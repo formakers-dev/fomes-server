@@ -1,0 +1,10 @@
+pairs:
+  js: Jason Ryu; sryu99
+  yn: Yena Kim; yenarue
+  sj: Steve Jeong; optyyie
+  tk: Tiffany Kim; yoonyoungkim89
+email:
+  prefix: pair
+  domain: gmail.com
+  no_solo_prefix: true
+global: false
