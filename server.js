@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const db = require('./db.js');
 const User = require('./user.js');
+const port = process.env.PORT || 8080;
 
 db();
 
@@ -49,6 +50,6 @@ app.get('/users', (req, res) => {
     });
 });
 
-app.listen(8080, () => {
-  console.log('Express App on port 8080!');
+app.listen(port, () => {
+  console.log('Express App on port ' + port);
 });
