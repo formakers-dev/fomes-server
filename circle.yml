@@ -7,3 +7,9 @@ dependencies:
     - rm -rf ./node_modules
   cache_directories:
     - ~/.npm
+
+deployment:
+  staging:
+    branch: master
+    heroku:
+      appname: appbeesvr
