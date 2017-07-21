@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "jasmine",
+    "test": "mocha --timeout 10000",
     "start": "node server.js"
   },
   "keywords": [],
@@ -17,6 +17,8 @@
     "morgan": "^1.8.2"
   },
   "devDependencies": {
-    "jasmine": "^2.6.0"
+    "chai": "^4.1.0",
+    "chai-http": "^3.0.0",
+    "mocha": "^3.4.2"
   }
 }

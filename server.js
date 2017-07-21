@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 
 app.post('/user/:name', (req, res) => {
   const userName = req.params.name;
-  var user = new User({ name: userName, email: userName + '@test.test' });
+  let user = new User({ name: userName, email: userName + '@test.test' });
   user.save((err) => {
     if (err) {
       res.send(err);
@@ -34,7 +34,7 @@ app.get('/user/:name', (req, res) => {
     .then((users) => {
       res.json(users);
     })
-    .catch((err) => {
+    .catch(() => {
       res.send("Error finding user")
     });
 });
@@ -45,7 +45,7 @@ app.get('/users', (req, res) => {
     .then((users) => {
       res.json(users);
     })
-    .catch((err) => {
+    .catch(() => {
       res.send("Error finding user")
     });
 });
@@ -53,3 +53,5 @@ app.get('/users', (req, res) => {
 app.listen(port, () => {
   console.log('Express App on port ' + port);
 });
+
+module.exports = app;   //For test
