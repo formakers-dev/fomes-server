@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jasmine",
     "start": "node server.js"
   },
   "keywords": [],
@@ -15,5 +15,8 @@
     "express": "^4.15.3",
     "mongoose": "^4.11.3",
     "morgan": "^1.8.2"
+  },
+  "devDependencies": {
+    "jasmine": "^2.6.0"
   }
 }
