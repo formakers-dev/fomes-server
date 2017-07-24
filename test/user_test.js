@@ -17,13 +17,12 @@ describe('Users', () => {
       it('it should GET all the users', (done) => {
         chai.request(server)
             .get('/users')
-            .then(200)
-            .then((res) => {
+            .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('Array');
                 res.body.length.should.be.eql(2);
+                done()
             })
-            .then(() => done(), done);
       });
   });
 });
