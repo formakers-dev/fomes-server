@@ -5,6 +5,7 @@ const db = require('./db');
 const User = require('./models/user');
 const UserApps = require('./routes/userApps');
 const ShortTermStats = require('./routes/shortTermStats');
+const LongTermStats = require('./routes/longTermStats');
 
 db();
 
@@ -59,6 +60,10 @@ app.route('/user/:email/apps')
 app.route('/user/:email/shortTermStats')
     .get(ShortTermStats.getShortTermStats)
     .post(ShortTermStats.postShortTermStats);
+
+app.route('/user/:email/longTermStats')
+    .get(LongTermStats.getLongTermStats)
+    .post(LongTermStats.postLongTermStats);
 
 app.post('/dailyUsageStats', (req, res) => {
   console.log('------------------------- daliyUsageStats');
