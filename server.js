@@ -6,6 +6,7 @@ const User = require('./models/user');
 const UserApps = require('./routes/userApps');
 const ShortTermStats = require('./routes/shortTermStats');
 const LongTermStats = require('./routes/longTermStats');
+const port = process.env.PORT || 8080;
 
 db();
 
@@ -65,7 +66,7 @@ app.route('/user/:email/longTermStats')
     .get(LongTermStats.getLongTermStats)
     .post(LongTermStats.postLongTermStats);
 
-app.listen(8080, () => {
+app.listen(port, () => {
     console.log('Express App on port 8080!');
 });
 
