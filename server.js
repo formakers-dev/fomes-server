@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const db = require('./db.js');
-const User = require('./user.js');
-const UserAppList = require('./userAppList.js');
+const User = require('./models/user.js');
+const UserApps = require('./routes/userApps.js');
 
 db();
 
@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 
 app.post('/user/:name', (req, res) => {
   const userName = req.params.name;
-  var user = new User({ name: userName, email: userName + '@test.test' });
+  let user = new User({ name: userName, email: userName + '@test.test' });
   user.save((err) => {
     if (err) {
       res.send(err);
@@ -35,7 +35,7 @@ app.get('/user/:name', (req, res) => {
       res.json(users);
     })
     .catch((err) => {
-      res.send("Error finding user")
+      res.send("Error finding user :" + err)
     });
 });
 
@@ -46,35 +46,37 @@ app.get('/users', (req, res) => {
       res.json(users);
     })
     .catch((err) => {
-      res.send("Error finding user")
+      res.send("Error finding user : " + err)
     });
 });
 
-app.post('/appInfoList', (req, res) => {
-  console.log('------------------------- appInfoList')
-  UserAppList.insertMany(req.body, (err, result) => {
-    if(!err) {
-      res.send(true);
-    }
-  });
-})
-app.post('/dailyUsageStats', (req, res) => {
-  console.log('------------------------- daliyUsageStats')
-  console.log(req.body);
-  res.send(true);
-})
-app.post('/detailUsageStats', (req, res) => {
-  console.log('------------------------- detailUsageStats')
-  console.log(req.body);
-  res.send(true);
-})
-app.post('/dailyUsageStatsByEvent', (req, res) => {
-  console.log('------------------------- dailyUsageStatsByEvent')
-  console.log(req.body);
-  res.send(true);
-})
 
+app.route('/user/:email/apps')
+    .get(UserApps.getUserApps)
+    .post(UserApps.postUserApps);
+
+app.post('/dailyUsageStats', (req, res) => {
+  console.log('------------------------- daliyUsageStats');
+  console.log(req.body);
+  res.send(true);
+});
+
+app.post('/detailUsageStats', (req, res) => {
+  console.log('------------------------- detailUsageStats');
+  console.log(req.body);
+  res.send(true);
+});
+
+app.post('/dailyUsageStatsByEvent', (req, res) => {
+  console.log('------------------------- dailyUsageStatsByEvent');
+  console.log(req.body);
+  res.send(true);
+});
 
 app.listen(8080, () => {
-  console.log('Express App on port 8080!');
+    console.log('Express App on port 8080!');
 });
+
+module.exports = app;
+
+
