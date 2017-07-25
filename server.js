@@ -1,9 +1,10 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const db = require('./db.js');
-const User = require('./models/user.js');
-const UserApps = require('./routes/userApps.js');
+const db = require('./db');
+const User = require('./models/user');
+const UserApps = require('./routes/userApps');
+const ShortTermStats = require('./routes/shortTermStats');
 
 db();
 
@@ -54,6 +55,10 @@ app.get('/users', (req, res) => {
 app.route('/user/:email/apps')
     .get(UserApps.getUserApps)
     .post(UserApps.postUserApps);
+
+app.route('/user/:email/shortTermStats')
+    .get(ShortTermStats.getShortTermStats)
+    .post(ShortTermStats.postShortTermStats);
 
 app.post('/dailyUsageStats', (req, res) => {
   console.log('------------------------- daliyUsageStats');
