@@ -65,24 +65,6 @@ app.route('/user/:email/longTermStats')
     .get(LongTermStats.getLongTermStats)
     .post(LongTermStats.postLongTermStats);
 
-app.post('/dailyUsageStats', (req, res) => {
-  console.log('------------------------- daliyUsageStats');
-  console.log(req.body);
-  res.send(true);
-});
-
-app.post('/detailUsageStats', (req, res) => {
-  console.log('------------------------- detailUsageStats');
-  console.log(req.body);
-  res.send(true);
-});
-
-app.post('/dailyUsageStatsByEvent', (req, res) => {
-  console.log('------------------------- dailyUsageStatsByEvent');
-  console.log(req.body);
-  res.send(true);
-});
-
 app.listen(8080, () => {
     console.log('Express App on port 8080!');
 });
