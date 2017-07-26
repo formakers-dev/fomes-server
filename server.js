@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const db = require('./db');
-const User = require('./models/user');
 const UserApps = require('./routes/userApps');
 const ShortTermStats = require('./routes/shortTermStats');
 const LongTermStats = require('./routes/longTermStats');
@@ -19,41 +18,6 @@ app.get('/', (req, res) => {
   res.send('hello world')
 });
 
-app.post('/user/:name', (req, res) => {
-  const userName = req.params.name;
-  let user = new User({ name: userName, email: userName + '@test.test' });
-  user.save((err) => {
-    if (err) {
-      res.send(err);
-    } else {
-      res.send(userName + 'is successfully added');
-    }
-  });
-});
-
-app.get('/user/:name', (req, res) => {
-  User.find({ name: req.params.name })
-    .exec()
-    .then((users) => {
-      res.json(users);
-    })
-    .catch((err) => {
-      res.send("Error finding user :" + err)
-    });
-});
-
-app.get('/users', (req, res) => {
-  User.find()
-    .exec()
-    .then((users) => {
-      res.json(users);
-    })
-    .catch((err) => {
-      res.send("Error finding user : " + err)
-    });
-});
-
-
 app.route('/apps/:userId')
     .get(UserApps.getUserApps)
     .post(UserApps.postUserApps);
@@ -69,5 +33,4 @@ app.listen(port, () => {
 });
 
 module.exports = app;
-
 
