@@ -1,7 +1,7 @@
 let UserApps = require('../models/userApps');
 
 let getUserApps = (req, res) => {
-    let query = UserApps.find({email: req.params.email});
+    let query = UserApps.find({userId: req.params.userId});
     query.exec((err, userApps) => {
         if(err) {
             res.send(err);
@@ -13,7 +13,7 @@ let getUserApps = (req, res) => {
 
 let postUserApps = (req, res) => {
     let newUserApps = new UserApps(req.body);
-    newUserApps.save((err, userApps) => {
+    newUserApps.save((err) => {
        if(err){
            res.send(err);
        } else {

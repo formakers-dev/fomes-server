@@ -54,7 +54,7 @@ app.get('/users', (req, res) => {
 });
 
 
-app.route('/user/:email/apps')
+app.route('/apps/:userId')
     .get(UserApps.getUserApps)
     .post(UserApps.postUserApps);
 
