@@ -58,12 +58,10 @@ app.route('/apps/:userId')
     .get(UserApps.getUserApps)
     .post(UserApps.postUserApps);
 
-app.route('/user/:email/shortTermStats')
-    .get(ShortTermStats.getShortTermStats)
+app.route('/stats/short/:userId')
     .post(ShortTermStats.postShortTermStats);
 
-app.route('/user/:email/longTermStats')
-    .get(LongTermStats.getLongTermStats)
+app.route('/stats/long/:userId')
     .post(LongTermStats.postLongTermStats);
 
 app.listen(port, () => {

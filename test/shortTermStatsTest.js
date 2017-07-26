@@ -2,13 +2,14 @@ let chai = require('chai');
 let chaiHttp = require('chai-http');
 let server = require('./../server');
 let should = chai.should();
+let ShortTermStats = require('./../models/shortTermStats');
 chai.use(chaiHttp);
 
 describe('shortTermStats', () => {
     describe('POST shortTermStats', () => {
         it('it should save all shortTermStats of the user', (done) => {
             let doc = {
-                "email": "test@test.com",
+                "userId": "testId",
                 "stats": [
                     {
                         "packageName": "com.whatever.package1",
@@ -22,7 +23,7 @@ describe('shortTermStats', () => {
             };
 
             chai.request(server)
-                .post("/user/test@test.com/shortTermStats")
+                .post("/stats/short/testId")
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -32,19 +33,10 @@ describe('shortTermStats', () => {
         });
     });
 
-    describe('GET shortTermStats', () => {
-        it('it should get all shortTermStats of the user', (done) => {
-            chai.request(server)
-                .get("/user/test@test.com/shortTermStats")
-                .end((err, res)=> {
-                    res.should.have.status(200);
-                    res.body[0].should.have.property("email");
-                    res.body[0].should.have.property("stats");
-                    res.body[0].stats[0].should.have.property("packageName");
-                    res.body[0].stats[0].should.have.property("eventType");
-                    res.body[0].stats[0].should.have.property("timeStamp");
-                    done();
-                })
+    afterEach((done) => {
+        ShortTermStats.remove({userId:'testId'}, () => {
+            done();
         });
     });
+
 });

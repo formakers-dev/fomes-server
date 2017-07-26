@@ -2,14 +2,14 @@ let chai = require('chai');
 let chaiHttp = require('chai-http');
 let server = require('./../server');
 let should = chai.should();
-let UserAppsModel = require('../models/userApps');
+let UserApps = require('../models/userApps');
 
 chai.use(chaiHttp);
 
 describe('UserApps', () => {
     describe('POST userApps', () => {
         before((done) => {
-            UserAppsModel.remove({userId:'testId'}, () => {
+            UserApps.remove({userId:'testId'}, () => {
                 done();
             });
         });
@@ -40,7 +40,7 @@ describe('UserApps', () => {
 
     describe('GET userApps', () => {
         before((done) => {
-            const newUserApps = new UserAppsModel({
+            const newUserApps = new UserApps({
                 userId: "testId",
                 apps: [{
                     packageName: "com.test.package",
@@ -66,7 +66,7 @@ describe('UserApps', () => {
     });
 
     afterEach((done) => {
-        UserAppsModel.remove({userId:'testId'}, () => {
+        UserApps.remove({userId:'testId'}, () => {
             done();
         });
     });

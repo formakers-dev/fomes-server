@@ -2,13 +2,14 @@ let chai = require('chai');
 let chaiHttp = require('chai-http');
 let server = require('./../server');
 let should = chai.should();
+let LongTermStats = require('../models/longTermStats');
 chai.use(chaiHttp);
 
 describe('longTermStats', () => {
     describe('POST longTermStats', () => {
         it('it should post all longTermStats of the user', (done) => {
             let doc = {
-                email: 'test@test.com',
+                userId: 'testId',
                 stats: [
                     {
                         packageName: 'packageA',
@@ -22,8 +23,9 @@ describe('longTermStats', () => {
                     }
                 ]
             };
+
             chai.request(server)
-                .post('/user/test@test.com/longTermStats')
+                .post('/stats/long/testId/')
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -33,19 +35,9 @@ describe('longTermStats', () => {
         });
     });
 
-    describe('GET longTermStats', () => {
-      it('it should get all longTermStats of the user', (done) => {
-          chai.request(server)
-              .get("/user/test@test.com/longTermStats")
-              .end((err, res) => {
-                  res.should.have.status(200);
-                  res.body[0].should.have.property("email");
-                  res.body[0].should.have.property("stats");
-                  res.body[0].stats[0].should.have.property("packageName");
-                  res.body[0].stats[0].should.have.property("lastUsedDate");
-                  res.body[0].stats[0].should.have.property("totalUsedTime");
-                  done();
-              });
-      });
-   });
+    afterEach((done) => {
+        LongTermStats.remove({userId:'testId'}, () => {
+            done();
+        });
+    });
 });
