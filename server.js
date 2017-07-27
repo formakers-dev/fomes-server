@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const db = require('./db');
+const User = require('./routes/user');
 const UserApps = require('./routes/userApps');
 const ShortTermStats = require('./routes/shortTermStats');
 const LongTermStats = require('./routes/longTermStats');
@@ -17,6 +18,9 @@ app.use(bodyParser.urlencoded({
 app.get('/', (req, res) => {
   res.send('hello world')
 });
+
+app.route('/user')
+    .post(User.postUser);
 
 app.route('/apps/:userId')
     .get(UserApps.getUserApps)
