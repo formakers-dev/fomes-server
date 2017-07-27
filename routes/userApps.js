@@ -12,7 +12,10 @@ let getUserApps = (req, res) => {
 };
 
 let postUserApps = (req, res) => {
-    let newUserApps = new UserApps(req.body);
+    let userAppsJson = {};
+    userAppsJson.userId = req.params.userId;
+    userAppsJson.apps = req.body;
+    let newUserApps = new UserApps(userAppsJson);
     newUserApps.save((err) => {
        if(err){
            res.send(err);

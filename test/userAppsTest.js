@@ -16,7 +16,6 @@ describe('UserApps', () => {
 
         it('it should POST all the apps of the user', done => {
             let doc = {
-                "userId": "testId",
                 "apps": [
                     {
                         "packageName": "com.whatever.package1",
