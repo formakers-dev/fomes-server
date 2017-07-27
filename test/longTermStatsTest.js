@@ -9,7 +9,6 @@ describe('longTermStats', () => {
     describe('POST longTermStats', () => {
         it('it should post all longTermStats of the user', (done) => {
             let doc = {
-                userId: 'testId',
                 stats: [
                     {
                         packageName: 'packageA',
@@ -25,7 +24,7 @@ describe('longTermStats', () => {
             };
 
             chai.request(server)
-                .post('/stats/long/testId/')
+                .post('/stats/long/testId')
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);

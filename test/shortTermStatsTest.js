@@ -29,7 +29,7 @@ describe('shortTermStats', () => {
                     res.should.have.status(200);
                     res.body.should.be.eql(true);
                     done();
-                })
+                });
         });
     });
 
