@@ -2,30 +2,28 @@ let chai = require('chai');
 let chaiHttp = require('chai-http');
 let server = require('./../server');
 let should = chai.should();
-let ShortTermStats = require('./../models/shortTermStats');
+let EventStats = require('./../models/eventStats');
 chai.use(chaiHttp);
 
-describe('shortTermStats', () => {
-    describe('POST shortTermStats', () => {
-        it('it should save all shortTermStats of the user', (done) => {
+describe('eventStats', () => {
+    describe('POST eventStats', () => {
+        it('it should save all eventStats of the user', (done) => {
             let doc = {
                 "stats": [
                     {
                         "packageName": "com.whatever.package1",
-                        "startTimeStamp": 1499914700000,
-                        "endTimeStamp": 1499914800000,
-                        "totalUsedTime": 100000
+                        "eventType": "1",
+                        "timeStamp": 1499914800001
                     },
                     {
                         "packageName": "com.whatever.package2",
-                        "startTimeStamp": 1499914700001,
-                        "endTimeStamp": 1499914900001,
-                        "totalUsedTime": 200000
+                        "eventType": "2",
+                        "timeStamp": 1499914800002
                     }]
             };
 
             chai.request(server)
-                .post("/stats/short/testId")
+                .post("/stats/event/testId")
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -36,9 +34,8 @@ describe('shortTermStats', () => {
     });
 
     afterEach((done) => {
-        ShortTermStats.remove({userId:'testId'}, () => {
+        EventStats.remove({userId:'testId'}, () => {
             done();
         });
     });
-
 });

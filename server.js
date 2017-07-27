@@ -6,6 +6,7 @@ const User = require('./routes/user');
 const UserApps = require('./routes/userApps');
 const ShortTermStats = require('./routes/shortTermStats');
 const LongTermStats = require('./routes/longTermStats');
+const EventStats = require('./routes/eventStats');
 const port = process.env.PORT || 8080;
 
 db();
@@ -28,6 +29,9 @@ app.route('/apps/:userId')
 
 app.route('/stats/short/:userId')
     .post(ShortTermStats.postShortTermStats);
+
+app.route('/stats/event/:userId')
+    .post(EventStats.postEventStats);
 
 app.route('/stats/long/:userId')
     .post(LongTermStats.postLongTermStats);
