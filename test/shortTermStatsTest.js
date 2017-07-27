@@ -9,7 +9,6 @@ describe('shortTermStats', () => {
     describe('POST shortTermStats', () => {
         it('it should save all shortTermStats of the user', (done) => {
             let doc = {
-                "userId": "testId",
                 "stats": [
                     {
                         "packageName": "com.whatever.package1",

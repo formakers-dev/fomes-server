@@ -33,7 +33,7 @@ app.route('/stats/long/:userId')
     .post(LongTermStats.postLongTermStats);
 
 app.listen(port, () => {
-    console.log('Express App on port 8080!');
+    console.log('Express App on port ' + port);
 });
 
 module.exports = app;
