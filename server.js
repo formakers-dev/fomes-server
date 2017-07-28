@@ -44,8 +44,9 @@ app.listen(port, () => {
     console.log('Express App on port ' + port);
 });
 
-function test() {
+function test(req, res) {
     console.log("TEST CALLED");
+    res.send("ABCDE");
 }
 
 module.exports = app;
