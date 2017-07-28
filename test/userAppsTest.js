@@ -28,39 +28,13 @@ describe('UserApps', () => {
 
             chai.request(server)
                 .post('/apps/testId')
+                .set('x-access-token', 'testToken')
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.eql(true);
                     done();
                 })
-        });
-    });
-
-    describe('GET userApps', () => {
-        before((done) => {
-            const newUserApps = new UserApps({
-                userId: "testId",
-                apps: [{
-                    packageName: "com.test.package",
-                    appName: "testApp"
-                }]
-            });
-            newUserApps.save(() => {
-                done();
-            });
-        });
-
-        it('it should GET all the apps about the input id', done => {
-            chai.request(server)
-                .get('/apps/testId')
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body[0].userId.should.be.eql("testId");
-                    res.body[0].apps[0].packageName.should.be.eql("com.test.package");
-                    res.body[0].apps[0].appName.should.be.eql("testApp");
-                    done();
-                });
         });
     });
 

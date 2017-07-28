@@ -25,6 +25,7 @@ describe('longTermStats', () => {
 
             chai.request(server)
                 .post('/stats/long/testId')
+                .set('x-access-token', 'testToken')
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);

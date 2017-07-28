@@ -1,12 +1,11 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const statsRouter = require('./router/stats');
+const appsRouter = require('./router/apps');
+const userRouter = require('./router/user');
+const authMiddleware = require('./middleware/auth');
 const db = require('./db');
-const User = require('./routes/user');
-const UserApps = require('./routes/userApps');
-const ShortTermStats = require('./routes/shortTermStats');
-const LongTermStats = require('./routes/longTermStats');
-const EventStats = require('./routes/eventStats');
 const port = process.env.PORT || 8080;
 
 db();
@@ -20,34 +19,14 @@ app.get('/', (req, res) => {
   res.send('hello world')
 });
 
-app.route('/auth/google/callback')
-    .get(test)
-    .post(test);
-
-app.route('/user')
-    .post(User.postUser);
-
-app.route('/apps/:userId')
-    .get(UserApps.getUserApps)
-    .post(UserApps.postUserApps);
-
-app.route('/stats/short/:userId')
-    .post(ShortTermStats.postShortTermStats);
-
-app.route('/stats/event/:userId')
-    .post(EventStats.postEventStats);
-
-app.route('/stats/long/:userId')
-    .post(LongTermStats.postLongTermStats);
+app.use('/user', userRouter);
+app.use('/stats', authMiddleware, statsRouter);
+app.use('/apps', authMiddleware, appsRouter);
 
 app.listen(port, () => {
     console.log('Express App on port ' + port);
 });
 
-function test(req, res) {
-    console.log("TEST CALLED");
-    res.send("ABCDE");
-}
 
 module.exports = app;
 
