@@ -20,6 +20,10 @@ app.get('/', (req, res) => {
   res.send('hello world')
 });
 
+app.route('/auth/google/callback')
+    .get(test)
+    .post(test);
+
 app.route('/user')
     .post(User.postUser);
 
@@ -39,6 +43,10 @@ app.route('/stats/long/:userId')
 app.listen(port, () => {
     console.log('Express App on port ' + port);
 });
+
+function test() {
+    console.log("TEST CALLED");
+}
 
 module.exports = app;
 
