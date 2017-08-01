@@ -1,10 +1,9 @@
-const GoogleAuth = require('google-auth-library');
-const CLIENT_ID = "1011092046994-qdvlddoem775qt59sm5b2sqfp3iq0etf.apps.googleusercontent.com";
-let auth = new GoogleAuth;
-// let client = new auth.OAuth2(CLIENT_ID, '', '');
+const jwt = require('jsonwebtoken');
 
 const authMiddleware = (req, res, next) => {
+    const user = req.body;
     const token = req.headers['x-access-token'];
+    const secret = req.app.get('jwt-secret');
 
     if(!token) {
         return res.status(403).json({
@@ -13,28 +12,26 @@ const authMiddleware = (req, res, next) => {
         });
     }
 
-    // create a promise that decodes the token
-    const p = new Promise(
-        (resolve, reject) => {
-            if(token === "testToken") {
-                resolve();
-            } else {
-                reject("Not authorized");
-            }
-            // client.verifyIdToken(
-            //     token,
-            //     CLIENT_ID,
-            //     (err, login) => {
-            //         if(err) {
-            //             reject(err);
-            //         } else {
-            //             let payload = login.getPayload();
-            //             let userId = payload['sub'];
-            //             resolve(userId);
-            //         }
-            //     });
+    // TODO: 로그인 했을 경우 각 provider에서 제공한 tokenId에서 id를 꺼내온다
+    // id를 가지고 jwt를 생성하여 client에 보내줌
+    const check = (user) => {
+        if (!user) {
+            reject(new Error("login failed"));
+        } else {
+            const p = new Promise(
+                (resolve, reject) => {
+                    jwt.verify(token, secret, (err, decoded) => {
+                        if(err) {
+                            reject(err);
+                        } else {
+                            resolve(decoded);
+                        }
+                    })
+                }
+            );
+            return p;
         }
-    );
+    };
 
     const onError = (errorMessage) => {
         res.status(403).json({
@@ -42,12 +39,11 @@ const authMiddleware = (req, res, next) => {
             message: errorMessage
         });
     };
+    const onSuccess = (token) => {
+        res.json(true);
+    }
 
-    // process the promise
-    p.then(()=>{
-        req.isAuthenticated = true;
-        next();
-    }).catch(onError)
+    check(user).then(onSuccess).catch(onError);
 };
 
 module.exports = authMiddleware;

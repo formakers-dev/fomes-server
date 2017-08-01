@@ -14,11 +14,14 @@
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
     "google-auth-library": "^0.10.0",
+    "jsonwebtoken": "^7.4.1",
+    "jwt-secret": "^1.1.1",
     "mongoose": "^4.11.3",
     "morgan": "^1.8.2"
   },
   "devDependencies": {
     "chai": "^4.1.0",
+    "chai-as-promised": "^7.1.1",
     "chai-http": "^3.0.0",
     "mocha": "^3.4.2"
   }
