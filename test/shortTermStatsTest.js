@@ -26,7 +26,7 @@ describe('shortTermStats', () => {
 
         it('단기통계데이터를 성공적으로 저장한다', (done) => {
             chai.request(server)
-                .post("/stats/short/testId")
+                .post("/stats/short")
                 .set('x-access-token', testConfig.validToken)
                 .send(doc)
                 .end((err, res) => {
@@ -38,7 +38,7 @@ describe('shortTermStats', () => {
 
         it('잘못된 토큰은 접근을 차단한다', (done) => {
             chai.request(server)
-                .post("/stats/short/testId")
+                .post("/stats/short")
                 .set('x-access-token', testConfig.invalidToken)
                 .send(doc)
                 .end((err, res) => {
@@ -49,7 +49,7 @@ describe('shortTermStats', () => {
 
         it('만료된 토큰은 접근을 차단한다', (done) => {
             chai.request(server)
-                .post("/stats/short/testId")
+                .post("/stats/short")
                 .set('x-access-token', testConfig.expiredToken)
                 .send(doc)
                 .end((err, res) => {

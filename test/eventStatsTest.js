@@ -24,7 +24,7 @@ describe('eventStats', () => {
 
         it('이벤트 통계정보를 정상적으로 저장한다', (done) => {
             chai.request(server)
-                .post("/stats/event/testId")
+                .post("/stats/event")
                 .set('x-access-token', testConfig.validToken)
                 .send(doc)
                 .end((err, res) => {
@@ -36,7 +36,7 @@ describe('eventStats', () => {
 
         it('잘못된 토큰은 접근을 차단한다', (done) => {
             chai.request(server)
-                .post("/stats/event/testId")
+                .post("/stats/event")
                 .set('x-access-token', testConfig.invalidToken)
                 .send(doc)
                 .end((err, res) => {
@@ -47,7 +47,7 @@ describe('eventStats', () => {
 
         it('만료된 토큰은 접근을 차단한다', (done) => {
             chai.request(server)
-                .post("/stats/event/testId")
+                .post("/stats/event")
                 .set('x-access-token', testConfig.expiredToken)
                 .send(doc)
                 .end((err, res) => {

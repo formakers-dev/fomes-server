@@ -25,7 +25,7 @@ describe('longTermStats', () => {
 
         it('장기 통계데이터를 정상적으로 저장한다', (done) => {
             chai.request(server)
-                .post('/stats/long/testId')
+                .post('/stats/long')
                 .set('x-access-token', testConfig.validToken)
                 .send(doc)
                 .end((err, res) => {
@@ -37,7 +37,7 @@ describe('longTermStats', () => {
 
         it('잘못된 토큰은 접근을 차단한다', (done) => {
             chai.request(server)
-                .post("/stats/long/testId")
+                .post("/stats/long")
                 .set('x-access-token', testConfig.invalidToken)
                 .send(doc)
                 .end((err, res) => {
@@ -48,7 +48,7 @@ describe('longTermStats', () => {
 
         it('만료된 토큰은 접근을 차단한다', (done) => {
             chai.request(server)
-                .post("/stats/long/testId")
+                .post("/stats/long")
                 .set('x-access-token', testConfig.expiredToken)
                 .send(doc)
                 .end((err, res) => {

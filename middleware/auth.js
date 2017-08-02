@@ -23,12 +23,14 @@ const authMiddleware = (req, res, next) => {
     };
 
     const onError = (errorMessage) => {
+        console.log('===authMiddleware:onError');
         res.status(403).json({
             success: false,
             message: errorMessage
         });
     };
-    const onSuccess = () => {
+    const onSuccess = (decoded) => {
+        req.params.userId = decoded.userId;
         next();
     };
 

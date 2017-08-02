@@ -5,13 +5,13 @@ const LongTermStats = require('../controller/longTermStats');
 const EventStats = require('../controller/eventStats');
 
 
-statsRouter.route('/short/:userId')
+statsRouter.route('/short')
     .post(ShortTermStats.postShortTermStats);
 
-statsRouter.route('/event/:userId')
+statsRouter.route('/event')
     .post(EventStats.postEventStats);
 
-statsRouter.route('/long/:userId')
+statsRouter.route('/long')
     .post(LongTermStats.postLongTermStats);
 
 module.exports = statsRouter;
