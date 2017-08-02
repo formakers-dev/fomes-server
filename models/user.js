@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const usersSchema = new mongoose.Schema({
     userId : String,
-    name : String
+    email : String,
+    name : String,
+    provider: String
 });
 const user = mongoose.model('users', usersSchema);
 module.exports = user;

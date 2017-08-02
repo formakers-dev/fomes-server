@@ -1,3 +1,3 @@
 module.exports = {
-    'secret': 'secretKey'
-}
+    'secret': process.env.APPBEE_SECRET_KEY || 'secretKey'
+};
