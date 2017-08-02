@@ -53,7 +53,7 @@ describe('shortTermStats', () => {
                 .set('x-access-token', testConfig.expiredToken)
                 .send(doc)
                 .end((err, res) => {
-                    res.should.have.status(403);
+                    res.should.have.status(401);
                     done();
                 });
         });

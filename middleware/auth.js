@@ -11,10 +11,14 @@ const authMiddleware = (req, res, next) => {
             return new Promise(
                 (resolve, reject) => {
                     jwt.verify(token, config.secret, (err, decoded) => {
-                        if(err) {
+                        if(!err) {
+                            resolve(decoded);
+                        } else if(err instanceof jwt.TokenExpiredError) {
+                            err.errCode = config.UNAUTHORIZED;
                             reject(err);
                         } else {
-                            resolve(decoded);
+                            err.errCode = config.FORBIDDEN;
+                            reject(err);
                         }
                     })
                 }
@@ -22,11 +26,11 @@ const authMiddleware = (req, res, next) => {
         }
     };
 
-    const onError = (errorMessage) => {
+    const onError = (err) => {
         console.log('===authMiddleware:onError');
-        res.status(403).json({
+        res.status(err.errCode).json({
             success: false,
-            message: errorMessage
+            message: err.message
         });
     };
     const onSuccess = (decoded) => {
