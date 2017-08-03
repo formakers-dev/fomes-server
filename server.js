@@ -8,7 +8,7 @@ const Auth = require('./middleware/auth');
 const db = require('./db');
 const port = require('./config')[process.env.NODE_ENV].port;
 
-db();
+db.init();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
