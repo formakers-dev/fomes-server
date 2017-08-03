@@ -12,7 +12,7 @@ chai.use(chaiHttp);
 
 describe('Users', () => {
     describe('GET user auth', () => {
-        it('id토큰 검증 후 API 사용을 위한 액세스 토큰을 발급하여 리턴한다', done => {
+        it('google id토큰 검증 후 API 사용을 위한 appbee 토큰을 발급하여 리턴한다', done => {
             chai.request(server)
                 .get('/user/auth')
                 .set('x-id-token', testConfig.googleIdToken)
@@ -23,7 +23,7 @@ describe('Users', () => {
                 });
         });
 
-        it('리턴되는 액세스 토큰은 유효한 토큰이어야 한다', done => {
+        it('리턴되는 appbee 토큰은 유효한 토큰이어야 한다', done => {
             chai.request(server)
                 .get('/user/auth')
                 .set('x-id-token', testConfig.googleIdToken)
