@@ -1,9 +1,9 @@
-let chai = require('chai');
-let chaiHttp = require('chai-http');
-let server = require('./../server');
-let testConfig = require('./testConfig');
-let should = chai.should();
-let ShortTermStats = require('./../models/shortTermStats');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const server = require('../server');
+const testConfig = require('./testConfig');
+const should = chai.should();
+const ShortTermStats = require('../models/shortTermStats');
 chai.use(chaiHttp);
 
 describe('shortTermStats', () => {

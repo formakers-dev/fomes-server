@@ -1,9 +1,8 @@
+const GoogleAuth = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 
-const authMiddleware = (req, res, next) => {
-    // TODO: 로그인 했을 경우 각 provider에서 제공한 tokenId에서 id를 꺼내온다
-    // id를 가지고 jwt를 생성하여 client에 보내줌
+const appBeeTokenVerifier = (req, res, next) => {
     const check = (token) => {
         if (!token) {
             reject(new Error("Has no token"));
@@ -27,7 +26,7 @@ const authMiddleware = (req, res, next) => {
     };
 
     const onError = (err) => {
-        console.log('===authMiddleware:onError');
+        console.log('===appBeeTokenVerifier:onError');
         res.status(err.errCode).json({
             success: false,
             message: err.message
@@ -43,4 +42,49 @@ const authMiddleware = (req, res, next) => {
         .catch(onError);
 };
 
-module.exports = authMiddleware;
+
+const googleTokenVerifier = (req, res, next) => {
+    const verifyGoogleToken = (googleIdToken) => {
+        return new Promise(
+            (resolve, reject) => {
+                const auth = new GoogleAuth;
+                const client = new auth.OAuth2();
+
+                client.verifyIdToken(
+                    googleIdToken,
+                    process.env['GG_CLIENT_ID'],
+                    function(err, login) {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            const payload = login.getPayload();
+                            let user = {};
+                            user.userId = payload['sub'];
+                            user.email = payload['email'];
+                            user.name = payload['name'];
+                            user.provider = 'GG';
+
+                            resolve(user);
+                        }
+                    }
+                );
+            }
+        );
+    };
+
+    verifyGoogleToken(req.headers['x-id-token'])
+        .then((user) => {
+            req.user = user;
+            next();
+        })
+        .catch((err) => {
+            console.log('===verifyGoogleToken:onError');
+            res.status(403).json({
+                success: false,
+                message: err.message
+            });
+        });
+};
+
+
+module.exports = {appBeeTokenVerifier, googleTokenVerifier};
