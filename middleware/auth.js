@@ -1,6 +1,6 @@
 const GoogleAuth = require('google-auth-library');
 const jwt = require('jsonwebtoken');
-const config = require('../config');
+const config = require('../config')[process.env.NODE_ENV];
 
 const appBeeTokenVerifier = (req, res, next) => {
     const check = (token) => {
@@ -13,10 +13,10 @@ const appBeeTokenVerifier = (req, res, next) => {
                         if(!err) {
                             resolve(decoded);
                         } else if(err instanceof jwt.TokenExpiredError) {
-                            err.errCode = config.UNAUTHORIZED;
+                            err.errCode = 401;
                             reject(err);
                         } else {
-                            err.errCode = config.FORBIDDEN;
+                            err.errCode = 403;
                             reject(err);
                         }
                     })
@@ -52,7 +52,7 @@ const googleTokenVerifier = (req, res, next) => {
 
                 client.verifyIdToken(
                     googleIdToken,
-                    process.env['GG_CLIENT_ID'],
+                    config.googleClientId,
                     function(err, login) {
                         if (err) {
                             reject(err);

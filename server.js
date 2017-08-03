@@ -6,7 +6,7 @@ const appsRouter = require('./router/apps');
 const userRouter = require('./router/user');
 const Auth = require('./middleware/auth');
 const db = require('./db');
-const port = process.env.PORT || 8080;
+const port = require('./config')[process.env.NODE_ENV].port;
 
 db();
 

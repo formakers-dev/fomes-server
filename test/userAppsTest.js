@@ -1,7 +1,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../server');
-const testConfig = require('./testConfig');
+const config = require('../config')[process.env.NODE_ENV];
 const should = chai.should();
 const UserApps = require('../models/userApps');
 
@@ -23,7 +23,7 @@ describe('UserApps', () => {
         it('앱 설치 목록을 저장한다', done => {
             chai.request(server)
                 .post('/apps')
-                .set('x-access-token', testConfig.validToken)
+                .set('x-access-token', config.appbeeToken.valid)
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -35,7 +35,7 @@ describe('UserApps', () => {
         it('잘못된 토큰은 접근을 차단한다', (done) => {
             chai.request(server)
                 .post("/apps")
-                .set('x-access-token', testConfig.invalidToken)
+                .set('x-access-token', config.appbeeToken.invalid)
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(403);
@@ -46,7 +46,7 @@ describe('UserApps', () => {
         it('만료된 토큰은 접근을 차단한다', (done) => {
             chai.request(server)
                 .post("/apps")
-                .set('x-access-token', testConfig.expiredToken)
+                .set('x-access-token', config.appbeeToken.expired)
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(401);
