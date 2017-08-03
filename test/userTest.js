@@ -1,13 +1,13 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const server = require('../server');
 const testConfig = require('./testConfig');
 const should = chai.should();
 const Users = require('../models/user');
 const expect = chai.expect;
 const jwt = require('jsonwebtoken');
 const config = require('../config');
-const sinon = require('sinon');
+require('./setupSinon')();
+const server = require('../server');
 
 chai.use(chaiHttp);
 
@@ -30,7 +30,7 @@ describe('Users', () => {
                     jwt.verify(res.body, config.secret, (err) => {
                         expect(!err).to.be.true;
                         done();
-                    })
+                    });
                 });
         });
 
