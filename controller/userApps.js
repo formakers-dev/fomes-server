@@ -13,7 +13,7 @@ let getUserApps = (req, res) => {
 
 let postUserApps = (req, res) => {
     let userAppsJson = {};
-    userAppsJson.userId = req.params.userId;
+    userAppsJson.userId = req.userId;
     userAppsJson.apps = req.body;
     let newUserApps = new UserApps(userAppsJson);
     newUserApps.save((err) => {

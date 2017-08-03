@@ -33,7 +33,7 @@ const appBeeTokenVerifier = (req, res, next) => {
         });
     };
     const onSuccess = (decoded) => {
-        req.params.userId = decoded.userId;
+        req.userId = decoded.userId;
         next();
     };
 

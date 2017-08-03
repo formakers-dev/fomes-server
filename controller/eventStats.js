@@ -2,7 +2,7 @@ let EventStats = require('./../models/eventStats');
 
 let postEventStats = (req, res) => {
     let eventStatJson = {};
-    eventStatJson.userId = req.params.userId;
+    eventStatJson.userId = req.userId;
     eventStatJson.stats = req.body;
 
     let newEventStats = new EventStats(eventStatJson);

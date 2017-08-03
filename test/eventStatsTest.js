@@ -9,9 +9,7 @@ chai.use(chaiHttp);
 
 describe('eventStats', () => {
     describe('POST eventStats', () => {
-        const doc = {
-            "stats": [
-                {
+        const doc = [{
                     "packageName": "com.whatever.package1",
                     "eventType": "1",
                     "timeStamp": 1499914800001
@@ -20,8 +18,7 @@ describe('eventStats', () => {
                     "packageName": "com.whatever.package2",
                     "eventType": "2",
                     "timeStamp": 1499914800002
-                }]
-        };
+                }];
 
         it('이벤트 통계정보를 정상적으로 저장한다', (done) => {
             chai.request(server)
@@ -59,7 +56,7 @@ describe('eventStats', () => {
     });
 
     afterEach((done) => {
-        EventStats.remove({userId:'testId'}, () => {
+        EventStats.remove({ userId : config.testUserId }, () => {
             done();
         });
     });

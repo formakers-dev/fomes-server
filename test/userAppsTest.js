@@ -9,16 +9,14 @@ chai.use(chaiHttp);
 
 describe('UserApps', () => {
     describe('POST userApps', () => {
-        const doc = {
-            "apps": [
-                {
+        const doc = [{
                     "packageName": "com.whatever.package1",
                     "appName": "app1"
-                }, {
+                },
+                {
                     "packageName": "com.whatever.package2",
                     "appName": "app2"
-                }]
-        };
+                }];
 
         it('앱 설치 목록을 저장한다', done => {
             chai.request(server)
@@ -29,7 +27,7 @@ describe('UserApps', () => {
                     res.should.have.status(200);
                     res.body.should.be.eql(true);
                     done();
-                })
+                });
         });
 
         it('잘못된 토큰은 접근을 차단한다', (done) => {
@@ -56,7 +54,7 @@ describe('UserApps', () => {
     });
 
     afterEach((done) => {
-        UserApps.remove({userId:'testId'}, () => {
+        UserApps.remove({userId : config.testUserId}, () => {
             done();
         });
     });

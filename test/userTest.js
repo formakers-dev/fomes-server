@@ -34,7 +34,7 @@ describe('Users', () => {
         });
 
         afterEach((done) => {
-            Users.remove({userId:'testId'}, () => {
+            Users.remove({ userId : config.testUserId }, () => {
                 done();
             });
         });

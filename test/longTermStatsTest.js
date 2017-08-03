@@ -9,9 +9,7 @@ chai.use(chaiHttp);
 
 describe('longTermStats', () => {
     describe('POST longTermStats', () => {
-        const doc = {
-            stats: [
-                {
+        const doc = [{
                     packageName: 'packageA',
                     lastUsedDate: '20170101',
                     totalUsedTime: 1000
@@ -20,9 +18,7 @@ describe('longTermStats', () => {
                     packageName: 'packageA',
                     lastUsedDate: '20170102',
                     totalUsedTime: 2000
-                }
-            ]
-        };
+                }];
 
         it('장기 통계데이터를 정상적으로 저장한다', (done) => {
             chai.request(server)
@@ -60,7 +56,7 @@ describe('longTermStats', () => {
     });
 
     afterEach((done) => {
-        LongTermStats.remove({userId:'testId'}, () => {
+        LongTermStats.remove({ userId : config.testUserId }, () => {
             done();
         });
     });

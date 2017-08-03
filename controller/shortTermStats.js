@@ -2,7 +2,7 @@ let ShortTermStats = require('./../models/shortTermStats');
 
 let postShortTermStats = (req, res) => {
     let shortTermStatJson = {};
-    shortTermStatJson.userId = req.params.userId;
+    shortTermStatJson.userId = req.userId;
     shortTermStatJson.stats = req.body;
 
     let newShortTermStats = new ShortTermStats(shortTermStatJson);

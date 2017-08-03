@@ -8,9 +8,7 @@ chai.use(chaiHttp);
 
 describe('shortTermStats', () => {
     describe('POST shortTermStats', () => {
-        let doc = {
-            "stats": [
-                {
+        let doc = [{
                     "packageName": "com.whatever.package1",
                     "startTimeStamp": 1499914700000,
                     "endTimeStamp": 1499914800000,
@@ -21,8 +19,7 @@ describe('shortTermStats', () => {
                     "startTimeStamp": 1499914700001,
                     "endTimeStamp": 1499914900001,
                     "totalUsedTime": 200000
-                }]
-        };
+                }];
 
         it('단기통계데이터를 성공적으로 저장한다', (done) => {
             chai.request(server)
@@ -60,7 +57,7 @@ describe('shortTermStats', () => {
     });
 
     afterEach((done) => {
-        ShortTermStats.remove({userId:'testId'}, () => {
+        ShortTermStats.remove({ userId : config.testUserId }, () => {
             done();
         });
     });
