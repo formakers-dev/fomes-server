@@ -7,7 +7,6 @@ const userRouter = require('./router/user');
 const Auth = require('./middleware/auth');
 const db = require('./db');
 const port = require('./config')[process.env.NODE_ENV].port;
-const httpPort = process.env.PORT || 8080;
 const http = require('http');
 
 db.init();
@@ -25,8 +24,8 @@ app.use('/user', userRouter);
 app.use('/stats', Auth.appBeeTokenVerifier, statsRouter);
 app.use('/apps', Auth.appBeeTokenVerifier, appsRouter);
 
-http.createServer(app).listen(httpPort, () => {
-    console.log('Express App on http port ' + httpPort);
+http.createServer(app).listen(port, () => {
+    console.log('Express App on http port ' + port);
 });
 
 // [https]

@@ -4,3 +4,4 @@ package-lock.json
 *.csr.pem
 *.key.pem
 *.DS_Store
+*.log
