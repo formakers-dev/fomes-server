@@ -40,5 +40,5 @@ http.createServer(app).listen(httpPort, () => {
 // https.createServer(credential, app).listen(httpsPort, () => {
 //     console.log('Express App on https port ' + httpsPort);
 // });
-
+//
 module.exports = app;
