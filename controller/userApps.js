@@ -15,14 +15,15 @@ let postUserApps = (req, res) => {
     let userAppsJson = {};
     userAppsJson.userId = req.userId;
     userAppsJson.apps = req.body;
-    let newUserApps = new UserApps(userAppsJson);
-    newUserApps.save((err) => {
-       if(err){
-           res.send(err);
-       } else {
-           res.send(true);
-       }
-    });
+
+    UserApps.findOneAndUpdate({userId : req.userId}, { $set: userAppsJson }, {upsert: true})
+        .exec()
+        .then(() => {
+            res.send(true);
+        })
+        .catch((err) => {
+            res.send(err);
+        });
 };
 
 module.exports = {getUserApps, postUserApps};

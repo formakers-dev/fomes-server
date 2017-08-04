@@ -5,14 +5,14 @@ const postLongTermStats = (req, res) => {
     longTermStatJson.userId = req.userId;
     longTermStatJson.stats = req.body;
 
-    let newLongTermStats = new LongTermStats(longTermStatJson);
-    newLongTermStats.save((err) => {
-        if(err) {
-            res.send(err);
-        }else {
+    LongTermStats.findOneAndUpdate({userId : req.userId}, { $set: longTermStatJson }, {upsert: true})
+        .exec()
+        .then(() => {
             res.send(true);
-        }
-    });
+        })
+        .catch((err) => {
+            res.send(err);
+        });
 };
 
 module.exports = {postLongTermStats};
