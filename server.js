@@ -11,8 +11,9 @@ const http = require('http');
 
 db.init();
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '5mb'}));
 app.use(bodyParser.urlencoded({
+    limit: '5mb',
     extended: true
 }));
 
