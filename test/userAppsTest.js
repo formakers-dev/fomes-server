@@ -5,6 +5,7 @@ const config = require('../config')[process.env.NODE_ENV];
 const should = chai.should();
 const expect = chai.expect;
 const UserApps = require('../models/userApps');
+const UncrawledApps = require('../models/uncrawledApps');
 
 chai.use(chaiHttp);
 
@@ -19,7 +20,7 @@ describe('UserApps', () => {
                 "appName": "app2"
             }];
 
-        it('앱 설치 목록을 저장한다', done => {
+        it('앱 설치 목록을 저장하고 Apps 테이블에 없는 앱들은 별도로 저장한다', done => {
             chai.request(server)
                 .post('/apps')
                 .set('x-access-token', config.appbeeToken.valid)
@@ -33,6 +34,21 @@ describe('UserApps', () => {
                         verifyUserAppsData(userApps.apps[1], "com.whatever.package2", "app2");
                         done();
                     })
+                });
+        });
+
+        it('Apps 테이블에 없는 앱들은 별도로 저장한다', done => {
+            chai.request(server)
+                .post('/apps')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send(doc)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.eql(true);
+                    UncrawledApps.find({"packageName" : {$in : ["com.whatever.package1", "com.whatever.package2"]}}, (err, uncrawledApps) => {
+                        uncrawledApps.length.should.be.eql(2);
+                        done();
+                    });
                 });
         });
 
@@ -72,8 +88,15 @@ describe('UserApps', () => {
     });
 
     afterEach((done) => {
-        UserApps.remove({userId : config.testUserId}, () => {
-            done();
-        });
+        UserApps.remove({userId : config.testUserId})
+            .then(() => {
+                console.log("UncrawledApps.deleteMany");
+                UncrawledApps.deleteMany({"packageName" : {$in : ["com.whatever.package1", "com.whatever.package2"]}});
+                done();
+            })
+            .catch((err) => {
+                console.log(err.message);
+                done();
+            });
     });
 });

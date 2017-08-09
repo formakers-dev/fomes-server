@@ -11,7 +11,7 @@ let getUserApps = (req, res) => {
     })
 };
 
-let postUserApps = (req, res) => {
+let postUserApps = (req, res, next) => {
     let userAppsJson = {};
     userAppsJson.userId = req.userId;
     userAppsJson.apps = req.body;
@@ -20,6 +20,7 @@ let postUserApps = (req, res) => {
         .exec()
         .then(() => {
             res.send(true);
+            next();
         })
         .catch((err) => {
             res.send(err);

@@ -2,6 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const config = require('../config')[process.env.NODE_ENV];
 const should = chai.should();
+const expect = chai.expect;
 const Users = require('../models/user');
 const jwt = require('jsonwebtoken');
 require('./setupSinon')();
