@@ -3,6 +3,7 @@ const chaiHttp = require('chai-http');
 const server = require('../server');
 const config = require('../config')[process.env.NODE_ENV];
 const should = chai.should();
+const expect = chai.expect;
 const ShortTermStats = require('../models/shortTermStats');
 chai.use(chaiHttp);
 
@@ -64,17 +65,16 @@ describe('shortTermStats', () => {
                 });
         });
 
-        const verifyShortTermStatData = function(shortTermStat, packageName, startTimeStamp, endTimeStamp, totalUsedTime) {
+        const verifyShortTermStatData = (shortTermStat, packageName, startTimeStamp, endTimeStamp, totalUsedTime) => {
             shortTermStat.packageName.should.be.eql(packageName);
             shortTermStat.startTimeStamp.should.be.eql(startTimeStamp);
             shortTermStat.endTimeStamp.should.be.eql(endTimeStamp);
             shortTermStat.totalUsedTime.should.be.eql(totalUsedTime);
         };
 
-        const verifyDoNotInsertShortTermStatData = function(done) {
+        const verifyDoNotInsertShortTermStatData = (done) => {
             ShortTermStats.findOne({userId : config.testUserId}, (err, shortTermStat) => {
-                chai.expect(shortTermStat).to.be.null;
-
+                expect(shortTermStat).to.be.null;
                 done();
             });
         };
