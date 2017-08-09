@@ -2,6 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../server');
 const should = chai.should();
+const expect = chai.expect;
 const EventStats = require('../models/eventStats');
 const config = require('../config')[process.env.NODE_ENV];
 
@@ -28,7 +29,13 @@ describe('eventStats', () => {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.eql(true);
-                    done();
+
+                    EventStats.findOne({userId: config.testUserId}, (err, eventStat) => {
+                        eventStat.stats.length.should.be.eql(2);
+                        verifyEventStatData(eventStat.stats[0], "com.whatever.package1", "1", 1499914800001);
+                        verifyEventStatData(eventStat.stats[1], "com.whatever.package2", "2", 1499914800002);
+                        done();
+                    });
                 });
         });
 
@@ -39,7 +46,7 @@ describe('eventStats', () => {
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(403);
-                    done();
+                    verifyDoNotInsertEventStat(done);
                 });
         });
 
@@ -50,9 +57,22 @@ describe('eventStats', () => {
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(401);
-                    done();
+                    verifyDoNotInsertEventStat(done);
                 });
         });
+
+        const verifyEventStatData = (eventStat, packageName, eventType, timeStamp) => {
+            eventStat.packageName.should.be.eql(packageName);
+            eventStat.eventType.should.be.eql(eventType);
+            eventStat.timeStamp.should.be.eql(timeStamp);
+        };
+
+        const verifyDoNotInsertEventStat = (done) => {
+            EventStats.findOne({userId: config.testUserId}, (err, eventStat) => {
+                expect(eventStat).to.be.null;
+                done();
+            });
+        }
     });
 
     afterEach((done) => {
