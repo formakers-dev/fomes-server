@@ -7,14 +7,14 @@ const should = chai.should();
 chai.use(chaiHttp);
 
 describe('Apps', () => {
-    describe('GET info', () => {
+    describe('POST info', () => {
         const doc = {
             "packageNames": ["com.facebook.katana"]
         };
 
         it('PackageName에 해당하는 앱정보를 리턴한다', done => {
             chai.request(server)
-                .get('/apps/info')
+                .post('/apps/info')
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);
