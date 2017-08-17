@@ -8,9 +8,7 @@ chai.use(chaiHttp);
 
 describe('Apps', () => {
     describe('POST info', () => {
-        const doc = {
-            "packageNames": ["com.facebook.katana"]
-        };
+        const doc = ["com.facebook.katana", "com.kakao.talk"];
 
         it('PackageName에 해당하는 앱정보를 리턴한다', done => {
             chai.request(server)
@@ -24,6 +22,7 @@ describe('Apps', () => {
                     res.body[0].categoryName1.should.be.eql("소셜");
                     res.body[0].categoryId2.should.be.eql("");
                     res.body[0].categoryName2.should.be.eql("");
+                    res.body[1].packageName.should.be.eql("com.kakao.talk");
                     done();
                 });
         });
