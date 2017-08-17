@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const UserApps = require('../models/userApps');
 const config = require('../config')[process.env.NODE_ENV];
 
 const generateToken = (req, res) => {
@@ -35,5 +36,19 @@ const upsertUser = (req, res, next) => {
         });
 };
 
+let postUserApps = (req, res) => {
+    let userAppsJson = {};
+    userAppsJson.userId = req.userId;
+    userAppsJson.apps = req.body;
 
-module.exports = {upsertUser, generateToken};
+    UserApps.findOneAndUpdate({userId : req.userId}, { $set: userAppsJson }, {upsert: true})
+        .exec()
+        .then(() => {
+            res.send(true);
+        })
+        .catch((err) => {
+            res.send(err);
+        });
+};
+
+module.exports = {upsertUser, generateToken, postUserApps};

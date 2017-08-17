@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
 
 app.use('/user', userRouter);
 app.use('/stats', Auth.appBeeTokenVerifier, statsRouter);
-app.use('/apps', Auth.appBeeTokenVerifier, appsRouter);
+app.use('/apps', appsRouter);
 
 http.createServer(app).listen(port, () => {
     console.log('Express App on http port ' + port);

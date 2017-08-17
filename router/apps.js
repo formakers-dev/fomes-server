@@ -1,9 +1,8 @@
 const express = require('express');
 const appsRouter = express.Router();
-const UserApps = require('../controller/userApps');
+const Apps = require('../controller/apps');
 
-appsRouter.route('/')
-    .get(UserApps.getUserApps)
-    .post(UserApps.postUserApps);
+appsRouter.route('/info')
+    .get(Apps.getInfo);
 
 module.exports = appsRouter;
