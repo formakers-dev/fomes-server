@@ -10,6 +10,6 @@ dependencies:
 
 deployment:
   staging:
-    branch: master
+    branch: development
     heroku:
       appname: appbeesvr
