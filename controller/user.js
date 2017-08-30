@@ -1,11 +1,11 @@
 const User = require('../models/user');
 const UserApps = require('../models/userApps');
 
-const upsertUser = (req, res, next) => {
-    User.findOneAndUpdate({userId : req.user.userId}, { $set: req.user }, {upsert: true})
+const upsertUser = (req, res) => {
+    User.findOneAndUpdate({userId : req.body.userId}, { $set: req.body }, {upsert: true})
         .exec()
         .then(() => {
-            next();
+            res.send(true);
         })
         .catch((err) => {
             console.log('===upsertUser:Error' + err.message);

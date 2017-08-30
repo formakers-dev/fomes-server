@@ -11,7 +11,7 @@ const UserApps = require('../models/userApps');
 chai.use(chaiHttp);
 
 describe('Users', () => {
-    describe('GET user auth', () => {
+    describe('POST user', () => {
         const newUser = {
             userId: config.testAppbeeNumber,
             firstUsedDate: "20170828",
@@ -21,26 +21,32 @@ describe('Users', () => {
             userId: config.testAppbeeNumber,
             lastUsedDate: "20170829"
         };
+        it('신규 유저 정보를 정상적으로 저장한다', (done) => {
+            chai.request(server)
+                .post('/user')
+                .send(newUser)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.eql(true);
 
-        it('새로운 사용자일 경우, 유저정보를 정상적으로 저장한다', done => {
-            Users.findOneAndUpdate({userId: newUser.userId}, {$set: newUser}, {upsert: true})
-                .exec()
-                .then(() => {
                     Users.findOne({userId: newUser.userId}, (err, user) => {
                         verifyUserData(user, config.testAppbeeNumber, "20170828", "20170828");
                         done();
                     });
-
                 });
         });
 
-        it('기존 사용자일 경우, 유저정보를 정상적으로 업데이트한다', done => {
+        it('기존 유저 정보를 정상적으로 업데이트한다', (done) => {
             Users.findOneAndUpdate({userId: newUser.userId}, {$set: newUser}, {upsert: true})
                 .exec()
                 .then(() => {
-                    Users.findOneAndUpdate({userId: oldUser.userId}, {$set: oldUser}, {upsert: true})
-                        .exec()
-                        .then(() => {
+                    chai.request(server)
+                        .post('/user')
+                        .send(oldUser)
+                        .end((err, res) => {
+                            res.should.have.status(200);
+                            res.body.should.be.eql(true);
+
                             Users.findOne({userId: oldUser.userId}, (err, user) => {
                                 verifyUserData(user, config.testAppbeeNumber, "20170828", "20170829");
                                 done();
@@ -49,19 +55,19 @@ describe('Users', () => {
                 });
         });
 
+        afterEach((done) => {
+            Users.remove({ userId : config.testAppbeeNumber }, () => {
+                done();
+            });
+        });
+
         const verifyUserData = (user, userId, firstUsedDate, lastUsedDate) => {
             user.userId.should.be.eql(userId);
             user.firstUsedDate.should.be.eql(firstUsedDate);
             user.lastUsedDate.should.be.eql(lastUsedDate);
         };
 
-        afterEach((done) => {
-            Users.remove({ userId : config.testAppbeeNumber }, () => {
-                done();
-            });
-        });
     });
-
 
     describe('POST userApps', () => {
         const doc = [{
@@ -89,7 +95,6 @@ describe('Users', () => {
                     })
                 });
         });
-
 
         const verifyUserAppsData = (app, packageName, appName) => {
             app.packageName.should.be.eql(packageName);
