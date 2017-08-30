@@ -1,9 +1,8 @@
 const express = require('express');
 const userRouter = express.Router();
 const User = require('../controller/user');
-const Auth = require('../middleware/auth');
 
-userRouter.get('/auth', Auth.googleTokenVerifier, User.upsertUser, User.generateToken);
-userRouter.post('/apps', Auth.appBeeTokenVerifier, User.postUserApps);
+userRouter.get('/auth', User.upsertUser);
+userRouter.post('/apps', User.postUserApps);
 
 module.exports = userRouter;

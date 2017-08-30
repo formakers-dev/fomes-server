@@ -24,13 +24,13 @@ describe('eventStats', () => {
         it('이벤트 통계정보를 정상적으로 저장한다', (done) => {
             chai.request(server)
                 .post("/stats/event")
-                .set('x-access-token', config.appbeeToken.valid)
+                .set("x-appbee-number", config.testAppbeeNumber)
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.eql(true);
 
-                    EventStats.findOne({userId: config.testUserId}, (err, eventStat) => {
+                    EventStats.findOne({userId: config.testAppbeeNumber}, (err, eventStat) => {
                         eventStat.stats.length.should.be.eql(2);
                         verifyEventStatData(eventStat.stats[0], "com.whatever.package1", "1", 1499914800001);
                         verifyEventStatData(eventStat.stats[1], "com.whatever.package2", "2", 1499914800002);
@@ -39,44 +39,15 @@ describe('eventStats', () => {
                 });
         });
 
-        it('잘못된 토큰은 접근을 차단한다', (done) => {
-            chai.request(server)
-                .post("/stats/event")
-                .set('x-access-token', config.appbeeToken.invalid)
-                .send(doc)
-                .end((err, res) => {
-                    res.should.have.status(403);
-                    verifyDoNotInsertEventStat(done);
-                });
-        });
-
-        it('만료된 토큰은 접근을 차단한다', (done) => {
-            chai.request(server)
-                .post("/stats/event")
-                .set('x-access-token', config.appbeeToken.expired)
-                .send(doc)
-                .end((err, res) => {
-                    res.should.have.status(401);
-                    verifyDoNotInsertEventStat(done);
-                });
-        });
-
         const verifyEventStatData = (eventStat, packageName, eventType, timeStamp) => {
             eventStat.packageName.should.be.eql(packageName);
             eventStat.eventType.should.be.eql(eventType);
             eventStat.timeStamp.should.be.eql(timeStamp);
         };
-
-        const verifyDoNotInsertEventStat = (done) => {
-            EventStats.findOne({userId: config.testUserId}, (err, eventStat) => {
-                expect(eventStat).to.be.null;
-                done();
-            });
-        }
     });
 
     afterEach((done) => {
-        EventStats.remove({ userId : config.testUserId }, () => {
+        EventStats.remove({ userId : config.testAppbeeNumber }, () => {
             done();
         });
     });

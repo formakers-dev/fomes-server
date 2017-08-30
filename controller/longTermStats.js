@@ -2,7 +2,7 @@ let LongTermStats = require('./../models/longTermStats');
 
 const postLongTermStats = (req, res) => {
     let longTermStatJson = {};
-    longTermStatJson.userId = req.userId;
+    longTermStatJson.userId = req.headers['x-appbee-number'];
     longTermStatJson.stats = req.body;
 
     LongTermStats.findOneAndUpdate({userId : req.userId}, { $set: longTermStatJson }, {upsert: true})

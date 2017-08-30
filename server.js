@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const statsRouter = require('./router/stats');
 const appsRouter = require('./router/apps');
 const userRouter = require('./router/user');
-const Auth = require('./middleware/auth');
 const db = require('./db');
 const port = require('./config')[process.env.NODE_ENV].port;
 const http = require('http');
@@ -22,7 +21,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/user', userRouter);
-app.use('/stats', Auth.appBeeTokenVerifier, statsRouter);
+app.use('/stats', statsRouter);
 app.use('/apps', appsRouter);
 
 app.use('/download', (req, res) => {

@@ -1,5 +1,4 @@
 const sinon = require('sinon');
-const Auth = require('../middleware/auth');
 const config = require('../config')[process.env.NODE_ENV];
 
 const setupSinon = () => {

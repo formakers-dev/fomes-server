@@ -25,13 +25,13 @@ describe('shortTermStats', () => {
         it('단기통계데이터를 성공적으로 저장한다', (done) => {
             chai.request(server)
                 .post("/stats/short")
-                .set('x-access-token', config.appbeeToken.valid)
+                .set('x-appbee-number', config.testAppbeeNumber)
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.eql(true);
 
-                    ShortTermStats.findOne({userId : config.testUserId}, (err, shortTermStat) => {
+                    ShortTermStats.findOne({userId : config.testAppbeeNumber}, (err, shortTermStat) => {
                         shortTermStat.stats.length.should.be.eql(2);
                         verifyShortTermStatData(shortTermStat.stats[0], 'com.whatever.package1', 1499914700000, 1499914800000, 100000);
                         verifyShortTermStatData(shortTermStat.stats[1], 'com.whatever.package2', 1499914700001, 1499914900001, 200000);
@@ -41,47 +41,16 @@ describe('shortTermStats', () => {
                 });
         });
 
-        it('잘못된 토큰은 접근을 차단한다', (done) => {
-            chai.request(server)
-                .post("/stats/short")
-                .set('x-access-token', config.appbeeToken.invalid)
-                .send(doc)
-                .end((err, res) => {
-                    res.should.have.status(403);
-
-                    verifyDoNotInsertShortTermStatData(done);
-                });
-        });
-
-        it('만료된 토큰은 접근을 차단한다', (done) => {
-            chai.request(server)
-                .post("/stats/short")
-                .set('x-access-token', config.appbeeToken.expired)
-                .send(doc)
-                .end((err, res) => {
-                    res.should.have.status(401);
-
-                    verifyDoNotInsertShortTermStatData(done);
-                });
-        });
-
         const verifyShortTermStatData = (shortTermStat, packageName, startTimeStamp, endTimeStamp, totalUsedTime) => {
             shortTermStat.packageName.should.be.eql(packageName);
             shortTermStat.startTimeStamp.should.be.eql(startTimeStamp);
             shortTermStat.endTimeStamp.should.be.eql(endTimeStamp);
             shortTermStat.totalUsedTime.should.be.eql(totalUsedTime);
         };
-
-        const verifyDoNotInsertShortTermStatData = (done) => {
-            ShortTermStats.findOne({userId : config.testUserId}, (err, shortTermStat) => {
-                expect(shortTermStat).to.be.null;
-                done();
-            });
-        };
     });
 
     afterEach((done) => {
-        ShortTermStats.remove({ userId : config.testUserId }, () => {
+        ShortTermStats.remove({ userId : config.testAppbeeNumber }, () => {
             done();
         });
     });
