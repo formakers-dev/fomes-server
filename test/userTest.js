@@ -14,15 +14,12 @@ describe('Users', () => {
     describe('GET user auth', () => {
         const newUser = {
             userId: config.testAppbeeNumber,
-            provider: 'google',
-            name: '테스트유저',
-            email: 'appbee0627@gmail.com'
+            firstUsedDate: "20170828",
+            lastUsedDate: "20170828"
         };
         const oldUser = {
             userId: config.testAppbeeNumber,
-            provider: 'facebook',
-            name: '이름변경된테스트유저',
-            email: 'appbee1231@gmail.com'
+            lastUsedDate: "20170829"
         };
 
         it('새로운 사용자일 경우, 유저정보를 정상적으로 저장한다', done => {
@@ -30,7 +27,7 @@ describe('Users', () => {
                 .exec()
                 .then(() => {
                     Users.findOne({userId: newUser.userId}, (err, user) => {
-                        verifyUserData(user, config.testAppbeeNumber, "google", "테스트유저", "appbee0627@gmail.com");
+                        verifyUserData(user, config.testAppbeeNumber, "20170828", "20170828");
                         done();
                     });
 
@@ -45,18 +42,17 @@ describe('Users', () => {
                         .exec()
                         .then(() => {
                             Users.findOne({userId: oldUser.userId}, (err, user) => {
-                                verifyUserData(user, config.testAppbeeNumber, "facebook", "이름변경된테스트유저", "appbee1231@gmail.com");
+                                verifyUserData(user, config.testAppbeeNumber, "20170828", "20170829");
                                 done();
                             });
                         });
                 });
         });
 
-        const verifyUserData = (user, userId, provider, name, email) => {
+        const verifyUserData = (user, userId, firstUsedDate, lastUsedDate) => {
             user.userId.should.be.eql(userId);
-            user.provider.should.be.eql(provider);
-            user.name.should.be.eql(name);
-            user.email.should.be.eql(email);
+            user.firstUsedDate.should.be.eql(firstUsedDate);
+            user.lastUsedDate.should.be.eql(lastUsedDate);
         };
 
         afterEach((done) => {
