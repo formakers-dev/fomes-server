@@ -5,14 +5,10 @@ let postEventStats = (req, res) => {
     eventStatJson.userId = req.headers['x-appbee-number'];
     eventStatJson.stats = req.body;
 
-    let newEventStats = new EventStats(eventStatJson);
-    newEventStats.save((err) => {
-        if(err) {
-            res.send(err);
-        }else {
-            res.send(true);
-        }
-    })
+    EventStats.findOneAndUpdate({userId : eventStatJson.userId}, {$set : eventStatJson}, {upsert : true})
+        .exec()
+        .then(() => res.send(true))
+        .catch(err => res.send(err));
 };
 
 module.exports = {postEventStats};

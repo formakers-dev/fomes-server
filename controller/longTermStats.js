@@ -5,7 +5,7 @@ const postLongTermStats = (req, res) => {
     longTermStatJson.userId = req.headers['x-appbee-number'];
     longTermStatJson.stats = req.body;
 
-    LongTermStats.findOneAndUpdate({userId : req.userId}, { $set: longTermStatJson }, {upsert: true})
+    LongTermStats.findOneAndUpdate({userId : longTermStatJson.userId}, { $set: longTermStatJson }, {upsert: true})
         .exec()
         .then(() => {
             res.send(true);

@@ -21,7 +21,7 @@ let postUserApps = (req, res) => {
     userAppsJson.userId = req.headers['x-appbee-number'];
     userAppsJson.apps = req.body;
 
-    UserApps.findOneAndUpdate({userId : req.userId}, { $set: userAppsJson }, {upsert: true})
+    UserApps.findOneAndUpdate({userId : userAppsJson.userId}, { $set: userAppsJson }, {upsert: true})
         .exec()
         .then(() => {
             res.send(true);
