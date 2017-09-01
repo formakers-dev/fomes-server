@@ -25,6 +25,11 @@ app.use('/user', userRouter);
 app.use('/stats', Auth.appBeeTokenVerifier, statsRouter);
 app.use('/apps', appsRouter);
 
+app.use('/download', (req, res) => {
+    console.log(req.param("abc"));
+    res.redirect("http://appbeepkg.s3-website.ap-northeast-2.amazonaws.com/test/app-release.apk");
+});
+
 http.createServer(app).listen(port, () => {
     console.log('Express App on http port ' + port);
 });
