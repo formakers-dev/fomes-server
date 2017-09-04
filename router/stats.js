@@ -11,7 +11,8 @@ statsRouter.route('/short')
 statsRouter.route('/event')
     .post(EventStats.postEventStats);
 
-statsRouter.route('/long')
-    .post(LongTermStats.postLongTermStats);
-
+statsRouter.route('/long/yearly')
+    .post(LongTermStats.postLongTermStatsBy2years);
+statsRouter.route('/long/monthly')
+    .post(LongTermStats.postLongTermStatsBy3months);
 module.exports = statsRouter;
