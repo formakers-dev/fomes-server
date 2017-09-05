@@ -25,8 +25,7 @@ app.use('/stats', statsRouter);
 app.use('/apps', appsRouter);
 
 app.use('/download', (req, res) => {
-    console.log(req.param("abc"));
-    res.redirect("http://appbeepkg.s3-website.ap-northeast-2.amazonaws.com/test/app-release.apk");
+    res.redirect("http://appbeepkg.s3-website.ap-northeast-2.amazonaws.com/test/appbee-beta.apk");
 });
 
 http.createServer(app).listen(port, () => {
