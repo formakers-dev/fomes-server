@@ -5,4 +5,7 @@ const Apps = require('../controller/apps');
 appsRouter.route('/info')
     .post(Apps.postInfo);
 
+appsRouter.route('/uncrawled')
+    .post(Apps.postUncrawled);
+
 module.exports = appsRouter;

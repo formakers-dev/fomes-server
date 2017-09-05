@@ -2,6 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../server');
 const config = require('../config')[process.env.NODE_ENV];
+const UncrawledApps = require('../models/uncrawledApps');
 const should = chai.should();
 
 chai.use(chaiHttp);
@@ -25,6 +26,32 @@ describe('Apps', () => {
                     res.body[1].packageName.should.be.eql("com.kakao.talk");
                     done();
                 });
+        });
+    });
+
+    describe('POST uncrawled', () => {
+        const doc = ["com.facebook.unknown", "com.kakao.unknown"];
+
+        it('Uncrawled App 목록에 저장한다', done => {
+            chai.request(server)
+                .post('/apps/uncrawled')
+                .send(doc)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.eql(true);
+
+                    UncrawledApps.find({$or : [{packageName : "com.facebook.unknown"}, {packageName : "com.kakao.unknown"}]},
+                        (err, uncrawledApps) => {
+                            uncrawledApps.length.should.be.eql(2);
+                            done();
+                        });
+                });
+        });
+
+        afterEach('clean up uncrawled apps', done => {
+            UncrawledApps.remove({$or : [{packageName : "com.facebook.unknown"}, {packageName : "com.kakao.unknown"}]})
+                .exec()
+                .then(done());
         });
     });
 
