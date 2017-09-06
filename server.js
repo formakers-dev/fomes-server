@@ -25,6 +25,7 @@ app.use('/stats', statsRouter);
 app.use('/apps', appsRouter);
 
 app.use('/download', (req, res) => {
+    console.log('os param : ' + req.param('os'));
     if(req.param("os") === "ios") {
         res.redirect("https://appbee.info");
     } else {
