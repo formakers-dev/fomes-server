@@ -25,7 +25,11 @@ app.use('/stats', statsRouter);
 app.use('/apps', appsRouter);
 
 app.use('/download', (req, res) => {
-    res.redirect("https://s3.ap-northeast-2.amazonaws.com/appbeepkg/release/appbee-beta.apk");
+    if(req.param("os") === "ios") {
+        res.redirect("https://appbee.info");
+    } else {
+        res.redirect("https://s3.ap-northeast-2.amazonaws.com/appbeepkg/release/appbee-beta.apk");
+    }
 });
 
 http.createServer(app).listen(port, () => {
