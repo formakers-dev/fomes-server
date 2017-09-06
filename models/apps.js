@@ -6,6 +6,6 @@ const appSchema = new mongoose.Schema({
     categoryId2: String,
     categoryName1: String,
     categoryName2: String
-});
+}, {timestamps: {createdAt: 'createdAt', updatedAt: 'updatedAt'}});
 const apps = mongoose.model('apps', appSchema);
 module.exports = apps;

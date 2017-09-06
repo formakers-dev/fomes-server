@@ -8,7 +8,8 @@ const analysesSchema = new mongoose.Schema({
     mostDownloadCategories: [String],
     leastDownloadCategory: String,
     mostUsedCategories: [String],
-    leastUsedCategory: String
-});
+    leastUsedCategory: String,
+    lastUpdateTime: Date
+}, {timestamps: {createdAt: 'createdAt', updatedAt: 'updatedAt'}});
 const analyses = mongoose.model('analyses', analysesSchema);
 module.exports = analyses;
