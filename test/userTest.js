@@ -92,12 +92,12 @@ describe('Users', () => {
         it('앱 설치 목록을 저장하고 Apps 테이블에 없는 앱들은 별도로 저장한다', done => {
             chai.request(server)
                 .post('/user/apps')
-                .set('x-appbee-number', config.testAppbeeNumber)
+                .set('x-access-token', config.appbeeToken.valid)
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.eql(true);
-                    UserApps.findOne({userId: config.testAppbeeNumber}, (err, userApps) => {
+                    UserApps.findOne({userId: config.testUserId}, (err, userApps) => {
                         userApps.apps.length.should.be.eql(2);
                         verifyUserAppsData(userApps.apps[0], "com.whatever.package1", "app1");
                         verifyUserAppsData(userApps.apps[1], "com.whatever.package2", "app2");
@@ -112,7 +112,7 @@ describe('Users', () => {
         };
 
         afterEach((done) => {
-            UserApps.remove({userId : config.testAppbeeNumber},() => {
+            UserApps.remove({userId : config.testUserId},() => {
                 done();
             });
         });

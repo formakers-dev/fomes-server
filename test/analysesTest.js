@@ -28,15 +28,15 @@ describe('analyses', () => {
         it('분석 결과를 저장한다', done => {
             chai.request(server)
                 .post("/stats/analysis/result")
-                .set("x-appbee-number", config.testAppbeeNumber)
+                .set('x-access-token', config.appbeeToken.valid)
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);
 
-                    Analyses.findOne({userId : config.testAppbeeNumber}, (err, doc) => {
+                    Analyses.findOne({userId : config.testUserId}, (err, doc) => {
                         doc.should.be.ok;
 
-                        doc.userId.should.be.eql(config.testAppbeeNumber);
+                        doc.userId.should.be.eql(config.testUserId);
 
                         doc.characterType.should.be.eql('GAMER');
                         doc.totalInstalledAppCount.should.be.eql(100);
@@ -58,7 +58,7 @@ describe('analyses', () => {
         });
 
         afterEach((done) => {
-            Analyses.remove({userId : config.testAppbeeNumber}, () => {
+            Analyses.remove({userId : config.testUserId}, () => {
                 done();
             });
         });

@@ -2,7 +2,7 @@ let ShortTermStats = require('./../models/shortTermStats');
 
 let postShortTermStats = (req, res) => {
     let shortTermStatJson = {};
-    shortTermStatJson.userId = req.headers['x-appbee-number'];
+    shortTermStatJson.userId = req.userId
     shortTermStatJson.stats = req.body;
 
     ShortTermStats.findOneAndUpdate({userId : shortTermStatJson.userId}, { $set: shortTermStatJson }, {upsert: true})

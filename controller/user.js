@@ -20,7 +20,7 @@ const upsertUser = (req, res, next) => {
 
 let postUserApps = (req, res) => {
     let userAppsJson = {};
-    userAppsJson.userId = req.headers['x-appbee-number'];
+    userAppsJson.userId = req.userId;
     userAppsJson.apps = req.body;
 
     UserApps.findOneAndUpdate({userId : userAppsJson.userId}, { $set: userAppsJson }, {upsert: true})

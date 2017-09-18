@@ -2,7 +2,7 @@ let LongTermStats = require('./../models/longTermStats');
 
 const postLongTermStatsBy2years = (req, res) => {
     let longTermStatJson = {};
-    longTermStatJson.userId = req.headers['x-appbee-number'];
+    longTermStatJson.userId = req.userId;
     longTermStatJson.duration = 'yearly';
     longTermStatJson.stats = req.body;
 
@@ -19,7 +19,7 @@ const postLongTermStatsBy2years = (req, res) => {
 
 const postLongTermStatsBy3months = (req, res) => {
     let longTermStatJson = {};
-    longTermStatJson.userId = req.headers['x-appbee-number'];
+    longTermStatJson.userId = req.userId;
     longTermStatJson.duration = 'monthly';
     longTermStatJson.stats = req.body;
 

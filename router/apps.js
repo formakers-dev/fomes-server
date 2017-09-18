@@ -1,11 +1,12 @@
 const express = require('express');
 const appsRouter = express.Router();
 const Apps = require('../controller/apps');
+const Auth = require('../middleware/auth');
 
 appsRouter.route('/info')
-    .post(Apps.postInfo);
+    .post(Auth.appBeeTokenVerifier, Apps.postInfo);
 
 appsRouter.route('/uncrawled')
-    .post(Apps.postUncrawled);
+    .post(Auth.appBeeTokenVerifier, Apps.postUncrawled);
 
 module.exports = appsRouter;

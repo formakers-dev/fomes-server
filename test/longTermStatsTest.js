@@ -24,16 +24,16 @@ describe('longTermStats', () => {
         it('연간/월간 장기 통계데이터를 동일테이블에 각각 저장한다', (done) => {
             chai.request(server)
                 .post('/stats/long/yearly')
-                .set('x-appbee-number', config.testAppbeeNumber)
+                .set('x-access-token', config.appbeeToken.valid)
                 .send(doc)
                 .end((err, res) => {
                     chai.request(server)
                         .post('/stats/long/monthly')
-                        .set('x-appbee-number', config.testAppbeeNumber)
+                        .set('x-access-token', config.appbeeToken.valid)
                         .send(doc)
                         .end((err, res) => {
 
-                            LongTermStats.find({userId : config.testAppbeeNumber}, (err, docs) => {
+                            LongTermStats.find({userId : config.testUserId}, (err, docs) => {
                                 docs.length.should.be.eql(2);
                                 docs[0].duration.should.be.eql("yearly");
                                 docs[0].stats.length.should.be.eql(2);
@@ -49,13 +49,13 @@ describe('longTermStats', () => {
         it('2년간 장기 통계데이터를 정상적으로 저장한다', (done) => {
             chai.request(server)
                 .post('/stats/long/yearly')
-                .set('x-appbee-number', config.testAppbeeNumber)
+                .set('x-access-token', config.appbeeToken.valid)
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.eql(true);
 
-                    LongTermStats.findOne({userId : config.testAppbeeNumber}, (err, longTermStat) => {
+                    LongTermStats.findOne({userId : config.testUserId}, (err, longTermStat) => {
                         longTermStat.stats.length.should.be.eql(2);
                         longTermStat.duration.should.be.eql("yearly");
                         verifyLongTermStatData(longTermStat.stats[0], 'appbee1.testapp.com', '20170101', 1000);
@@ -68,13 +68,13 @@ describe('longTermStats', () => {
         it('3달간 장기 통계데이터를 정상적으로 저장한다', (done) => {
             chai.request(server)
                 .post('/stats/long/monthly')
-                .set('x-appbee-number', config.testAppbeeNumber)
+                .set('x-access-token', config.appbeeToken.valid)
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.eql(true);
 
-                    LongTermStats.findOne({userId : config.testAppbeeNumber}, (err, longTermStat) => {
+                    LongTermStats.findOne({userId : config.testUserId}, (err, longTermStat) => {
                         longTermStat.stats.length.should.be.eql(2);
                         longTermStat.duration.should.be.eql("monthly");
                         verifyLongTermStatData(longTermStat.stats[0], 'appbee1.testapp.com', '20170101', 1000);
@@ -92,7 +92,7 @@ describe('longTermStats', () => {
     });
 
     afterEach((done) => {
-        LongTermStats.remove({ userId : config.testAppbeeNumber }, () => {
+        LongTermStats.remove({ userId : config.testUserId }, () => {
             done();
         });
     });

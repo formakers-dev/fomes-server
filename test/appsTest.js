@@ -14,6 +14,7 @@ describe('Apps', () => {
         it('PackageName에 해당하는 앱정보를 리턴한다', done => {
             chai.request(server)
                 .post('/apps/info')
+                .set('x-access-token', config.appbeeToken.valid)
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -35,6 +36,7 @@ describe('Apps', () => {
         it('Uncrawled App 목록에 저장한다', done => {
             chai.request(server)
                 .post('/apps/uncrawled')
+                .set('x-access-token', config.appbeeToken.valid)
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);

@@ -24,13 +24,13 @@ describe('eventStats', () => {
         it('이벤트 통계정보를 정상적으로 저장한다', (done) => {
             chai.request(server)
                 .post("/stats/event")
-                .set("x-appbee-number", config.testAppbeeNumber)
+                .set('x-access-token', config.appbeeToken.valid)
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.eql(true);
 
-                    EventStats.findOne({userId: config.testAppbeeNumber}, (err, eventStat) => {
+                    EventStats.findOne({userId: config.testUserId}, (err, eventStat) => {
                         eventStat.stats.length.should.be.eql(2);
                         verifyEventStatData(eventStat.stats[0], "com.whatever.package1", "1", 1499914800001);
                         verifyEventStatData(eventStat.stats[1], "com.whatever.package2", "2", 1499914800002);
@@ -47,7 +47,7 @@ describe('eventStats', () => {
     });
 
     afterEach((done) => {
-        EventStats.remove({ userId : config.testAppbeeNumber }, () => {
+        EventStats.remove({ userId : config.testUserId }, () => {
             done();
         });
     });
