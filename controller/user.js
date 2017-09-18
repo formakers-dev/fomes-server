@@ -1,11 +1,13 @@
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const UserApps = require('../models/userApps');
+const config = require('../config')[process.env.NODE_ENV];
 
-const upsertUser = (req, res) => {
-    User.findOneAndUpdate({userId : req.body.userId}, { $set: req.body }, {upsert: true})
+const upsertUser = (req, res, next) => {
+    User.findOneAndUpdate({userId : req.user.userId}, { $set: req.user }, {upsert: true})
         .exec()
         .then(() => {
-            res.send(true);
+            next();
         })
         .catch((err) => {
             console.log('===upsertUser:Error' + err.message);
@@ -31,4 +33,22 @@ let postUserApps = (req, res) => {
         });
 };
 
-module.exports = {upsertUser, postUserApps};
+const generateToken = (req, res) => {
+    jwt.sign(req.user, config.secret, {
+        expiresIn: '7d',
+        issuer: 'appbee.com',
+        subject: 'AppBeeAuth'
+    }, (err, newToken) => {
+        if(err) {
+            console.log("====generateToken:Error" + err.message);
+            res.status(403).json({
+                success: false,
+                message: err.message
+            });
+        } else {
+            res.json(newToken);
+        }
+    });
+};
+
+module.exports = {upsertUser, postUserApps, generateToken};
