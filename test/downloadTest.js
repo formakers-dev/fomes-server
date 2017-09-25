@@ -3,8 +3,7 @@ const chaiHttp = require('chai-http');
 const config = require('../config')[process.env.NODE_ENV];
 const should = chai.should();
 const expect = chai.expect;
-require('./setupSinon')();
-const DownloadHistories = require('../models/downloadHistories')
+const DownloadHistories = require('../models/downloadHistories');
 const server = require('../server');
 
 chai.use(chaiHttp);
