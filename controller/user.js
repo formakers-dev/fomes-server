@@ -3,7 +3,7 @@ const User = require('../models/user');
 const UserApps = require('../models/userApps');
 const config = require('../config')[process.env.NODE_ENV];
 
-const upsertUser = (req, res, next) => {
+let upsertUser = (req, res, next) => {
     User.findOneAndUpdate({userId : req.user.userId}, { $set: req.user }, {upsert: true})
         .exec()
         .then(() => {
@@ -33,7 +33,41 @@ let postUserApps = (req, res) => {
         });
 };
 
-const generateToken = (req, res) => {
+let updateLastUpdateStatTimestamp = (req, res, next) => {
+    User.findAndUpdate({"userId" : req.userId}, {"lastUpdateStatTimestamp" : req.lastUpdateStatTimestamp})
+        .exec()
+        .then(() => {
+            next();
+        })
+        .catch((err) => {
+            console.log('===updateLastUpdateStatTimestamp:Error' + err.message);
+            res.status(500).json({
+                success: false,
+                message: err.message
+            });
+        });
+};
+
+let getLastUpdateStatTimestamp = (req, res) => {
+    User.findOne({"userId" : req.userId})
+        .exec()
+        .then((user) => {
+            if(user.lastUpdateStatTimestamp) {
+                res.json(user.lastUpdateStatTimestamp);
+            } else {
+                res.json(0);
+            }
+        })
+        .catch((err) => {
+            console.log('===getLastUpdateStatTimestamp:Error' + err.message);
+            res.status(500).json({
+                success: false,
+                message: err.message
+            });
+        });
+};
+
+let generateToken = (req, res) => {
     jwt.sign(req.user, config.secret, {
         expiresIn: '7d',
         issuer: 'appbee.com',
@@ -51,4 +85,4 @@ const generateToken = (req, res) => {
     });
 };
 
-module.exports = {upsertUser, postUserApps, generateToken};
+module.exports = {upsertUser, postUserApps, generateToken, updateLastUpdateStatTimestamp, getLastUpdateStatTimestamp};
