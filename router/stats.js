@@ -8,6 +8,8 @@ const Auth = require('../middleware/auth');
 statsRouter.route('/short')
     .post(Auth.appBeeTokenVerifier, ShortTermStats.postShortTermStats);
 
+statsRouter.get('/short/lastUpdateStatTimestamp', Auth.appBeeTokenVerifier, ShortTermStats.getLastUpdateStatTimestamp);
+
 statsRouter.route('/long/yearly')
     .post(Auth.appBeeTokenVerifier, LongTermStats.postLongTermStatsBy2years);
 

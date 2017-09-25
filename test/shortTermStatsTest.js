@@ -47,12 +47,57 @@ describe('shortTermStats', () => {
             shortTermStat.endTimeStamp.should.be.eql(endTimeStamp);
             shortTermStat.totalUsedTime.should.be.eql(totalUsedTime);
         };
-    });
 
-    afterEach((done) => {
-        ShortTermStats.remove({ userId : config.testUserId }, () => {
-            done();
+        afterEach((done) => {
+            ShortTermStats.remove({ userId : config.testUserId }, () => {
+                done();
+            });
         });
     });
 
+    describe('GET lastUpdateStatsTimestamp', () => {
+        let shortTermStat = {
+            userId: config.testUserId
+        };
+
+        beforeEach((done) => {
+            ShortTermStats.findOneAndUpdate({userId: shortTermStat.userId}, {$set: shortTermStat}, {upsert: true})
+                .exec()
+                .then(() => done());
+        });
+
+        it('저장된 lastUpdateStatsTimestamp가 없는 경우 초기값 0을 리턴한다', done => {
+            chai.request(server)
+                .get('/stats/short/lastUpdateStatTimestamp')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send()
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.eql(0);
+                    done();
+                });
+        });
+
+        it('저장된 lastUpdateStatsTimestamp를 리턴한다', done => {
+            ShortTermStats.findOneAndUpdate({userId: shortTermStat.userId}, {$set: {lastUpdateStatTimestamp: "1234567890"}}, {upsert: true})
+                .exec()
+                .then(() => {
+                    chai.request(server)
+                        .get('/stats/short/lastUpdateStatTimestamp')
+                        .set('x-access-token', config.appbeeToken.valid)
+                        .send()
+                        .end((err, res) => {
+                            res.should.have.status(200);
+                            res.body.should.be.eql(1234567890);
+                            done();
+                        });
+                });
+        });
+
+        afterEach((done) => {
+            ShortTermStats.remove({ userId : config.testUserId }, () => {
+                done();
+            });
+        });
+    });
 });

@@ -3,8 +3,7 @@ const usersSchema = new mongoose.Schema({
     userId : String,
     email : String,
     name : String,
-    provider: String,
-    lastUpdateStatTimestamp: Number
+    provider: String
 });
 const user = mongoose.model('users', usersSchema);
 module.exports = user;
