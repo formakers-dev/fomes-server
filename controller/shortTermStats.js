@@ -17,7 +17,7 @@ let getLastUpdateStatTimestamp = (req, res) => {
     ShortTermStats.findOne({"userId" : req.userId})
         .exec()
         .then((shortTermStat) => {
-            if(shortTermStat.lastUpdateStatTimestamp) {
+            if (shortTermStat && shortTermStat.lastUpdateStatTimestamp) {
                 res.json(shortTermStat.lastUpdateStatTimestamp);
             } else {
                 res.json(0);
