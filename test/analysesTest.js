@@ -99,8 +99,8 @@ describe('analyses', () => {
                 {
                     "packageName": "com.whatever.package1",
                     "startTimeStamp": 1500000000000,    //2017-07-14 11:40:00
-                    "endTimeStamp": 1500000150000,      //2017-07-14 11:42:30
-                    "totalUsedTime": 150000
+                    "endTimeStamp": 1500005000000,      //2017-07-14 13:03:20
+                    "totalUsedTime": 5000000
                 }]
             };
 
@@ -118,7 +118,7 @@ describe('analyses', () => {
                     .end((err, res) => {
                         res.should.have.status(200);
                         res.body.mostUsedApp.should.be.eql('com.whatever.package1');
-                        res.body.averageUsedMinutesPerDay.should.be.eql(225000);
+                        res.body.averageUsedMinutesPerDay.should.be.eql(44);
                         done();
                     });
             });

@@ -42,7 +42,7 @@ let getOverview = (req, res) => {
                 });
 
                 const usedDays = Math.ceil((endTime - startTime) / 1000 / 60 / 60 / 24);
-                averageUsedMinutesPerDay = Math.floor(sumOfTotalUsedTime / usedDays);
+                averageUsedMinutesPerDay = Math.floor(sumOfTotalUsedTime / 1000 / 60 / usedDays);
             }
 
             res.json({
