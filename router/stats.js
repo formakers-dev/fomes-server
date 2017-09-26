@@ -19,4 +19,6 @@ statsRouter.route('/long/monthly')
 statsRouter.route('/analysis/result')
     .post(Auth.appBeeTokenVerifier, Analyses.postResult);
 
+statsRouter.get('/analysis/overview', Auth.appBeeTokenVerifier, Analyses.getOverview);
+
 module.exports = statsRouter;

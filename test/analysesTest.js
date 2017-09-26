@@ -5,24 +5,25 @@ const should = chai.should();
 const expect = chai.expect;
 const config = require('../config')[process.env.NODE_ENV];
 const Analyses = require('../models/analyses');
+const ShortTermStats = require('../models/shortTermStats');
 
 chai.use(chaiHttp);
 
 describe('analyses', () => {
     describe('POST result', () => {
         const doc = {
-            "characterType" : "GAMER",
-            "totalInstalledAppCount" : 100,
-            "averageUsedMinutesPerDay" : 1000,
-            "mostUsedApp" : "packageName1",
-            "mostDownloadCategories" : [
+            "characterType": "GAMER",
+            "totalInstalledAppCount": 100,
+            "averageUsedMinutesPerDay": 1000,
+            "mostUsedApp": "packageName1",
+            "mostDownloadCategories": [
                 "categoryId1", "categoryId2", "categoryId3"
             ],
-            "leastDownloadCategory" : "categoryId4",
-            "mostUsedCategories" : [
+            "leastDownloadCategory": "categoryId4",
+            "mostUsedCategories": [
                 "categoryId5", "categoryId6", "categoryId7"
             ],
-            "leastUsedCategory" : "categoryId8"
+            "leastUsedCategory": "categoryId8"
         };
 
         it('분석 결과를 저장한다', done => {
@@ -33,7 +34,7 @@ describe('analyses', () => {
                 .end((err, res) => {
                     res.should.have.status(200);
 
-                    Analyses.findOne({userId : config.testUserId}, (err, doc) => {
+                    Analyses.findOne({userId: config.testUserId}, (err, doc) => {
                         doc.should.be.ok;
 
                         doc.userId.should.be.eql(config.testUserId);
@@ -58,9 +59,76 @@ describe('analyses', () => {
         });
 
         afterEach((done) => {
-            Analyses.remove({userId : config.testUserId}, () => {
+            Analyses.remove({userId: config.testUserId}, () => {
                 done();
             });
         });
+    });
+
+    describe('GET overview analysis', () => {
+        describe('단기통계데이터가 없는 경우', () => {
+            it('비어있는 결과를 리턴한다', done => {
+                chai.request(server)
+                    .get("/stats/analysis/overview")
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .send()
+                    .end((err, res) => {
+                        res.should.have.status(200);
+                        res.body.mostUsedApp.should.be.eql('');
+                        res.body.averageUsedMinutesPerDay.should.be.eql(0);
+                        done();
+                    });
+            });
+        });
+
+        describe('단기통계데이터가 있는 경우', () => {
+            const doc = {
+                lastUpdateStatTimestamp: "1234567890",
+                stats: [{
+                    "packageName": "com.whatever.package1",
+                    "startTimeStamp": 1499910000000,    //2017-07-13 10:40:00
+                    "endTimeStamp": 1499910100000,      //2017-07-13 10:41:40
+                    "totalUsedTime": 100000
+                },
+                {
+                    "packageName": "com.whatever.package2",
+                    "startTimeStamp": 1499914801000,    //2017-07-13 12:00:01
+                    "endTimeStamp": 1499915001000,      //2017-07-13 12:03:21
+                    "totalUsedTime": 200000
+                },
+                {
+                    "packageName": "com.whatever.package1",
+                    "startTimeStamp": 1500000000000,    //2017-07-14 11:40:00
+                    "endTimeStamp": 1500000150000,      //2017-07-14 11:42:30
+                    "totalUsedTime": 150000
+                }]
+            };
+
+            before((done) => {
+                ShortTermStats.findOneAndUpdate({userId: config.testUserId}, {$set: doc}, {upsert: true})
+                    .exec()
+                    .then(() => done());
+            });
+
+            it('단기통계 데이터를 기준으로 Overview를 분석하여 결과를 리턴한다', done => {
+                chai.request(server)
+                    .get("/stats/analysis/overview")
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .send()
+                    .end((err, res) => {
+                        res.should.have.status(200);
+                        res.body.mostUsedApp.should.be.eql('com.whatever.package1');
+                        res.body.averageUsedMinutesPerDay.should.be.eql(225000);
+                        done();
+                    });
+            });
+
+            after((done) => {
+                ShortTermStats.remove({userId: config.testUserId})
+                    .exec()
+                    .then(() => done());
+            });
+        });
+
     });
 });
