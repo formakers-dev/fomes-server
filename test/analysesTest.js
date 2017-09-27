@@ -65,17 +65,22 @@ describe('analyses', () => {
         });
     });
 
-    describe('GET overview analysis', () => {
+    describe('GET averageUsedMinutesPerDay', () => {
+        before((done) => {
+            ShortTermStats.remove({userId: config.testUserId})
+                .exec()
+                .then(() => done());
+        });
+
         describe('단기통계데이터가 없는 경우', () => {
             it('비어있는 결과를 리턴한다', done => {
                 chai.request(server)
-                    .get("/stats/analysis/overview")
+                    .get("/stats/analysis/averageUsedMinutesPerDay")
                     .set('x-access-token', config.appbeeToken.valid)
                     .send()
                     .end((err, res) => {
                         res.should.have.status(200);
-                        res.body.mostUsedApp.should.be.eql('');
-                        res.body.averageUsedMinutesPerDay.should.be.eql(0);
+                        res.body.should.be.eql(0);
                         done();
                     });
             });
@@ -84,24 +89,25 @@ describe('analyses', () => {
         describe('단기통계데이터가 있는 경우', () => {
             const doc = {
                 lastUpdateStatTimestamp: "1234567890",
-                stats: [{
-                    "packageName": "com.whatever.package1",
-                    "startTimeStamp": 1499910000000,    //2017-07-13 10:40:00
-                    "endTimeStamp": 1499910100000,      //2017-07-13 10:41:40
-                    "totalUsedTime": 100000
-                },
-                {
-                    "packageName": "com.whatever.package2",
-                    "startTimeStamp": 1499914801000,    //2017-07-13 12:00:01
-                    "endTimeStamp": 1499915001000,      //2017-07-13 12:03:21
-                    "totalUsedTime": 200000
-                },
-                {
-                    "packageName": "com.whatever.package1",
-                    "startTimeStamp": 1500000000000,    //2017-07-14 11:40:00
-                    "endTimeStamp": 1500005000000,      //2017-07-14 13:03:20
-                    "totalUsedTime": 5000000
-                }]
+                stats: [
+                    {
+                        "packageName": "com.whatever.package1",
+                        "startTimeStamp": 1499910000000,    //2017-07-13 10:40:00
+                        "endTimeStamp": 1499910100000,      //2017-07-13 10:41:40
+                        "totalUsedTime": 100000
+                    },
+                    {
+                        "packageName": "com.whatever.package2",
+                        "startTimeStamp": 1499914801000,    //2017-07-13 12:00:01
+                        "endTimeStamp": 1499915001000,      //2017-07-13 12:03:21
+                        "totalUsedTime": 200000
+                    },
+                    {
+                        "packageName": "com.whatever.package1",
+                        "startTimeStamp": 1500000000000,    //2017-07-14 11:40:00
+                        "endTimeStamp": 1500005000000,      //2017-07-14 13:03:20
+                        "totalUsedTime": 5000000
+                    }]
             };
 
             before((done) => {
@@ -110,15 +116,14 @@ describe('analyses', () => {
                     .then(() => done());
             });
 
-            it('단기통계 데이터를 기준으로 Overview를 분석하여 결과를 리턴한다', done => {
+            it('단기통계 데이터를 기준으로 일평균 앱사용시간을 분석하여 결과를 리턴한다', done => {
                 chai.request(server)
-                    .get("/stats/analysis/overview")
+                    .get("/stats/analysis/averageUsedMinutesPerDay")
                     .set('x-access-token', config.appbeeToken.valid)
                     .send()
                     .end((err, res) => {
                         res.should.have.status(200);
-                        res.body.mostUsedApp.should.be.eql('com.whatever.package1');
-                        res.body.averageUsedMinutesPerDay.should.be.eql(44);
+                        res.body.should.be.eql(44);
                         done();
                     });
             });
