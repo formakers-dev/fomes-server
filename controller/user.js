@@ -4,7 +4,7 @@ const UserApps = require('../models/userApps');
 const config = require('../config')[process.env.NODE_ENV];
 
 let upsertUser = (req, res, next) => {
-    User.findOneAndUpdate({userId : req.user.userId}, { $set: req.user }, {upsert: true})
+    User.findOneAndUpdate({userId : req.body.userId}, { $set: req.body }, {upsert: true})
         .exec()
         .then(() => {
             next();
@@ -50,5 +50,6 @@ let generateToken = (req, res) => {
         }
     });
 };
+
 
 module.exports = {upsertUser, postUserApps, generateToken};

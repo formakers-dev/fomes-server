@@ -15,15 +15,11 @@ describe('Users', () => {
     describe('POST user', () => {
         const newUser = {
             userId: config.testUserId,
-            provider: 'google',
-            name: '테스트유저',
-            email: 'appbee0627@gmail.com'
+            registrationToken: 'registrationToken-new'
         };
         const oldUser = {
             userId: config.testUserId,
-            provider: 'facebook',
-            name: '이름변경된테스트유저',
-            email: 'appbee1231@gmail.com'
+            registrationToken: 'registrationToken-old'
         };
 
         it('google id토큰 검증 후 API 사용을 위한 appbee 토큰을 발급하여 리턴한다', done => {
@@ -43,7 +39,7 @@ describe('Users', () => {
                 .exec()
                 .then(() => {
                     Users.findOne({userId: newUser.userId}, (err, user) => {
-                        verifyUserData(user, config.testUserId, "google", "테스트유저", "appbee0627@gmail.com");
+                        verifyUserData(user, config.testUserId, "registrationToken-new");
                         done();
                     });
 
@@ -58,18 +54,16 @@ describe('Users', () => {
                         .exec()
                         .then(() => {
                             Users.findOne({userId: oldUser.userId}, (err, user) => {
-                                verifyUserData(user, config.testUserId, "facebook", "이름변경된테스트유저", "appbee1231@gmail.com");
+                                verifyUserData(user, config.testUserId, "registrationToken-old");
                                 done();
                             });
                         });
                 });
         });
 
-        const verifyUserData = (user, userId, provider, name, email) => {
+        const verifyUserData = (user, userId, registrationToken) => {
             user.userId.should.be.eql(userId);
-            user.provider.should.be.eql(provider);
-            user.name.should.be.eql(name);
-            user.email.should.be.eql(email);
+            user.registrationToken.should.be.eql(registrationToken);
         };
 
         afterEach((done) => {
