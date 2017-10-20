@@ -44,7 +44,10 @@ const appBeeTokenVerifier = (req, res, next) => {
 
 
 const googleTokenVerifier = (req, res, next) => {
-    const verifyGoogleToken = (googleIdToken) => {
+    const verifyGoogleToken = (req) => {
+
+        const googleIdToken = req.headers['x-id-token'];
+
         return new Promise(
             (resolve, reject) => {
                 const auth = new GoogleAuth;
@@ -58,6 +61,7 @@ const googleTokenVerifier = (req, res, next) => {
                             reject(err);
                         } else {
                             const payload = login.getPayload();
+
                             let user = {};
                             user.userId = payload['sub'];
                             user.email = payload['email'];
@@ -72,9 +76,9 @@ const googleTokenVerifier = (req, res, next) => {
         );
     };
 
-    verifyGoogleToken(req.headers['x-id-token'])
+    verifyGoogleToken(req)
         .then((user) => {
-            req.user = user;
+            req.body.user = user;
             next();
         })
         .catch((err) => {

@@ -18,13 +18,14 @@ describe('Apps', () => {
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);
-                    res.body[0].packageName.should.be.eql("com.facebook.katana");
-                    res.body[0].appName.should.be.eql("Facebook");
-                    res.body[0].categoryId1.should.be.eql("/store/apps/category/SOCIAL");
-                    res.body[0].categoryName1.should.be.eql("소셜");
-                    res.body[0].categoryId2.should.be.eql("");
-                    res.body[0].categoryName2.should.be.eql("");
-                    res.body[1].packageName.should.be.eql("com.kakao.talk");
+                    res.body[0].packageName.should.be.eql("com.kakao.talk");
+                    res.body[1].packageName.should.be.eql("com.facebook.katana");
+                    res.body[1].appName.should.be.eql("Facebook");
+                    res.body[1].categoryId1.should.be.eql("/store/apps/category/SOCIAL");
+                    res.body[1].categoryName1.should.be.eql("소셜");
+                    res.body[1].categoryId2.should.be.eql("");
+                    res.body[1].categoryName2.should.be.eql("");
+
                     done();
                 });
         });

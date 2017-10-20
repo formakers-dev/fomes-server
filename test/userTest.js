@@ -46,7 +46,7 @@ describe('Users', () => {
     });
 
     describe('POST user', () => {
-        const oldUser = config.testUser;
+        const testUser = config.testUser;
         const newUser = {
             userId: '109974316241227718963',
             maxAge: 20,
@@ -69,13 +69,13 @@ describe('Users', () => {
         });
 
         it('기존 사용자일 경우, 유저정보를 정상적으로 업데이트한다', done => {
-            Users.findOneAndUpdate({userId: oldUser.userId}, {$set: oldUser}, {upsert: true})
+            Users.findOneAndUpdate({userId: testUser.userId}, {$set: testUser}, {upsert: true})
                 .exec()
                 .then(() => {
-                    Users.findOneAndUpdate({userId: oldUser.userId}, {$set: newUser}, {upsert: true})
+                    Users.findOneAndUpdate({userId: testUser.userId}, {$set: newUser}, {upsert: true})
                         .exec()
                         .then(() => {
-                            Users.findOne({userId: oldUser.userId}, (err, user) => {
+                            Users.findOne({userId: testUser.userId}, (err, user) => {
                                 verifyUserData(user, newUser.userId, newUser.maxAge, newUser.minAge, newUser.gender, newUser.email);
                                 done();
                             });
