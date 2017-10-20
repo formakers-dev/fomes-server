@@ -34,10 +34,10 @@ describe('analyses', () => {
                 .end((err, res) => {
                     res.should.have.status(200);
 
-                    Analyses.findOne({userId: config.testUserId}, (err, doc) => {
+                    Analyses.findOne({userId: config.testUser.userId}, (err, doc) => {
                         doc.should.be.ok;
 
-                        doc.userId.should.be.eql(config.testUserId);
+                        doc.userId.should.be.eql(config.testUser.userId);
 
                         doc.characterType.should.be.eql('GAMER');
                         doc.totalInstalledAppCount.should.be.eql(100);
@@ -67,7 +67,7 @@ describe('analyses', () => {
 
     describe('GET averageUsedMinutesPerDay', () => {
         before((done) => {
-            ShortTermStats.remove({userId: config.testUserId})
+            ShortTermStats.remove({userId: config.testUser.userId})
                 .exec()
                 .then(() => done());
         });
@@ -111,7 +111,7 @@ describe('analyses', () => {
             };
 
             before((done) => {
-                ShortTermStats.findOneAndUpdate({userId: config.testUserId}, {$set: doc}, {upsert: true})
+                ShortTermStats.findOneAndUpdate({userId: config.testUser.userId}, {$set: doc}, {upsert: true})
                     .exec()
                     .then(() => done());
             });
@@ -129,7 +129,7 @@ describe('analyses', () => {
             });
 
             after((done) => {
-                ShortTermStats.remove({userId: config.testUserId})
+                ShortTermStats.remove({userId: config.testUser.userId})
                     .exec()
                     .then(() => done());
             });

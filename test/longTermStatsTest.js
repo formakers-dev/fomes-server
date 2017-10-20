@@ -33,7 +33,7 @@ describe('longTermStats', () => {
                         .send(doc)
                         .end((err, res) => {
 
-                            LongTermStats.find({userId : config.testUserId}, (err, docs) => {
+                            LongTermStats.find({userId : config.testUser.userId}, (err, docs) => {
                                 docs.length.should.be.eql(2);
                                 docs[0].duration.should.be.eql("yearly");
                                 docs[0].stats.length.should.be.eql(2);
@@ -55,7 +55,7 @@ describe('longTermStats', () => {
                     res.should.have.status(200);
                     res.body.should.be.eql(true);
 
-                    LongTermStats.findOne({userId : config.testUserId}, (err, longTermStat) => {
+                    LongTermStats.findOne({userId : config.testUser.userId}, (err, longTermStat) => {
                         longTermStat.stats.length.should.be.eql(2);
                         longTermStat.duration.should.be.eql("yearly");
                         verifyLongTermStatData(longTermStat.stats[0], 'appbee1.testapp.com', '20170101', 1000);
@@ -74,7 +74,7 @@ describe('longTermStats', () => {
                     res.should.have.status(200);
                     res.body.should.be.eql(true);
 
-                    LongTermStats.findOne({userId : config.testUserId}, (err, longTermStat) => {
+                    LongTermStats.findOne({userId : config.testUser.userId}, (err, longTermStat) => {
                         longTermStat.stats.length.should.be.eql(2);
                         longTermStat.duration.should.be.eql("monthly");
                         verifyLongTermStatData(longTermStat.stats[0], 'appbee1.testapp.com', '20170101', 1000);
@@ -92,7 +92,7 @@ describe('longTermStats', () => {
     });
 
     afterEach((done) => {
-        LongTermStats.remove({ userId : config.testUserId }, () => {
+        LongTermStats.remove({ userId : config.testUser.userId }, () => {
             done();
         });
     });

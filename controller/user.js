@@ -18,6 +18,21 @@ let upsertUser = (req, res, next) => {
         });
 };
 
+let upsertNotificationToken = (req, res) => {
+    User.findOneAndUpdate({userId : req.body.userId}, { $set: req.body }, {upsert: true})
+        .exec()
+        .then(() => {
+            res.json(true);
+        })
+        .catch((err) => {
+            console.log('===upsertNotificationToken:Error' + err.message);
+            res.status(500).json({
+                success: false,
+                message: err.message
+            });
+        });
+};
+
 let postUserApps = (req, res) => {
     let userAppsJson = {};
     userAppsJson.userId = req.userId;
@@ -52,4 +67,4 @@ let generateToken = (req, res) => {
 };
 
 
-module.exports = {upsertUser, postUserApps, generateToken};
+module.exports = {upsertUser, postUserApps, generateToken, upsertNotificationToken};

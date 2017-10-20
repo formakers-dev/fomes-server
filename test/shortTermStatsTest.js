@@ -45,7 +45,7 @@ describe('shortTermStats', () => {
                     res.should.have.status(200);
                     res.body.should.be.eql(true);
 
-                    ShortTermStats.findOne({userId : config.testUserId}, (err, shortTermStat) => {
+                    ShortTermStats.findOne({userId : config.testUser.userId}, (err, shortTermStat) => {
                         shortTermStat.lastUpdateStatTimestamp.should.be.eql(1234567890);
                         shortTermStat.stats.length.should.be.eql(2);
                         verifyShortTermStatData(shortTermStat.stats[0], 'com.whatever.package1', 1499914700000, 1499914800000, 100000);
@@ -72,7 +72,7 @@ describe('shortTermStats', () => {
                             res.should.have.status(200);
                             res.body.should.be.eql(true);
 
-                            ShortTermStats.findOne({userId : config.testUserId}, (err, shortTermStat) => {
+                            ShortTermStats.findOne({userId : config.testUser.userId}, (err, shortTermStat) => {
                                 shortTermStat.lastUpdateStatTimestamp.should.be.eql(1234567899);
                                 shortTermStat.stats.length.should.be.eql(3);
                                 verifyShortTermStatData(shortTermStat.stats[0], 'com.whatever.package1', 1499914700000, 1499914800000, 100000);
@@ -93,7 +93,7 @@ describe('shortTermStats', () => {
         };
 
         afterEach((done) => {
-            ShortTermStats.remove({ userId : config.testUserId }, () => {
+            ShortTermStats.remove({ userId : config.testUser.userId }, () => {
                 done();
             });
         });
@@ -101,7 +101,7 @@ describe('shortTermStats', () => {
 
     describe('GET lastUpdateStatsTimestamp', () => {
         let shortTermStat = {
-            userId: config.testUserId
+            userId: config.testUser.userId
         };
 
         beforeEach((done) => {
@@ -110,7 +110,7 @@ describe('shortTermStats', () => {
                 .then(() => done());
         });
 
-        it('저장된 lastUpdateStatsTimestamp가 없는 경우 초기값 0을 리턴한다', done => {
+        it( '저장된 lastUpdateStatsTimestamp가 없는 경우 초기값 0을 리턴한다', done => {
             chai.request(server)
                 .get('/stats/short/lastUpdateStatTimestamp')
                 .set('x-access-token', config.appbeeToken.valid)
@@ -139,7 +139,7 @@ describe('shortTermStats', () => {
         });
 
         afterEach((done) => {
-            ShortTermStats.remove({ userId : config.testUserId }, () => {
+            ShortTermStats.remove({ userId : config.testUser.userId }, () => {
                 done();
             });
         });

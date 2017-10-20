@@ -12,34 +12,56 @@ const UserApps = require('../models/userApps');
 chai.use(chaiHttp);
 
 describe('Users', () => {
-    describe('POST user', () => {
-        const newUser = {
-            userId: config.testUserId,
-            registrationToken: 'registrationToken-new'
-        };
-        const oldUser = {
-            userId: config.testUserId,
-            registrationToken: 'registrationToken-old'
-        };
+
+    describe('POST notification token', () => {
+        let testUser = config.testUser;
+        testUser.registrationToken = 'new_user_token';
 
         it('google id토큰 검증 후 API 사용을 위한 appbee 토큰을 발급하여 리턴한다', done => {
             chai.request(server)
-                .get('/user/auth')
+                .post('/user/token')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send(testUser)
                 .end((err, res) => {
                     res.should.have.status(200);
-                    jwt.verify(res.body, config.secret, (err) => {
-                        expect(!err).to.be.true;
+                    res.body.should.be.eql(true);
+
+                    Users.findOne({userId: testUser.userId}, (err, user) => {
+                        verifyUserToken(user, user.userId, user.registrationToken);
                         done();
                     });
                 });
         });
+
+        const verifyUserToken = (user, userId, registrationToken) => {
+            user.userId.should.be.eql(userId);
+            user.registrationToken.should.be.eql(registrationToken);
+        };
+
+        afterEach((done) => {
+            Users.remove({ userId : config.testUser.userId }, () => {
+                done();
+            });
+        });
+    });
+
+    describe('POST user', () => {
+        const oldUser = config.testUser;
+        const newUser = {
+            userId: '109974316241227718963',
+            maxAge: 20,
+            minAge: 10,
+            gender: 'F',
+            email: 'appbee@appbee.com',
+            requestToken: 'test_user_request_token',
+        };
 
         it('새로운 사용자일 경우, 유저정보를 정상적으로 저장한다', done => {
             Users.findOneAndUpdate({userId: newUser.userId}, {$set: newUser}, {upsert: true})
                 .exec()
                 .then(() => {
                     Users.findOne({userId: newUser.userId}, (err, user) => {
-                        verifyUserData(user, config.testUserId, "registrationToken-new");
+                        verifyUserData(user, newUser.userId, newUser.maxAge, newUser.minAge, newUser.gender, newUser.email);
                         done();
                     });
 
@@ -47,27 +69,30 @@ describe('Users', () => {
         });
 
         it('기존 사용자일 경우, 유저정보를 정상적으로 업데이트한다', done => {
-            Users.findOneAndUpdate({userId: newUser.userId}, {$set: newUser}, {upsert: true})
+            Users.findOneAndUpdate({userId: oldUser.userId}, {$set: oldUser}, {upsert: true})
                 .exec()
                 .then(() => {
-                    Users.findOneAndUpdate({userId: oldUser.userId}, {$set: oldUser}, {upsert: true})
+                    Users.findOneAndUpdate({userId: oldUser.userId}, {$set: newUser}, {upsert: true})
                         .exec()
                         .then(() => {
                             Users.findOne({userId: oldUser.userId}, (err, user) => {
-                                verifyUserData(user, config.testUserId, "registrationToken-old");
+                                verifyUserData(user, newUser.userId, newUser.maxAge, newUser.minAge, newUser.gender, newUser.email);
                                 done();
                             });
                         });
                 });
         });
 
-        const verifyUserData = (user, userId, registrationToken) => {
+        const verifyUserData = (user, userId, maxAge, minAge, gender, email) => {
             user.userId.should.be.eql(userId);
-            user.registrationToken.should.be.eql(registrationToken);
+            user.maxAge.should.be.eql(maxAge);
+            user.minAge.should.be.eql(minAge);
+            user.gender.should.be.eql(gender);
+            user.email.should.be.eql(email);
         };
 
         afterEach((done) => {
-            Users.remove({ userId : config.testUserId }, () => {
+            Users.remove({ userId : config.testUser.userId }, () => {
                 done();
             });
         });
@@ -91,7 +116,7 @@ describe('Users', () => {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.eql(true);
-                    UserApps.findOne({userId: config.testUserId}, (err, userApps) => {
+                    UserApps.findOne({userId: config.testUser.userId}, (err, userApps) => {
                         userApps.apps.length.should.be.eql(2);
                         verifyUserAppsData(userApps.apps[0], "com.whatever.package1", "app1");
                         verifyUserAppsData(userApps.apps[1], "com.whatever.package2", "app2");
@@ -106,7 +131,7 @@ describe('Users', () => {
         };
 
         afterEach((done) => {
-            UserApps.remove({userId : config.testUserId},() => {
+            UserApps.remove({userId : config.testUser.userId},() => {
                 done();
             });
         });

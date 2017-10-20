@@ -11,13 +11,13 @@ chai.use(chaiHttp);
 describe('Downloads', () => {
     it('다운로드 요청시 넘어온 Referer를 저장한다', done => {
         chai.request(server)
-            .get('/download?referer=' + config.testUserId)
+            .get('/download?referer=' + config.testUser.userId)
             .send()
             .end((err, res) => {
                 res.statusCode.should.be.eql(200);
                 res.should.redirectTo('https://s3.ap-northeast-2.amazonaws.com/appbeepkg/release/appbee-beta.apk');
 
-                DownloadHistories.find({'userId':config.testUserId}, (err, histories) => {
+                DownloadHistories.find({'userId':config.testUser.userId}, (err, histories) => {
                     histories.length.should.be.eql(1);
                     done();
                 });
@@ -25,7 +25,7 @@ describe('Downloads', () => {
     });
 
     afterEach((done) => {
-        DownloadHistories.remove({ userId : config.testUserId }, () => {
+        DownloadHistories.remove({ userId : config.testUser.userId }, () => {
             done();
         });
     });
