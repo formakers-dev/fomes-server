@@ -12,15 +12,6 @@ chai.use(chaiHttp);
 
 describe('Users', () => {
 
-    describe('calls getGenderName from User Model', () => {
-       it('genderNumberCode에 따른 User 성별을 리턴한다', (done) => {
-          Users.getGenderName(0).should.be.eql('male');
-          Users.getGenderName(1).should.be.eql('female');
-          Users.getGenderName(2).should.be.eql('other');
-          done();
-       });
-    });
-
     describe('POST user', () => {
         let testUser = config.testUser;
         testUser.registrationToken = 'new_user_token';

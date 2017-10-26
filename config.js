@@ -14,7 +14,7 @@ module.exports = {
             userId: '109974316241227718963',
             maxAge: 50,
             minAge: 20,
-            gender: 0,
+            gender: 'male',
             email: 'appbee@appbee.com',
             registrationToken: 'test_user_registration_token',
         },
