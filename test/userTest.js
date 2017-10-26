@@ -12,11 +12,20 @@ chai.use(chaiHttp);
 
 describe('Users', () => {
 
+    describe('calls getGenderName from User Model', () => {
+       it('genderNumberCode에 따른 User 성별을 리턴한다', (done) => {
+          Users.getGenderName(0).should.be.eql('male');
+          Users.getGenderName(1).should.be.eql('female');
+          Users.getGenderName(2).should.be.eql('other');
+          done();
+       });
+    });
+
     describe('POST user', () => {
         let testUser = config.testUser;
         testUser.registrationToken = 'new_user_token';
 
-        it('google id토큰 검증 후 API 사용을 위한 appbee 토큰을 발급하여 리턴한다', done => {
+        it('User정보를 저장한다', done => {
             chai.request(server)
                 .post('/user')
                 .set('x-access-token', config.appbeeToken.valid)
@@ -26,16 +35,13 @@ describe('Users', () => {
                     res.body.should.be.eql(true);
 
                     Users.findOne({userId: testUser.userId}, (err, user) => {
-                        verifyUserToken(user, user.userId, user.registrationToken);
+                        user.userId.should.be.eql(testUser.userId);
+                        user.gender.should.be.eql("male");
+                        user.registrationToken.should.be.eql(testUser.registrationToken);
                         done();
                     });
                 });
         });
-
-        const verifyUserToken = (user, userId, registrationToken) => {
-            user.userId.should.be.eql(userId);
-            user.registrationToken.should.be.eql(registrationToken);
-        };
 
         afterEach((done) => {
             Users.remove({ userId : config.testUser.userId }, () => {
