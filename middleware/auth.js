@@ -1,6 +1,6 @@
 const GoogleAuth = require('google-auth-library');
 const jwt = require('jsonwebtoken');
-const config = require('../config')[process.env.NODE_ENV];
+const config = require('../config');
 
 const appBeeTokenVerifier = (req, res, next) => {
     const check = (token) => {

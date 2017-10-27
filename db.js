@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const config = require('./config')[process.env.NODE_ENV];
+const config = require('./config');
 
 const connect = () => {
     mongoose.connect(config.dbUrl, function(err) {

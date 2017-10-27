@@ -5,8 +5,9 @@ const statsRouter = require('./router/stats');
 const appsRouter = require('./router/apps');
 const userRouter = require('./router/user');
 const downloadRouter = require('./router/download');
+const projectRouter = require('./router/project');
 const db = require('./db');
-const port = require('./config')[process.env.NODE_ENV].port;
+const port = require('./config').port;
 const http = require('http');
 
 db.init();
@@ -25,6 +26,7 @@ app.use('/user', userRouter);
 app.use('/stats', statsRouter);
 app.use('/apps', appsRouter);
 app.use('/download', downloadRouter);
+app.use('/project', projectRouter);
 
 http.createServer(app).listen(port, () => {
     console.log('Express App on http port ' + port);

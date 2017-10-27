@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const UserApps = require('../models/userApps');
-const config = require('../config')[process.env.NODE_ENV];
+const config = require('../config');
 
 let upsertUser = (req, res, next) => {
 

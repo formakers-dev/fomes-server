@@ -1,4 +1,4 @@
-module.exports = {
+const config = {
     development: {
         secret: process.env.APPBEE_SECRET_KEY,
         dbUrl: process.env.MONGO_URL,
@@ -23,6 +23,9 @@ module.exports = {
             expired: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMDk5NzQzMTYyNDEyMjc3MTg5NjMiLCJlbWFpbCI6ImFwcGJlZTA2MjdAZ21haWwuY29tIiwibmFtZSI6IkJlZSBBcHAiLCJwcm92aWRlciI6IkdHIiwiaWF0IjoxNTAxNTc1MDQwLCJleHAiOjE1MDE1NzUwNDEsImlzcyI6ImFwcGJlZS5jb20iLCJzdWIiOiJBcHBCZWVBdXRoIn0._i1rbf--jvNqPlfN_lRg4-oNEzreVDJYDq0DvtVDiZ4",
             invalid: "IamFake"
         },
-        testAppbeeNumber: "appbeeNumber"
+        testAppbeeNumber: "appbeeNumber",
+        testProjectId: '1508998212204',
     }
 };
+
+module.exports = config[process.env.NODE_ENV];

@@ -3,7 +3,7 @@ const chaiHttp = require('chai-http');
 const server = require('../server');
 const should = chai.should();
 const expect = chai.expect;
-const config = require('../config')[process.env.NODE_ENV];
+const config = require('../config');
 const Analyses = require('../models/analyses');
 const ShortTermStats = require('../models/shortTermStats');
 

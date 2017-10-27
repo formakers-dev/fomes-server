@@ -1,6 +1,6 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const config = require('../config')[process.env.NODE_ENV];
+const config = require('../config');
 const should = chai.should();
 const expect = chai.expect;
 const DownloadHistories = require('../models/downloadHistories');

@@ -1,7 +1,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../server');
-const config = require('../config')[process.env.NODE_ENV];
+const config = require('../config');
 const UncrawledApps = require('../models/uncrawledApps');
 const should = chai.should();
 
