@@ -10,6 +10,7 @@ describe('Project', () => {
     describe('GET /project/all', () => {
         it('프로젝트 목록 조회', done => {
             request.get('/project')
+                .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .end((err, res) => {
                     res.body.length.should.be.not.eql(0);
@@ -43,6 +44,7 @@ describe('Project', () => {
     describe('GET /project', () => {
         it('프로젝트 단건 조회', done => {
             request.get('/project?projectId=' + config.testProjectId)
+                .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .end((err, res) => {
                     res.body.length.should.be.eql(1);
