@@ -9,10 +9,10 @@ const should = chai.should();
 describe('Project', () => {
     describe('GET /project/all', () => {
         it('프로젝트 목록 조회', done => {
-            request.get('/project/all')
+            request.get('/project')
                 .expect(200)
                 .end((err, res) => {
-                    res.body.length.should.be.eql(4);
+                    res.body.length.should.be.not.eql(0);
                     expect(res.body[0]).has.property('projectId');
                     expect(res.body[0]).has.property('customerId');
                     expect(res.body[0]).has.property('name');
