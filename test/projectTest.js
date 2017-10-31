@@ -7,8 +7,8 @@ const expect = chai.expect;
 const should = chai.should();
 
 describe('Project', () => {
-    describe('GET /project/all', () => {
-        it('프로젝트 목록 조회', done => {
+    describe('GET /project', () => {
+        it('프로젝트 목록을 조회한다', done => {
             request.get('/project')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
@@ -25,8 +25,8 @@ describe('Project', () => {
         });
     });
 
-    describe('GET /project', () => {
-        it('프로젝트 단건 조회', done => {
+    describe('GET /project?projectId=xxxx', () => {
+        it('프로젝트 상세정보를 조회한다', done => {
             request.get('/project?projectId=' + config.testProjectId)
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
