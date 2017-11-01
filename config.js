@@ -24,7 +24,7 @@ const config = {
             invalid: "IamFake"
         },
         testAppbeeNumber: "appbeeNumber",
-        testProjectId: '1508998212204',
+        testProjectId: 1508998212204,
     }
 };
 
