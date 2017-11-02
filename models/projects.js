@@ -6,13 +6,14 @@ const projectSchema = new Schema({
     customerId: String,
     name: String,
     introduce: String,
-    images: Array,
-    apps: Array,
-    interviewer_introduce: String,
     description: String,
     description_images: Array,
+    images: Array,
+    apps: Array,
     interview: Object,
-    status: Number
+    interviewer: Object,
+    status: String,
+    isCLab: Boolean
 });
 
 module.exports = mongoose.model('projects', projectSchema);

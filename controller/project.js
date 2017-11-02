@@ -1,23 +1,23 @@
 const Projects = require('../models/projects');
 
 const getProject = (req, res) => {
-    const projectId = req.query.projectId;
+    const projectId = req.params.id;
 
-    if (projectId) {
-        Projects.find({projectId: projectId}, (err, result) => {
-            if(err) {
-                return res.status(500).json({error: err});
-            }
-            res.json(result[0]);
-        });
-    } else {
-        Projects.find((err, result) => {
-            if(err) {
-                return res.status(500).json({error: err});
-            }
-            res.json(result);
-        });
-    }
+    Projects.find({$and: [{projectId: projectId},{status: { $ne: "temporary"}}]}, (err, result) => {
+        if(err) {
+            return res.status(500).json({error: err});
+        }
+        res.json(result[0]);
+    });
 };
 
-module.exports = { getProject };
+const getProjectList = (req, res) => {
+    Projects.find({status: { $ne: "temporary"}}, (err, result) => {
+        if(err) {
+            return res.status(500).json({error: err});
+        }
+        res.json(result);
+    });
+};
+
+module.exports = { getProject, getProjectList };
