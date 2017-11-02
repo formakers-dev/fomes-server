@@ -7,7 +7,7 @@ const projectSchema = new Schema({
     name: String,
     introduce: String,
     description: String,
-    description_images: Array,
+    descriptionImages: Array,
     images: Array,
     apps: Array,
     interview: Object,

@@ -22,16 +22,16 @@ describe('Project', () => {
                         "plan": "세부계획",
                         "minute": 60
                     }],
-                    "end_date": "20171101",
-                    "start_date": "20171102",
-                    "close_date": "20171103",
-                    "date_negotiable": false,
-                    "open_date": "20171104",
+                    "endDate": "20171101",
+                    "startDate": "20171102",
+                    "closeDate": "20171103",
+                    "dateNegotiable": false,
+                    "openDate": "20171104",
                     "location": "서울대",
-                    "location_negotiable": false,
+                    "locationNegotiable": false,
                     "type": "offline"
                 },
-                "description_images": [{
+                "descriptionImages": [{
                     "name": "anyimage",
                     "url": "www.anyimage.com"
                 }],
@@ -78,16 +78,16 @@ describe('Project', () => {
                     res.body.description.should.be.eql('토르는 히어로물이다.');
                     res.body.interview.plans[0].minute.should.be.eql(60);
                     res.body.interview.plans[0].plan.should.be.eql('세부계획');
-                    res.body.interview.end_date.should.be.eql('20171101');
-                    res.body.interview.start_date.should.be.eql('20171102');
-                    res.body.interview.close_date.should.be.eql('20171103');
-                    res.body.interview.date_negotiable.should.be.eql(false);
-                    res.body.interview.open_date.should.be.eql('20171104');
+                    res.body.interview.endDate.should.be.eql('20171101');
+                    res.body.interview.startDate.should.be.eql('20171102');
+                    res.body.interview.closeDate.should.be.eql('20171103');
+                    res.body.interview.dateNegotiable.should.be.eql(false);
+                    res.body.interview.openDate.should.be.eql('20171104');
                     res.body.interview.location.should.be.eql('서울대');
-                    res.body.interview.location_negotiable.should.be.eql(false);
+                    res.body.interview.locationNegotiable.should.be.eql(false);
                     res.body.interview.type.should.be.eql('offline');
-                    res.body.description_images[0].url.should.be.eql('www.anyimage.com');
-                    res.body.description_images[0].name.should.be.eql('anyimage');
+                    res.body.descriptionImages[0].url.should.be.eql('www.anyimage.com');
+                    res.body.descriptionImages[0].name.should.be.eql('anyimage');
                     res.body.apps[0].should.be.eql('com.app.cgv');
                     res.body.images[0].name.should.be.eql('anyimage2');
                     res.body.images[0].url.should.be.eql('www.anyimage2.com');
