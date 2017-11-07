@@ -10,46 +10,45 @@ const Projects = require('../models/projects');
 
 describe('Project', () => {
     before((done) => {
-        Projects.remove({}, () => {
-            Projects.create({
-                "projectId": config.testProjectId,
-                "customerId": "testCustomerId",
-                "name": "토르 - 기준스키마. 지우지마세요!!!",
-                "introduce": "영화가 개봉함",
-                "description": "토르는 히어로물이다.",
-                "interview": {
-                    "plans": [{
-                        "plan": "세부계획",
-                        "minute": 60
-                    }],
-                    "endDate": "20171101",
-                    "startDate": "20171102",
-                    "closeDate": "20171103",
-                    "dateNegotiable": false,
-                    "openDate": "20171104",
-                    "location": "서울대",
-                    "locationNegotiable": false,
-                    "type": "offline"
-                },
-                "descriptionImages": [{
-                    "name": "anyimage",
-                    "url": "www.anyimage.com"
+        Projects.create({
+            "projectId": config.testProjectId,
+            "customerId": "testCustomerId",
+            "name": "토르 - 기준스키마. 지우지마세요!!!",
+            "introduce": "영화가 개봉함",
+            "description": "토르는 히어로물이다.",
+            "interview": {
+                "plans": [{
+                    "plan": "세부계획",
+                    "minute": 60
                 }],
-                "apps": ["com.app.cgv"],
-                "images": [{
-                    "name": "anyimage2",
-                    "url": "www.anyimage2.com"
-                }],
-                "isCLab": true,
-                "interviewer": {
-                    "name": "혜리",
-                    "url": "www.interviewer.com",
-                    "introduce": "툰스토리 디자이너"
-                },
-                "status": "registered"
-            }, () => {
-                done();
-            });
+                "endDate": "20171101",
+                "startDate": "20171102",
+                "closeDate": "20171103",
+                "dateNegotiable": false,
+                "openDate": "20171104",
+                "location": "서울대",
+                "locationNegotiable": false,
+                "type": "offline",
+                "participants": []
+            },
+            "descriptionImages": [{
+                "name": "anyimage",
+                "url": "www.anyimage.com"
+            }],
+            "apps": ["com.app.cgv"],
+            "images": [{
+                "name": "anyimage2",
+                "url": "www.anyimage2.com"
+            }],
+            "isCLab": true,
+            "interviewer": {
+                "name": "혜리",
+                "url": "www.interviewer.com",
+                "introduce": "툰스토리 디자이너"
+            },
+            "status": "registered"
+        }, () => {
+            done();
         });
     });
 
@@ -99,6 +98,27 @@ describe('Project', () => {
                     done();
                 });
         });
+    });
+
+    describe('POST /projects/{id}/participate', () => {
+        it('인터뷰 참가자 명단에 등록한다', done => {
+            request.post('/projects/' + config.testProjectId + '/participate')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .end((err, res) => {
+                    res.body.should.be.eql(true);
+                    Projects.findOne({projectId: config.testProjectId}, (err, result) => {
+                        result.interview.participants.length.should.be.eql(1);
+                        result.interview.participants[0].should.be.eql(config.testUser.userId);
+                        done();
+                    });
+                });
+        });
+
+        //TODO : 인원초과에 대한 에러처리
+        //TODO : 이미 등록된 유저에 대한 에러처리
+        //TODO : 모집기간 아닌 경우 에러처리
+        //TODO : 대상자가 아닌 경우 에러처리
     });
 
     after((done) => {

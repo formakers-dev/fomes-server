@@ -20,4 +20,17 @@ const getProjectList = (req, res) => {
     });
 };
 
-module.exports = { getProject, getProjectList };
+const postParticipate = (req, res) => {
+    const projectId = req.params.id;
+
+    Projects.findOneAndUpdate({projectId : projectId}, { $push: { 'interview.participants': req.userId } })
+        .exec()
+        .then(() => {
+            res.send(true);
+        })
+        .catch((err) => {
+            res.send(err);
+        });
+};
+
+module.exports = { getProject, getProjectList, postParticipate };
