@@ -1,6 +1,6 @@
-let Apps = require('../models/apps');
-let UncrawledApps = require('../models/uncrawledApps');
-let postInfo = (req, res) => {
+const Apps = require('../models/apps');
+const UncrawledApps = require('../models/uncrawledApps');
+const getInfo = (req, res) => {
     Apps.find({packageName : { $in: req.body }},
         { packageName: 1, appName: 1, categoryId1: 1, categoryId2: 1, categoryName1: 1, categoryName2: 1, _id: 0 })
         .exec()
@@ -9,7 +9,7 @@ let postInfo = (req, res) => {
         });
 };
 
-let postUncrawled = (req, res) => {
+const postUncrawled = (req, res) => {
     const bulkOps = [ ];
 
     req.body.forEach(packageName => {
@@ -30,4 +30,4 @@ let postUncrawled = (req, res) => {
         });
 };
 
-module.exports = {postInfo, postUncrawled};
+module.exports = {getInfo, postUncrawled};
