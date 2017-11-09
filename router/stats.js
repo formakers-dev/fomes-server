@@ -5,7 +5,8 @@ const Analyses = require('../controller/analyses');
 const Auth = require('../middleware/auth');
 
 statsRouter.route('/short')
-    .post(Auth.appBeeTokenVerifier, ShortTermStats.postShortTermStats);
+    .post(Auth.appBeeTokenVerifier, ShortTermStats.postShortTermStats)
+    .get(Auth.appBeeTokenVerifier, ShortTermStats.getShortTermStats);
 
 statsRouter.get('/short/lastUpdateStatTimestamp', Auth.appBeeTokenVerifier, ShortTermStats.getLastUpdateStatTimestamp);
 
