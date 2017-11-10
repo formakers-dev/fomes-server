@@ -9,4 +9,7 @@ appsRouter.route('/info')
 appsRouter.route('/uncrawled')
     .post(Auth.appBeeTokenVerifier, Apps.postUncrawled);
 
+appsRouter.route('/usages')
+    .post(Auth.appBeeTokenVerifier, Apps.postAppUsages);
+
 module.exports = appsRouter;
