@@ -14,45 +14,46 @@ const postUncrawled = (req, res) => {
     const bulkOps = [];
 
     req.body.forEach(packageName => {
-        const upsertDoc = {
+        bulkOps.push({
             'updateOne': {
                 'filter': {'packageName': packageName},
                 'update': {'packageName': packageName},
                 'upsert': true
             }
-        };
-        bulkOps.push(upsertDoc);
+        });
     });
 
-    UncrawledApps.bulkWrite(bulkOps)
-        .then(res.json(true))
-        .catch(err => {
+    UncrawledApps.bulkWrite(bulkOps, err => {
+        if (err) {
             console.log(JSON.stringify(err, null, 2));
             res.json(false);
-        });
+        } else {
+            res.json(true);
+        }
+    });
 };
 
 const postAppUsages = (req, res) => {
-    const data = req.body;
-    AppUsages.bulkWrite(
-        data.map(appUsage => {
-            return {
-                updateOne: {
-                    "filter": {"userId": req.userId, "packageName": appUsage.packageName},
-                    "update": {$set: {"totalUsedTime": appUsage.totalUsedTime}},
-                    "upsert": true
-                }
+    const bulkOps = [];
+
+    req.body.forEach(appUsage => {
+        bulkOps.push({
+            'updateOne': {
+                "filter": {"userId": req.userId, "packageName": appUsage.packageName},
+                "update": {"totalUsedTime": appUsage.totalUsedTime},
+                "upsert": true
             }
-        })
-    );
-    AppUsages.findOneAndUpdate({$and: [{packageName: ''}, {'users.userId': req.userId}]}, {$set: req.body})
-        .exec()
-        .then(() => {
-            res.send(true);
-        })
-        .catch((err) => {
-            res.send(err);
         });
+    });
+
+    AppUsages.bulkWrite(bulkOps, err => {
+        if (err) {
+            console.log(err);
+            res.json(false);
+        } else {
+            res.json(true);
+        }
+    });
 };
 
 module.exports = {getInfo, postUncrawled, postAppUsages};
