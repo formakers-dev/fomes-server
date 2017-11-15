@@ -78,7 +78,9 @@ describe('Apps', () => {
                 userId: config.testUser.userId,
                 packageName: 'com.kakao.talk',
                 totalUsedTime: 40000
-            }], () => done());
+            }], function() {
+                done()
+            });
         });
 
         it('앱사용기록을 저장한다', done => {

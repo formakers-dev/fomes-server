@@ -34,24 +34,4 @@ const getLastUpdateStatTimestamp = (req, res) => {
         });
 };
 
-const getShortTermStats = (req, res) => {
-    ShortTermStats.aggregate([
-        {$match: {userId: req.userId}},
-        {$unwind: '$stats'},
-        {$match: {'stats.startTimeStamp': {$gt: parseInt(req.query.startTimeStamp)}}},
-        {$group: {_id: '$userId', stats: {$push: '$stats'}}}
-        ])
-        .exec()
-        .then(result => {
-            res.json(result[0].stats);
-        })
-        .catch(err => {
-            console.log('===getShortTermStats:Error' + err.message);
-            res.status(500).json({
-                success: false,
-                message: err.message
-            });
-        });
-};
-
-module.exports = {postShortTermStats, getLastUpdateStatTimestamp, getShortTermStats};
+module.exports = {postShortTermStats, getLastUpdateStatTimestamp};

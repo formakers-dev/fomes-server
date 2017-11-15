@@ -91,12 +91,6 @@ describe('shortTermStats', () => {
             shortTermStat.endTimeStamp.should.be.eql(endTimeStamp);
             shortTermStat.totalUsedTime.should.be.eql(totalUsedTime);
         };
-
-        afterEach((done) => {
-            ShortTermStats.remove({ userId : config.testUser.userId }, () => {
-                done();
-            });
-        });
     });
 
     describe('GET lastUpdateStatsTimestamp', () => {
@@ -138,59 +132,11 @@ describe('shortTermStats', () => {
                 });
         });
 
-        afterEach((done) => {
-            ShortTermStats.remove({ userId : config.testUser.userId }, () => {
-                done();
-            });
-        });
     });
 
-    describe('GET shortTermStats', () => {
-        const data = {
-            userId: config.testUser.userId,
-            stats: [{
-                "packageName": "com.whatever.package1",
-                "startTimeStamp": 1499914700000,
-                "endTimeStamp": 1499914800000,
-                "totalUsedTime": 100000
-            }, {
-                "packageName": "com.whatever.package2",
-                "startTimeStamp": 1499914700001,
-                "endTimeStamp": 1499914900001,
-                "totalUsedTime": 200000
-            }, {
-                "packageName": "com.whatever.package3",
-                "startTimeStamp": 1499914700002,
-                "endTimeStamp": 1499914900003,
-                "totalUsedTime": 300000
-            }]
-        };
-
-        beforeEach((done) => {
-            ShortTermStats.findOneAndUpdate({userId: config.testUser.userId}, {$set: data}, {upsert: true})
-                .exec()
-                .then(() => done());
-        });
-
-        it('요청한 userID의 shortTermStat중 기간에 맞는 값들을 조회한다', (done) => {
-            chai.request(server)
-                .get("/stats/short?startTimeStamp=1499914700001")
-                .set('x-access-token', config.appbeeToken.valid)
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.length.should.be.eql(1);
-                    res.body[0].packageName.should.be.eql('com.whatever.package3');
-                    res.body[0].startTimeStamp.should.be.eql(1499914700002);
-                    res.body[0].endTimeStamp.should.be.eql(1499914900003);
-                    res.body[0].totalUsedTime.should.be.eql(300000);
-                    done();
-                });
-        });
-
-        afterEach((done) => {
-            ShortTermStats.remove({ userId : config.testUser.userId }, () => {
-                done();
-            });
+    afterEach((done) => {
+        ShortTermStats.remove({ userId : config.testUser.userId }, () => {
+            done();
         });
     });
 });
