@@ -39,14 +39,12 @@ describe('shortTermStats', () => {
             chai.request(server)
                 .post("/stats/short")
                 .set('x-access-token', config.appbeeToken.valid)
-                .set('x-last-updated-time', 1234567890)
                 .send(doc)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.eql(true);
 
                     ShortTermStats.findOne({userId : config.testUser.userId}, (err, shortTermStat) => {
-                        shortTermStat.lastUpdateStatTimestamp.should.be.eql(1234567890);
                         shortTermStat.stats.length.should.be.eql(2);
                         verifyShortTermStatData(shortTermStat.stats[0], 'com.whatever.package1', 1499914700000, 1499914800000, 100000);
                         verifyShortTermStatData(shortTermStat.stats[1], 'com.whatever.package2', 1499914700001, 1499914900001, 200000);
@@ -60,20 +58,17 @@ describe('shortTermStats', () => {
             chai.request(server)
                 .post("/stats/short")
                 .set('x-access-token', config.appbeeToken.valid)
-                .set('x-last-updated-time', 1234567890)
                 .send(doc)
                 .end(() => {
                     chai.request((server))
                         .post("/stats/short")
                         .set('x-access-token', config.appbeeToken.valid)
-                        .set('x-last-updated-time', 1234567899)
                         .send(newDoc)
                         .end((err, res) => {
                             res.should.have.status(200);
                             res.body.should.be.eql(true);
 
                             ShortTermStats.findOne({userId : config.testUser.userId}, (err, shortTermStat) => {
-                                shortTermStat.lastUpdateStatTimestamp.should.be.eql(1234567899);
                                 shortTermStat.stats.length.should.be.eql(4);
                                 verifyShortTermStatData(shortTermStat.stats[0], 'com.whatever.package1', 1499914700000, 1499914800000, 100000);
                                 verifyShortTermStatData(shortTermStat.stats[1], 'com.whatever.package2', 1499914700001, 1499914900001, 200000);
@@ -92,47 +87,6 @@ describe('shortTermStats', () => {
             shortTermStat.endTimeStamp.should.be.eql(endTimeStamp);
             shortTermStat.totalUsedTime.should.be.eql(totalUsedTime);
         };
-    });
-
-    describe('GET lastUpdateStatsTimestamp', () => {
-        let shortTermStat = {
-            userId: config.testUser.userId
-        };
-
-        beforeEach((done) => {
-            ShortTermStats.findOneAndUpdate({userId: shortTermStat.userId}, {$set: shortTermStat}, {upsert: true})
-                .exec()
-                .then(() => done());
-        });
-
-        it( '저장된 lastUpdateStatsTimestamp가 없는 경우 초기값 0을 리턴한다', done => {
-            chai.request(server)
-                .get('/stats/short/lastUpdateStatTimestamp')
-                .set('x-access-token', config.appbeeToken.valid)
-                .send()
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.should.be.eql(0);
-                    done();
-                });
-        });
-
-        it('저장된 lastUpdateStatsTimestamp를 리턴한다', done => {
-            ShortTermStats.findOneAndUpdate({userId: shortTermStat.userId}, {$set: {lastUpdateStatTimestamp: "1234567890"}}, {upsert: true})
-                .exec()
-                .then(() => {
-                    chai.request(server)
-                        .get('/stats/short/lastUpdateStatTimestamp')
-                        .set('x-access-token', config.appbeeToken.valid)
-                        .send()
-                        .end((err, res) => {
-                            res.should.have.status(200);
-                            res.body.should.be.eql(1234567890);
-                            done();
-                        });
-                });
-        });
-
     });
 
     afterEach((done) => {

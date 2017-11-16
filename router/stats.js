@@ -5,8 +5,6 @@ const Analyses = require('../controller/analyses');
 const Auth = require('../middleware/auth');
 
 statsRouter.post('/short', Auth.appBeeTokenVerifier, ShortTermStats.postShortTermStats);
-statsRouter.get('/short/lastUpdateStatTimestamp', Auth.appBeeTokenVerifier, ShortTermStats.getLastUpdateStatTimestamp);
-
 statsRouter.post('/analysis/result', Auth.appBeeTokenVerifier, Analyses.postResult);
 statsRouter.get('/analysis/averageUsedMinutesPerDay', Auth.appBeeTokenVerifier, Analyses.getAverageUsedMinutesPerDay);
 
