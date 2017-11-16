@@ -34,12 +34,18 @@ const postUncrawled = (req, res) => {
 };
 
 const postAppUsages = (req, res) => {
+    if(req.body.length < 1) {
+        res.json(true);
+        return;
+    }
+
     const bulkOps = [];
+    const userId = req.userId;
 
     req.body.forEach(appUsage => {
         bulkOps.push({
             'updateOne': {
-                "filter": {"userId": req.userId, "packageName": appUsage.packageName},
+                "filter": {"userId": userId, "packageName": appUsage.packageName},
                 "update": {"totalUsedTime": appUsage.totalUsedTime},
                 "upsert": true
             }

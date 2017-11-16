@@ -58,18 +58,8 @@ describe('Apps', () => {
     });
 
     describe('POST appUsages', () => {
-        const data = [{
-            packageName: 'com.kakao.talk',
-            totalUsedTime: 10000,
-        }, {
-            packageName: 'com.naver.talk',
-            totalUsedTime: 20000,
-        }, {
-            packageName: 'com.android.com',
-            totalUsedTime: 30000,
-        }];
 
-        before(done => {
+        beforeEach(done => {
             AppUsages.create([{
                 userId: 'anotherUserId',
                 packageName: 'com.pre.installed',
@@ -82,6 +72,17 @@ describe('Apps', () => {
                 done()
             });
         });
+
+        const data = [{
+            packageName: 'com.kakao.talk',
+            totalUsedTime: 10000,
+        }, {
+            packageName: 'com.naver.talk',
+            totalUsedTime: 20000,
+        }, {
+            packageName: 'com.android.com',
+            totalUsedTime: 30000,
+        }];
 
         it('앱사용기록을 저장한다', done => {
             request.post('/apps/usages')
@@ -124,7 +125,19 @@ describe('Apps', () => {
                 .catch(err => done(err));
         });
 
-        after(done => {
+        it('앱 사용기록이 없을 경우, db저장 없이 요청을 종료한다', done => {
+            request.post('/apps/usages')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send([])
+                .expect(200)
+                .then(res => {
+                    res.body.should.be.eql(true);
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        afterEach(done => {
             AppUsages.remove({}).exec().then(() => done());
         });
     });

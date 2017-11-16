@@ -4,7 +4,7 @@ const postShortTermStats = (req, res) => {
     ShortTermStats.findOneAndUpdate({userId: req.userId},
         {
             $set: {lastUpdateStatTimestamp: req.headers['x-last-updated-time']},
-            $addToSet: {stats: {$each: req.body}}
+            $push: {stats: {$each: req.body}}
         }, {upsert: true})
         .exec()
         .then(() => {

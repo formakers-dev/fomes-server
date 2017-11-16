@@ -74,10 +74,11 @@ describe('shortTermStats', () => {
 
                             ShortTermStats.findOne({userId : config.testUser.userId}, (err, shortTermStat) => {
                                 shortTermStat.lastUpdateStatTimestamp.should.be.eql(1234567899);
-                                shortTermStat.stats.length.should.be.eql(3);
+                                shortTermStat.stats.length.should.be.eql(4);
                                 verifyShortTermStatData(shortTermStat.stats[0], 'com.whatever.package1', 1499914700000, 1499914800000, 100000);
                                 verifyShortTermStatData(shortTermStat.stats[1], 'com.whatever.package2', 1499914700001, 1499914900001, 200000);
-                                verifyShortTermStatData(shortTermStat.stats[2], 'com.whatever.package3', 1499914700003, 1499914900003, 300000);
+                                verifyShortTermStatData(shortTermStat.stats[2], 'com.whatever.package1', 1499914700000, 1499914800000, 100000);
+                                verifyShortTermStatData(shortTermStat.stats[3], 'com.whatever.package3', 1499914700003, 1499914900003, 300000);
 
                                 done();
                             });
