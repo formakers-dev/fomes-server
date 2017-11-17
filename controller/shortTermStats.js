@@ -1,17 +1,27 @@
 const ShortTermStats = require('./../models/shortTermStats');
 
 const postShortTermStats = (req, res) => {
-    ShortTermStats.findOneAndUpdate({userId: req.userId},
-        {
-            $push: {stats: {$each: req.body}}
-        }, {upsert: true})
-        .exec()
-        .then(() => {
-            res.send(true);
-        })
-        .catch((err) => {
-            res.send(err);
+    if (!Array.isArray(req.body)) {
+        res.sendStatus(400);
+    } else if (req.body.length < 1) {
+        res.json(true);
+    } else {
+        const userId = req.userId;
+        const shortTermStatArray = [];
+
+        req.body.forEach((shortTermStat) => {
+            shortTermStat.userId = userId;
+            shortTermStatArray.push(shortTermStat);
         });
+
+        ShortTermStats.create(shortTermStatArray, (err) => {
+            if (err) {
+                res.json(false);
+            } else {
+                res.json(true);
+            }
+        });
+    }
 };
 
 module.exports = {postShortTermStats};

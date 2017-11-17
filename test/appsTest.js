@@ -68,7 +68,7 @@ describe('Apps', () => {
                 userId: config.testUser.userId,
                 packageName: 'com.kakao.talk',
                 totalUsedTime: 40000
-            }], function() {
+            }], function () {
                 done()
             });
         });
@@ -125,7 +125,16 @@ describe('Apps', () => {
                 .catch(err => done(err));
         });
 
-        it('앱 사용기록이 없을 경우, db저장 없이 요청을 종료한다', done => {
+        it('앱 사용기록을 잘못된 형태로 전송한 경우, 400 에러코드를 리턴한다.', done => {
+            request.post('/apps/usages')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send()
+                .expect(400)
+                .then(() => done())
+                .catch(err => done(err));
+        });
+
+        it('빈 앱 사용기록을 전송한 경우, 아무 처리없이 true를 리턴한다.', done => {
             request.post('/apps/usages')
                 .set('x-access-token', config.appbeeToken.valid)
                 .send([])
