@@ -10,7 +10,7 @@ const projectSchema = new Schema({
     descriptionImages: Array,
     images: Array,
     apps: Array,
-    interview: Object,
+    interviews: Array,
     interviewer: Object,
     status: String,
     isCLab: Boolean

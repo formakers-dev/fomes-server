@@ -1,11 +1,10 @@
 const Projects = require('../models/projects');
-const moment = require('moment');
 
 const getProject = (req, res) => {
     const projectId = req.params.id;
 
-    Projects.find({$and: [{projectId: projectId},{status: { $ne: "temporary"}}]}, (err, result) => {
-        if(err) {
+    Projects.find({$and: [{projectId: projectId}, {status: {$ne: "temporary"}}]}, (err, result) => {
+        if (err) {
             return res.status(500).json({error: err});
         }
         res.json(result[0]);
@@ -13,8 +12,8 @@ const getProject = (req, res) => {
 };
 
 const getProjectList = (req, res) => {
-    Projects.find({status: { $ne: "temporary"}}, (err, result) => {
-        if(err) {
+    Projects.find({status: {$ne: "temporary"}}, (err, result) => {
+        if (err) {
             return res.status(500).json({error: err});
         }
         res.json(result);
@@ -22,22 +21,34 @@ const getProjectList = (req, res) => {
 };
 
 const postParticipate = (req, res) => {
-    const projectId = req.params.id;
+    const projectId = parseInt(req.params.id);
+    const interviewSeq = parseInt(req.params.seq);
     const userId = req.userId;
     const currentTime = new Date().getTime();
 
-    Projects.findOne({projectId: projectId}, (err, project) => {
-        const openTime = moment(project.interview.openDate).toDate().getTime();
-        const closeTime = moment(project.interview.closeDate).toDate().getTime();
+    Projects.aggregate([
+        {'$match': {projectId: projectId}},
+        {'$unwind': '$interviews'},
+        {'$match': {'interviews.seq': interviewSeq}},
+        {
+            '$project': {
+                'projectId': true,
+                'interviewSeq': '$interviews.seq',
+                'openDate': '$interviews.openDate',
+                'closeDate': '$interviews.closeDate',
+                'status': '$interviews.status',
+                'participants': '$interviews.participants'
+            }
+        }
+    ], (err, projects) => {
+        const interview = projects[0];
 
-        if (project.status !== 'registered') {
+        if (interview.status !== 'registered') {
             res.sendStatus(406);
-        } else if (currentTime <= openTime || currentTime >= closeTime) {
+        } else if (currentTime <= interview.openDate || currentTime >= interview.closeDate) {
             res.sendStatus(406)
-        } else if (project.interview.participants.includes(userId)) {
+        } else if (interview.participants.filter(user => user.userId === userId).length > 0) {
             res.sendStatus(409);
-        } else if (project.interview.participants.length >= project.interview.totalCount) {
-            res.sendStatus(416);
         } else {
             Projects.findOneAndUpdate({projectId: projectId}, {$push: {'interview.participants': userId}})
                 .exec()
@@ -52,4 +63,4 @@ const postParticipate = (req, res) => {
 
 };
 
-module.exports = { getProject, getProjectList, postParticipate };
+module.exports = {getProject, getProjectList, postParticipate};
