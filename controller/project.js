@@ -23,7 +23,7 @@ const getProjectList = (req, res) => {
     });
 };
 
-const getInterview = (req, res) => {
+const getInterviewList = (req, res) => {
     Projects.aggregate([
         {'$unwind': '$interviews'},
         {'$match':{'interviews.notifiedUserIds': req.userId}}
@@ -78,4 +78,4 @@ const postParticipate = (req, res) => {
 
 };
 
-module.exports = {getProject, getProjectList, postParticipate, getInterview};
+module.exports = {getProject, getProjectList, postParticipate, getInterviewList};
