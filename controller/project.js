@@ -1,9 +1,12 @@
 const Projects = require('../models/projects');
 
 const getProject = (req, res) => {
-    const projectId = req.params.id;
+    const projectId = parseInt(req.params.id);
 
-    Projects.find({$and: [{projectId: projectId}, {status: {$ne: "temporary"}}]}, (err, result) => {
+    Projects.aggregate([
+        {"$match" : { $and : [{projectId: projectId}, { status: { "$ne" : "temporary"}}]}},
+        {"$project": {"interviews": false}}
+    ], (err, result) => {
         if (err) {
             return res.status(500).json({error: err});
         }
