@@ -91,6 +91,12 @@ describe('Project', () => {
                 .expect(200)
                 .then(res => {
                     res.body.length.should.be.eql(1);
+                    res.body[0].projectId.should.be.eql(config.testProjectId);
+                    res.body[0].customerId.should.be.eql("testCustomerId");
+                    res.body[0].name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
+                    res.body[0].introduce.should.be.eql('영화가 개봉함');
+                    res.body[0].description.should.be.eql('토르는 히어로물이다.');
+                    should.not.exist(res.body[0].interviews);
                     done();
                 }).catch(err => done(err));
         });

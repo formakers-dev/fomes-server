@@ -12,7 +12,10 @@ const getProject = (req, res) => {
 };
 
 const getProjectList = (req, res) => {
-    Projects.find({status: {$ne: "temporary"}}, (err, result) => {
+    Projects.aggregate([
+        {"$match" : { status: { "$ne" : "temporary"}}},
+        {"$project": {"interviews": false}}
+    ], (err, result) => {
         if (err) {
             return res.status(500).json({error: err});
         }
