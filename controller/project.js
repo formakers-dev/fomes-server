@@ -20,6 +20,18 @@ const getProjectList = (req, res) => {
     });
 };
 
+const getInterview = (req, res) => {
+    Projects.aggregate([
+        {'$unwind': '$interviews'},
+        {'$match':{'interviews.notifiedUserIds': req.userId}}
+    ], (err, interviews) => {
+        if (err) {
+           res.json(err);
+        }
+        res.json(interviews);
+    });
+};
+
 const postParticipate = (req, res) => {
     const projectId = parseInt(req.params.id);
     const interviewSeq = parseInt(req.params.seq);
@@ -63,4 +75,4 @@ const postParticipate = (req, res) => {
 
 };
 
-module.exports = {getProject, getProjectList, postParticipate};
+module.exports = {getProject, getProjectList, postParticipate, getInterview};

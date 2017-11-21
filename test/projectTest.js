@@ -37,7 +37,12 @@ describe('Project', () => {
                     "totalCount": 2,
                     "participants": [{
                         "userId": "1234"
-                    }]
+                    }],
+                    "notifiedUserIds": [
+                        "userId1234",
+                        config.testUser.userId
+                    ],
+                    "apps": ['com.kakao.talk']
                 }, {
                     "seq": 2,
                     "status": "registered",
@@ -288,6 +293,40 @@ describe('Project', () => {
                 .exec()
                 .then(() => done())
                 .catch((err) => done(err));
+        });
+    });
+
+    describe('GET /projects/interviews', () => {
+        it('인터뷰 목록을 조회한다', done => {
+            request.get('/projects/interviews')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.length.should.be.eql(1);
+                    // project
+                    res.body[0].projectId.should.be.eql(1508998212204);
+                    res.body[0].name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
+                    res.body[0].introduce.should.be.eql('영화가 개봉함');
+                    res.body[0].description.should.be.eql('토르는 히어로물이다.');
+                    // interview
+                    res.body[0].interviews.seq.should.be.eql(1);
+                    res.body[0].interviews.type.should.be.eql('offline');
+                    res.body[0].interviews.location.should.be.eql('서울대');
+                    res.body[0].interviews.openDate.should.be.eql('2017-11-01T00:00:00.000Z');
+                    res.body[0].interviews.closeDate.should.be.eql('2017-11-03T00:00:00.000Z');
+                    res.body[0].interviews.startDate.should.be.eql('2017-11-04T00:00:00.000Z');
+                    res.body[0].interviews.endDate.should.be.eql('2017-11-08T00:00:00.000Z');
+                    res.body[0].interviews.apps.length.should.be.eql(1);
+                    res.body[0].interviews.apps[0].should.be.eql('com.kakao.talk');
+                    res.body[0].interviews.plans.length.should.be.eql(1);
+                    res.body[0].interviews.plans[0].minute.should.be.eql(60);
+                    res.body[0].interviews.plans[0].plan.should.be.eql('세부계획');
+                    // 조회조건
+                    res.body[0].interviews.notifiedUserIds.includes(config.testUser.userId);
+
+                    done();
+                })
+                .catch(err => done(err));
         });
     });
 
