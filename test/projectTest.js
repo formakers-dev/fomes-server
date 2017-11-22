@@ -311,9 +311,9 @@ describe('Project', () => {
         });
     });
 
-    describe('GET /projects/interviews/:id', () => {
+    describe('GET /projects/:id/interviews/:seq', () => {
         it('인터뷰 단건을 조회한다', done => {
-            request.get('/projects/interviews/' + config.testInterviewSeq)
+            request.get('/projects/' + config.testProjectId+ '/interviews/' + config.testInterviewSeq)
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {

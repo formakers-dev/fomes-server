@@ -4,7 +4,7 @@ const getProject = (req, res) => {
     const projectId = parseInt(req.params.id);
 
     Projects.aggregate([
-        {"$match" : { $and : [{projectId: projectId}, { status: { "$ne" : "temporary"}}]}},
+        {"$match": {$and: [{projectId: projectId}, {status: {"$ne": "temporary"}}]}},
         {"$project": {"interviews": false}}
     ], (err, result) => {
         if (err) {
@@ -16,7 +16,7 @@ const getProject = (req, res) => {
 
 const getProjectList = (req, res) => {
     Projects.aggregate([
-        {"$match" : { status: { "$ne" : "temporary"}}},
+        {"$match": {status: {"$ne": "temporary"}}},
         {"$project": {"interviews": false}}
     ], (err, result) => {
         if (err) {
@@ -29,7 +29,7 @@ const getProjectList = (req, res) => {
 const getInterview = (req, res) => {
     Projects.aggregate([
         {'$unwind': '$interviews'},
-        {'$match':{ $and: [{'interviews.notifiedUserIds': req.userId}, {'interviews.seq': Number(req.params.seq)}]}}
+        {'$match': {$and: [{'interviews.notifiedUserIds': req.userId}, {'interviews.seq': Number(req.params.seq)}]}}
     ], (err, interviews) => {
         if (err) {
             res.json(err);
@@ -41,10 +41,10 @@ const getInterview = (req, res) => {
 const getInterviewList = (req, res) => {
     Projects.aggregate([
         {'$unwind': '$interviews'},
-        {'$match':{'interviews.notifiedUserIds': req.userId}}
+        {'$match': {'interviews.notifiedUserIds': req.userId}}
     ], (err, interviews) => {
         if (err) {
-           res.json(err);
+            res.json(err);
         }
         res.json(interviews);
     });
