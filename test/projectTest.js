@@ -34,14 +34,14 @@ describe('Project', () => {
                         "type": "offline",
                         "totalCount": 2,
                         "timeSlots": [{
-                            "id": 0,
+                            "id": 10000,
                             "time": 6,
                             "userId": "1234"
                         }, {
-                            "id": 1,
+                            "id": 10001,
                             "time": 7,
                         }, {
-                            "id": 2,
+                            "id": 10002,
                             "time": 8,
                         }],
                         "notifiedUserIds": [
@@ -63,15 +63,15 @@ describe('Project', () => {
                         "type": "offline",
                         "totalCount": 3,
                         "timeSlots": [{
-                            "id": 0,
+                            "id": 20000,
                             "time": 7,
                             "userId": "1234"
                         }, {
-                            "id": 1,
+                            "id": 20001,
                             "time": 9,
                             "userId": "9999"
                         }, {
-                            "id": 2,
+                            "id": 20002,
                             "time": 11,
                         }, {
                             "id": 3,
@@ -150,7 +150,8 @@ describe('Project', () => {
 
         it('인터뷰 참가자 명단에 등록한다', done => {
             let clock = sinon.useFakeTimers(new Date("2017-11-02").getTime());
-            request.post('/projects/' + config.testProjectId + '/interviews/' + config.testInterviewSeq + '/participate/1')
+            const testSlotId = 10001;
+            request.post('/projects/' + config.testProjectId + '/interviews/' + config.testInterviewSeq + '/participate/' + testSlotId)
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then((res) => {
@@ -172,8 +173,8 @@ describe('Project', () => {
                     ], (err, projects) => {
                         const project = projects[0];
                         project.timeSlots.length.should.be.eql(3);
-                        project.timeSlots.filter(timeSlot => timeSlot.id === 1).length.should.be.eql(1);
-                        project.timeSlots.filter(timeSlot => timeSlot.id === 1)[0].userId.should.be.eql(config.testUser.userId);
+                        project.timeSlots.filter(timeSlot => timeSlot.id === testSlotId).length.should.be.eql(1);
+                        project.timeSlots.filter(timeSlot => timeSlot.id === testSlotId)[0].userId.should.be.eql(config.testUser.userId);
 
                         clock.restore();
                         done();

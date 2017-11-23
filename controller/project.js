@@ -68,6 +68,7 @@ const postParticipate = (req, res) => {
     const projectId = parseInt(req.params.id);
     const interviewSeq = parseInt(req.params.seq);
     const slotId = parseInt(req.params.slotId);
+    const slotIndex = slotId % 10000;
     const userId = req.userId;
     const currentTime = new Date().getTime();
 
@@ -99,7 +100,7 @@ const postParticipate = (req, res) => {
         } else {
 
             let obj = {};
-            obj['interviews.' + interviewSeq + '.timeSlots.' + slotId + '.userId'] = userId;
+            obj['interviews.' + interviewSeq + '.timeSlots.' + slotIndex + '.userId'] = userId;
 
             Projects.findOneAndUpdate({projectId: projectId, 'interviews.timeSlots.id': slotId},
                 {$set: obj}, {upsert: true})
