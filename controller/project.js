@@ -27,9 +27,16 @@ const getProjectList = (req, res) => {
 };
 
 const getInterview = (req, res) => {
+    const currentTime = new Date();
     Projects.aggregate([
         {'$unwind': '$interviews'},
-        {'$match': {$and: [{'interviews.notifiedUserIds': req.userId}, {'interviews.seq': Number(req.params.seq)}]}}
+        {'$match': {$and: [
+                    {'interviews.notifiedUserIds': req.userId},
+                    {'interviews.seq': Number(req.params.seq)},
+                    {'interviews.status': {"$ne": "temporary"}},
+                    {'interviews.openDate': {$lte: currentTime}},
+                    {'interviews.closeDate': {$gte: currentTime}}
+                    ]}}
     ], (err, interviews) => {
         if (err) {
             res.json(err);
@@ -39,9 +46,15 @@ const getInterview = (req, res) => {
 };
 
 const getInterviewList = (req, res) => {
+    const currentTime = new Date();
     Projects.aggregate([
         {'$unwind': '$interviews'},
-        {'$match': {'interviews.notifiedUserIds': req.userId}}
+        {'$match': {$and: [
+                    {'interviews.notifiedUserIds': req.userId},
+                    {'interviews.status': {"$ne": "temporary"}},
+                    {'interviews.openDate': {$lte: currentTime}},
+                    {'interviews.closeDate': {$gte: currentTime}}
+                    ]}}
     ], (err, interviews) => {
         if (err) {
             res.json(err);
