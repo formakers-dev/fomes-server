@@ -4,7 +4,7 @@ const getProject = (req, res) => {
     const projectId = parseInt(req.params.id);
 
     Projects.aggregate([
-        {"$match": {$and: [{projectId: projectId}, {status: {"$ne": "temporary"}}]}},
+        {"$match": {projectId: projectId, status: {"$ne": "temporary"}}},
         {"$project": {"interviews": false}}
     ], (err, result) => {
         if (err) {
@@ -29,6 +29,7 @@ const getProjectList = (req, res) => {
 const getInterview = (req, res) => {
     const currentTime = new Date();
     Projects.aggregate([
+        {'$match': {projectId: Number(req.params.id)}},
         {'$unwind': '$interviews'},
         {'$match': {$and: [
                     {'interviews.notifiedUserIds': req.userId},
@@ -66,6 +67,7 @@ const getInterviewList = (req, res) => {
 const postParticipate = (req, res) => {
     const projectId = parseInt(req.params.id);
     const interviewSeq = parseInt(req.params.seq);
+    const slotId = parseInt(req.params.slotId);
     const userId = req.userId;
     const currentTime = new Date().getTime();
 
@@ -80,25 +82,34 @@ const postParticipate = (req, res) => {
                 'openDate': '$interviews.openDate',
                 'closeDate': '$interviews.closeDate',
                 'status': '$interviews.status',
-                'participants': '$interviews.participants'
+                'timeSlots': '$interviews.timeSlots'
             }
         }
-    ], (err, projects) => {
-        const interview = projects[0];
+    ], (err, interviews) => {
+        const interview = interviews[0];
+
+        //TODO: 잘못된slotId보낸 경우에 대한 처리 req.params.slotId
 
         if (interview.status !== 'registered') {
             res.sendStatus(406);
         } else if (currentTime <= interview.openDate || currentTime >= interview.closeDate) {
             res.sendStatus(406)
-        } else if (interview.participants.filter(user => user.userId === userId).length > 0) {
+        } else if (interview.timeSlots.filter(timeSlot => timeSlot.userId === userId).length > 0) {
             res.sendStatus(409);
         } else {
-            Projects.findOneAndUpdate({projectId: projectId}, {$push: {'interview.participants': userId}})
+
+            let obj = {};
+            obj['interviews.' + interviewSeq + '.timeSlots.' + slotId + '.userId'] = userId;
+
+            Projects.findOneAndUpdate({projectId: projectId, 'interviews.timeSlots.id': slotId},
+                {$set: obj}, {upsert: true})
                 .exec()
-                .then(() => {
+                .then(project => {
+                    console.log(project);
                     res.send(true);
                 })
                 .catch((err) => {
+                    console.log(err);
                     res.send(err);
                 });
         }

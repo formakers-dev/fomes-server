@@ -12,8 +12,7 @@ const projectSchema = new Schema({
     apps: Array,
     interviews: Array,
     interviewer: Object,
-    status: String,
-    isCLab: Boolean
+    status: String
 });
 
 module.exports = mongoose.model('projects', projectSchema);

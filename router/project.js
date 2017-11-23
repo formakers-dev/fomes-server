@@ -3,10 +3,11 @@ const projectRouter = express.Router();
 const Project = require('../controller/project');
 const Auth = require('../middleware/auth');
 
-projectRouter.route('/').get(Auth.appBeeTokenVerifier, Project.getProjectList);
-projectRouter.route('/interviews').get(Auth.appBeeTokenVerifier, Project.getInterviewList);
-projectRouter.route('/:id/interviews/:seq').get(Auth.appBeeTokenVerifier, Project.getInterview);
-projectRouter.route('/:id').get(Auth.appBeeTokenVerifier, Project.getProject);
-projectRouter.route('/:id/:seq/participate').post(Auth.appBeeTokenVerifier, Project.postParticipate);
+projectRouter.get('/', Auth.appBeeTokenVerifier, Project.getProjectList);
+projectRouter.get('/:id', Auth.appBeeTokenVerifier, Project.getProject);
+projectRouter.get('/match/interviews', Auth.appBeeTokenVerifier, Project.getInterviewList);
+projectRouter.get('/:id/interviews/:seq', Auth.appBeeTokenVerifier, Project.getInterview);
+
+projectRouter.post('/:id/interviews/:seq/participate/:slotId', Auth.appBeeTokenVerifier, Project.postParticipate);
 
 module.exports = projectRouter;

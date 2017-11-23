@@ -25,7 +25,7 @@ const config = {
         },
         testAppbeeNumber: "appbeeNumber",
         testProjectId: 1508998212204,
-        testInterviewSeq: 1,
+        testInterviewSeq: 0,
     }
 };
 
