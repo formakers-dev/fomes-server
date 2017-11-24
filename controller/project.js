@@ -31,13 +31,17 @@ const getInterview = (req, res) => {
     Projects.aggregate([
         {'$match': {projectId: Number(req.params.id)}},
         {'$unwind': '$interviews'},
-        {'$match': {$and: [
+        {
+            '$match': {
+                $and: [
                     {'interviews.notifiedUserIds': req.userId},
                     {'interviews.seq': Number(req.params.seq)},
                     {'interviews.status': {"$ne": "temporary"}},
                     {'interviews.openDate': {$lte: currentTime}},
                     {'interviews.closeDate': {$gte: currentTime}}
-                    ]}}
+                ]
+            }
+        }
     ], (err, interviews) => {
         if (err) {
             res.json(err);
@@ -50,12 +54,16 @@ const getInterviewList = (req, res) => {
     const currentTime = new Date();
     Projects.aggregate([
         {'$unwind': '$interviews'},
-        {'$match': {$and: [
+        {
+            '$match': {
+                $and: [
                     {'interviews.notifiedUserIds': req.userId},
                     {'interviews.status': {"$ne": "temporary"}},
                     {'interviews.openDate': {$lte: currentTime}},
                     {'interviews.closeDate': {$gte: currentTime}}
-                    ]}}
+                ]
+            }
+        }
     ], (err, interviews) => {
         if (err) {
             res.json(err);
@@ -67,8 +75,7 @@ const getInterviewList = (req, res) => {
 const postParticipate = (req, res) => {
     const projectId = parseInt(req.params.id);
     const interviewSeq = parseInt(req.params.seq);
-    const slotId = parseInt(req.params.slotId);
-    const slotIndex = slotId % 10000;
+    const slotId = req.params.slotId;
     const userId = req.userId;
     const currentTime = new Date().getTime();
 
@@ -83,27 +90,29 @@ const postParticipate = (req, res) => {
                 'openDate': '$interviews.openDate',
                 'closeDate': '$interviews.closeDate',
                 'status': '$interviews.status',
-                'timeSlots': '$interviews.timeSlots'
+                'timeSlot': '$interviews.timeSlot'
             }
         }
     ], (err, interviews) => {
         const interview = interviews[0];
-
-        //TODO: 잘못된slotId보낸 경우에 대한 처리 req.params.slotId
+        //TODO: 다른 프로젝트,인터뷰의 동일 시간대에 참여 중인 경우 에러 처리
 
         if (interview.status !== 'registered') {
             res.sendStatus(406);
         } else if (currentTime <= interview.openDate || currentTime >= interview.closeDate) {
             res.sendStatus(406)
-        } else if (interview.timeSlots.filter(timeSlot => timeSlot.userId === userId).length > 0) {
+        } else if (interview.timeSlot[slotId] !== "") {
+            res.sendStatus(409);
+        } else if (Object.keys(interview.timeSlot).filter(id => interview.timeSlot[id] === userId).length > 0) {
+            res.sendStatus(405)
+        } else if (!Object.keys(interview.timeSlot).includes(slotId)) {
             res.sendStatus(409);
         } else {
+            const updateTargetSlot = {};
+            updateTargetSlot['interviews.$.timeSlot.' + slotId] = userId;
 
-            let obj = {};
-            obj['interviews.' + interviewSeq + '.timeSlots.' + slotIndex + '.userId'] = userId;
-
-            Projects.findOneAndUpdate({projectId: projectId, 'interviews.timeSlots.id': slotId},
-                {$set: obj}, {upsert: true})
+            Projects.findOneAndUpdate({projectId: projectId, 'interviews.seq': interviewSeq},
+                {$set: updateTargetSlot}, {upsert: true})
                 .exec()
                 .then(project => {
                     console.log(project);

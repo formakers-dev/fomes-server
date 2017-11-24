@@ -10,7 +10,6 @@ const Projects = require('../models/projects');
 
 describe('Project', () => {
     const sandbox = sinon.sandbox.create();
-
     before((done) => {
         Projects.remove({}, () => {
             Projects.create(
@@ -33,17 +32,11 @@ describe('Project', () => {
                         "location": "서울대",
                         "type": "offline",
                         "totalCount": 2,
-                        "timeSlots": [{
-                            "id": 10000,
-                            "time": 6,
-                            "userId": "1234"
-                        }, {
-                            "id": 10001,
-                            "time": 7,
-                        }, {
-                            "id": 10002,
-                            "time": 8,
-                        }],
+                        "timeSlot": {
+                            "time6": "1234",
+                            "time7": "",
+                            "time8": "",
+                        },
                         "notifiedUserIds": [
                             "userId1234",
                             config.testUser.userId
@@ -62,24 +55,13 @@ describe('Project', () => {
                         "location": "잠실",
                         "type": "offline",
                         "totalCount": 3,
-                        "timeSlots": [{
-                            "id": 20000,
-                            "time": 7,
-                            "userId": "1234"
-                        }, {
-                            "id": 20001,
-                            "time": 9,
-                            "userId": "9999"
-                        }, {
-                            "id": 20002,
-                            "time": 11,
-                        }, {
-                            "id": 3,
-                            "time": 14,
-                        }, {
-                            "id": 4,
-                            "time": 20,
-                        }]
+                        "timeSlot": {
+                            "time7": "1234",
+                            "time9": "9999",
+                            "time11": "",
+                            "time14": config.testUser.userId,
+                            "time20": ""
+                        }
                     }],
                     "descriptionImages": [{
                         "name": "anyimage",
@@ -119,7 +101,9 @@ describe('Project', () => {
     });
 
     describe('GET /projects/{id}', () => {
+        let clock;
         it('프로젝트 상세정보를 조회한다', done => {
+            clock = sandbox.useFakeTimers(new Date("2017-11-02").getTime());
             request.get('/projects/' + config.testProjectId)
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
@@ -140,160 +124,16 @@ describe('Project', () => {
                     done();
                 }).catch(err => done(err));
         });
-    });
 
-    describe('POST /projects/{id}/interviews/{seq}/participate/{slotId}', () => {
-        beforeEach((done) => {
-            sandbox.useFakeTimers(new Date("2017-11-02").getTime());
-            done();
-        });
-
-        it('인터뷰 참가자 명단에 등록한다', done => {
-            let clock = sinon.useFakeTimers(new Date("2017-11-02").getTime());
-            const testSlotId = 10001;
-            request.post('/projects/' + config.testProjectId + '/interviews/' + config.testInterviewSeq + '/participate/' + testSlotId)
-                .set('x-access-token', config.appbeeToken.valid)
-                .expect(200)
-                .then((res) => {
-                    res.body.should.be.eql(true);
-                    Projects.aggregate([
-                        {'$match': {projectId: config.testProjectId}},
-                        {'$unwind': '$interviews'},
-                        {'$match': {'interviews.seq': config.testInterviewSeq}},
-                        {
-                            '$project': {
-                                'projectId': true,
-                                'interviewSeq': '$interviews.seq',
-                                'openDate': '$interviews.openDate',
-                                'closeDate': '$interviews.closeDate',
-                                'status': '$interviews.status',
-                                'timeSlots': '$interviews.timeSlots',
-                            }
-                        }
-                    ], (err, projects) => {
-                        const project = projects[0];
-                        project.timeSlots.length.should.be.eql(3);
-                        project.timeSlots.filter(timeSlot => timeSlot.id === testSlotId).length.should.be.eql(1);
-                        project.timeSlots.filter(timeSlot => timeSlot.id === testSlotId)[0].userId.should.be.eql(config.testUser.userId);
-
-                        clock.restore();
-                        done();
-                    });
-                }).catch(err => done(err));
-        });
-
-        // describe('이미 등록된 유저인 경우', () => {
-        //     before((done) => {
-        //         Projects.findOneAndUpdate({$and: [{projectId: config.testProjectId}, {'interviews.seq': config.testInterviewSeq}]},
-        //             {$set: {'interviews.$.participants': [{userId: config.testUser.userId}]}})
-        //             .exec()
-        //             .then(() => done())
-        //             .catch(err => done(err));
-        //     });
-        //
-        //     it('상태코드 409으로 응답한다', done => {
-        //         request.post('/projects/' + config.testProjectId + '/' + config.testInterviewSeq + '/participate')
-        //             .set('x-access-token', config.appbeeToken.valid)
-        //             .expect(409)
-        //             .then(() => {
-        //                 Projects.aggregate([
-        //                     {'$match': {projectId: config.testProjectId}},
-        //                     {'$unwind': '$interviews'},
-        //                     {'$match': {'interviews.seq': config.testInterviewSeq}},
-        //                     {
-        //                         '$project': {
-        //                             'projectId': true,
-        //                             'interviewSeq': '$interviews.seq',
-        //                             'openDate': '$interviews.openDate',
-        //                             'closeDate': '$interviews.closeDate',
-        //                             'status': '$interviews.status',
-        //                             'participants': '$interviews.participants'
-        //                         }
-        //                     }
-        //                 ], (err, projects) => {
-        //                     const interview = projects[0];
-        //                     interview.participants.filter(user => user.userId === config.testUser.userId).length.should.be.eql(1);
-        //                     done();
-        //                 });
-        //             })
-        //             .catch(err => done(err));
-        //     });
-        // });
-        //
-        // describe('모집기간이 아닌 경우', () => {
-        //     describe('모집마감시간 이후인 경우', () => {
-        //         beforeEach((done) => {
-        //             done();
-        //         });
-        //
-        //         it('상태코드 406으로 응답한다', done => {
-        //             let clock = sinon.useFakeTimers(new Date("2017-11-04").getTime());
-        //             request.post('/projects/' + config.testProjectId + '/' + config.testInterviewSeq + '/participate')
-        //                 .set('x-access-token', config.appbeeToken.valid)
-        //                 .expect(406)
-        //                 .then(() => {
-        //                     clock.restore();
-        //                     done();
-        //                 })
-        //                 .catch(err => done(err));
-        //         });
-        //     });
-        //
-        //     describe('모집시작시간 이전인 경우', () => {
-        //         beforeEach((done) => {
-        //             done();
-        //         });
-        //
-        //         it('상태코드 406으로 응답한다', done => {
-        //             const clock = sinon.useFakeTimers(new Date("2017-10-31").getTime());
-        //             request.post('/projects/' + config.testProjectId + '/' + config.testInterviewSeq + '/participate')
-        //                 .set('x-access-token', config.appbeeToken.valid)
-        //                 .expect(406)
-        //                 .then(() => {
-        //                     clock.restore();
-        //                     done();
-        //                 })
-        //                 .catch(err => done(err));
-        //         });
-        //     });
-        // });
-        //
-        // describe('프로젝트 상태가 모집중이 아닌 경우', () => {
-        //     before((done) => {
-        //         Projects.findOneAndUpdate({$and: [{projectId: config.testProjectId}, {'interviews.seq': config.testInterviewSeq}]},
-        //             {$set: {'interviews.$.status': 'temporary'}})
-        //             .exec()
-        //             .then(() => done())
-        //             .catch(err => done(err));
-        //     });
-        //
-        //     it('상태코드 406으로 응답한다', done => {
-        //         request.post('/projects/' + config.testProjectId + '/' + config.testInterviewSeq + '/participate')
-        //             .set('x-access-token', config.appbeeToken.valid)
-        //             .expect(406)
-        //             .then(() => {
-        //                 done();
-        //             })
-        //             .catch(err => done(err));
-        //     });
-        // });
-
-        //TODO : 대상자가 아닌 경우 에러처리 - 405 => 아직 알 수 없음.
-
-        afterEach(done => {
-            sandbox.restore();
-
-            Projects.findOneAndUpdate({projectId: config.testProjectId},
-                {$set: {'interview.participants': []}})
-                .exec()
-                .then(() => done())
-                .catch((err) => done(err));
-        });
+        afterEach(() => {
+            clock.restore();
+        })
     });
 
     describe('GET /projects/match/interviews', () => {
+        let clock;
         it('매칭된 인터뷰 목록을 조회한다', done => {
-            const clock = sinon.useFakeTimers(new Date("2017-11-02").getTime());
+            clock = sandbox.useFakeTimers(new Date("2017-11-02").getTime());
             request.get('/projects/match/interviews')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
@@ -319,16 +159,19 @@ describe('Project', () => {
                     // 조회조건
                     res.body[0].interviews.notifiedUserIds.includes(config.testUser.userId);
 
-                    clock.restore();
                     done();
                 })
                 .catch(err => done(err));
         });
+        afterEach(() => {
+            clock.restore();
+        })
     });
 
     describe('GET /projects/{id}/interviews/{seq}', () => {
+        let clock;
         it('인터뷰 단건을 조회한다', done => {
-            const clock = sinon.useFakeTimers(new Date("2017-11-02").getTime());
+            clock = sandbox.useFakeTimers(new Date("2017-11-02").getTime());
             request.get('/projects/' + config.testProjectId + '/interviews/' + config.testInterviewSeq)
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
@@ -353,12 +196,162 @@ describe('Project', () => {
                     // 조회조건
                     res.body.interviews.notifiedUserIds.includes(config.testUser.userId);
 
-                    clock.restore();
                     done();
                 })
                 .catch(err => done(err));
         });
     });
+
+    describe('POST /projects/{id}/interviews/{seq}/participate/{slotId}', () => {
+        let clock;
+        beforeEach((done) => {
+            clock = sandbox.useFakeTimers(new Date("2017-11-02").getTime());
+            done();
+        });
+
+        it('인터뷰 참가자 명단에 등록한다', done => {
+            request.post('/projects/' + config.testProjectId + '/interviews/' + config.testInterviewSeq + '/participate/time7')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then((res) => {
+                    res.body.should.be.eql(true);
+                    return Projects.findOne({projectId: config.testProjectId});
+                })
+                .then(project => {
+                    const timeSlot = project.interviews.filter(interview => interview.seq === config.testInterviewSeq)[0].timeSlot;
+
+                    Object.keys(timeSlot).length.should.be.eql(3);
+                    timeSlot.should.hasOwnProperty('time7');
+                    timeSlot.time7.should.be.eql(config.testUser.userId);
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        it('이미 다른사람이 신청한 경우 409 에러를 리턴한다', done => {
+            request.post('/projects/' + config.testProjectId + '/interviews/' + config.testInterviewSeq + '/participate/time6')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(409, done);
+        });
+
+        it('선택되지 않은 타임슬롯을 신청한 경우, 409 에러를 리턴한다', done => {
+            request.post('/projects/' + config.testProjectId + '/interviews/' + config.testInterviewSeq + '/participate/time1')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(409, done);
+        });
+
+        describe('모집중이 아닌 경우', () => {
+            it('모집마감시간 이전인 경우 상태코드 406으로 응답한다', done => {
+                clock = sandbox.useFakeTimers(new Date("2017-10-31").getTime());
+
+                request.post('/projects/' + config.testProjectId + '/interviews/' + config.testInterviewSeq + '/participate/time7')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .expect(406, done);
+            });
+
+            it('모집마감시간 이후인 경우 상태코드 406으로 응답한다', done => {
+                clock = sandbox.useFakeTimers(new Date("2017-11-04").getTime());
+
+                request.post('/projects/' + config.testProjectId + '/interviews/' + config.testInterviewSeq + '/participate/time7')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .expect(406, done);
+            });
+
+            describe('인터뷰 상태가 모집중이 아닌 경우', () => {
+                before(done => {
+                    Projects.findOneAndUpdate({
+                            projectId: config.testProjectId,
+                            'interviews.seq': config.testInterviewSeq
+                        },
+                        {$set: {'interviews.$.status': 'temporary'}}, done);
+                });
+
+                it('인터뷰 상태가 모집중이 아닌 경우 406 에러를 리턴한다', done => {
+                    request.post('/projects/' + config.testProjectId + '/interviews/' + config.testInterviewSeq + '/participate/time7')
+                        .set('x-access-token', config.appbeeToken.valid)
+                        .expect(406, done);
+                });
+            });
+            afterEach(done => {
+                clock.restore();
+                done();
+            })
+        });
+
+        it('이미 해당 인터뷰의 다른 시간대에 참가중이면 405 에러를 리턴한다', done => {
+            request.post('/projects/' + config.testProjectId + '/interviews/1/participate/time11')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(405, done);
+        });
+
+        // describe('이미 등록된 유저인 경우', () => {
+        //     before((done) => {
+        //         Projects.findOneAndUpdate({$and: [{projectId: config.testProjectId}, {'interviews.seq': config.testInterviewSeq}]},
+        //             {$set: {'interviews.$.participants': [{userId: config.testUser.userId}]}})
+        //             .exec()
+        //             .then(() => done())
+        //             .catch(err => done(err));
+        //     });
+        //
+        //     it('상태코드 405으로 응답한다', done => {
+        //         request.post('/projects/' + config.testProjectId + '/' + config.testInterviewSeq + '/participate')
+        //             .set('x-access-token', config.appbeeToken.valid)
+        //             .expect(405)
+        //             .then(() => {
+        //                 Projects.aggregate([
+        //                     {'$match': {projectId: config.testProjectId}},
+        //                     {'$unwind': '$interviews'},
+        //                     {'$match': {'interviews.seq': config.testInterviewSeq}},
+        //                     {
+        //                         '$project': {
+        //                             'projectId': true,
+        //                             'interviewSeq': '$interviews.seq',
+        //                             'openDate': '$interviews.openDate',
+        //                             'closeDate': '$interviews.closeDate',
+        //                             'status': '$interviews.status',
+        //                             'participants': '$interviews.participants'
+        //                         }
+        //                     }
+        //                 ], (err, projects) => {
+        //                     const interview = projects[0];
+        //                     interview.participants.filter(user => user.userId === config.testUser.userId).length.should.be.eql(1);
+        //                     done();
+        //                 });
+        //             })
+        //             .catch(err => done(err));
+        //     });
+        // });
+        //
+        //
+        // describe('프로젝트 상태가 모집중이 아닌 경우', () => {
+        //     before((done) => {
+        //         Projects.findOneAndUpdate({$and: [{projectId: config.testProjectId}, {'interviews.seq': config.testInterviewSeq}]},
+        //             {$set: {'interviews.$.status': 'temporary'}})
+        //             .exec()
+        //             .then(() => done())
+        //             .catch(err => done(err));
+        //     });
+        //
+        //     it('상태코드 406으로 응답한다', done => {
+        //         request.post('/projects/' + config.testProjectId + '/' + config.testInterviewSeq + '/participate')
+        //             .set('x-access-token', config.appbeeToken.valid)
+        //             .expect(406)
+        //             .then(() => {
+        //                 done();
+        //             })
+        //             .catch(err => done(err));
+        //     });
+        // });
+
+        //TODO : 대상자가 아닌 경우 에러처리 - 405 => 아직 알 수 없음.
+
+        afterEach(() => {
+            clock.restore();
+            sandbox.restore();
+        });
+    });
+
 
     afterEach(done => {
         sandbox.restore();
