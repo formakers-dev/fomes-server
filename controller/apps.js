@@ -1,14 +1,5 @@
-const Apps = require('../models/apps');
 const UncrawledApps = require('../models/uncrawledApps');
 const AppUsages = require('../models/appUsages');
-const getInfo = (req, res) => {
-    Apps.find({packageName: {$in: req.body}},
-        {packageName: 1, appName: 1, categoryId1: 1, categoryId2: 1, categoryName1: 1, categoryName2: 1, _id: 0})
-        .exec()
-        .then((appsInfo) => {
-            res.json(appsInfo);
-        });
-};
 
 const postUncrawled = (req, res) => {
     const bulkOps = [];
@@ -63,4 +54,4 @@ const postAppUsages = (req, res) => {
     }
 };
 
-module.exports = {getInfo, postUncrawled, postAppUsages};
+module.exports = {postUncrawled, postAppUsages};
