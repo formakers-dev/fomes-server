@@ -33,9 +33,9 @@ const verifyRegistrationCode = (req, res) => {
         .exec()
         .then(registrationCode => {
             if (registrationCode) {
-                res.json(true);
+                res.sendStatus(200)
             } else {
-                res.json(false);
+                res.sendStatus(401);
             }
         })
         .catch(err => sendError(res, err));

@@ -37,31 +37,21 @@ describe('Users', () => {
         });
     });
 
-    describe('GET /user/verifyRegistrationCode/{code}', () => {
+    describe('GET /user/verifyInvitationCode/{code}', () => {
         before(done => {
             RegistrationCodes.create({code: 'VALIDCODE'}, done);
         });
 
         it('등록코드가 유효한 경우 true를 리턴한다', done => {
-            request.get('/user/verifyRegistrationCode/VALIDCODE')
+            request.get('/user/verifyInvitationCode/VALIDCODE')
                 .send()
-                .expect(200)
-                .then(res => {
-                    res.body.should.be.eql(true);
-                    done();
-                })
-                .catch(err => done(err));
+                .expect(200, done);
         });
 
         it('등록코드가 유효하지 않은 경우 false를 리턴한다', done => {
-            request.get('/user/verifyRegistrationCode/INVALIDCODE')
+            request.get('/user/verifyInvitationCode/INVALIDCODE')
                 .send()
-                .expect(200)
-                .then(res => {
-                    res.body.should.be.eql(false);
-                    done();
-                })
-                .catch(err => done(err));
+                .expect(401, done);
         });
 
         after(done => {
