@@ -52,13 +52,15 @@ const getInterview = (req, res) => {
 
 const getInterviewList = (req, res) => {
     const currentTime = new Date();
+    console.log(currentTime);
+    console.log(req.userId);
     Projects.aggregate([
+        {'$match': { 'status': {"$ne": "temporary"}}},
         {'$unwind': '$interviews'},
         {
             '$match': {
                 $and: [
                     {'interviews.notifiedUserIds': req.userId},
-                    {'interviews.status': {"$ne": "temporary"}},
                     {'interviews.openDate': {$lte: currentTime}},
                     {'interviews.closeDate': {$gte: currentTime}}
                 ]
@@ -89,14 +91,13 @@ const postParticipate = (req, res) => {
                 'interviewSeq': '$interviews.seq',
                 'openDate': '$interviews.openDate',
                 'closeDate': '$interviews.closeDate',
-                'status': '$interviews.status',
+                'status': '$status',
                 'timeSlot': '$interviews.timeSlot'
             }
         }
     ], (err, interviews) => {
         const interview = interviews[0];
         //TODO: 다른 프로젝트,인터뷰의 동일 시간대에 참여 중인 경우 에러 처리
-
         if (interview.status !== 'registered') {
             res.sendStatus(406);
         } else if (currentTime <= interview.openDate || currentTime >= interview.closeDate) {
