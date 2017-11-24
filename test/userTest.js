@@ -2,7 +2,7 @@ const chai = require('chai');
 const config = require('../config');
 const should = chai.should();
 const Users = require('../models/user');
-const RegistrationCodes = require('../models/registrationCodes');
+const InvitationCodes = require('../models/invitationCodes');
 const server = require('../server');
 const request = require('supertest').agent(server);
 
@@ -39,7 +39,7 @@ describe('Users', () => {
 
     describe('GET /user/verifyInvitationCode/{code}', () => {
         before(done => {
-            RegistrationCodes.create({code: 'VALIDCODE'}, done);
+            InvitationCodes.create({code: 'VALIDCODE'}, done);
         });
 
         it('등록코드가 유효한 경우 true를 리턴한다', done => {
@@ -55,7 +55,7 @@ describe('Users', () => {
         });
 
         after(done => {
-            RegistrationCodes.remove({}, done);
+            InvitationCodes.remove({}, done);
         });
     });
 });

@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const RegistraionCodes = require('../models/registrationCodes');
+const InvitationCodes = require('../models/invitationCodes');
 const config = require('../config');
 
 const upsertUser = (req, res, next) => {
@@ -28,11 +28,11 @@ const generateToken = (req, res) => {
     });
 };
 
-const verifyRegistrationCode = (req, res) => {
-    RegistraionCodes.findOne({code: req.params.code})
+const verifyInvitationCode = (req, res) => {
+    InvitationCodes.findOne({code: req.params.code})
         .exec()
-        .then(registrationCode => {
-            if (registrationCode) {
+        .then(code => {
+            if (code) {
                 res.sendStatus(200)
             } else {
                 res.sendStatus(401);
@@ -50,4 +50,4 @@ const sendError = (res, err) => {
 };
 
 
-module.exports = {upsertUser, generateToken, verifyRegistrationCode};
+module.exports = {upsertUser, generateToken, verifyInvitationCode};
