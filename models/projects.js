@@ -11,7 +11,7 @@ const projectSchema = new Schema({
     images: Array,
     apps: Array,
     interviews: Array,
-    interviewer: Object,
+    owner: Object,
     status: String
 });
 

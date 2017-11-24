@@ -71,9 +71,9 @@ describe('Project', () => {
                         "name": "anyimage2",
                         "url": "www.anyimage2.com"
                     }],
-                    "interviewer": {
+                    "owner": {
                         "name": "혜리",
-                        "url": "www.interviewer.com",
+                        "url": "www.owner.com",
                         "introduce": "툰스토리 디자이너"
                     },
                     "status": "registered"
@@ -117,9 +117,9 @@ describe('Project', () => {
                     res.body.descriptionImages[0].name.should.be.eql('anyimage');
                     res.body.images[0].name.should.be.eql('anyimage2');
                     res.body.images[0].url.should.be.eql('www.anyimage2.com');
-                    res.body.interviewer.name.should.be.eql('혜리');
-                    res.body.interviewer.url.should.be.eql('www.interviewer.com');
-                    res.body.interviewer.introduce.should.be.eql('툰스토리 디자이너');
+                    res.body.owner.name.should.be.eql('혜리');
+                    res.body.owner.url.should.be.eql('www.owner.com');
+                    res.body.owner.introduce.should.be.eql('툰스토리 디자이너');
 
                     done();
                 }).catch(err => done(err));
