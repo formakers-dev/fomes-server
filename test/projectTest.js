@@ -12,91 +12,140 @@ describe('Project', () => {
     const sandbox = sinon.sandbox.create();
     const testProjectId = 1508998212204;
 
-    beforeEach(done => {
-        Projects.create({
-            "projectId": testProjectId,
-            "customerId": "testCustomerId",
-            "name": "토르 - 기준스키마. 지우지마세요!!!",
-            "introduce": "영화가 개봉함",
-            "description": "토르는 히어로물이다.",
-            "interviews": [{
-                "seq": 0,
-                "type": "offline",
-                "location": "서울대",
-                "locationDescription": "서울대오는길",
-                "apps": ['com.kakao.talk'],
-                "openDate": new Date("2017-11-01"),
-                "closeDate": new Date("2017-11-03"),
-                "interviewDate": new Date("2017-11-04"),
-                "totalCount": 2,
-                "timeSlot": {
-                    "time6": "1234",
-                    "time7": "",
-                    "time8": "",
-                },
-                "emergencyPhone": "010-6789-0123",
-                "notifiedUserIds": [
-                    "userId1234",
-                    config.testUser.userId
-                ]
-            }, {
-                "seq": 1,
-                "interviewDate": new Date("2017-11-12"),
-                "closeDate": new Date("2017-11-03"),
-                "openDate": new Date("2017-11-01"),
-                "location": "잠실",
-                "locationDescription": "잠실오는길",
-                "type": "offline",
-                "totalCount": 3,
-                "timeSlot": {
-                    "time7": "1234",
-                    "time9": "9999",
-                    "time11": "",
-                    "time14": config.testUser.userId,
-                    "time20": ""
-                },
-                "emergencyPhone": "010-1234-5678",
-                "notifiedUserIds": [],
-                "apps": []
-            }, {
-                "seq": 2,
-                "interviewDate": new Date("2017-11-12"),
-                "closeDate": new Date("2017-11-03"),
-                "openDate": new Date("2017-11-01"),
-                "location": "잠실",
-                "locationDescription": "잠실오는길",
-                "type": "offline",
-                "totalCount": 3,
-                "timeSlot": {
-                    "time7": "1234",
-                    "time9": "9999",
-                    "time11": "",
-                    "time14": config.testUser.userId,
-                    "time20": ""
-                },
-                "emergencyPhone": "010-1234-5678",
-                "notifiedUserIds": [config.testUser.userId],
-                "apps": []
-            }],
-            "descriptionImages": [{
-                "name": "anyimage",
-                "url": "www.anyimage.com"
-            }],
+    const data = [{
+        "projectId": testProjectId,
+        "customerId": "testCustomerId",
+        "name": "토르 - 기준스키마. 지우지마세요!!!",
+        "introduce": "영화가 개봉함",
+        "description": "토르는 히어로물이다.",
+        "interviews": [{
+            "seq": 0,
+            "type": "offline",
+            "location": "서울대",
+            "locationDescription": "서울대오는길",
+            "apps": ['com.kakao.talk'],
+            "openDate": new Date("2017-11-01"),
+            "closeDate": new Date("2017-11-03"),
+            "interviewDate": new Date("2017-11-04"),
+            "totalCount": 2,
+            "timeSlot": {
+                "time6": "1234",
+                "time7": "",
+                "time8": "",
+            },
+            "emergencyPhone": "010-6789-0123",
+            "notifiedUserIds": [
+                "userId1234",
+                config.testUser.userId
+            ]
+        }, {
+            "seq": 1,
+            "interviewDate": new Date("2017-11-12"),
+            "closeDate": new Date("2017-11-03"),
+            "openDate": new Date("2017-11-01"),
+            "location": "잠실",
+            "locationDescription": "잠실오는길",
+            "type": "offline",
+            "totalCount": 3,
+            "timeSlot": {
+                "time7": "1234",
+                "time9": "9999",
+                "time11": "",
+                "time14": config.testUser.userId,
+                "time20": ""
+            },
+            "emergencyPhone": "010-1234-5678",
+            "notifiedUserIds": [],
+            "apps": []
+        }, {
+            "seq": 2,
+            "interviewDate": new Date("2017-11-12"),
+            "closeDate": new Date("2017-11-03"),
+            "openDate": new Date("2017-11-01"),
+            "location": "잠실",
+            "locationDescription": "잠실오는길",
+            "type": "offline",
+            "totalCount": 3,
+            "timeSlot": {
+                "time7": "1234",
+                "time9": "9999",
+                "time11": "",
+                "time14": "",
+                "time20": config.testUser.userId
+            },
+            "emergencyPhone": "010-1234-5678",
+            "notifiedUserIds": [config.testUser.userId],
+            "apps": []
+        }],
+        "descriptionImages": [{
+            "name": "anyimage",
+            "url": "www.anyimage.com"
+        }],
+        "image": {
+            "name": "anyimage2",
+            "url": "www.anyimage2.com"
+        },
+        "owner": {
+            "name": "혜리",
             "image": {
-                "name": "anyimage2",
-                "url": "www.anyimage2.com"
+                "name": "ownerImage",
+                "url": "www.owner.com"
             },
-            "owner": {
-                "name": "혜리",
-                "image": {
-                    "name": "ownerImage",
-                    "url": "www.owner.com"
-                },
-                "introduce": "툰스토리 디자이너"
+            "introduce": "툰스토리 디자이너"
+        },
+        "videoUrl": "aaa.video.url",
+        "status": "registered"
+    }, {
+        "projectId": '2',
+        "customerId": "testCustomerId",
+        "name": "원더우먼",
+        "introduce": "재미있는 영화",
+        "description": "원더우먼은 히어로물이다.",
+        "interviews": [{
+            "seq": 0,
+            "type": "offline",
+            "location": "우면",
+            "locationDescription": "우면오는길",
+            "apps": ['woman.beauty.com'],
+            "openDate": new Date("2017-10-30"),
+            "closeDate": new Date("2017-11-04"),
+            "interviewDate": new Date("2017-11-05"),
+            "totalCount": 5,
+            "timeSlot": {
+                "time17": "",
+                "time18": "",
+                "time19": "",
+                "time20": "",
+                "time21": config.testUser.userId
             },
-            "videoUrl": "aaa.video.url",
-            "status": "registered"
-        }, done);
+            "emergencyPhone": "010-9999-7777",
+            "notifiedUserIds": [
+                "userId1234",
+                config.testUser.userId
+            ]
+        }],
+        "descriptionImages": [{
+            "name": "anyimage",
+            "url": "www.anyimage.com"
+        }],
+        "image": {
+            "name": "anyimage2",
+            "url": "www.anyimage2.com"
+        },
+        "owner": {
+            "name": "혜리",
+            "image": {
+                "name": "ownerImage",
+                "url": "www.owner.com"
+            },
+            "introduce": "툰스토리 디자이너"
+        },
+        "videoUrl": "aaa.video.url",
+        "status": "registered"
+    }];
+
+    beforeEach(done => {
+        Projects.create(data, done);
     });
 
     describe('GET /projects', () => {
@@ -105,13 +154,29 @@ describe('Project', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
-                    res.body.length.should.be.eql(1);
-                    res.body[0].projectId.should.be.eql(testProjectId);
-                    res.body[0].customerId.should.be.eql("testCustomerId");
-                    res.body[0].name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
-                    res.body[0].introduce.should.be.eql('영화가 개봉함');
-                    res.body[0].description.should.be.eql('토르는 히어로물이다.');
-                    should.not.exist(res.body[0].interviews);
+                    res.body.length.should.be.eql(2);
+
+                    const project1 = res.body[0];
+
+                    project1.projectId.should.be.eql(2);
+                    project1.projectId.should.be.eql(2);
+                    project1.customerId.should.be.eql("testCustomerId");
+                    project1.name.should.be.eql('원더우먼');
+                    project1.introduce.should.be.eql('재미있는 영화');
+                    project1.description.should.be.eql('원더우먼은 히어로물이다.');
+                    should.not.exist(project1.interviews);
+
+                    const project2 = res.body[1];
+
+                    project2.projectId.should.be.eql(testProjectId);
+                    project2.customerId.should.be.eql("testCustomerId");
+                    project2.name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
+                    project2.introduce.should.be.eql('영화가 개봉함');
+                    project2.description.should.be.eql('토르는 히어로물이다.');
+                    should.not.exist(project2.interviews);
+
+
+
                     done();
                 }).catch(err => done(err));
         });
@@ -155,30 +220,121 @@ describe('Project', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
-                    res.body.length.should.be.eql(2);
-                    // project
-                    res.body[0].projectId.should.be.eql(1508998212204);
-                    res.body[0].name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
-                    res.body[0].introduce.should.be.eql('영화가 개봉함');
-                    res.body[0].description.should.be.eql('토르는 히어로물이다.');
+                    res.body.length.should.be.eql(3);
+                    const project1 = res.body[0];
+                    project1.projectId.should.be.eql(1508998212204);
+                    project1.name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
+                    project1.introduce.should.be.eql('영화가 개봉함');
+                    project1.description.should.be.eql('토르는 히어로물이다.');
                     // interview
-                    res.body[0].interviews.seq.should.be.eql(0);
-                    res.body[0].interviews.type.should.be.eql('offline');
-                    res.body[0].interviews.location.should.be.eql('서울대');
-                    res.body[0].interviews.locationDescription.should.be.eql('서울대오는길');
-                    res.body[0].interviews.openDate.should.be.eql('2017-11-01T00:00:00.000Z');
-                    res.body[0].interviews.closeDate.should.be.eql('2017-11-03T00:00:00.000Z');
-                    res.body[0].interviews.interviewDate.should.be.eql('2017-11-04T00:00:00.000Z');
-                    res.body[0].interviews.apps.length.should.be.eql(1);
-                    res.body[0].interviews.apps[0].should.be.eql('com.kakao.talk');
+                    project1.interviews.type.should.be.eql('offline');
+                    project1.interviews.location.should.be.eql('잠실');
+                    project1.interviews.locationDescription.should.be.eql('잠실오는길');
+                    project1.interviews.openDate.should.be.eql('2017-11-01T00:00:00.000Z');
+                    project1.interviews.closeDate.should.be.eql('2017-11-03T00:00:00.000Z');
+                    project1.interviews.interviewDate.should.be.eql('2017-11-12T00:00:00.000Z');
+                    project1.interviews.apps.length.should.be.eql(0);
                     // 조회조건
-                    res.body[0].interviews.notifiedUserIds.should.be.includes(config.testUser.userId);
+                    project1.interviews.notifiedUserIds.should.be.includes(config.testUser.userId);
+
+                    const project2 = res.body[1];
+                    project2.projectId.should.be.eql(2);
+                    project2.name.should.be.eql('원더우먼');
+                    project2.introduce.should.be.eql('재미있는 영화');
+                    project2.description.should.be.eql('원더우먼은 히어로물이다.');
+                    // interview
+                    project2.interviews.type.should.be.eql('offline');
+                    project2.interviews.location.should.be.eql('우면');
+                    project2.interviews.locationDescription.should.be.eql('우면오는길');
+                    project2.interviews.openDate.should.be.eql('2017-10-30T00:00:00.000Z');
+                    project2.interviews.closeDate.should.be.eql('2017-11-04T00:00:00.000Z');
+                    project2.interviews.interviewDate.should.be.eql('2017-11-05T00:00:00.000Z');
+                    project2.interviews.apps.length.should.be.eql(1);
+                    project2.interviews.apps[0].should.be.eql('woman.beauty.com');
+                    // 조회조건
+                    project2.interviews.notifiedUserIds.should.be.includes(config.testUser.userId);
+
+
+                    const project3 = res.body[2];
+                    // project
+                    project3.projectId.should.be.eql(1508998212204);
+                    project3.name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
+                    project3.introduce.should.be.eql('영화가 개봉함');
+                    project3.description.should.be.eql('토르는 히어로물이다.');
+                    // interview
+                    project3.interviews.type.should.be.eql('offline');
+                    project3.interviews.location.should.be.eql('서울대');
+                    project3.interviews.locationDescription.should.be.eql('서울대오는길');
+                    project3.interviews.openDate.should.be.eql('2017-11-01T00:00:00.000Z');
+                    project3.interviews.closeDate.should.be.eql('2017-11-03T00:00:00.000Z');
+                    project3.interviews.interviewDate.should.be.eql('2017-11-04T00:00:00.000Z');
+                    project3.interviews.apps.length.should.be.eql(1);
+                    project3.interviews.apps[0].should.be.eql('com.kakao.talk');
+                    // 조회조건
+                    project3.interviews.notifiedUserIds.should.be.includes(config.testUser.userId);
+
+
                     done();
                 })
                 .catch(err => done(err));
         });
 
         afterEach(() => clock.restore());
+    });
+
+    describe('GET /registered/interviews', () => {
+        let clock;
+
+        beforeEach(() => {
+            clock = sandbox.useFakeTimers(new Date("2017-11-02").getTime());
+        });
+
+        it('해당 유저가 신청한 인터뷰 목록을 조회한다.', done => {
+            request.get('/projects/registered/interviews')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.length.should.be.eql(3);
+
+                    const project1 = res.body[0];
+
+                    project1.name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
+                    project1.interviews.interviewDate.should.be.eql('2017-11-12T00:00:00.000Z');
+                    project1.interviews.location.should.be.eql('잠실');
+                    project1.interviews.selectedTimeSlot.should.be.eql('time14');
+                    project1.interviews.openDate.should.be.eql('2017-11-01T00:00:00.000Z');
+                    project1.interviews.closeDate.should.be.eql('2017-11-03T00:00:00.000Z');
+                    project1.interviews.locationDescription.should.be.eql('잠실오는길');
+                    project1.interviews.emergencyPhone.should.be.eql('010-1234-5678');
+
+                    const project2 = res.body[1];
+
+                    project2.name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
+                    project2.interviews.interviewDate.should.be.eql('2017-11-12T00:00:00.000Z');
+                    project2.interviews.location.should.be.eql('잠실');
+                    project2.interviews.selectedTimeSlot.should.be.eql('time20');
+                    project2.interviews.openDate.should.be.eql('2017-11-01T00:00:00.000Z');
+                    project2.interviews.closeDate.should.be.eql('2017-11-03T00:00:00.000Z');
+                    project2.interviews.locationDescription.should.be.eql('잠실오는길');
+                    project2.interviews.emergencyPhone.should.be.eql('010-1234-5678');
+
+                    const project3 = res.body[2];
+
+                    project3.name.should.be.eql('원더우먼');
+                    project3.interviews.interviewDate.should.be.eql('2017-11-05T00:00:00.000Z');
+                    project3.interviews.location.should.be.eql('우면');
+                    project3.interviews.selectedTimeSlot.should.be.eql('time21');
+                    project3.interviews.openDate.should.be.eql('2017-10-30T00:00:00.000Z');
+                    project3.interviews.closeDate.should.be.eql('2017-11-04T00:00:00.000Z');
+                    project3.interviews.locationDescription.should.be.eql('우면오는길');
+                    project3.interviews.emergencyPhone.should.be.eql('010-9999-7777');
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        afterEach(() => clock.restore())
     });
 
     describe('GET /projects/{id}/interviews/{seq}', () => {
@@ -232,7 +388,7 @@ describe('Project', () => {
                     res.body.interviews.timeSlots.should.be.includes('time11');
                     res.body.interviews.timeSlots.should.be.includes('time14');
                     res.body.interviews.timeSlots.should.be.includes('time20');
-                    res.body.interviews.selectedTimeSlot.should.be.eql('time14');
+                    res.body.interviews.selectedTimeSlot.should.be.eql('time20');
 
                     done();
                 })
@@ -263,7 +419,8 @@ describe('Project', () => {
                     const timeSlot = project.interviews.filter(interview => interview.seq === testInterviewSeq)[0].timeSlot;
 
                     Object.keys(timeSlot).length.should.be.eql(3);
-                    timeSlot.should.hasOwnProperty('time7');
+
+                    timeSlot.hasOwnProperty('time7').should.be.true;
                     timeSlot.time7.should.be.eql(config.testUser.userId);
 
                     done();

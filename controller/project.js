@@ -17,7 +17,8 @@ const getProject = (req, res) => {
 const getProjectList = (req, res) => {
     Projects.aggregate([
         {"$match": {status: {"$ne": "temporary"}}},
-        {"$project": {"interviews": false}}
+        {"$project": {"interviews": false}},
+        {'$sort': {projectId : 1}}
     ], (err, result) => {
         if (err) {
             return res.status(500).json({error: err});
@@ -56,7 +57,7 @@ const getInterview = (req, res) => {
         let selectedTimeSlot;
 
         for (let timeSlotKey in interview.timeSlot) {
-            if(!interview.timeSlot.hasOwnProperty(timeSlotKey)) {
+            if (!interview.timeSlot.hasOwnProperty(timeSlotKey)) {
                 continue;
             }
             if (!interview.timeSlot[timeSlotKey] || interview.timeSlot[timeSlotKey] === req.userId) {
@@ -90,12 +91,80 @@ const getInterviewList = (req, res) => {
                     {'interviews.closeDate': {$gte: currentTime}}
                 ]
             }
-        }
+        },
+        {'$sort': {'interviews.interviewDate' : -1, 'projectId' : 1, 'interviews.seq' : 1}}
     ], (err, interviews) => {
         if (err) {
             res.json(err);
         }
         res.json(interviews);
+    });
+};
+
+
+const getRegisteredInterviewList = (req, res) => {
+    const currentTime = new Date();
+    const userId = req.userId;
+    Projects.aggregate([
+        {'$unwind': '$interviews'},
+        {
+            '$match': {
+                $and: [
+                    {'interviews.openDate': {$lte: currentTime}},
+                    {
+                        $or: [
+                            {'interviews.timeSlot.time6': userId},
+                            {'interviews.timeSlot.time7': userId},
+                            {'interviews.timeSlot.time8': userId},
+                            {'interviews.timeSlot.time9': userId},
+                            {'interviews.timeSlot.time10': userId},
+                            {'interviews.timeSlot.time11': userId},
+                            {'interviews.timeSlot.time12': userId},
+                            {'interviews.timeSlot.time13': userId},
+                            {'interviews.timeSlot.time14': userId},
+                            {'interviews.timeSlot.time15': userId},
+                            {'interviews.timeSlot.time16': userId},
+                            {'interviews.timeSlot.time17': userId},
+                            {'interviews.timeSlot.time18': userId},
+                            {'interviews.timeSlot.time19': userId},
+                            {'interviews.timeSlot.time20': userId},
+                            {'interviews.timeSlot.time21': userId},
+                        ]
+                    }
+
+                ]
+            }
+        },
+        {'$sort': {'interviews.interviewDate' : -1}}
+    ], (err, projects) => {
+        if (err) {
+            res.json(err);
+        }
+
+        for(let project of projects) {
+            const interview = project.interviews;
+
+            let timeSlots = [];
+            let selectedTimeSlot;
+
+            for (let timeSlotKey in interview.timeSlot) {
+                if (!interview.timeSlot.hasOwnProperty(timeSlotKey)) {
+                    continue;
+                }
+                if (!interview.timeSlot[timeSlotKey] || interview.timeSlot[timeSlotKey] === req.userId) {
+                    timeSlots.push(timeSlotKey);
+                }
+                if (interview.timeSlot[timeSlotKey] === req.userId) {
+                    selectedTimeSlot = timeSlotKey;
+                }
+            }
+
+            project.interviews.timeSlots = timeSlots;
+            project.interviews.selectedTimeSlot = selectedTimeSlot || '';
+
+        }
+
+        res.json(projects);
     });
 };
 
@@ -198,4 +267,12 @@ const cancelParticipation = (req, res) => {
     });
 };
 
-module.exports = {getProject, getProjectList, postParticipate, getInterview, getInterviewList, cancelParticipation};
+module.exports = {
+    getProject,
+    getProjectList,
+    postParticipate,
+    getInterview,
+    getInterviewList,
+    cancelParticipation,
+    getRegisteredInterviewList
+};
