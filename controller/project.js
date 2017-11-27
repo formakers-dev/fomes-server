@@ -55,8 +55,11 @@ const getInterview = (req, res) => {
         let timeSlots = [];
         let selectedTimeSlot;
 
-        for(let timeSlotKey in interview.timeSlot) {
-            if(!interview.timeSlot[timeSlotKey] || interview.timeSlot[timeSlotKey] === req.userId) {
+        for (let timeSlotKey in interview.timeSlot) {
+            if(!interview.timeSlot.hasOwnProperty(timeSlotKey)) {
+                continue;
+            }
+            if (!interview.timeSlot[timeSlotKey] || interview.timeSlot[timeSlotKey] === req.userId) {
                 timeSlots.push(timeSlotKey);
             }
             if (interview.timeSlot[timeSlotKey] === req.userId) {
@@ -64,7 +67,7 @@ const getInterview = (req, res) => {
             }
         }
 
-        project.interviews.timeSlots  = timeSlots;
+        project.interviews.timeSlots = timeSlots;
         project.interviews.selectedTimeSlot = selectedTimeSlot || '';
 
         res.json(project);
