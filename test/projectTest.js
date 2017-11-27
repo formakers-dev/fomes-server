@@ -10,73 +10,74 @@ const Projects = require('../models/projects');
 
 describe('Project', () => {
     const sandbox = sinon.sandbox.create();
+    const testProjectId = 1508998212204;
 
     beforeEach(done => {
         Projects.create({
-                "projectId": 1508998212204,
-                "customerId": "testCustomerId",
-                "name": "토르 - 기준스키마. 지우지마세요!!!",
-                "introduce": "영화가 개봉함",
-                "description": "토르는 히어로물이다.",
-                "interviews": [{
-                    "seq": 0,
-                    "type": "offline",
-                    "location": "서울대",
-                    "locationDescription": "서울대오는길",
-                    "apps": ['com.kakao.talk'],
-                    "openDate": new Date("2017-11-01"),
-                    "closeDate": new Date("2017-11-03"),
-                    "interviewDate": new Date("2017-11-04"),
-                    "totalCount": 2,
-                    "timeSlot": {
-                        "time6": "1234",
-                        "time7": "",
-                        "time8": "",
-                    },
-                    "emergencyPhone": "010-6789-0123",
-                    "notifiedUserIds": [
-                        "userId1234",
-                        config.testUser.userId
-                    ]
-                }, {
-                    "seq": 1,
-                    "interviewDate": new Date("2017-11-12"),
-                    "closeDate": new Date("2017-11-03"),
-                    "openDate": new Date("2017-11-01"),
-                    "location": "잠실",
-                    "locationDescription": "잠실오는길",
-                    "type": "offline",
-                    "totalCount": 3,
-                    "timeSlot": {
-                        "time7": "1234",
-                        "time9": "9999",
-                        "time11": "",
-                        "time14": config.testUser.userId,
-                        "time20": ""
-                    },
-                    "emergencyPhone": "010-1234-5678",
-                    "notifiedUserIds": [],
-                    "apps": []
-                }],
-                "descriptionImages": [{
-                    "name": "anyimage",
-                    "url": "www.anyimage.com"
-                }],
+            "projectId": testProjectId,
+            "customerId": "testCustomerId",
+            "name": "토르 - 기준스키마. 지우지마세요!!!",
+            "introduce": "영화가 개봉함",
+            "description": "토르는 히어로물이다.",
+            "interviews": [{
+                "seq": 0,
+                "type": "offline",
+                "location": "서울대",
+                "locationDescription": "서울대오는길",
+                "apps": ['com.kakao.talk'],
+                "openDate": new Date("2017-11-01"),
+                "closeDate": new Date("2017-11-03"),
+                "interviewDate": new Date("2017-11-04"),
+                "totalCount": 2,
+                "timeSlot": {
+                    "time6": "1234",
+                    "time7": "",
+                    "time8": "",
+                },
+                "emergencyPhone": "010-6789-0123",
+                "notifiedUserIds": [
+                    "userId1234",
+                    config.testUser.userId
+                ]
+            }, {
+                "seq": 1,
+                "interviewDate": new Date("2017-11-12"),
+                "closeDate": new Date("2017-11-03"),
+                "openDate": new Date("2017-11-01"),
+                "location": "잠실",
+                "locationDescription": "잠실오는길",
+                "type": "offline",
+                "totalCount": 3,
+                "timeSlot": {
+                    "time7": "1234",
+                    "time9": "9999",
+                    "time11": "",
+                    "time14": config.testUser.userId,
+                    "time20": ""
+                },
+                "emergencyPhone": "010-1234-5678",
+                "notifiedUserIds": [],
+                "apps": []
+            }],
+            "descriptionImages": [{
+                "name": "anyimage",
+                "url": "www.anyimage.com"
+            }],
+            "image": {
+                "name": "anyimage2",
+                "url": "www.anyimage2.com"
+            },
+            "owner": {
+                "name": "혜리",
                 "image": {
-                    "name": "anyimage2",
-                    "url": "www.anyimage2.com"
+                    "name": "ownerImage",
+                    "url": "www.owner.com"
                 },
-                "owner": {
-                    "name": "혜리",
-                    "image": {
-                        "name": "ownerImage",
-                        "url": "www.owner.com"
-                    },
-                    "introduce": "툰스토리 디자이너"
-                },
-                "videoUrl": "aaa.video.url",
-                "status": "registered"
-            }, done);
+                "introduce": "툰스토리 디자이너"
+            },
+            "videoUrl": "aaa.video.url",
+            "status": "registered"
+        }, done);
     });
 
     describe('GET /projects', () => {
@@ -86,7 +87,7 @@ describe('Project', () => {
                 .expect(200)
                 .then(res => {
                     res.body.length.should.be.eql(1);
-                    res.body[0].projectId.should.be.eql(config.testProjectId);
+                    res.body[0].projectId.should.be.eql(testProjectId);
                     res.body[0].customerId.should.be.eql("testCustomerId");
                     res.body[0].name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
                     res.body[0].introduce.should.be.eql('영화가 개봉함');
@@ -100,11 +101,11 @@ describe('Project', () => {
     describe('GET /projects/{id}', () => {
         it('프로젝트 상세정보를 조회한다', done => {
 
-            request.get('/projects/' + config.testProjectId)
+            request.get('/projects/' + testProjectId)
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
-                    res.body.projectId.should.be.eql(config.testProjectId);
+                    res.body.projectId.should.be.eql(testProjectId);
                     res.body.customerId.should.be.eql("testCustomerId");
                     res.body.name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
                     res.body.introduce.should.be.eql('영화가 개봉함');
@@ -169,7 +170,7 @@ describe('Project', () => {
         });
 
         it('인터뷰 단건을 조회한다', done => {
-            request.get('/projects/' + config.testProjectId + '/interviews/' + config.testInterviewSeq)
+            request.get('/projects/' + testProjectId + '/interviews/0')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
@@ -207,15 +208,17 @@ describe('Project', () => {
         });
 
         it('인터뷰 참가자 명단에 등록한다', done => {
-            request.post('/projects/' + config.testProjectId + '/interviews/' + config.testInterviewSeq + '/participate/time7')
+            const testInterviewSeq = 0;
+
+            request.post('/projects/' + testProjectId + '/interviews/' + testInterviewSeq + '/participate/time7')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then((res) => {
                     res.body.should.be.eql(true);
-                    return Projects.findOne({projectId: config.testProjectId});
+                    return Projects.findOne({projectId: testProjectId});
                 })
                 .then(project => {
-                    const timeSlot = project.interviews.filter(interview => interview.seq === config.testInterviewSeq)[0].timeSlot;
+                    const timeSlot = project.interviews.filter(interview => interview.seq === testInterviewSeq)[0].timeSlot;
 
                     Object.keys(timeSlot).length.should.be.eql(3);
                     timeSlot.should.hasOwnProperty('time7');
@@ -227,46 +230,46 @@ describe('Project', () => {
         });
 
         it('이미 다른사람이 신청한 경우 409 에러를 리턴한다', done => {
-            request.post('/projects/' + config.testProjectId + '/interviews/' + config.testInterviewSeq + '/participate/time6')
+            request.post('/projects/' + testProjectId + '/interviews/0/participate/time6')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(409, done);
         });
 
-        it('선택되지 않은 타임슬롯을 신청한 경우, 409 에러를 리턴한다', done => {
-            request.post('/projects/' + config.testProjectId + '/interviews/' + config.testInterviewSeq + '/participate/time1')
+        it('선택되지 않은 타임슬롯을 신청한 경우, 416 에러를 리턴한다', done => {
+            request.post('/projects/' + testProjectId + '/interviews/0/participate/time1')
                 .set('x-access-token', config.appbeeToken.valid)
-                .expect(409, done);
+                .expect(416, done);
         });
 
         describe('모집중이 아닌 경우', () => {
-            it('모집마감시간 이전인 경우 상태코드 406으로 응답한다', done => {
+            it('모집마감시간 이전인 경우 상태코드 412으로 응답한다', done => {
                 clock = sandbox.useFakeTimers(new Date("2017-10-31").getTime());
 
-                request.post('/projects/' + config.testProjectId + '/interviews/' + config.testInterviewSeq + '/participate/time7')
+                request.post('/projects/' + testProjectId + '/interviews/0/participate/time7')
                     .set('x-access-token', config.appbeeToken.valid)
-                    .expect(406, () => {
+                    .expect(412, () => {
                         done();
                     });
             });
 
-            it('모집마감시간 이후인 경우 상태코드 406으로 응답한다', done => {
+            it('모집마감시간 이후인 경우 상태코드 412으로 응답한다', done => {
                 clock = sandbox.useFakeTimers(new Date("2017-11-04").getTime());
 
-                request.post('/projects/' + config.testProjectId + '/interviews/' + config.testInterviewSeq + '/participate/time7')
+                request.post('/projects/' + testProjectId + '/interviews/0/participate/time7')
                     .set('x-access-token', config.appbeeToken.valid)
-                    .expect(406, () => {
+                    .expect(412, () => {
                         done();
                     });
             });
 
             describe('프로젝트 상태가 모집중이 아닌 경우', () => {
                 beforeEach(done => {
-                    Projects.findOneAndUpdate({projectId: config.testProjectId},
+                    Projects.findOneAndUpdate({projectId: testProjectId},
                         {$set: {'status': 'temporary'}}, done);
                 });
 
                 it('406 에러를 리턴한다', done => {
-                    request.post('/projects/' + config.testProjectId + '/interviews/' + config.testInterviewSeq + '/participate/time7')
+                    request.post('/projects/' + testProjectId + '/interviews/0/participate/time7')
                         .set('x-access-token', config.appbeeToken.valid)
                         .expect(406, done);
                 });
@@ -274,9 +277,66 @@ describe('Project', () => {
         });
 
         it('이미 해당 인터뷰의 다른 시간대에 참가중이면 405 에러를 리턴한다', done => {
-            request.post('/projects/' + config.testProjectId + '/interviews/1/participate/time11')
+            request.post('/projects/' + testProjectId + '/interviews/1/participate/time11')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(405, done);
+        });
+
+        afterEach(() => clock.restore());
+    });
+
+    describe('POST /projects/{id}/interviews/{seq}/cancel/{slotId}/', () => {
+        let clock;
+
+        beforeEach(() => {
+            clock = sandbox.useFakeTimers(new Date("2017-11-02").getTime());
+        });
+
+        it('인터뷰 취소요청시, 해당 슬롯의 userId를 초기화한다', done => {
+            request.post('/projects/' + testProjectId + '/interviews/1/cancel/time14')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.should.be.eql(true);
+                    return Projects.findOne({projectId: testProjectId});
+                })
+                .then(project => {
+                    project.interviews[1].seq.should.be.eql(1);
+                    project.interviews[1].timeSlot['time14'].should.be.eql('');
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        it('본인 신청건이 아닌 경우, 406에러 코드를 리턴한다', done => {
+            request.post('/projects/' + testProjectId + '/interviews/1/cancel/time7')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(406, done);
+        });
+
+        it('존재하지 않는 슬롯인 경우, 416에러 코드를 리턴한다', done => {
+            request.post('/projects/' + testProjectId + '/interviews/1/cancel/time21')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(416, done);
+        });
+
+        describe('취소 가능일의 유효성 검증이 필요한 경우, ', () => {
+            it('취소가능일 인터뷰 참가 전까지 취소요청 시, 정상적으로 취소를 진행할 수 있다.', done => {
+                clock = sandbox.useFakeTimers(new Date("2017-11-12T13:59:59Z").getTime());
+
+                request.post('/projects/' + testProjectId + '/interviews/1/cancel/time14')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .expect(200, done);
+            });
+
+            it('취소가능일시가 지난 경우 412에러 코드를 리턴한다', done => {
+                clock = sandbox.useFakeTimers(new Date("2017-11-13T14:00:00Z").getTime());
+
+                request.post('/projects/' + testProjectId + '/interviews/1/cancel/time14')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .expect(412, done);
+            });
+
         });
 
         afterEach(() => clock.restore());

@@ -26,8 +26,10 @@ const getProjectList = (req, res) => {
     });
 };
 
+//TODO : InterviewList 조회시 CurrentTime과 Locale상관관계 확인 필요
 const getInterview = (req, res) => {
     const currentTime = new Date();
+
     Projects.aggregate([
         {'$match': {projectId: Number(req.params.id)}},
         {'$unwind': '$interviews'},
@@ -50,12 +52,13 @@ const getInterview = (req, res) => {
     });
 };
 
+
+//TODO : InterviewList 조회시 CurrentTime과 Locale상관관계 확인 필요
 const getInterviewList = (req, res) => {
     const currentTime = new Date();
-    console.log(currentTime);
-    console.log(req.userId);
+
     Projects.aggregate([
-        {'$match': { 'status': {"$ne": "temporary"}}},
+        {'$match': {'status': {"$ne": "temporary"}}},
         {'$unwind': '$interviews'},
         {
             '$match': {
@@ -79,7 +82,7 @@ const postParticipate = (req, res) => {
     const interviewSeq = parseInt(req.params.seq);
     const slotId = req.params.slotId;
     const userId = req.userId;
-    const currentTime = new Date().getTime();
+    const currentTime = Date.now();
 
     Projects.aggregate([
         {'$match': {projectId: projectId}},
@@ -101,31 +104,76 @@ const postParticipate = (req, res) => {
         if (interview.status !== 'registered') {
             res.sendStatus(406);
         } else if (currentTime <= interview.openDate || currentTime >= interview.closeDate) {
-            res.sendStatus(406)
+            res.sendStatus(412)
+        } else if (!Object.keys(interview.timeSlot).includes(slotId)) {
+            res.sendStatus(416);
         } else if (interview.timeSlot[slotId] !== "") {
             res.sendStatus(409);
         } else if (Object.keys(interview.timeSlot).filter(id => interview.timeSlot[id] === userId).length > 0) {
             res.sendStatus(405)
-        } else if (!Object.keys(interview.timeSlot).includes(slotId)) {
-            res.sendStatus(409);
         } else {
-            const updateTargetSlot = {};
-            updateTargetSlot['interviews.$.timeSlot.' + slotId] = userId;
-
-            Projects.findOneAndUpdate({projectId: projectId, 'interviews.seq': interviewSeq},
-                {$set: updateTargetSlot}, {upsert: true})
-                .exec()
-                .then(project => {
-                    console.log(project);
-                    res.send(true);
-                })
+            setTimeSlotWithUserId(projectId, interviewSeq, slotId, userId)
+                .then(() => res.send(true))
                 .catch((err) => {
                     console.log(err);
                     res.send(err);
                 });
         }
     });
-
 };
 
-module.exports = {getProject, getProjectList, postParticipate, getInterview, getInterviewList};
+const setTimeSlotWithUserId = (projectId, interviewSeq, slotId, userId) => {
+    const updateTargetSlot = {};
+    updateTargetSlot['interviews.$.timeSlot.' + slotId] = userId;
+
+    return Projects.findOneAndUpdate({projectId: projectId, 'interviews.seq': interviewSeq},
+        {$set: updateTargetSlot}, {upsert: true});
+};
+
+const cancelParticipation = (req, res) => {
+    const projectId = parseInt(req.params.id);
+    const interviewSeq = parseInt(req.params.seq);
+    const slotId = req.params.slotId;
+    const userId = req.userId;
+    const currentTime = Date.now();
+
+    Projects.aggregate([
+        {'$match': {projectId: projectId}},
+        {'$unwind': '$interviews'},
+        {'$match': {'interviews.seq': interviewSeq}},
+        {
+            '$project': {
+                'projectId': true,
+                'interviewSeq': '$interviews.seq',
+                'openDate': '$interviews.openDate',
+                'closeDate': '$interviews.closeDate',
+                'interviewDate': '$interviews.interviewDate',
+                'status': '$status',
+                'timeSlot': '$interviews.timeSlot'
+            }
+        }
+    ], (err, interviews) => {
+        const interview = interviews[0];
+        const hour = parseInt(slotId.substr(4));
+        const deadline = interview.interviewDate;
+        deadline.setUTCHours(hour);
+
+        if (!Object.keys(interview.timeSlot).includes(slotId)) {
+            res.sendStatus(416);
+        } else if (currentTime >= deadline) {
+            res.sendStatus(412);
+        } else if (Object.keys(interview.timeSlot).filter(id => (id === slotId && interview.timeSlot[id] !== userId)).length > 0) {
+            res.sendStatus(406);
+        } else {
+            setTimeSlotWithUserId(projectId, interviewSeq, slotId, '')
+                .then(() => res.send(true))
+                .catch((err) => {
+                    console.log(err);
+                    res.send(err);
+                });
+        }
+
+    });
+};
+
+module.exports = {getProject, getProjectList, postParticipate, getInterview, getInterviewList, cancelParticipation};

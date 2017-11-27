@@ -9,5 +9,6 @@ projectRouter.get('/match/interviews', Auth.appBeeTokenVerifier, Project.getInte
 projectRouter.get('/:id/interviews/:seq', Auth.appBeeTokenVerifier, Project.getInterview);
 
 projectRouter.post('/:id/interviews/:seq/participate/:slotId', Auth.appBeeTokenVerifier, Project.postParticipate);
+projectRouter.post('/:id/interviews/:seq/cancel/:slotId', Auth.appBeeTokenVerifier, Project.cancelParticipation);
 
 module.exports = projectRouter;
