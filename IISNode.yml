@@ -1,5 +1,5 @@
 loggingEnabled: false
-devErrorsEnabled: true
+devErrorsEnabled: false
 
 # For documentation see https://github.com/tjanczuk/iisnode/blob/master/src/samples/configuration/iisnode.yml
 
