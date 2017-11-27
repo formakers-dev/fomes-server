@@ -44,11 +44,30 @@ const getInterview = (req, res) => {
                 ]
             }
         }
-    ], (err, interviews) => {
+    ], (err, projects) => {
         if (err) {
             res.json(err);
         }
-        res.json(interviews[0]);
+
+        const project = projects[0];
+        const interview = project.interviews;
+
+        let timeSlots = [];
+        let selectedTimeSlot;
+
+        for(let timeSlotKey in interview.timeSlot) {
+            if(!interview.timeSlot[timeSlotKey] || interview.timeSlot[timeSlotKey] === req.userId) {
+                timeSlots.push(timeSlotKey);
+            }
+            if (interview.timeSlot[timeSlotKey] === req.userId) {
+                selectedTimeSlot = timeSlotKey;
+            }
+        }
+
+        project.interviews.timeSlots  = timeSlots;
+        project.interviews.selectedTimeSlot = selectedTimeSlot || '';
+
+        res.json(project);
     });
 };
 

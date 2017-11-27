@@ -58,6 +58,25 @@ describe('Project', () => {
                 "emergencyPhone": "010-1234-5678",
                 "notifiedUserIds": [],
                 "apps": []
+            }, {
+                "seq": 2,
+                "interviewDate": new Date("2017-11-12"),
+                "closeDate": new Date("2017-11-03"),
+                "openDate": new Date("2017-11-01"),
+                "location": "잠실",
+                "locationDescription": "잠실오는길",
+                "type": "offline",
+                "totalCount": 3,
+                "timeSlot": {
+                    "time7": "1234",
+                    "time9": "9999",
+                    "time11": "",
+                    "time14": config.testUser.userId,
+                    "time20": ""
+                },
+                "emergencyPhone": "010-1234-5678",
+                "notifiedUserIds": [config.testUser.userId],
+                "apps": []
             }],
             "descriptionImages": [{
                 "name": "anyimage",
@@ -136,7 +155,7 @@ describe('Project', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
-                    res.body.length.should.be.eql(1);
+                    res.body.length.should.be.eql(2);
                     // project
                     res.body[0].projectId.should.be.eql(1508998212204);
                     res.body[0].name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
@@ -153,7 +172,7 @@ describe('Project', () => {
                     res.body[0].interviews.apps.length.should.be.eql(1);
                     res.body[0].interviews.apps[0].should.be.eql('com.kakao.talk');
                     // 조회조건
-                    res.body[0].interviews.notifiedUserIds.includes(config.testUser.userId);
+                    res.body[0].interviews.notifiedUserIds.should.be.includes(config.testUser.userId);
                     done();
                 })
                 .catch(err => done(err));
@@ -169,7 +188,7 @@ describe('Project', () => {
             clock = sandbox.useFakeTimers(new Date("2017-11-02").getTime());
         });
 
-        it('인터뷰 단건을 조회한다', done => {
+        it('notification 대상이 된  인터뷰 단건을 조회한다', done => {
             request.get('/projects/' + testProjectId + '/interviews/0')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
@@ -190,7 +209,30 @@ describe('Project', () => {
                     res.body.interviews.apps.length.should.be.eql(1);
                     res.body.interviews.apps[0].should.be.eql('com.kakao.talk');
                     // 조회조건
-                    res.body.interviews.notifiedUserIds.includes(config.testUser.userId);
+                    res.body.interviews.notifiedUserIds.should.be.includes(config.testUser.userId);
+                    // timeslot
+                    res.body.interviews.timeSlots.length.should.be.eql(2);
+                    res.body.interviews.timeSlots.should.be.includes('time7');
+                    res.body.interviews.timeSlots.should.be.includes('time8');
+                    res.body.interviews.selectedTimeSlot.should.be.eql('');
+
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        it('사전에 신청한 인터뷰 단건을 조회할 경우 selectedTimeSlot에 해당 타임슬롯을 세팅한다', done => {
+
+            request.get('/projects/' + testProjectId + '/interviews/2')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.interviews.timeSlots.length.should.be.eql(3);
+                    res.body.interviews.timeSlots.should.be.includes('time11');
+                    res.body.interviews.timeSlots.should.be.includes('time14');
+                    res.body.interviews.timeSlots.should.be.includes('time20');
+                    res.body.interviews.selectedTimeSlot.should.be.eql('time14');
 
                     done();
                 })
