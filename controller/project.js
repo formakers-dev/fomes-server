@@ -47,7 +47,7 @@ const getInterview = (req, res) => {
         }
     ], (err, projects) => {
         if (err) {
-            res.json(err);
+            return res.json(err);
         }
 
         const project = projects[0];
@@ -80,7 +80,7 @@ const getInterviewList = (req, res) => {
         {'$sort': {'interviews.interviewDate': -1, 'projectId': 1, 'interviews.seq': 1}}
     ], (err, interviews) => {
         if (err) {
-            res.json(err);
+            return res.json(err);
         }
         res.json(interviews);
     });
@@ -125,7 +125,7 @@ const getRegisteredInterviewList = (req, res) => {
         {'$sort': {'interviews.interviewDate': -1}}
     ], (err, projects) => {
         if (err) {
-            res.json(err);
+            return res.json(err);
         }
 
         projects.forEach(project => {
@@ -161,6 +161,10 @@ const postParticipate = (req, res) => {
             }
         }
     ], (err, interviews) => {
+        if (err) {
+            return res.json(err);
+        }
+
         const interview = interviews[0];
         //TODO: 다른 프로젝트,인터뷰의 동일 시간대에 참여 중인 경우 에러 처리
         if (interview.status !== 'registered') {
@@ -215,6 +219,10 @@ const cancelParticipation = (req, res) => {
             }
         }
     ], (err, interviews) => {
+        if (err) {
+            return res.json(err);
+        }
+
         const interview = interviews[0];
         const hour = parseInt(slotId.substr(4));
         const deadline = interview.interviewDate;
