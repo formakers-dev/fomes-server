@@ -18,7 +18,7 @@ const getProjectList = (req, res) => {
     Projects.aggregate([
         {"$match": {status: {"$ne": "temporary"}}},
         {"$project": {"interviews": false}},
-        {'$sort': {projectId : 1}}
+        {'$sort': {projectId: 1}}
     ], (err, result) => {
         if (err) {
             return res.status(500).json({error: err});
@@ -53,23 +53,8 @@ const getInterview = (req, res) => {
         const project = projects[0];
         const interview = project.interviews;
 
-        let timeSlots = [];
-        let selectedTimeSlot;
-
-        for (let timeSlotKey in interview.timeSlot) {
-            if (!interview.timeSlot.hasOwnProperty(timeSlotKey)) {
-                continue;
-            }
-            if (!interview.timeSlot[timeSlotKey] || interview.timeSlot[timeSlotKey] === req.userId) {
-                timeSlots.push(timeSlotKey);
-            }
-            if (interview.timeSlot[timeSlotKey] === req.userId) {
-                selectedTimeSlot = timeSlotKey;
-            }
-        }
-
-        project.interviews.timeSlots = timeSlots;
-        project.interviews.selectedTimeSlot = selectedTimeSlot || '';
+        project.interviews.timeSlots = Object.keys(interview.timeSlot).filter(timeSlotKey => (!interview.timeSlot[timeSlotKey] || interview.timeSlot[timeSlotKey] === req.userId));
+        project.interviews.selectedTimeSlot = Object.keys(interview.timeSlot).filter(timeSlotKey => (interview.timeSlot[timeSlotKey] === req.userId))[0] || '';
 
         res.json(project);
     });
@@ -92,7 +77,7 @@ const getInterviewList = (req, res) => {
                 ]
             }
         },
-        {'$sort': {'interviews.interviewDate' : -1, 'projectId' : 1, 'interviews.seq' : 1}}
+        {'$sort': {'interviews.interviewDate': -1, 'projectId': 1, 'interviews.seq': 1}}
     ], (err, interviews) => {
         if (err) {
             res.json(err);
@@ -105,6 +90,8 @@ const getInterviewList = (req, res) => {
 const getRegisteredInterviewList = (req, res) => {
     const currentTime = new Date();
     const userId = req.userId;
+
+    //TODO: 성능고려한 튜닝 필요
     Projects.aggregate([
         {'$unwind': '$interviews'},
         {
@@ -135,34 +122,18 @@ const getRegisteredInterviewList = (req, res) => {
                 ]
             }
         },
-        {'$sort': {'interviews.interviewDate' : -1}}
+        {'$sort': {'interviews.interviewDate': -1}}
     ], (err, projects) => {
         if (err) {
             res.json(err);
         }
 
-        for(let project of projects) {
+        projects.forEach(project => {
             const interview = project.interviews;
 
-            let timeSlots = [];
-            let selectedTimeSlot;
-
-            for (let timeSlotKey in interview.timeSlot) {
-                if (!interview.timeSlot.hasOwnProperty(timeSlotKey)) {
-                    continue;
-                }
-                if (!interview.timeSlot[timeSlotKey] || interview.timeSlot[timeSlotKey] === req.userId) {
-                    timeSlots.push(timeSlotKey);
-                }
-                if (interview.timeSlot[timeSlotKey] === req.userId) {
-                    selectedTimeSlot = timeSlotKey;
-                }
-            }
-
-            project.interviews.timeSlots = timeSlots;
-            project.interviews.selectedTimeSlot = selectedTimeSlot || '';
-
-        }
+            project.interviews.timeSlots = [];
+            project.interviews.selectedTimeSlot = Object.keys(interview.timeSlot).filter(timeSlotKey => (interview.timeSlot[timeSlotKey] === req.userId))[0];
+        });
 
         res.json(projects);
     });
