@@ -21,6 +21,7 @@ describe('Project', () => {
         "interviews": [{
             "seq": 0,
             "type": "offline",
+            "introduce": "토르 1차 인터뷰 소개",
             "location": "서울대",
             "locationDescription": "서울대오는길",
             "apps": [{
@@ -49,6 +50,7 @@ describe('Project', () => {
             "location": "잠실",
             "locationDescription": "잠실오는길",
             "type": "offline",
+            "introduce": "토르 2차 인터뷰 소개",
             "totalCount": 3,
             "timeSlot": {
                 "time7": "1234",
@@ -71,6 +73,7 @@ describe('Project', () => {
             "location": "잠실",
             "locationDescription": "잠실오는길",
             "type": "offline",
+            "introduce": "토르 3차 인터뷰 소개",
             "totalCount": 3,
             "timeSlot": {
                 "time7": "1234",
@@ -113,6 +116,7 @@ describe('Project', () => {
         "interviews": [{
             "seq": 0,
             "type": "offline",
+            "introduce": "원더우먼 1차 인터뷰 소개",
             "location": "우면",
             "locationDescription": "우면오는길",
             "apps": [{
@@ -240,6 +244,7 @@ describe('Project', () => {
                     // interview
                     project1.interviews.seq.should.be.eql(2);
                     project1.interviews.type.should.be.eql('offline');
+                    project1.interviews.introduce.should.be.eql('토르 3차 인터뷰 소개');
                     project1.interviews.location.should.be.eql('잠실');
                     project1.interviews.locationDescription.should.be.eql('잠실오는길');
                     project1.interviews.openDate.should.be.eql('2017-11-01T00:00:00.000Z');
@@ -259,6 +264,7 @@ describe('Project', () => {
                     // interview
                     project2.interviews.seq.should.be.eql(0);
                     project2.interviews.type.should.be.eql('offline');
+                    project2.interviews.introduce.should.be.eql('원더우먼 1차 인터뷰 소개');
                     project2.interviews.location.should.be.eql('우면');
                     project2.interviews.locationDescription.should.be.eql('우면오는길');
                     project2.interviews.openDate.should.be.eql('2017-10-30T00:00:00.000Z');
@@ -279,6 +285,7 @@ describe('Project', () => {
                     // interview
                     project3.interviews.seq.should.be.eql(0);
                     project3.interviews.type.should.be.eql('offline');
+                    project3.interviews.introduce.should.be.eql('토르 1차 인터뷰 소개');
                     project3.interviews.location.should.be.eql('서울대');
                     project3.interviews.locationDescription.should.be.eql('서울대오는길');
                     project3.interviews.openDate.should.be.eql('2017-11-01T00:00:00.000Z');
@@ -374,6 +381,7 @@ describe('Project', () => {
                     // interview
                     res.body.interviews.seq.should.be.eql(0);
                     res.body.interviews.type.should.be.eql('offline');
+                    res.body.interviews.introduce.should.be.eql('토르 1차 인터뷰 소개');
                     res.body.interviews.location.should.be.eql('서울대');
                     res.body.interviews.locationDescription.should.be.eql('서울대오는길');
                     res.body.interviews.openDate.should.be.eql('2017-11-01T00:00:00.000Z');
