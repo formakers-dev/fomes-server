@@ -202,6 +202,7 @@ describe('Project', () => {
                     res.body.owner.image.name.should.be.eql('ownerImage');
                     res.body.owner.image.url.should.be.eql('www.owner.com');
                     res.body.owner.introduce.should.be.eql('툰스토리 디자이너');
+                    should.not.exist(res.body.interviews);
 
                     done();
                 }).catch(err => done(err));
