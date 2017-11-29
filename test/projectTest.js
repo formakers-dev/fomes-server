@@ -23,7 +23,10 @@ describe('Project', () => {
             "type": "offline",
             "location": "서울대",
             "locationDescription": "서울대오는길",
-            "apps": ['com.kakao.talk'],
+            "apps": [{
+                packageName: 'com.kakao.talk',
+                appName: '카카오톡'
+            }],
             "openDate": new Date("2017-11-01"),
             "closeDate": new Date("2017-11-03"),
             "interviewDate": new Date("2017-11-04"),
@@ -56,7 +59,10 @@ describe('Project', () => {
             },
             "emergencyPhone": "010-1234-5678",
             "notifiedUserIds": [],
-            "apps": []
+            "apps": [{
+                packageName: 'com.naver.home',
+                appName: '네이버홈이지'
+            }]
         }, {
             "seq": 2,
             "interviewDate": new Date("2017-11-12"),
@@ -75,7 +81,10 @@ describe('Project', () => {
             },
             "emergencyPhone": "010-1234-5678",
             "notifiedUserIds": [config.testUser.userId],
-            "apps": []
+            "apps": [{
+                packageName: 'com.kakao.talk',
+                appName: '카카오톡'
+            }]
         }],
         "descriptionImages": [{
             "name": "anyimage",
@@ -106,7 +115,10 @@ describe('Project', () => {
             "type": "offline",
             "location": "우면",
             "locationDescription": "우면오는길",
-            "apps": ['woman.beauty.com'],
+            "apps": [{
+                packageName: 'woman.beauty.com',
+                appName: '우먼뷰티앱'
+            }],
             "openDate": new Date("2017-10-30"),
             "closeDate": new Date("2017-11-04"),
             "interviewDate": new Date("2017-11-05"),
@@ -175,8 +187,6 @@ describe('Project', () => {
                     project2.description.should.be.eql('토르는 히어로물이다.');
                     should.not.exist(project2.interviews);
 
-
-
                     done();
                 }).catch(err => done(err));
         });
@@ -228,13 +238,16 @@ describe('Project', () => {
                     project1.introduce.should.be.eql('영화가 개봉함');
                     project1.description.should.be.eql('토르는 히어로물이다.');
                     // interview
+                    project1.interviews.seq.should.be.eql(2);
                     project1.interviews.type.should.be.eql('offline');
                     project1.interviews.location.should.be.eql('잠실');
                     project1.interviews.locationDescription.should.be.eql('잠실오는길');
                     project1.interviews.openDate.should.be.eql('2017-11-01T00:00:00.000Z');
                     project1.interviews.closeDate.should.be.eql('2017-11-03T00:00:00.000Z');
                     project1.interviews.interviewDate.should.be.eql('2017-11-12T00:00:00.000Z');
-                    project1.interviews.apps.length.should.be.eql(0);
+                    project1.interviews.apps.length.should.be.eql(1);
+                    project1.interviews.apps[0].packageName.should.be.eql("com.kakao.talk");
+                    project1.interviews.apps[0].appName.should.be.eql("카카오톡");
                     // 조회조건
                     project1.interviews.notifiedUserIds.should.be.includes(config.testUser.userId);
 
@@ -244,6 +257,7 @@ describe('Project', () => {
                     project2.introduce.should.be.eql('재미있는 영화');
                     project2.description.should.be.eql('원더우먼은 히어로물이다.');
                     // interview
+                    project2.interviews.seq.should.be.eql(0);
                     project2.interviews.type.should.be.eql('offline');
                     project2.interviews.location.should.be.eql('우면');
                     project2.interviews.locationDescription.should.be.eql('우면오는길');
@@ -251,10 +265,10 @@ describe('Project', () => {
                     project2.interviews.closeDate.should.be.eql('2017-11-04T00:00:00.000Z');
                     project2.interviews.interviewDate.should.be.eql('2017-11-05T00:00:00.000Z');
                     project2.interviews.apps.length.should.be.eql(1);
-                    project2.interviews.apps[0].should.be.eql('woman.beauty.com');
+                    project2.interviews.apps[0].packageName.should.be.eql('woman.beauty.com');
+                    project2.interviews.apps[0].appName.should.be.eql('우먼뷰티앱');
                     // 조회조건
                     project2.interviews.notifiedUserIds.should.be.includes(config.testUser.userId);
-
 
                     const project3 = res.body[2];
                     // project
@@ -263,6 +277,7 @@ describe('Project', () => {
                     project3.introduce.should.be.eql('영화가 개봉함');
                     project3.description.should.be.eql('토르는 히어로물이다.');
                     // interview
+                    project3.interviews.seq.should.be.eql(0);
                     project3.interviews.type.should.be.eql('offline');
                     project3.interviews.location.should.be.eql('서울대');
                     project3.interviews.locationDescription.should.be.eql('서울대오는길');
@@ -270,10 +285,11 @@ describe('Project', () => {
                     project3.interviews.closeDate.should.be.eql('2017-11-03T00:00:00.000Z');
                     project3.interviews.interviewDate.should.be.eql('2017-11-04T00:00:00.000Z');
                     project3.interviews.apps.length.should.be.eql(1);
-                    project3.interviews.apps[0].should.be.eql('com.kakao.talk');
+                    project3.interviews.apps[0].packageName.should.be.eql('com.kakao.talk');
+                    project3.interviews.apps[0].appName.should.be.eql('카카오톡');
+
                     // 조회조건
                     project3.interviews.notifiedUserIds.should.be.includes(config.testUser.userId);
-
 
                     done();
                 })
@@ -364,7 +380,8 @@ describe('Project', () => {
                     res.body.interviews.closeDate.should.be.eql('2017-11-03T00:00:00.000Z');
                     res.body.interviews.interviewDate.should.be.eql('2017-11-04T00:00:00.000Z');
                     res.body.interviews.apps.length.should.be.eql(1);
-                    res.body.interviews.apps[0].should.be.eql('com.kakao.talk');
+                    res.body.interviews.apps[0].packageName.should.be.eql('com.kakao.talk');
+                    res.body.interviews.apps[0].appName.should.be.eql('카카오톡');
                     // 조회조건
                     res.body.interviews.notifiedUserIds.should.be.includes(config.testUser.userId);
                     // timeslot
@@ -421,7 +438,7 @@ describe('Project', () => {
 
                     Object.keys(timeSlot).length.should.be.eql(3);
 
-                    timeSlot.hasOwnProperty('time7').should.be.true;
+                    timeSlot.hasOwnProperty('time7').should.be.eql(true);
                     timeSlot.time7.should.be.eql(config.testUser.userId);
 
                     done();

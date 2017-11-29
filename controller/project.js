@@ -3,7 +3,7 @@ const Projects = require('../models/projects');
 const getProject = (req, res) => {
     const projectId = parseInt(req.params.id);
 
-    Projects.findOne({projectId: projectId, status: {"$ne": "temporary"}})
+    Projects.findOne({projectId: projectId, status: {$ne: "temporary"}})
         .select('-interviews')
         .exec()
         .then(project => res.json(project))
@@ -11,7 +11,7 @@ const getProject = (req, res) => {
 };
 
 const getProjectList = (req, res) => {
-    Projects.find({status: {"$ne": "temporary"}})
+    Projects.find({status: {$ne: "temporary"}})
         .select('-interviews')
         .sort({projectId: 1})
         .exec()
@@ -24,14 +24,14 @@ const getInterview = (req, res) => {
     const currentTime = new Date();
 
     Projects.aggregate([
-        {'$match': {projectId: Number(req.params.id)}},
-        {'$unwind': '$interviews'},
+        {$match: {projectId: Number(req.params.id)}},
+        {$unwind: '$interviews'},
         {
-            '$match': {
+            $match: {
                 $and: [
                     {'interviews.notifiedUserIds': req.userId},
                     {'interviews.seq': Number(req.params.seq)},
-                    {'interviews.status': {"$ne": "temporary"}},
+                    {'interviews.status': {$ne: "temporary"}},
                     {'interviews.openDate': {$lte: currentTime}},
                     {'interviews.closeDate': {$gte: currentTime}}
                 ]
@@ -39,14 +39,13 @@ const getInterview = (req, res) => {
         }
     ])
         .exec()
-        .then(projects => {
-            const project = projects[0];
-            const interview = project.interviews;
+        .then(projectInterviews => {
+            const interview = projectInterviews[0].interviews;
 
-            project.interviews.timeSlots = Object.keys(interview.timeSlot).filter(timeSlotKey => (!interview.timeSlot[timeSlotKey] || interview.timeSlot[timeSlotKey] === req.userId));
-            project.interviews.selectedTimeSlot = Object.keys(interview.timeSlot).filter(timeSlotKey => (interview.timeSlot[timeSlotKey] === req.userId))[0] || '';
+            interview.timeSlots = Object.keys(interview.timeSlot).filter(timeSlotKey => (!interview.timeSlot[timeSlotKey] || interview.timeSlot[timeSlotKey] === req.userId));
+            interview.selectedTimeSlot = Object.keys(interview.timeSlot).filter(timeSlotKey => (interview.timeSlot[timeSlotKey] === req.userId))[0] || '';
 
-            res.json(project);
+            res.json(projectInterviews[0]);
         })
         .catch(err => res.status(500).json({error: err}));
 };
@@ -57,10 +56,10 @@ const getInterviewList = (req, res) => {
     const currentTime = new Date();
 
     Projects.aggregate([
-        {'$match': {'status': {"$ne": "temporary"}}},
-        {'$unwind': '$interviews'},
+        {$match: {'status': {$ne: "temporary"}}},
+        {$unwind: '$interviews'},
         {
-            '$match': {
+            $match: {
                 $and: [
                     {'interviews.notifiedUserIds': req.userId},
                     {'interviews.openDate': {$lte: currentTime}},
@@ -68,11 +67,14 @@ const getInterviewList = (req, res) => {
                 ]
             }
         },
-        {'$sort': {'interviews.interviewDate': -1, 'projectId': 1, 'interviews.seq': 1}}
+        {$sort: {'interviews.interviewDate': -1, 'projectId': 1, 'interviews.seq': 1}}
     ])
         .exec()
-        .then(interviews => res.json(interviews))
-        .catch(err => res.status(500).json({error: err}));
+        .then(projectInterviews => res.json(projectInterviews))
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({error: err});
+        });
 };
 
 
@@ -82,9 +84,9 @@ const getRegisteredInterviewList = (req, res) => {
 
     //TODO: 성능고려한 튜닝 필요
     Projects.aggregate([
-        {'$unwind': '$interviews'},
+        {$unwind: '$interviews'},
         {
-            '$match': {
+            $match: {
                 $and: [
                     {'interviews.openDate': {$lte: currentTime}},
                     {
@@ -111,7 +113,7 @@ const getRegisteredInterviewList = (req, res) => {
                 ]
             }
         },
-        {'$sort': {'interviews.interviewDate': -1}}
+        {$sort: {'interviews.interviewDate': -1}}
     ])
         .exec()
         .then(projects => {
@@ -135,11 +137,11 @@ const postParticipate = (req, res) => {
     const currentTime = Date.now();
 
     Projects.aggregate([
-        {'$match': {projectId: projectId}},
-        {'$unwind': '$interviews'},
-        {'$match': {'interviews.seq': interviewSeq}},
+        {$match: {projectId: projectId}},
+        {$unwind: '$interviews'},
+        {$match: {'interviews.seq': interviewSeq}},
         {
-            '$project': {
+            $project: {
                 'projectId': true,
                 'interviewSeq': '$interviews.seq',
                 'openDate': '$interviews.openDate',
@@ -190,11 +192,11 @@ const cancelParticipation = (req, res) => {
     const currentTime = Date.now();
 
     Projects.aggregate([
-        {'$match': {projectId: projectId}},
-        {'$unwind': '$interviews'},
-        {'$match': {'interviews.seq': interviewSeq}},
+        {$match: {projectId: projectId}},
+        {$unwind: '$interviews'},
+        {$match: {'interviews.seq': interviewSeq}},
         {
-            '$project': {
+            $project: {
                 'projectId': true,
                 'interviewSeq': '$interviews.seq',
                 'openDate': '$interviews.openDate',
