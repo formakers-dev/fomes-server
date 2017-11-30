@@ -3,7 +3,7 @@ const Projects = require('../models/projects');
 const getProject = (req, res) => {
     const projectId = parseInt(req.params.id);
 
-    Projects.findOne({projectId: projectId, status: {$ne: "temporary"}})
+    Projects.findOne({projectId: projectId, status: 'registered'})
         .select('-interviews')
         .exec()
         .then(project => res.json(project))
@@ -11,7 +11,7 @@ const getProject = (req, res) => {
 };
 
 const getProjectList = (req, res) => {
-    Projects.find({status: {$ne: "temporary"}})
+    Projects.find({status: 'registered'})
         .select('-interviews')
         .sort({projectId: 1})
         .exec()
@@ -24,14 +24,13 @@ const getInterview = (req, res) => {
     const currentTime = new Date();
 
     Projects.aggregate([
-        {$match: {projectId: Number(req.params.id)}},
+        {$match: {projectId: Number(req.params.id), status: 'registered'}},
         {$unwind: '$interviews'},
         {
             $match: {
                 $and: [
                     {'interviews.notifiedUserIds': req.userId},
                     {'interviews.seq': Number(req.params.seq)},
-                    {'interviews.status': {$ne: "temporary"}},
                     {'interviews.openDate': {$lte: currentTime}},
                     {'interviews.closeDate': {$gte: currentTime}}
                 ]
@@ -57,7 +56,7 @@ const getInterviewList = (req, res) => {
     const userId = req.userId;
 
     Projects.aggregate([
-        {$match: {'status': {$ne: "temporary"}}},
+        {$match: {'status': 'registered'}},
         {$unwind: '$interviews'},
         {
             $match: {
@@ -93,6 +92,7 @@ const getRegisteredInterviewList = (req, res) => {
 
     //TODO: 성능고려한 튜닝 필요
     Projects.aggregate([
+        {$match: {'status': 'registered'}},
         {$unwind: '$interviews'},
         {
             $match: {
