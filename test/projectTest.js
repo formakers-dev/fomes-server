@@ -368,6 +368,12 @@ describe('Project', () => {
                 .catch(err => done(err));
         });
 
+        it('권한이 없는 인터뷰에 접근한 경우 406코드를 리턴한다', done => {
+            request.get('/projects/' + testProjectId + '/interviews/1')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(406, done);
+        });
+
         afterEach(() => clock.restore());
     });
 

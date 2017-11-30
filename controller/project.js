@@ -39,6 +39,11 @@ const getInterview = (req, res) => {
     ])
         .exec()
         .then(projectInterviews => {
+            if (!projectInterviews || projectInterviews.length === 0) {
+                res.sendStatus(406);
+                return;
+            }
+
             const interview = projectInterviews[0].interviews;
 
             interview.timeSlots = Object.keys(interview.timeSlot).filter(timeSlotKey => (!interview.timeSlot[timeSlotKey] || interview.timeSlot[timeSlotKey] === req.userId));
@@ -46,7 +51,10 @@ const getInterview = (req, res) => {
 
             res.json(projectInterviews[0]);
         })
-        .catch(err => res.status(500).json({error: err}));
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({error: err})
+        });
 };
 
 
