@@ -39,7 +39,7 @@ describe('Project', () => {
             },
             "emergencyPhone": "010-6789-0123",
             "notifiedUserIds": [
-                "userId1234",
+                "1234",
                 config.testUser.userId
             ]
         }, {
@@ -56,11 +56,11 @@ describe('Project', () => {
                 "time7": "1234",
                 "time9": "9999",
                 "time11": "",
-                "time14": config.testUser.userId,
+                "time14": "0000",
                 "time20": ""
             },
             "emergencyPhone": "010-1234-5678",
-            "notifiedUserIds": [],
+            "notifiedUserIds": ["1234", "9999", "0000"],
             "apps": [{
                 packageName: 'com.naver.home',
                 appName: '네이버홈이지'
@@ -83,7 +83,7 @@ describe('Project', () => {
                 "time20": config.testUser.userId
             },
             "emergencyPhone": "010-1234-5678",
-            "notifiedUserIds": [config.testUser.userId],
+            "notifiedUserIds": ["1234", "9999", "0000", config.testUser.userId],
             "apps": [{
                 packageName: 'com.kakao.talk',
                 appName: '카카오톡'
@@ -136,7 +136,7 @@ describe('Project', () => {
             },
             "emergencyPhone": "010-9999-7777",
             "notifiedUserIds": [
-                "userId1234",
+                "1234",
                 config.testUser.userId
             ]
         }],
@@ -235,68 +235,28 @@ describe('Project', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
-                    res.body.length.should.be.eql(3);
-                    const project1 = res.body[0];
-                    project1.projectId.should.be.eql(1508998212204);
-                    project1.name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
-                    project1.introduce.should.be.eql('영화가 개봉함');
-                    project1.description.should.be.eql('토르는 히어로물이다.');
-                    // interview
-                    project1.interviews.seq.should.be.eql(2);
-                    project1.interviews.type.should.be.eql('offline');
-                    project1.interviews.introduce.should.be.eql('토르 3차 인터뷰 소개');
-                    project1.interviews.location.should.be.eql('잠실');
-                    project1.interviews.locationDescription.should.be.eql('잠실오는길');
-                    project1.interviews.openDate.should.be.eql('2017-11-01T00:00:00.000Z');
-                    project1.interviews.closeDate.should.be.eql('2017-11-03T00:00:00.000Z');
-                    project1.interviews.interviewDate.should.be.eql('2017-11-12T00:00:00.000Z');
-                    project1.interviews.apps.length.should.be.eql(1);
-                    project1.interviews.apps[0].packageName.should.be.eql("com.kakao.talk");
-                    project1.interviews.apps[0].appName.should.be.eql("카카오톡");
-                    // 조회조건
-                    project1.interviews.notifiedUserIds.should.be.includes(config.testUser.userId);
-
-                    const project2 = res.body[1];
-                    project2.projectId.should.be.eql(2);
-                    project2.name.should.be.eql('원더우먼');
-                    project2.introduce.should.be.eql('재미있는 영화');
-                    project2.description.should.be.eql('원더우먼은 히어로물이다.');
-                    // interview
-                    project2.interviews.seq.should.be.eql(0);
-                    project2.interviews.type.should.be.eql('offline');
-                    project2.interviews.introduce.should.be.eql('원더우먼 1차 인터뷰 소개');
-                    project2.interviews.location.should.be.eql('우면');
-                    project2.interviews.locationDescription.should.be.eql('우면오는길');
-                    project2.interviews.openDate.should.be.eql('2017-10-30T00:00:00.000Z');
-                    project2.interviews.closeDate.should.be.eql('2017-11-04T00:00:00.000Z');
-                    project2.interviews.interviewDate.should.be.eql('2017-11-05T00:00:00.000Z');
-                    project2.interviews.apps.length.should.be.eql(1);
-                    project2.interviews.apps[0].packageName.should.be.eql('woman.beauty.com');
-                    project2.interviews.apps[0].appName.should.be.eql('우먼뷰티앱');
-                    // 조회조건
-                    project2.interviews.notifiedUserIds.should.be.includes(config.testUser.userId);
-
-                    const project3 = res.body[2];
+                    res.body.length.should.be.eql(1);
+                    const projectInterview = res.body[0];
                     // project
-                    project3.projectId.should.be.eql(1508998212204);
-                    project3.name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
-                    project3.introduce.should.be.eql('영화가 개봉함');
-                    project3.description.should.be.eql('토르는 히어로물이다.');
+                    projectInterview.projectId.should.be.eql(1508998212204);
+                    projectInterview.name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
+                    projectInterview.introduce.should.be.eql('영화가 개봉함');
+                    projectInterview.description.should.be.eql('토르는 히어로물이다.');
                     // interview
-                    project3.interviews.seq.should.be.eql(0);
-                    project3.interviews.type.should.be.eql('offline');
-                    project3.interviews.introduce.should.be.eql('토르 1차 인터뷰 소개');
-                    project3.interviews.location.should.be.eql('서울대');
-                    project3.interviews.locationDescription.should.be.eql('서울대오는길');
-                    project3.interviews.openDate.should.be.eql('2017-11-01T00:00:00.000Z');
-                    project3.interviews.closeDate.should.be.eql('2017-11-03T00:00:00.000Z');
-                    project3.interviews.interviewDate.should.be.eql('2017-11-04T00:00:00.000Z');
-                    project3.interviews.apps.length.should.be.eql(1);
-                    project3.interviews.apps[0].packageName.should.be.eql('com.kakao.talk');
-                    project3.interviews.apps[0].appName.should.be.eql('카카오톡');
+                    projectInterview.interviews.seq.should.be.eql(0);
+                    projectInterview.interviews.type.should.be.eql('offline');
+                    projectInterview.interviews.introduce.should.be.eql('토르 1차 인터뷰 소개');
+                    projectInterview.interviews.location.should.be.eql('서울대');
+                    projectInterview.interviews.locationDescription.should.be.eql('서울대오는길');
+                    projectInterview.interviews.openDate.should.be.eql('2017-11-01T00:00:00.000Z');
+                    projectInterview.interviews.closeDate.should.be.eql('2017-11-03T00:00:00.000Z');
+                    projectInterview.interviews.interviewDate.should.be.eql('2017-11-04T00:00:00.000Z');
+                    projectInterview.interviews.apps.length.should.be.eql(1);
+                    projectInterview.interviews.apps[0].packageName.should.be.eql('com.kakao.talk');
+                    projectInterview.interviews.apps[0].appName.should.be.eql('카카오톡');
 
                     // 조회조건
-                    project3.interviews.notifiedUserIds.should.be.includes(config.testUser.userId);
+                    projectInterview.interviews.notifiedUserIds.should.be.includes(config.testUser.userId);
 
                     done();
                 })
@@ -318,40 +278,27 @@ describe('Project', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
-                    res.body.length.should.be.eql(3);
+                    res.body.length.should.be.eql(2);
 
                     const project1 = res.body[0];
-
                     project1.name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
                     project1.interviews.interviewDate.should.be.eql('2017-11-12T00:00:00.000Z');
                     project1.interviews.location.should.be.eql('잠실');
-                    project1.interviews.selectedTimeSlot.should.be.eql('time14');
+                    project1.interviews.selectedTimeSlot.should.be.eql('time20');
                     project1.interviews.openDate.should.be.eql('2017-11-01T00:00:00.000Z');
                     project1.interviews.closeDate.should.be.eql('2017-11-03T00:00:00.000Z');
                     project1.interviews.locationDescription.should.be.eql('잠실오는길');
                     project1.interviews.emergencyPhone.should.be.eql('010-1234-5678');
 
                     const project2 = res.body[1];
-
-                    project2.name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
-                    project2.interviews.interviewDate.should.be.eql('2017-11-12T00:00:00.000Z');
-                    project2.interviews.location.should.be.eql('잠실');
-                    project2.interviews.selectedTimeSlot.should.be.eql('time20');
-                    project2.interviews.openDate.should.be.eql('2017-11-01T00:00:00.000Z');
-                    project2.interviews.closeDate.should.be.eql('2017-11-03T00:00:00.000Z');
-                    project2.interviews.locationDescription.should.be.eql('잠실오는길');
-                    project2.interviews.emergencyPhone.should.be.eql('010-1234-5678');
-
-                    const project3 = res.body[2];
-
-                    project3.name.should.be.eql('원더우먼');
-                    project3.interviews.interviewDate.should.be.eql('2017-11-05T00:00:00.000Z');
-                    project3.interviews.location.should.be.eql('우면');
-                    project3.interviews.selectedTimeSlot.should.be.eql('time21');
-                    project3.interviews.openDate.should.be.eql('2017-10-30T00:00:00.000Z');
-                    project3.interviews.closeDate.should.be.eql('2017-11-04T00:00:00.000Z');
-                    project3.interviews.locationDescription.should.be.eql('우면오는길');
-                    project3.interviews.emergencyPhone.should.be.eql('010-9999-7777');
+                    project2.name.should.be.eql('원더우먼');
+                    project2.interviews.interviewDate.should.be.eql('2017-11-05T00:00:00.000Z');
+                    project2.interviews.location.should.be.eql('우면');
+                    project2.interviews.selectedTimeSlot.should.be.eql('time21');
+                    project2.interviews.openDate.should.be.eql('2017-10-30T00:00:00.000Z');
+                    project2.interviews.closeDate.should.be.eql('2017-11-04T00:00:00.000Z');
+                    project2.interviews.locationDescription.should.be.eql('우면오는길');
+                    project2.interviews.emergencyPhone.should.be.eql('010-9999-7777');
 
                     done();
                 })
@@ -502,7 +449,7 @@ describe('Project', () => {
         });
 
         it('이미 해당 인터뷰의 다른 시간대에 참가중이면 405 에러를 리턴한다', done => {
-            request.post('/projects/' + testProjectId + '/interviews/1/participate/time11')
+            request.post('/projects/' + testProjectId + '/interviews/2/participate/time11')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(405, done);
         });
@@ -518,7 +465,7 @@ describe('Project', () => {
         });
 
         it('인터뷰 취소요청시, 해당 슬롯의 userId를 초기화한다', done => {
-            request.post('/projects/' + testProjectId + '/interviews/1/cancel/time14')
+            request.post('/projects/' + testProjectId + '/interviews/2/cancel/time20')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
@@ -527,7 +474,7 @@ describe('Project', () => {
                 })
                 .then(project => {
                     project.interviews[1].seq.should.be.eql(1);
-                    project.interviews[1].timeSlot['time14'].should.be.eql('');
+                    project.interviews[1].timeSlot['time20'].should.be.eql('');
                     done();
                 })
                 .catch(err => done(err));
@@ -547,9 +494,9 @@ describe('Project', () => {
 
         describe('취소 가능일의 유효성 검증이 필요한 경우, ', () => {
             it('취소가능일 인터뷰 참가 전까지 취소요청 시, 정상적으로 취소를 진행할 수 있다.', done => {
-                clock = sandbox.useFakeTimers(new Date("2017-11-12T13:59:59Z").getTime());
+                clock = sandbox.useFakeTimers(new Date("2017-11-04T13:59:59Z").getTime());
 
-                request.post('/projects/' + testProjectId + '/interviews/1/cancel/time14')
+                request.post('/projects/' + testProjectId + '/interviews/2/cancel/time20')
                     .set('x-access-token', config.appbeeToken.valid)
                     .expect(200, done);
             });
@@ -557,7 +504,7 @@ describe('Project', () => {
             it('취소가능일시가 지난 경우 412에러 코드를 리턴한다', done => {
                 clock = sandbox.useFakeTimers(new Date("2017-11-13T14:00:00Z").getTime());
 
-                request.post('/projects/' + testProjectId + '/interviews/1/cancel/time14')
+                request.post('/projects/' + testProjectId + '/interviews/2/cancel/time20')
                     .set('x-access-token', config.appbeeToken.valid)
                     .expect(412, done);
             });

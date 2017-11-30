@@ -54,6 +54,7 @@ const getInterview = (req, res) => {
 //TODO : InterviewList 조회시 CurrentTime과 Locale상관관계 확인 필요
 const getInterviewList = (req, res) => {
     const currentTime = new Date();
+    const userId = req.userId;
 
     Projects.aggregate([
         {$match: {'status': {$ne: "temporary"}}},
@@ -61,7 +62,7 @@ const getInterviewList = (req, res) => {
         {
             $match: {
                 $and: [
-                    {'interviews.notifiedUserIds': req.userId},
+                    {'interviews.notifiedUserIds': userId},
                     {'interviews.openDate': {$lte: currentTime}},
                     {'interviews.closeDate': {$gte: currentTime}}
                 ]
@@ -70,13 +71,21 @@ const getInterviewList = (req, res) => {
         {$sort: {'interviews.interviewDate': -1, 'projectId': 1, 'interviews.seq': 1}}
     ])
         .exec()
-        .then(projectInterviews => res.json(projectInterviews))
+        .then(projectInterviews => res.json(filterRegistredInterviews(userId, projectInterviews)))
         .catch(err => {
             console.log(err);
             res.status(500).json({error: err});
         });
 };
 
+
+const filterRegistredInterviews = (userId, projectInterviews) => {
+    return projectInterviews.filter(projectInterview => !isAlreadyRegistered(userId, projectInterview.interviews.timeSlot));
+};
+
+const isAlreadyRegistered = (userId, timeSlot) => {
+    return Object.keys(timeSlot).filter(timeSlotKey => timeSlot[timeSlotKey] === userId).length > 0;
+};
 
 const getRegisteredInterviewList = (req, res) => {
     const currentTime = new Date();
