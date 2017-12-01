@@ -7,15 +7,20 @@ const postShortTermStats = (req, res) => {
         res.json(true);
     } else {
         const userId = req.userId;
-        const shortTermStatArray = [];
+        const bulkOps = [];
 
-        req.body.forEach((shortTermStat) => {
+        req.body.forEach(shortTermStat => {
             shortTermStat.userId = userId;
-            shortTermStatArray.push(shortTermStat);
+            bulkOps.push({
+                'insertOne': {
+                    'document': shortTermStat,
+                }
+            });
         });
 
-        ShortTermStats.create(shortTermStatArray, (err) => {
+        ShortTermStats.bulkWrite(bulkOps, err => {
             if (err) {
+                console.log(JSON.stringify(err, null, 2));
                 res.json(false);
             } else {
                 res.json(true);

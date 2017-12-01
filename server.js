@@ -4,8 +4,8 @@ const bodyParser = require('body-parser');
 const statsRouter = require('./router/stats');
 const appsRouter = require('./router/apps');
 const userRouter = require('./router/user');
-const downloadRouter = require('./router/download');
 const projectRouter = require('./router/project');
+const configurationRouter = require('./router/configurations');
 const db = require('./db');
 const port = require('./config').port;
 
@@ -18,14 +18,14 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.get('/', (req, res) => {
-    res.send('Hello AppBee')
+    res.send('Hello AppBee');
 });
 
 app.use('/user', userRouter);
 app.use('/stats', statsRouter);
 app.use('/apps', appsRouter);
-app.use('/download', downloadRouter);
 app.use('/projects', projectRouter);
+app.use('/config', configurationRouter);
 
 app.listen(port, () => {
     console.log('Express App on http port ' + port);

@@ -15,6 +15,7 @@ const ownerSchema = new Schema({
 const interviewSchema = new Schema({
     seq: Number,
     type: String,
+    introduce: String,
     location: String,
     locationDescription: String,
     apps: Array,

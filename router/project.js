@@ -6,6 +6,7 @@ const Auth = require('../middleware/auth');
 projectRouter.get('/', Auth.appBeeTokenVerifier, Project.getProjectList);
 projectRouter.get('/:id', Auth.appBeeTokenVerifier, Project.getProject);
 projectRouter.get('/match/interviews', Auth.appBeeTokenVerifier, Project.getInterviewList);
+projectRouter.get('/registered/interviews', Auth.appBeeTokenVerifier, Project.getRegisteredInterviewList);
 projectRouter.get('/:id/interviews/:seq', Auth.appBeeTokenVerifier, Project.getInterview);
 
 projectRouter.post('/:id/interviews/:seq/participate/:slotId', Auth.appBeeTokenVerifier, Project.postParticipate);

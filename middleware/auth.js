@@ -59,11 +59,12 @@ const googleTokenVerifier = (req, res, next) => {
                         } else {
                             const payload = login.getPayload();
 
-                            let user = {};
-                            user.userId = payload['sub'];
+                            const user = {};
+                            user.provider = 'google';
+                            user.providerId = payload['sub'];
+                            user.userId = user.provider + user.providerId;
                             user.email = payload['email'];
                             user.name = payload['name'];
-                            user.provider = 'GG';
 
                             resolve(user);
                         }
