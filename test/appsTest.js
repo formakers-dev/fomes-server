@@ -2,35 +2,10 @@ const chai = require('chai');
 const server = require('../server');
 const config = require('../config');
 const request = require('supertest').agent(server);
-const UncrawledApps = require('../models/uncrawledApps');
 const AppUsages = require('../models/appUsages');
 const should = chai.should();
 
 describe('Apps', () => {
-    describe('POST uncrawled', () => {
-        const doc = ["com.facebook.unknown", "com.kakao.unknown"];
-
-        it('Uncrawled App 목록에 저장한다', done => {
-            request.post('/apps/uncrawled')
-                .set('x-access-token', config.appbeeToken.valid)
-                .send(doc)
-                .expect(200)
-                .then(res => {
-                    res.body.should.be.eql(true);
-                    return UncrawledApps.find({$or: [{packageName: "com.facebook.unknown"}, {packageName: "com.kakao.unknown"}]}).exec()
-                })
-                .then(uncrawledApps => {
-                    uncrawledApps.length.should.be.eql(2);
-                    done();
-                })
-                .catch(err => done(err));
-        });
-
-        afterEach('clean up uncrawled apps', done => {
-            UncrawledApps.remove({$or: [{packageName: "com.facebook.unknown"}, {packageName: "com.kakao.unknown"}]}, done);
-        });
-    });
-
     describe('POST appUsages', () => {
 
         beforeEach(done => {
