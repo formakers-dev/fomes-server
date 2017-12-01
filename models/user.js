@@ -5,7 +5,9 @@ const usersSchema = new mongoose.Schema({
     email : String,
     birthday: Number,
     gender: String,
-    registrationToken: String
+    registrationToken: String,
+    provider: String,
+    providerId: String
 });
 
 const user = mongoose.model('users', usersSchema);

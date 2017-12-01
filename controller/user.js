@@ -12,7 +12,7 @@ const upsertUser = (req, res, next) => {
 
 const generateToken = (req, res) => {
     jwt.sign(req.body, config.secret, {
-        expiresIn: '7d',
+        expiresIn: '3m',
         issuer: 'appbee.com',
         subject: 'AppBeeAuth'
     }, (err, newToken) => {
