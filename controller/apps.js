@@ -1,28 +1,4 @@
-const UncrawledApps = require('../models/uncrawledApps');
 const AppUsages = require('../models/appUsages');
-
-const postUncrawled = (req, res) => {
-    const bulkOps = [];
-
-    req.body.forEach(packageName => {
-        bulkOps.push({
-            'updateOne': {
-                'filter': {'packageName': packageName},
-                'update': {'packageName': packageName},
-                'upsert': true
-            }
-        });
-    });
-
-    UncrawledApps.bulkWrite(bulkOps, err => {
-        if (err) {
-            console.log(JSON.stringify(err, null, 2));
-            res.json(false);
-        } else {
-            res.json(true);
-        }
-    });
-};
 
 const postAppUsages = (req, res) => {
     if (!Array.isArray(req.body)) {
@@ -54,4 +30,4 @@ const postAppUsages = (req, res) => {
     }
 };
 
-module.exports = {postUncrawled, postAppUsages};
+module.exports = {postAppUsages};
