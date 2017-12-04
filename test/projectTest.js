@@ -117,13 +117,39 @@ describe('Project', () => {
             "seq": 0,
             "type": "offline",
             "introduce": "원더우먼 1차 인터뷰 소개",
+            "location": "우면1",
+            "locationDescription": "우면오는길1",
+            "apps": [{
+                packageName: 'woman.beauty.com',
+                appName: '우먼뷰티앱'
+            }],
+            "openDate": new Date("2017-10-30"),
+            "closeDate": new Date("2017-10-31"),
+            "interviewDate": new Date("2017-11-01"),
+            "totalCount": 5,
+            "timeSlot": {
+                "time17": "",
+                "time18": "",
+                "time19": "",
+                "time20": "",
+                "time21": config.testUser.userId
+            },
+            "emergencyPhone": "010-9999-7777",
+            "notifiedUserIds": [
+                "1234",
+                config.testUser.userId
+            ]
+        },{
+            "seq": 1,
+            "type": "offline",
+            "introduce": "원더우먼 2차 인터뷰 소개",
             "location": "우면",
             "locationDescription": "우면오는길",
             "apps": [{
                 packageName: 'woman.beauty.com',
                 appName: '우먼뷰티앱'
             }],
-            "openDate": new Date("2017-10-30"),
+            "openDate": new Date("2017-11-02"),
             "closeDate": new Date("2017-11-04"),
             "interviewDate": new Date("2017-11-05"),
             "totalCount": 5,
@@ -273,7 +299,7 @@ describe('Project', () => {
             clock = sandbox.useFakeTimers(new Date("2017-11-02").getTime());
         });
 
-        it('해당 유저가 신청한 인터뷰 목록을 조회한다.', done => {
+        it('해당 유저가 신청한 인터뷰 목록중 인터뷰날짜가 경과하지 않은 목록만 조회한다.', done => {
             request.get('/projects/registered/interviews')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
@@ -282,6 +308,7 @@ describe('Project', () => {
 
                     const project1 = res.body[0];
                     project1.name.should.be.eql('토르 - 기준스키마. 지우지마세요!!!');
+                    project1.interviews.seq.should.be.eql(2);
                     project1.interviews.interviewDate.should.be.eql('2017-11-12T00:00:00.000Z');
                     project1.interviews.location.should.be.eql('잠실');
                     project1.interviews.selectedTimeSlot.should.be.eql('time20');
@@ -292,10 +319,11 @@ describe('Project', () => {
 
                     const project2 = res.body[1];
                     project2.name.should.be.eql('원더우먼');
+                    project2.interviews.seq.should.be.eql(1);
                     project2.interviews.interviewDate.should.be.eql('2017-11-05T00:00:00.000Z');
                     project2.interviews.location.should.be.eql('우면');
                     project2.interviews.selectedTimeSlot.should.be.eql('time21');
-                    project2.interviews.openDate.should.be.eql('2017-10-30T00:00:00.000Z');
+                    project2.interviews.openDate.should.be.eql('2017-11-02T00:00:00.000Z');
                     project2.interviews.closeDate.should.be.eql('2017-11-04T00:00:00.000Z');
                     project2.interviews.locationDescription.should.be.eql('우면오는길');
                     project2.interviews.emergencyPhone.should.be.eql('010-9999-7777');

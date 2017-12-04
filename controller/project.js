@@ -21,8 +21,6 @@ const getProjectList = (req, res) => {
 
 //TODO : InterviewList 조회시 CurrentTime과 Locale상관관계 확인 필요
 const getInterview = (req, res) => {
-    const currentTime = new Date();
-
     Projects.aggregate([
         {$match: {projectId: Number(req.params.id), status: 'registered'}},
         {$unwind: '$interviews'},
@@ -31,8 +29,6 @@ const getInterview = (req, res) => {
                 $and: [
                     {'interviews.notifiedUserIds': req.userId},
                     {'interviews.seq': Number(req.params.seq)},
-                    {'interviews.openDate': {$lte: currentTime}},
-                    {'interviews.closeDate': {$gte: currentTime}}
                 ]
             }
         }
@@ -61,6 +57,7 @@ const getInterview = (req, res) => {
 //TODO : InterviewList 조회시 CurrentTime과 Locale상관관계 확인 필요
 const getInterviewList = (req, res) => {
     const currentTime = new Date();
+    currentTime.setUTCHours(0,0,0,0);
     const userId = req.userId;
 
     Projects.aggregate([
@@ -96,6 +93,7 @@ const isAlreadyRegistered = (userId, timeSlot) => {
 
 const getRegisteredInterviewList = (req, res) => {
     const currentTime = new Date();
+    currentTime.setUTCHours(0,0,0,0);
     const userId = req.userId;
 
     //TODO: 성능고려한 튜닝 필요
@@ -105,7 +103,7 @@ const getRegisteredInterviewList = (req, res) => {
         {
             $match: {
                 $and: [
-                    {'interviews.openDate': {$lte: currentTime}},
+                    {'interviews.interviewDate': {$gte: currentTime}},
                     {
                         $or: [
                             {'interviews.timeSlot.time6': userId},
