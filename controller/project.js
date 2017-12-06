@@ -54,10 +54,9 @@ const getInterview = (req, res) => {
 };
 
 
-//TODO : InterviewList 조회시 CurrentTime과 Locale상관관계 확인 필요
 const getInterviewList = (req, res) => {
+    //TODO : 추후 글로벌 확산 시 로케일 적용 필요, 현재는 서버기준로케일(한국) 따라감
     const currentTime = new Date();
-    currentTime.setUTCHours(0,0,0,0);
     const userId = req.userId;
 
     Projects.aggregate([
@@ -92,8 +91,8 @@ const isAlreadyRegistered = (userId, timeSlot) => {
 };
 
 const getRegisteredInterviewList = (req, res) => {
+    //TODO : 추후 글로벌 확산 시 로케일 적용 필요, 현재는 서버기준로케일(한국) 따라감
     const currentTime = new Date();
-    currentTime.setUTCHours(0,0,0,0);
     const userId = req.userId;
 
     //TODO: 성능고려한 튜닝 필요
@@ -145,11 +144,12 @@ const getRegisteredInterviewList = (req, res) => {
 };
 
 const postParticipate = (req, res) => {
+    //TODO : 추후 글로벌 확산 시 로케일 적용 필요, 현재는 서버기준로케일(한국) 따라감
     const projectId = parseInt(req.params.id);
     const interviewSeq = parseInt(req.params.seq);
     const slotId = req.params.slotId;
     const userId = req.userId;
-    const currentTime = Date.now();
+    const currentTime = new Date();
 
     Projects.aggregate([
         {$match: {projectId: projectId}},
@@ -200,11 +200,12 @@ const setTimeSlotWithUserId = (projectId, interviewSeq, slotId, userId) => {
 };
 
 const cancelParticipation = (req, res) => {
+    //TODO : 추후 글로벌 확산 시 로케일 적용 필요, 현재는 서버기준로케일(한국) 따라감
     const projectId = parseInt(req.params.id);
     const interviewSeq = parseInt(req.params.seq);
     const slotId = req.params.slotId;
     const userId = req.userId;
-    const currentTime = Date.now();
+    const currentTime = new Date();
 
     Projects.aggregate([
         {$match: {projectId: projectId}},
@@ -227,7 +228,7 @@ const cancelParticipation = (req, res) => {
             const interview = interviews[0];
             const hour = parseInt(slotId.substr(4));
             const deadline = interview.interviewDate;
-            deadline.setUTCHours(hour);
+            deadline.setHours(hour, 0, 0, 0);
 
             if (!Object.keys(interview.timeSlot).includes(slotId)) {
                 res.sendStatus(416);
