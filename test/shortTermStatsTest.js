@@ -9,14 +9,14 @@ describe('shortTermStats', () => {
     describe('POST shortTermStats', () => {
         const doc = [{
             "packageName": "com.whatever.package1",
-            "startTimestamp": 1499914700000,
-            "endTimestamp": 1499914800000,
+            "startTimeStamp": 1499914700000,
+            "endTimeStamp": 1499914800000,
             "totalUsedTime": 100000
         },
             {
                 "packageName": "com.whatever.package2",
-                "startTimestamp": 1499914700001,
-                "endTimestamp": 1499914900001,
+                "startTimeStamp": 1499914700001,
+                "endTimeStamp": 1499914900001,
                 "totalUsedTime": 200000
             }];
 
@@ -44,8 +44,8 @@ describe('shortTermStats', () => {
         it('기존에 존재하는 단기통계데이터가 있으면 덮어쓰지 않고 추가한다', (done) => {
             const newDoc = [{
                 "packageName": "com.whatever.package1",
-                "startTimestamp": 1499914700002,
-                "endTimestamp": 1499914800002,
+                "startTimeStamp": 1499914700002,
+                "endTimeStamp": 1499914800002,
                 "totalUsedTime": 100002
             }];
 
@@ -61,7 +61,7 @@ describe('shortTermStats', () => {
                         .then(res => {
                             res.body.should.be.eql(true);
 
-                            ShortTermStats.find({userId: config.testUser.userId}).sort({startTimestamp: 1})
+                            ShortTermStats.find({userId: config.testUser.userId}).sort({startTimeStamp: 1})
                                 .then(shortTermStats => {
                                     shortTermStats.length.should.be.eql(3);
                                     verifyShortTermStatData(shortTermStats[0], 'com.whatever.package1', 1499914700000, 1499914800000, 100000);
@@ -100,10 +100,10 @@ describe('shortTermStats', () => {
                 }).catch((err) => done(err));
         });
 
-        const verifyShortTermStatData = (shortTermStat, packageName, startTimestamp, endTimestamp, totalUsedTime) => {
+        const verifyShortTermStatData = (shortTermStat, packageName, startTimeStamp, endTimeStamp, totalUsedTime) => {
             shortTermStat.packageName.should.be.eql(packageName);
-            shortTermStat.startTimestamp.should.be.eql(startTimestamp);
-            shortTermStat.endTimestamp.should.be.eql(endTimestamp);
+            shortTermStat.startTimeStamp.should.be.eql(startTimeStamp);
+            shortTermStat.endTimeStamp.should.be.eql(endTimeStamp);
             shortTermStat.totalUsedTime.should.be.eql(totalUsedTime);
         };
     });
