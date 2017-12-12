@@ -5,7 +5,9 @@ const config = require('../config');
 const appBeeTokenVerifier = (req, res, next) => {
     const check = (token) => {
         if (!token) {
-            reject(new Error("Has no token"));
+            return new Promise((resolve, reject) => {
+                reject(new Error("Has no token"));
+            });
         } else {
             return new Promise(
                 (resolve, reject) => {
