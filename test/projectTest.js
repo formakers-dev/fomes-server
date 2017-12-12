@@ -379,24 +379,29 @@ describe('Project', () => {
                     res.body.introduce.should.be.eql('영화가 개봉함');
                     res.body.description.should.be.eql('토르는 히어로물이다.');
                     // interview
-                    res.body.interviews.seq.should.be.eql(0);
-                    res.body.interviews.type.should.be.eql('offline');
-                    res.body.interviews.introduce.should.be.eql('토르 1차 인터뷰 소개');
-                    res.body.interviews.location.should.be.eql('서울대');
-                    res.body.interviews.locationDescription.should.be.eql('서울대오는길');
-                    res.body.interviews.openDate.should.be.eql('2017-10-31T15:00:00.000Z');
-                    res.body.interviews.closeDate.should.be.eql('2017-11-03T14:59:59.999Z');
-                    res.body.interviews.interviewDate.should.be.eql('2017-11-04T14:59:59.999Z');
-                    res.body.interviews.apps.length.should.be.eql(1);
-                    res.body.interviews.apps[0].packageName.should.be.eql('com.kakao.talk');
-                    res.body.interviews.apps[0].appName.should.be.eql('카카오톡');
+                    const interview = res.body.interviews;
+                    interview.seq.should.be.eql(0);
+                    interview.type.should.be.eql('offline');
+                    interview.introduce.should.be.eql('토르 1차 인터뷰 소개');
+                    interview.location.should.be.eql('서울대');
+                    interview.locationDescription.should.be.eql('서울대오는길');
+                    interview.openDate.should.be.eql('2017-10-31T15:00:00.000Z');
+                    interview.closeDate.should.be.eql('2017-11-03T14:59:59.999Z');
+                    interview.interviewDate.should.be.eql('2017-11-04T14:59:59.999Z');
+                    interview.apps.length.should.be.eql(1);
+                    interview.apps[0].packageName.should.be.eql('com.kakao.talk');
+                    interview.apps[0].appName.should.be.eql('카카오톡');
+                    interview.totalCount.should.be.eql(2);
+                    interview.availableCount.should.be.eql(1);
+
                     // 조회조건
-                    res.body.interviews.notifiedUserIds.should.be.includes(config.testUser.userId);
+                    interview.notifiedUserIds.should.be.includes(config.testUser.userId);
+
                     // timeslot
-                    res.body.interviews.timeSlots.length.should.be.eql(2);
-                    res.body.interviews.timeSlots.should.be.includes('time7');
-                    res.body.interviews.timeSlots.should.be.includes('time8');
-                    res.body.interviews.selectedTimeSlot.should.be.eql('');
+                    interview.timeSlots.length.should.be.eql(2);
+                    interview.timeSlots.should.be.includes('time7');
+                    interview.timeSlots.should.be.includes('time8');
+                    interview.selectedTimeSlot.should.be.eql('');
 
                     done();
                 })

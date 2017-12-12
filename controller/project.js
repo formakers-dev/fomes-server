@@ -21,13 +21,15 @@ const getProjectList = (req, res) => {
 
 //TODO : InterviewList 조회시 CurrentTime과 Locale상관관계 확인 필요
 const getInterview = (req, res) => {
+    const userId = req.userId;
+
     Projects.aggregate([
         {$match: {projectId: Number(req.params.id), status: 'registered'}},
         {$unwind: '$interviews'},
         {
             $match: {
                 $and: [
-                    {'interviews.notifiedUserIds': req.userId},
+                    {'interviews.notifiedUserIds': userId},
                     {'interviews.seq': Number(req.params.seq)},
                 ]
             }
@@ -41,9 +43,11 @@ const getInterview = (req, res) => {
             }
 
             const interview = projectInterviews[0].interviews;
+            const timeSlot = interview.timeSlot;
 
-            interview.timeSlots = Object.keys(interview.timeSlot).filter(timeSlotKey => (!interview.timeSlot[timeSlotKey] || interview.timeSlot[timeSlotKey] === req.userId));
-            interview.selectedTimeSlot = Object.keys(interview.timeSlot).filter(timeSlotKey => (interview.timeSlot[timeSlotKey] === req.userId))[0] || '';
+            interview.timeSlots = Object.keys(timeSlot).filter(key => (!timeSlot[key] || timeSlot[key] === userId));
+            interview.selectedTimeSlot = Object.keys(timeSlot).filter(key => (timeSlot[key] === userId))[0] || '';
+            interview.availableCount = interview.totalCount - Object.keys(timeSlot).filter(key => (timeSlot[key] !== '')).length;
 
             res.json(projectInterviews[0]);
         })
