@@ -17,7 +17,9 @@ describe('Users', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .send(testUser)
                 .expect(200)
-                .then(() => {
+                .then(res => {
+                    res.body.should.be.eql(true);
+
                     Users.findOne({userId: testUser.userId}, (err, user) => {
                         user.userId.should.be.eql(testUser.userId);
                         user.gender.should.be.eql("male");
@@ -46,7 +48,6 @@ describe('Users', () => {
                         return Users.findOne({userId: config.testUser.userId});
                     })
                     .then((result) => {
-                        console.log(result);
                         result.registrationToken.should.be.eql("NEW_CODE");
                         result.userId.should.be.eql(config.testUser.userId);
                         done();

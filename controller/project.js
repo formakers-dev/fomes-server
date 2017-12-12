@@ -1,4 +1,5 @@
 const Projects = require('../models/projects');
+const ParticipationHistories = require('../models/participationHistories');
 
 const getProject = (req, res) => {
     const projectId = parseInt(req.params.id);
@@ -199,7 +200,11 @@ const postParticipate = (req, res) => {
                 res.sendStatus(405);
             } else {
                 setTimeSlotWithUserId(projectId, interviewSeq, slotId, userId)
-                    .then(() => res.send(true))
+                    .then(() => {
+                        createParticipationHistory(userId, 'participate', projectId, interviewSeq, slotId)
+                            .then(() => res.send(true))
+                            .catch(() => res.send(true));
+                    })
                     .catch((err) => {
                         res.send(err);
                     });
@@ -256,7 +261,11 @@ const cancelParticipation = (req, res) => {
                 res.sendStatus(406);
             } else {
                 setTimeSlotWithUserId(projectId, interviewSeq, slotId, '')
-                    .then(() => res.send(true))
+                    .then(() => {
+                        createParticipationHistory(userId, 'cancel', projectId, interviewSeq, slotId)
+                            .then(() => res.send(true))
+                            .catch(() => res.send(true));
+                    })
                     .catch((err) => {
                         res.send(err);
                     });
@@ -264,6 +273,16 @@ const cancelParticipation = (req, res) => {
         })
         .catch(err => res.status(500).json({error: err}));
 
+};
+
+const createParticipationHistory = (userId, type, projectId, interviewSeq, slotId) => {
+    return ParticipationHistories.create({
+        userId: userId,
+        type: type,
+        projectId: projectId,
+        interviewSeq: interviewSeq,
+        slotId: slotId
+    });
 };
 
 module.exports = {
