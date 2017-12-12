@@ -17,9 +17,7 @@ describe('Users', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .send(testUser)
                 .expect(200)
-                .then(res => {
-                    res.body.should.be.eql(true);
-
+                .then(() => {
                     Users.findOne({userId: testUser.userId}, (err, user) => {
                         user.userId.should.be.eql(testUser.userId);
                         user.gender.should.be.eql("male");
@@ -28,6 +26,36 @@ describe('Users', () => {
                     });
                 })
                 .catch(err => done(err));
+        });
+
+        describe('기존 사용자가 존재할 경우,', () => {
+            before(done => {
+                Users.create(config.testUser, done);
+            });
+
+            it('User의 특정 정보를 업데이트 한다', done => {
+                const newToken = {
+                    registrationToken: "NEW_CODE"
+                };
+
+                request.post('/user')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .send(newToken)
+                    .expect(200)
+                    .then(() => {
+                        return Users.findOne({userId: config.testUser.userId});
+                    })
+                    .then((result) => {
+                        console.log(result);
+                        result.registrationToken.should.be.eql("NEW_CODE");
+                        result.userId.should.be.eql(config.testUser.userId);
+                        done();
+                    }).catch(err => done(err));
+            });
+
+            after(done => {
+                Users.remove({}, done);
+            })
         });
 
         afterEach((done) => {

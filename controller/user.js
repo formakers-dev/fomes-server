@@ -4,7 +4,7 @@ const InvitationCodes = require('../models/invitationCodes');
 const config = require('../config');
 
 const upsertUser = (req, res, next) => {
-    User.findOneAndUpdate({userId: req.body.userId}, {$set: req.body}, {upsert: true})
+    User.findOneAndUpdate({userId: req.userId}, {$set: req.body}, {upsert: true})
         .exec()
         .then(() => next())
         .catch(err => sendError(res, err));
@@ -48,6 +48,5 @@ const sendError = (res, err) => {
         message: err.message
     });
 };
-
 
 module.exports = {upsertUser, generateToken, verifyInvitationCode};
