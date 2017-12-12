@@ -46,7 +46,6 @@ describe('Users', () => {
                         return Users.findOne({userId: config.testUser.userId});
                     })
                     .then((result) => {
-                        console.log(result);
                         result.registrationToken.should.be.eql("NEW_CODE");
                         result.userId.should.be.eql(config.testUser.userId);
                         done();

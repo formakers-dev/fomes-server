@@ -7,6 +7,7 @@ const sinon = require('sinon');
 const should = chai.should();
 
 const Projects = require('../models/projects');
+const ParticipationHistories = require('../models/participationHistories');
 
 describe('Project', () => {
     const sandbox = sinon.sandbox.create();
@@ -474,6 +475,26 @@ describe('Project', () => {
                 .catch(err => done(err));
         });
 
+        it('인터뷰 참가신청시 신청 이력을 저장한다', done => {
+            const testInterviewSeq = 0;
+
+            request.post('/projects/' + testProjectId + '/interviews/' + testInterviewSeq + '/participate/time7')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then((res) => {
+                    res.body.should.be.eql(true);
+                    return ParticipationHistories.findOne({userId: config.testUser.userId});
+                })
+                .then(participationHistory => {
+                    participationHistory.type.should.be.eql('participate');
+                    participationHistory.projectId.should.be.eql(testProjectId);
+                    participationHistory.interviewSeq.should.be.eql(testInterviewSeq);
+                    participationHistory.slotId.should.be.eql('time7');
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
         it('이미 다른사람이 신청한 경우 409 에러를 리턴한다', done => {
             request.post('/projects/' + testProjectId + '/interviews/0/participate/time6')
                 .set('x-access-token', config.appbeeToken.valid)
@@ -559,6 +580,24 @@ describe('Project', () => {
                 .catch(err => done(err));
         });
 
+        it('인터뷰 취소요청시, 취소이력을 저장한다', done => {
+            request.post('/projects/' + testProjectId + '/interviews/2/cancel/time20')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.should.be.eql(true);
+                    return ParticipationHistories.findOne({userId: config.testUser.userId});
+                })
+                .then(participationHistory => {
+                    participationHistory.type.should.be.eql('cancel');
+                    participationHistory.projectId.should.be.eql(testProjectId);
+                    participationHistory.interviewSeq.should.be.eql(2);
+                    participationHistory.slotId.should.be.eql('time20');
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
         it('본인 신청건이 아닌 경우, 406에러 코드를 리턴한다', done => {
             request.post('/projects/' + testProjectId + '/interviews/1/cancel/time7')
                 .set('x-access-token', config.appbeeToken.valid)
@@ -595,8 +634,10 @@ describe('Project', () => {
 
     afterEach(done => {
         Projects.remove({}, () => {
-            sandbox.restore();
-            done();
+            ParticipationHistories.remove({}, () => {
+                sandbox.restore();
+                done();
+            });
         });
     });
 });
