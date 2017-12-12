@@ -77,7 +77,7 @@ describe('Project', () => {
             "totalCount": 3,
             "timeSlot": {
                 "time7": "1234",
-                "time9": "9999",
+                "time9": "",
                 "time11": "",
                 "time14": "",
                 "time20": config.testUser.userId
@@ -392,7 +392,6 @@ describe('Project', () => {
                     interview.apps[0].packageName.should.be.eql('com.kakao.talk');
                     interview.apps[0].appName.should.be.eql('카카오톡');
                     interview.totalCount.should.be.eql(2);
-                    interview.availableCount.should.be.eql(1);
 
                     // 조회조건
                     interview.notifiedUserIds.should.be.includes(config.testUser.userId);
@@ -409,12 +408,12 @@ describe('Project', () => {
         });
 
         it('사전에 신청한 인터뷰 단건을 조회할 경우 selectedTimeSlot에 해당 타임슬롯을 세팅한다', done => {
-
             request.get('/projects/' + testProjectId + '/interviews/2')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
-                    res.body.interviews.timeSlots.length.should.be.eql(3);
+                    res.body.interviews.timeSlots.length.should.be.eql(4);
+                    res.body.interviews.timeSlots.should.be.includes('time9');
                     res.body.interviews.timeSlots.should.be.includes('time11');
                     res.body.interviews.timeSlots.should.be.includes('time14');
                     res.body.interviews.timeSlots.should.be.includes('time20');
@@ -429,6 +428,17 @@ describe('Project', () => {
             request.get('/projects/' + testProjectId + '/interviews/1')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(406, done);
+        });
+
+        it('모집 가능 인원 수가 없을 경우 timeSlots을 empty List로 리턴한다', done => {
+            request.get('/projects/2/interviews/2')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.interviews.timeSlots.length.should.be.eql(0);
+                    done();
+                })
+                .catch(err => done(err));
         });
 
         afterEach(() => clock.restore());
@@ -477,6 +487,12 @@ describe('Project', () => {
         });
 
         describe('모집중이 아닌 경우', () => {
+            it('이미 전체 참가자수의 모집이 완료된 경우 412으로 응답한다', done => {
+                request.post('/projects/2/interviews/2/participate/time19')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .expect(412, done);
+            });
+
             it('모집마감시간 이전인 경우 상태코드 412으로 응답한다', done => {
                 clock = sandbox.useFakeTimers(new Date("2017-10-30T15:00:00.000Z").getTime());  //한국시간 11월 1일 오전 0시
 

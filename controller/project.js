@@ -45,9 +45,13 @@ const getInterview = (req, res) => {
             const interview = projectInterviews[0].interviews;
             const timeSlot = interview.timeSlot;
 
-            interview.timeSlots = Object.keys(timeSlot).filter(key => (!timeSlot[key] || timeSlot[key] === userId));
+            if (isAvailableToParticipate(interview)) {
+                interview.timeSlots = Object.keys(timeSlot).filter(key => (!timeSlot[key] || timeSlot[key] === userId));
+            } else {
+                interview.timeSlots = [];
+            }
+
             interview.selectedTimeSlot = Object.keys(timeSlot).filter(key => (timeSlot[key] === userId))[0] || '';
-            interview.availableCount = interview.totalCount - Object.keys(timeSlot).filter(key => (timeSlot[key] !== '')).length;
 
             res.json(projectInterviews[0]);
         })
@@ -92,11 +96,11 @@ const filterRegisterdInterviews = (userId, projectInterviews) => {
 };
 
 const isAlreadyRegistered = (userId, timeSlot) => {
-    return Object.keys(timeSlot).filter(key => timeSlot[key] === userId).length > 0;
+    return (Object.keys(timeSlot).filter(key => timeSlot[key] === userId).length > 0);
 };
 
 const isAvailableToParticipate = (interview) => {
-    return Object.keys(interview.timeSlot).filter(key => interview.timeSlot[key] !== '').length < interview.totalCount;
+    return (Object.keys(interview.timeSlot).filter(key => interview.timeSlot[key] !== '').length < interview.totalCount);
 };
 
 const getRegisteredInterviewList = (req, res) => {
@@ -171,17 +175,21 @@ const postParticipate = (req, res) => {
                 'openDate': '$interviews.openDate',
                 'closeDate': '$interviews.closeDate',
                 'status': '$status',
-                'timeSlot': '$interviews.timeSlot'
+                'timeSlot': '$interviews.timeSlot',
+                'totalCount': '$interviews.totalCount',
             }
         }
     ])
         .exec()
         .then(interviews => {
             const interview = interviews[0];
+
             //TODO: 다른 프로젝트,인터뷰의 동일 시간대에 참여 중인 경우 에러 처리
             if (interview.status !== 'registered') {
                 res.sendStatus(406);
             } else if (currentTime <= interview.openDate || currentTime >= interview.closeDate) {
+                res.sendStatus(412);
+            } else if (!isAvailableToParticipate(interview)) {
                 res.sendStatus(412);
             } else if (!Object.keys(interview.timeSlot).includes(slotId)) {
                 res.sendStatus(416);
