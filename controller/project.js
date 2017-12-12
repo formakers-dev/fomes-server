@@ -53,7 +53,6 @@ const getInterview = (req, res) => {
         });
 };
 
-
 const getInterviewList = (req, res) => {
     //TODO : 추후 글로벌 확산 시 로케일 적용 필요, 현재는 서버기준로케일(한국) 따라감
     const currentTime = new Date();
@@ -74,20 +73,26 @@ const getInterviewList = (req, res) => {
         {$sort: {'interviews.interviewDate': -1, 'projectId': 1, 'interviews.seq': 1}}
     ])
         .exec()
-        .then(projectInterviews => res.json(filterRegistredInterviews(userId, projectInterviews)))
+        .then(projectInterviews => res.json(filterRegisterdInterviews(userId, projectInterviews)))
         .catch(err => {
             console.log(err);
             res.status(500).json({error: err});
         });
 };
 
-
-const filterRegistredInterviews = (userId, projectInterviews) => {
-    return projectInterviews.filter(projectInterview => !isAlreadyRegistered(userId, projectInterview.interviews.timeSlot));
+const filterRegisterdInterviews = (userId, projectInterviews) => {
+    return projectInterviews.filter(projectInterview => {
+        return !isAlreadyRegistered(userId, projectInterview.interviews.timeSlot)
+            && isAvailableToParticipate(projectInterview.interviews);
+    });
 };
 
 const isAlreadyRegistered = (userId, timeSlot) => {
-    return Object.keys(timeSlot).filter(timeSlotKey => timeSlot[timeSlotKey] === userId).length > 0;
+    return Object.keys(timeSlot).filter(key => timeSlot[key] === userId).length > 0;
+};
+
+const isAvailableToParticipate = (interview) => {
+    return Object.keys(interview.timeSlot).filter(key => interview.timeSlot[key] !== '').length < interview.totalCount;
 };
 
 const getRegisteredInterviewList = (req, res) => {
@@ -192,6 +197,7 @@ const postParticipate = (req, res) => {
 };
 
 const setTimeSlotWithUserId = (projectId, interviewSeq, slotId, userId) => {
+    console.log('Participate Interview At ' + Date.now() + ' : Project-' + projectId + ', Interview-' + interviewSeq + ', slot-' + slotId + ', user-' + userId);
     const updateTargetSlot = {};
     updateTargetSlot['interviews.$.timeSlot.' + slotId] = userId;
 

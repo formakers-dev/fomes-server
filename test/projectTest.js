@@ -165,6 +165,31 @@ describe('Project', () => {
                 "1234",
                 config.testUser.userId
             ]
+        }, {
+            "seq": 2,
+            "type": "offline",
+            "introduce": "원더우먼 3차 인터뷰 소개",
+            "location": "서울",
+            "locationDescription": "서울오는길",
+            "apps": [{
+                packageName: 'woman.beauty.com1',
+                appName: '우먼뷰티앱1'
+            }],
+            "openDate": new Date("2017-10-31T15:00:00.000Z"),
+            "closeDate": new Date("2017-11-02T14:59:59.999Z"),
+            "interviewDate": new Date("2017-11-03T14:59:59.999Z"),
+            "totalCount": 2,
+            "timeSlot": {
+                "time17": "1234",
+                "time18": "5678",
+                "time19": ""
+            },
+            "emergencyPhone": "010-9999-0001",
+            "notifiedUserIds": [
+                "1234",
+                "5678",
+                config.testUser.userId
+            ]
         }],
         "descriptionImages": [{
             "name": "anyimage",
@@ -256,7 +281,7 @@ describe('Project', () => {
             clock = sandbox.useFakeTimers(new Date("2017-11-02T02:30:00.000Z").getTime()); // 한국 기준 11월2일 11시30분
         });
 
-        it('매칭된 인터뷰 목록을 조회한다', done => {
+        it('매칭된 인터뷰 목록 중 신청가능한 목록을 조회한다', done => {
             request.get('/projects/match/interviews')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
@@ -372,7 +397,6 @@ describe('Project', () => {
                     res.body.interviews.timeSlots.should.be.includes('time7');
                     res.body.interviews.timeSlots.should.be.includes('time8');
                     res.body.interviews.selectedTimeSlot.should.be.eql('');
-
 
                     done();
                 })
