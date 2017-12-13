@@ -79,6 +79,7 @@ const googleTokenVerifier = (req, res, next) => {
     verifyGoogleToken(req.headers['x-id-token'])
         .then((user) => {
             req.body = user;
+            req.userId = user.userId;
             next();
         })
         .catch((err) => {

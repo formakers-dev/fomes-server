@@ -4,9 +4,7 @@ const InvitationCodes = require('../models/invitationCodes');
 const config = require('../config');
 
 const upsertUser = (req, res, next) => {
-    const userId = (req.userId)? req.userId : req.body.userId;
-
-    User.findOneAndUpdate({userId: userId}, {$set: req.body}, {upsert: true})
+    User.findOneAndUpdate({userId: req.userId}, {$set: req.body}, {upsert: true})
         .exec()
         .then(() => next())
         .catch(err => sendError(res, err));
