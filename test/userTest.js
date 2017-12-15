@@ -1,8 +1,10 @@
-const chai = require('chai');
+const jwt = require('jsonwebtoken');
 const config = require('../config');
-const should = chai.should();
+const should = require('chai').should();
 const Users = require('../models/user');
 const InvitationCodes = require('../models/invitationCodes');
+require('./setupSinon')();
+
 const server = require('../server');
 const request = require('supertest').agent(server);
 
@@ -83,6 +85,69 @@ describe('Users', () => {
 
         after(done => {
             InvitationCodes.remove({}, done);
+        });
+    });
+
+    describe('POST /user/auth/', () => {
+        const signInUser = {
+            userId : null,
+            name: null,
+            email : null,
+            birthday: 1980,
+            gender: 'female',
+            registrationToken: 'new_registration_token',
+            provider: null,
+            providerId: null
+        };
+
+        before(done => {
+            Users.create(config.testUser, done);
+        });
+
+        it('구글토큰검증 후 User정보를 업데이트한다', done => {
+            request.post('/user/auth')
+                .set('x-id-token', config.testUser.googleIdToken)
+                .send(signInUser)
+                .expect(200)
+                .then((res) => {
+                    res.body.should.be.not.null;
+                    Users.findOne({userId: config.testUser.userId}, (err, user) => {
+                        user.userId.should.be.eql(config.testUser.userId);
+                        user.name.should.be.eql('testName');
+                        user.email.should.be.eql('test@email.com');
+                        user.birthday.should.be.eql(1980);
+                        user.gender.should.be.eql('female');
+                        user.provider.should.be.eql('google');
+                        user.providerId.should.be.eql("109974316241227718963");
+                        user.registrationToken.should.be.eql('new_registration_token');
+                        done();
+                    });
+                })
+                .catch(err => done(err));
+        });
+
+        it('구글토큰검증 후 AppBeeToken을 발급하여 리턴한다', done => {
+            request.post('/user/auth')
+                .set('x-id-token', config.testUser.googleIdToken)
+                .send(signInUser)
+                .expect(200)
+                .then((res) => {
+                    const appBeeToken = res.body;
+
+                    jwt.verify(appBeeToken, config.secret, (err, decoded) => {
+                        if(!err) {
+                            decoded.userId.should.be.eql(config.testUser.userId);
+                            done();
+                        } else {
+                            done('Invalid AppBee token is generated!!!');
+                        }
+                    });
+                })
+                .catch(err => done(err));
+        });
+
+        afterEach((done) => {
+            Users.remove({userId: config.testUser.userId}, done);
         });
     });
 });
