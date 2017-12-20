@@ -38,10 +38,7 @@ describe('Apps', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .send(data)
                 .expect(200)
-                .then(res => {
-                    res.body.should.be.eql(true);
-                    return AppUsages.find({userId: config.testUser.userId}).exec();
-                })
+                .then(() => AppUsages.find({userId: config.testUser.userId}).exec())
                 .then(docs => {
                     docs.length.should.be.eql(3);
                     docs[0].userId.should.be.eql(config.testUser.userId);
@@ -83,15 +80,12 @@ describe('Apps', () => {
                 .catch(err => done(err));
         });
 
-        it('빈 앱 사용기록을 전송한 경우, 아무 처리없이 true를 리턴한다.', done => {
+        it('빈 앱 사용기록을 전송한 경우, 아무 처리없이 200을 리턴한다.', done => {
             request.post('/apps/usages')
                 .set('x-access-token', config.appbeeToken.valid)
                 .send([])
                 .expect(200)
-                .then(res => {
-                    res.body.should.be.eql(true);
-                    done();
-                })
+                .then(() => done())
                 .catch(err => done(err));
         });
 

@@ -4,7 +4,7 @@ const postAppUsages = (req, res) => {
     if (!Array.isArray(req.body)) {
         res.sendStatus(400);
     } else if (req.body.length < 1) {
-        res.json(true);
+        res.sendStatus(200);
     } else {
         const bulkOps = [];
         const userId = req.userId;
@@ -22,9 +22,9 @@ const postAppUsages = (req, res) => {
         AppUsages.bulkWrite(bulkOps, err => {
             if (err) {
                 console.log(err);
-                res.json(false);
+                res.sendStatus(500);
             } else {
-                res.json(true);
+                res.sendStatus(200);
             }
         });
     }

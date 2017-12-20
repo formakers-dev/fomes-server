@@ -4,7 +4,7 @@ const postShortTermStats = (req, res) => {
     if (!Array.isArray(req.body)) {
         res.sendStatus(400);
     } else if (req.body.length < 1) {
-        res.json(true);
+        res.sendStatus(200);
     } else {
         const userId = req.userId;
         const bulkOps = [];
@@ -21,9 +21,9 @@ const postShortTermStats = (req, res) => {
         ShortTermStats.bulkWrite(bulkOps, err => {
             if (err) {
                 console.log(JSON.stringify(err, null, 2));
-                res.json(false);
+                res.sendStatus(500);
             } else {
-                res.json(true);
+                res.sendStatus(200);
             }
         });
     }
