@@ -8,7 +8,7 @@ const getProject = (req, res) => {
         .select('-interviews')
         .exec()
         .then(project => res.json(project))
-        .catch(err => res.status(500).json({error: err}));
+        .catch(err => sendStatus500Error(err, res));
 };
 
 const getProjectList = (req, res) => {
@@ -17,10 +17,9 @@ const getProjectList = (req, res) => {
         .sort({projectId: 1})
         .exec()
         .then(projects => res.json(projects))
-        .catch(err => res.status(500).json({error: err}));
+        .catch(err => sendStatus500Error(err, res));
 };
 
-//TODO : InterviewList 조회시 CurrentTime과 Locale상관관계 확인 필요
 const getInterview = (req, res) => {
     const userId = req.userId;
 
@@ -56,14 +55,10 @@ const getInterview = (req, res) => {
 
             res.json(projectInterviews[0]);
         })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({error: err})
-        });
+        .catch(err => sendStatus500Error(err, res));
 };
 
 const getInterviewList = (req, res) => {
-    //TODO : 추후 글로벌 확산 시 로케일 적용 필요, 현재는 서버기준로케일(한국) 따라감
     const currentTime = new Date();
     const userId = req.userId;
 
@@ -83,10 +78,7 @@ const getInterviewList = (req, res) => {
     ])
         .exec()
         .then(projectInterviews => res.json(filterRegisterdInterviews(userId, projectInterviews)))
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({error: err});
-        });
+        .catch(err => sendStatus500Error(err, res));
 };
 
 const filterRegisterdInterviews = (userId, projectInterviews) => {
@@ -105,7 +97,6 @@ const isAvailableToParticipate = (interview) => {
 };
 
 const getRegisteredInterviewList = (req, res) => {
-    //TODO : 추후 글로벌 확산 시 로케일 적용 필요, 현재는 서버기준로케일(한국) 따라감
     const currentTime = new Date();
     const userId = req.userId;
 
@@ -154,11 +145,10 @@ const getRegisteredInterviewList = (req, res) => {
 
             res.json(projects);
         })
-        .catch(err => res.status(500).json({error: err}));
+        .catch(err => sendStatus500Error(err, res));
 };
 
 const postParticipate = (req, res) => {
-    //TODO : 추후 글로벌 확산 시 로케일 적용 필요, 현재는 서버기준로케일(한국) 따라감
     const projectId = parseInt(req.params.id);
     const interviewSeq = parseInt(req.params.seq);
     const slotId = req.params.slotId;
@@ -202,15 +192,13 @@ const postParticipate = (req, res) => {
                 setTimeSlotWithUserId(projectId, interviewSeq, slotId, userId)
                     .then(() => {
                         createParticipationHistory(userId, 'participate', projectId, interviewSeq, slotId)
-                            .then(() => res.send(true))
-                            .catch(() => res.send(true));
+                            .then(() => res.sendStatus(200))
+                            .catch(() => res.sendStatus(200));
                     })
-                    .catch((err) => {
-                        res.send(err);
-                    });
+                    .catch(err => sendStatus500Error(err, res));
             }
         })
-        .catch(err => res.status(500).json({error: err}));
+        .catch(err => sendStatus500Error(err, res));
 };
 
 const setTimeSlotWithUserId = (projectId, interviewSeq, slotId, userId) => {
@@ -223,7 +211,6 @@ const setTimeSlotWithUserId = (projectId, interviewSeq, slotId, userId) => {
 };
 
 const cancelParticipation = (req, res) => {
-    //TODO : 추후 글로벌 확산 시 로케일 적용 필요, 현재는 서버기준로케일(한국) 따라감
     const projectId = parseInt(req.params.id);
     const interviewSeq = parseInt(req.params.seq);
     const slotId = req.params.slotId;
@@ -263,15 +250,13 @@ const cancelParticipation = (req, res) => {
                 setTimeSlotWithUserId(projectId, interviewSeq, slotId, '')
                     .then(() => {
                         createParticipationHistory(userId, 'cancel', projectId, interviewSeq, slotId)
-                            .then(() => res.send(true))
-                            .catch(() => res.send(true));
+                            .then(() => res.sendStatus(200))
+                            .catch(() => res.sendStatus(200));
                     })
-                    .catch((err) => {
-                        res.send(err);
-                    });
+                    .catch(err => sendStatus500Error(err, res));
             }
         })
-        .catch(err => res.status(500).json({error: err}));
+        .catch(err => sendStatus500Error(err, res));
 
 };
 
@@ -283,6 +268,11 @@ const createParticipationHistory = (userId, type, projectId, interviewSeq, slotI
         interviewSeq: interviewSeq,
         slotId: slotId
     });
+};
+
+const sendStatus500Error = (err, res) => {
+    console.error(err);
+    res.sendStatus(500);
 };
 
 module.exports = {

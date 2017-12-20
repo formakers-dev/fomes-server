@@ -458,10 +458,7 @@ describe('Project', () => {
             request.post('/projects/' + testProjectId + '/interviews/' + testInterviewSeq + '/participate/time7')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
-                .then((res) => {
-                    res.body.should.be.eql(true);
-                    return Projects.findOne({projectId: testProjectId});
-                })
+                .then(() => Projects.findOne({projectId: testProjectId}))
                 .then(project => {
                     const timeSlot = project.interviews.filter(interview => interview.seq === testInterviewSeq)[0].timeSlot;
 
@@ -481,10 +478,7 @@ describe('Project', () => {
             request.post('/projects/' + testProjectId + '/interviews/' + testInterviewSeq + '/participate/time7')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
-                .then((res) => {
-                    res.body.should.be.eql(true);
-                    return ParticipationHistories.findOne({userId: config.testUser.userId});
-                })
+                .then(() => ParticipationHistories.findOne({userId: config.testUser.userId}))
                 .then(participationHistory => {
                     participationHistory.type.should.be.eql('participate');
                     participationHistory.projectId.should.be.eql(testProjectId);
@@ -568,10 +562,7 @@ describe('Project', () => {
             request.post('/projects/' + testProjectId + '/interviews/2/cancel/time20')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
-                .then(res => {
-                    res.body.should.be.eql(true);
-                    return Projects.findOne({projectId: testProjectId});
-                })
+                .then(() => Projects.findOne({projectId: testProjectId}))
                 .then(project => {
                     project.interviews[1].seq.should.be.eql(1);
                     project.interviews[1].timeSlot['time20'].should.be.eql('');
@@ -584,10 +575,7 @@ describe('Project', () => {
             request.post('/projects/' + testProjectId + '/interviews/2/cancel/time20')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
-                .then(res => {
-                    res.body.should.be.eql(true);
-                    return ParticipationHistories.findOne({userId: config.testUser.userId});
-                })
+                .then(() => ParticipationHistories.findOne({userId: config.testUser.userId}))
                 .then(participationHistory => {
                     participationHistory.type.should.be.eql('cancel');
                     participationHistory.projectId.should.be.eql(testProjectId);
