@@ -35,7 +35,7 @@ const verifyInvitationCode = (req, res) => {
             if (code) {
                 res.sendStatus(200)
             } else {
-                res.sendStatus(401);
+                res.sendStatus(412);
             }
         })
         .catch(err => sendError(res, err));

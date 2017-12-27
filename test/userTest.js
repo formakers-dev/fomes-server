@@ -80,7 +80,7 @@ describe('Users', () => {
         it('등록코드가 유효하지 않은 경우 false를 리턴한다', done => {
             request.get('/user/verifyInvitationCode/INVALIDCODE')
                 .send()
-                .expect(401, done);
+                .expect(412, done);
         });
 
         after(done => {
