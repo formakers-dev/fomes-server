@@ -66,6 +66,29 @@ describe('Users', () => {
         });
     });
 
+    describe('GET /user/verifyToken', () => {
+        it('토큰이 유효한 경우 200을 리턴한다', done => {
+            request.get('/user/verifyToken')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send()
+                .expect(200, done);
+        });
+
+        it('토큰이 만료된 경우 401을 리턴한다', done => {
+            request.get('/user/verifyToken')
+                .set('x-access-token', config.appbeeToken.expired)
+                .send()
+                .expect(401, done);
+        });
+
+        it('토큰이 잘못된 경우 403을 리턴한다', done => {
+            request.get('/user/verifyToken')
+                .set('x-access-token', config.appbeeToken.invalid)
+                .send()
+                .expect(403, done);
+        });
+    });
+
     describe('GET /user/verifyInvitationCode/{code}', () => {
         before(done => {
             InvitationCodes.create({code: 'VALIDCODE'}, done);
