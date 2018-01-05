@@ -12,7 +12,7 @@ const upsertUser = (req, res, next) => {
 
 const generateToken = (req, res) => {
     jwt.sign(req.body, config.secret, {
-        expiresIn: '60d',
+        expiresIn: '1d',
         issuer: 'appbee.com',
         subject: 'AppBeeAuth'
     }, (err, newToken) => {
@@ -35,7 +35,7 @@ const verifyInvitationCode = (req, res) => {
             if (code) {
                 res.sendStatus(200)
             } else {
-                res.sendStatus(401);
+                res.sendStatus(412);
             }
         })
         .catch(err => sendError(res, err));

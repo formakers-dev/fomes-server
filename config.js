@@ -12,11 +12,10 @@ const config = {
         googleClientId: '',
         testUser: {
             userId: '109974316241227718963',
-            maxAge: 50,
-            minAge: 20,
             gender: 'male',
             email: 'appbee@appbee.com',
             registrationToken: 'test_user_registration_token',
+            googleIdToken: 'test_user_google_id_token',
         },
         appbeeToken: {
             valid: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMDk5NzQzMTYyNDEyMjc3MTg5NjMiLCJlbWFpbCI6ImFwcGJlZTA2MjdAZ21haWwuY29tIiwibmFtZSI6IkJlZSBBcHAiLCJwcm92aWRlciI6IkdHIiwiaWF0IjoxNTAxNTc0OTE3LCJleHAiOjQ2NTczMzQ5MTcsImlzcyI6ImFwcGJlZS5jb20iLCJzdWIiOiJBcHBCZWVBdXRoIn0.F09sUmkBtwvZei-RCt6eWUF17BhmHd30WlFhau7DTaQ",
