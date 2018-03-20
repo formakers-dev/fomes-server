@@ -9,7 +9,7 @@ dependencies:
     - ~/.npm
 
 deployment:
-  staging:
+  development:
     branch: development
     heroku:
-      appname: appbeesvr
+      appname: appbee-server-dev
