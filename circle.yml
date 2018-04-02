@@ -13,3 +13,7 @@ deployment:
     branch: development
     heroku:
       appname: appbee-server-dev
+  production:
+    branch: release
+    heroku:
+      appname: appbee-server
