@@ -1,4 +1,6 @@
 machine:
+  timezone:
+    Asia/Tokyo
   node:
     version: 6.11.0
 
@@ -9,7 +11,11 @@ dependencies:
     - ~/.npm
 
 deployment:
-  staging:
+  development:
     branch: development
     heroku:
-      appname: appbeesvr
+      appname: appbee-server-dev
+  staging:
+    branch: release
+    heroku:
+      appname: appbee-server-stg

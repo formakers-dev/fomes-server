@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.get('/', (req, res) => {
-    res.send('Hello AppBee');
+    res.send('Hello AppBee Mobile Server (' + process.env.NODE_ENV + ')');
 });
 
 app.use('/user', userRouter);
