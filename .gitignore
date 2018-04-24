@@ -6,3 +6,4 @@ package-lock.json
 *.DS_Store
 *.log
 /.nyc_output
+npm-debug.log

@@ -13,7 +13,7 @@ deployment:
     branch: development
     heroku:
       appname: appbee-server-dev
-  production:
+  staging:
     branch: release
     heroku:
-      appname: appbee-server
+      appname: appbee-server-stg
