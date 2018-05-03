@@ -7,7 +7,8 @@ const usersSchema = new mongoose.Schema({
     gender: String,
     registrationToken: String,
     provider: String,
-    providerId: String
+    providerId: String,
+    lastStatsUpdateTime: Date,
 });
 
 const user = mongoose.model('users', usersSchema);

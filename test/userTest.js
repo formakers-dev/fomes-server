@@ -21,9 +21,10 @@ describe('Users', () => {
                 .expect(200)
                 .then(() => {
                     Users.findOne({userId: testUser.userId}, (err, user) => {
-                        user.userId.should.be.eql(testUser.userId);
+                        user.userId.should.be.eql('109974316241227718963');
                         user.gender.should.be.eql("male");
-                        user.registrationToken.should.be.eql(testUser.registrationToken);
+                        user.email.should.be.eql("appbee@appbee.com");
+                        user.registrationToken.should.be.eql('new_user_token');
                         done();
                     });
                 })
