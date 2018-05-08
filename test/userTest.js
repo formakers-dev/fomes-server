@@ -21,9 +21,10 @@ describe('Users', () => {
                 .expect(200)
                 .then(() => {
                     Users.findOne({userId: testUser.userId}, (err, user) => {
-                        user.userId.should.be.eql(testUser.userId);
+                        user.userId.should.be.eql('109974316241227718963');
                         user.gender.should.be.eql("male");
-                        user.registrationToken.should.be.eql(testUser.registrationToken);
+                        user.email.should.be.eql("appbee@appbee.com");
+                        user.registrationToken.should.be.eql('new_user_token');
                         done();
                     });
                 })
@@ -120,7 +121,11 @@ describe('Users', () => {
             gender: 'female',
             registrationToken: 'new_registration_token',
             provider: null,
-            providerId: null
+            providerId: null,
+            signUpCode: {
+                type: 'beta',
+                value: 'TEST_BETA_CODE'
+            }
         };
 
         before(done => {
@@ -143,6 +148,8 @@ describe('Users', () => {
                         user.provider.should.be.eql('google');
                         user.providerId.should.be.eql("109974316241227718963");
                         user.registrationToken.should.be.eql('new_registration_token');
+                        user.signUpCode.type.should.be.eql('beta');
+                        user.signUpCode.value.should.be.eql('TEST_BETA_CODE');
                         done();
                     });
                 })

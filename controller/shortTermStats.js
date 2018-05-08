@@ -1,3 +1,4 @@
+const User = require('../models/user');
 const ShortTermStats = require('./../models/shortTermStats');
 
 const postShortTermStats = (req, res) => {
@@ -18,14 +19,15 @@ const postShortTermStats = (req, res) => {
             });
         });
 
-        ShortTermStats.bulkWrite(bulkOps, err => {
-            if (err) {
+        ShortTermStats.bulkWrite(bulkOps).then(() =>
+            User.findOneAndUpdate({userId: req.userId},
+                {$set: {"lastStatsUpdateTime" : new Date()}},
+                {upsert: true})
+        ).then(() => res.sendStatus(200))
+        .catch(err => {
                 console.log(JSON.stringify(err, null, 2));
                 res.sendStatus(500);
-            } else {
-                res.sendStatus(200);
-            }
-        });
+            });
     }
 };
 
