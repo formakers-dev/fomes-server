@@ -1,0 +1,110 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+# * Variables
+# {{ .Branch }} : get current branch name
+version: 2
+jobs:
+  build: # runs not using Workflows must have a `build` job as entry point
+    working_directory: ~/girlserver # directory where steps will run
+    docker: # run the steps with Docker
+      - image: circleci/node:8.11
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/mongo:3.4.4
+        environment:
+          TZ: "/usr/share/zoneinfo/Asia/Tokyo"
+
+    steps: # a collection of executable commands
+      - checkout # special step to check out source code to working directory
+      - run:
+          name: update-npm
+          command: 'sudo npm install -g npm@latest'
+#      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+      - run:
+          name: install-dependencies
+          command: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      # run tests!
+      - run:
+          name: test
+          command: npm test
+#      - run:
+#          name: code-coverage
+#          command: '../node_modules/.bin/nyc report --reporter=text-lcov'
+#      - store_artifacts: # special step to save test results as as artifact
+#          path: test-results.xml
+#          prefix: tests
+#      - store_artifacts:
+#          path: coverage
+#          prefix: coverage
+#      - store_test_results: # special step to upload test results for display in Test Summary
+#          path: test-results.xml
+
+  dev-deploy:
+    machine:
+        enable: true
+    working_directory: ~/girlserver
+    environment:
+      - HEROKU_APP : appbee-server-dev
+    steps:
+      - checkout
+      - run:
+          name: Setup Heroku
+          command: bash .circleci/setup-heroku.sh $HEROKU_APP
+      - run:
+          name: Deploy to Heroku
+          command: |
+            git push heroku master -f
+            heroku run rake db:migrate
+            sleep 5
+            heroku restart
+
+  stg-deploy:
+    machine:
+        enable: true
+    working_directory: ~/girlserver
+    environment:
+      - HEROKU_APP : appbee-server-stg
+    steps:
+      - checkout
+      - run:
+          name: Setup Heroku
+          command: bash .circleci/setup-heroku.sh $HEROKU_APP
+      - run:
+          name: Deploy to Heroku
+          command: |
+            git push heroku master -f
+            heroku run rake db:migrate
+            sleep 5
+            heroku restart
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - dev-deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - development
+      - stg-deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - release
