@@ -1,12 +1,27 @@
-version: 2
-jobs:
-  build:                              # runs not using Workflows must have a `build` job as entry point
-    working_directory: ~/girlserver   # directory where steps will run
+aliases:
+  - &setup-heroku
+    name: Setup Heroku
+    command: bash .circleci/setup-heroku.sh $HEROKU_APP
+
+  - &deploy-to-heroku
+    name: Deploy to Heroku
+    command: |
+      git push heroku master -f
+      heroku run rake db:migrate
+      sleep 5
+      heroku restart
+
+defaults: &defaults
+    working_directory: ~/girlserver # directory where steps will run
     docker:
       - image: circleci/node:8.11
         environment:
           TZ: "/usr/share/zoneinfo/Asia/Tokyo"
 
+version: 2
+jobs:
+  build:                              # runs not using Workflows must have a `build` job as entry point
+    <<: *defaults
     steps:                            # a collection of executable commands
       - checkout                      # special step to check out source code to working directory
       - run:
@@ -39,42 +54,22 @@ jobs:
 #          path: test-results.xml
 
   dev-deploy:
-    machine:
-        enable: true
-    working_directory: ~/girlserver
+    <<: *defaults
     environment:
       - HEROKU_APP : appbee-server-dev
     steps:
       - checkout
-      - run:
-          name: Setup Heroku
-          command: bash .circleci/setup-heroku.sh $HEROKU_APP
-      - run:
-          name: Deploy to Heroku
-          command: |
-            git push heroku master -f
-            heroku run rake db:migrate
-            sleep 5
-            heroku restart
+      - run: *setup-heroku
+      - run: *deploy-to-heroku
 
   stg-deploy:
-    machine:
-        enable: true
-    working_directory: ~/girlserver
+    <<: *defaults
     environment:
       - HEROKU_APP : appbee-server-stg
     steps:
       - checkout
-      - run:
-          name: Setup Heroku
-          command: bash .circleci/setup-heroku.sh $HEROKU_APP
-      - run:
-          name: Deploy to Heroku
-          command: |
-            git push heroku master -f
-            heroku run rake db:migrate
-            sleep 5
-            heroku restart
+      - run: *setup-heroku
+      - run: *deploy-to-heroku
       - run:
           name: Archive and Delivery to Slack
           command: bash .circleci/archive-and-delivery-to-slack.sh $CIRCLE_BRANCH
