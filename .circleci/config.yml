@@ -62,7 +62,7 @@ jobs:
       - run: *setup-heroku
       - run: *deploy-to-heroku
 
-  stg-deploy:
+  stg-deploy-and-prd-archiving:
     <<: *defaults
     environment:
       - HEROKU_APP : appbee-server-stg
@@ -88,7 +88,7 @@ workflows:
             branches:
               only:
                 - development
-      - stg-deploy:
+      - stg-deploy-and-prd-archiving:
           requires:
             - build
           filters:
