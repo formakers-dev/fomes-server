@@ -30,4 +30,16 @@ const postAppUsages = (req, res) => {
     }
 };
 
-module.exports = {postAppUsages};
+const getAppUsageByCategory = (req, res) => {
+    const regex = `/store/apps/category/${req.params.categoryId}.*`;
+
+    AppUsages.find({userId: req.userId})
+        .populate('appInfo')
+        .lean()
+        .then(appusages => {
+            res.json(appusages.filter(appusage => new RegExp(regex).test(appusage.appInfo.categoryId1))
+                .sort((a, b) => b.totalUsedTime > a.totalUsedTime));
+        }).catch(err => console.log(err));
+};
+
+module.exports = {postAppUsages, getAppUsageByCategory};

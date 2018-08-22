@@ -2,7 +2,7 @@ const chai = require('chai');
 const server = require('../server');
 const config = require('../config');
 const request = require('supertest').agent(server);
-const AppUsages = require('../models/appUsages');
+const { AppUsages, Apps } = require('../models/appUsages');
 const should = chai.should();
 
 describe('Apps', () => {
@@ -91,6 +91,155 @@ describe('Apps', () => {
 
         afterEach(done => {
             AppUsages.remove({}, done);
+        });
+    });
+
+    describe('GET appUsages by category', () => {
+        before(done => {
+            AppUsages.create([{
+                userId: 'anotherUserId',
+                packageName: 'com.test.testt',
+                totalUsedTime: 9992
+            }, {
+                userId: config.testUser.userId,
+                packageName: 'com.nhn.android.nmap',
+                totalUsedTime: 9999
+            }, {
+                userId: config.testUser.userId,
+                packageName: 'com.kakao.talk',
+                totalUsedTime: 40000
+            }, {
+                userId: config.testUser.userId,
+                packageName: 'com.nhn.line',
+                totalUsedTime: 20000
+            }, {
+                userId: config.testUser.userId,
+                packageName: 'com.game.edu',
+                totalUsedTime: 90000
+            }, {
+                userId: config.testUser.userId,
+                packageName: 'com.game.rpg',
+                totalUsedTime: 10000
+            }], function () {
+                Apps.create([{
+                    packageName: 'com.test.testt',
+                    appName: '테스트앱',
+                    categoryId1: '/store/apps/category/TEST',
+                    categoryName1: '테스트',
+                    developer: 'Test Developer',
+                    iconUrl: 'testIconUrl',
+                }, {
+                    packageName: 'com.nhn.android.nmap',
+                    appName: '네이버지도',
+                    categoryId1: '/store/apps/category/TOOL',
+                    categoryName1: '도구',
+                    developer: 'NHN Corp.',
+                    iconUrl: 'iconUrl0',
+                }, {
+                    packageName: 'com.kakao.talk',
+                    appName: '카카오톡',
+                    categoryId1: '/store/apps/category/COMMUNICATION',
+                    categoryName1: '커뮤니케이션',
+                    developer: 'Kakao Coperation',
+                    iconUrl: 'iconUrl1',
+                }, {
+                    packageName: 'com.nhn.line',
+                    appName: '네이버 라인',
+                    categoryId1: '/store/apps/category/COMMUNICATION',
+                    categoryName1: '커뮤니케이션',
+                    developer: 'NHN Corp.',
+                    iconUrl: 'iconUrl2',
+                }, {
+                    packageName: 'com.game.edu',
+                    appName: '교육게임명',
+                    categoryId1: '/store/apps/category/GAME_EDUCATIONAL',
+                    categoryName1: '교육',
+                    developer: 'Edu Game Corp.',
+                    iconUrl: 'iconUrl3',
+                }, {
+                    packageName: 'com.game.rpg',
+                    appName: '롤플레잉게임명',
+                    categoryId1: '/store/apps/category/GAME_ROLE_PLAYING',
+                    categoryName1: '롤플레잉',
+                    developer: 'Rpg Game Corp.',
+                    iconUrl: 'iconUrl4',
+                }], function () {
+                    done()
+                });
+            });
+        });
+
+        it('요청한 사용자의 데이터들만 리턴한다', done => {
+            request.get('/apps/usages/category/TOOL')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.length.should.be.eql(1);
+
+                    res.body[0].userId.should.be.eql(config.testUser.userId);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('지정한 카테고리의 앱 누적 사용 데이터들을 리턴한다', done => {
+            request.get('/apps/usages/category/COMMUNICATION')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.length.should.be.eql(2);
+
+                    res.body[0].appInfo.packageName.should.be.eql('com.kakao.talk');
+                    res.body[0].appInfo.appName.should.be.eql('카카오톡');
+                    res.body[0].appInfo.categoryId1.should.be.eql('/store/apps/category/COMMUNICATION');
+                    res.body[0].appInfo.categoryName1.should.be.eql('커뮤니케이션');
+                    res.body[0].appInfo.developer.should.be.eql('Kakao Coperation');
+                    res.body[0].appInfo.iconUrl.should.be.eql('iconUrl1');
+                    res.body[0].totalUsedTime.should.be.eql(40000);
+
+                    res.body[1].appInfo.packageName.should.be.eql('com.nhn.line');
+                    res.body[1].appInfo.appName.should.be.eql('네이버 라인');
+                    res.body[1].appInfo.categoryId1.should.be.eql('/store/apps/category/COMMUNICATION');
+                    res.body[1].appInfo.categoryName1.should.be.eql('커뮤니케이션');
+                    res.body[1].appInfo.developer.should.be.eql('NHN Corp.');
+                    res.body[1].appInfo.iconUrl.should.be.eql('iconUrl2');
+                    res.body[1].totalUsedTime.should.be.eql(20000);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('지정한 대분류 카테고리들의 앱 누적 사용 데이터들을 리턴한다', done => {
+            request.get('/apps/usages/category/GAME')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.length.should.be.eql(2);
+
+                    res.body[0].appInfo.packageName.should.be.eql('com.game.edu');
+                    res.body[0].appInfo.appName.should.be.eql('교육게임명');
+                    res.body[0].appInfo.categoryId1.should.be.eql('/store/apps/category/GAME_EDUCATIONAL');
+                    res.body[0].appInfo.categoryName1.should.be.eql('교육');
+                    res.body[0].appInfo.developer.should.be.eql('Edu Game Corp.');
+                    res.body[0].appInfo.iconUrl.should.be.eql('iconUrl3');
+                    res.body[0].totalUsedTime.should.be.eql(90000);
+
+                    res.body[1].appInfo.packageName.should.be.eql('com.game.rpg');
+                    res.body[1].appInfo.appName.should.be.eql('롤플레잉게임명');
+                    res.body[1].appInfo.categoryId1.should.be.eql('/store/apps/category/GAME_ROLE_PLAYING');
+                    res.body[1].appInfo.categoryName1.should.be.eql('롤플레잉');
+                    res.body[1].appInfo.developer.should.be.eql('Rpg Game Corp.');
+                    res.body[1].appInfo.iconUrl.should.be.eql('iconUrl4');
+                    res.body[1].totalUsedTime.should.be.eql(10000);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        after(done => {
+            AppUsages.remove({}, () => {
+                Apps.remove({}, done);
+            });
         });
     });
 });
