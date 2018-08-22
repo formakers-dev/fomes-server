@@ -1,4 +1,4 @@
-const AppUsages = require('../models/appUsages');
+const { AppUsages } = require('../models/appUsages');
 
 const postAppUsages = (req, res) => {
     if (!Array.isArray(req.body)) {
