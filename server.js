@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const morgan = require('morgan');
 const packagejson = require('./package.json');
 const statsRouter = require('./router/stats');
 const appsRouter = require('./router/apps');
@@ -17,6 +18,8 @@ app.use(bodyParser.urlencoded({
     limit: '10mb',
     extended: true
 }));
+
+app.use(morgan('combined'));
 
 app.get('/', (req, res) => {
     res.send('Hello AppBee Mobile Server (' + process.env.NODE_ENV + ' v' +  packagejson.version +')');
