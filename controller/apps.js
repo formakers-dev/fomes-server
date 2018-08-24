@@ -37,7 +37,8 @@ const getAppUsageByCategory = (req, res) => {
         .populate('appInfo')
         .lean()
         .then(appusages => {
-            res.json(appusages.filter(appusage => new RegExp(regex).test(appusage.appInfo.categoryId1))
+            res.json(appusages.filter(appusage => appusage.appInfo !== null && appusage.appInfo !== undefined
+                    && new RegExp(regex).test(appusage.appInfo.categoryId1))
                 .sort((a, b) => b.totalUsedTime > a.totalUsedTime));
         }).catch(err => console.log(err));
 };

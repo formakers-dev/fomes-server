@@ -120,6 +120,11 @@ describe('Apps', () => {
                 userId: config.testUser.userId,
                 packageName: 'com.game.rpg',
                 totalUsedTime: 10000
+            }, {
+                // 특정 앱의 사용 데이터는 있지만 해당 앱 정보가 DB에 없는 경우, 해당 앱은 제외한다.
+                userId: config.testUser.userId,
+                packageName: 'com.game.empty',
+                totalUsedTime: 10000
             }], function () {
                 Apps.create([{
                     packageName: 'com.test.testt',
