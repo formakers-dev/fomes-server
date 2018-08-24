@@ -70,8 +70,8 @@ const getAppUsageByCategory = (req, res) => {
         .populate('appInfo')
         .lean()
         .then(appusages => {
-            res.json(appusages.filter(appusage => appusage.appInfo !== null && appusage.appInfo !== undefined
-                && new RegExp(regex).test(appusage.appInfo.categoryId1))
+            res.json(appusages.filter(appusage => appusage.appInfo
+                    && new RegExp(regex).test(appusage.appInfo.categoryId1))
                 .sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1));
         }).catch(err => console.log(err));
 };
@@ -80,44 +80,31 @@ const getCategoryUsage = (req, res) => {
     AppUsages.find({userId: req.userId})
         .populate('appInfo')
         .lean()
-        .then(appusages => {
-
-            appusages = appusages.filter(appusage => appusage.appInfo !== null && appusage.appInfo !== undefined);
-
-            const categorySumMap = {};
-
-            appusages.map(appusage => {
-                const regex = `([^_]+)_.*`;
-                const matchedGroups = appusage.appInfo.categoryId1.match(regex);
-                if (matchedGroups !== null && matchedGroups !== undefined) {
+        .then(appUsages => {
+            const categoryUsageMap = appUsages.filter(appusage => appusage.appInfo).map(appUsage => {
+                return {
+                    categoryId: appUsage.appInfo.categoryId1,
+                    categoryName: appUsage.appInfo.categoryName1,
+                    totalUsedTime: appUsage.totalUsedTime,
+                }
+            }).map(appUsage => {
+                const matchedGroups = appUsage.categoryId.match(`([^_]+)_.*`);
+                if (matchedGroups) {
                     const parentCategoryId = matchedGroups[1];
                     if (Object.keys(parentCategories).includes(parentCategoryId)) {
-                        appusage.appInfo.categoryId1 = parentCategoryId;
-                        appusage.appInfo.categoryName1 = parentCategories[parentCategoryId];
+                        appUsage.categoryId = parentCategoryId;
+                        appUsage.categoryName = parentCategories[parentCategoryId];
                     }
                 }
-                return appusage;
-            }).forEach(appusage => {
-                const categoryId = appusage.appInfo.categoryId1;
+                return appUsage;
+            }).reduce((map, appUsage) => {
+                !map[appUsage.categoryId] ?
+                    map[appUsage.categoryId] = appUsage :
+                    map[appUsage.categoryId].totalUsedTime += appUsage.totalUsedTime;
+                return map;
+            }, {});
 
-                if (categorySumMap[categoryId] === null
-                    || categorySumMap[categoryId] === undefined) {
-                    categorySumMap[categoryId] = {
-                        totalUsedTime: appusage.totalUsedTime,
-                        name: appusage.appInfo.categoryName1
-                    };
-                } else {
-                    categorySumMap[categoryId].totalUsedTime += appusage.totalUsedTime;
-                }
-            });
-
-            res.json(Object.keys(categorySumMap).map(key => {
-                return {
-                    categoryId: key,
-                    categoryName: categorySumMap[key].name,
-                    totalUsedTime: categorySumMap[key].totalUsedTime
-                };
-            }).sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1));
+            res.json(Object.values(categoryUsageMap).sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1));
         }).catch(err => console.log(err));
 };
 
