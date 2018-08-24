@@ -247,4 +247,144 @@ describe('Apps', () => {
             });
         });
     });
+
+    describe('GET rank of appUsages group by category', () => {
+        beforeEach(done => {
+            AppUsages.create([{
+                userId: 'anotherUserId',
+                packageName: 'com.test.testt',
+                totalUsedTime: 9992
+            }, {
+                userId: config.testUser.userId,
+                packageName: 'com.nhn.android.nmap',
+                totalUsedTime: 9999
+            }, {
+                userId: config.testUser.userId,
+                packageName: 'com.kakao.talk',
+                totalUsedTime: 40000
+            }, {
+                userId: config.testUser.userId,
+                packageName: 'com.nhn.line',
+                totalUsedTime: 20000
+            }, {
+                // 특정 앱의 사용 데이터는 있지만 해당 앱 정보가 DB에 없는 경우, 해당 앱은 제외한다.
+                userId: config.testUser.userId,
+                packageName: 'com.game.empty',
+                totalUsedTime: 10000
+            }], function () {
+                Apps.create([{
+                    packageName: 'com.test.testt',
+                    appName: '테스트앱',
+                    categoryId1: '/store/apps/category/TEST',
+                    categoryName1: '테스트',
+                    developer: 'Test Developer',
+                    iconUrl: 'testIconUrl',
+                }, {
+                    packageName: 'com.nhn.android.nmap',
+                    appName: '네이버지도',
+                    categoryId1: '/store/apps/category/TOOL',
+                    categoryName1: '도구',
+                    developer: 'NHN Corp.',
+                    iconUrl: 'iconUrl0',
+                }, {
+                    packageName: 'com.kakao.talk',
+                    appName: '카카오톡',
+                    categoryId1: '/store/apps/category/COMMUNICATION',
+                    categoryName1: '커뮤니케이션',
+                    developer: 'Kakao Coperation',
+                    iconUrl: 'iconUrl1',
+                }, {
+                    packageName: 'com.nhn.line',
+                    appName: '네이버 라인',
+                    categoryId1: '/store/apps/category/COMMUNICATION',
+                    categoryName1: '커뮤니케이션',
+                    developer: 'NHN Corp.',
+                    iconUrl: 'iconUrl2',
+                }], function () {
+                    done()
+                });
+            });
+        });
+
+        describe('/apps/usages/rank/category 가 호출되면', () => {
+            it('카테고리별 앱 사용 시간을 합산하여 정렬된 리스트를 반환한다', done => {
+                request.get('/apps/usages/rank/category')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .expect(200)
+                    .then(res => {
+                        res.body.length.should.be.eql(2);
+
+                        res.body[0].categoryId.should.be.eql('/store/apps/category/COMMUNICATION');
+                        res.body[0].categoryName.should.be.eql('커뮤니케이션');
+                        res.body[0].totalUsedTime.should.be.eql(60000);
+
+                        res.body[1].categoryId.should.be.eql('/store/apps/category/TOOL');
+                        res.body[1].categoryName.should.be.eql('도구');
+                        res.body[1].totalUsedTime.should.be.eql(9999);
+                        done();
+                    }).catch(err => done(err));
+            });
+        });
+
+        describe('대분류에 속하는 앱을 사용하는 유저가 호출한 경우', () => {
+            before(done => {
+                AppUsages.insertMany([{
+                    userId: config.testUser.userId,
+                    packageName: 'com.game.edu',
+                    totalUsedTime: 90000
+                }, {
+                    userId: config.testUser.userId,
+                    packageName: 'com.game.rpg',
+                    totalUsedTime: 10000
+                }], function () {
+                    Apps.insertMany([{
+                        packageName: 'com.game.edu',
+                        appName: '교육게임명',
+                        categoryId1: '/store/apps/category/GAME_EDUCATIONAL',
+                        categoryName1: '교육',
+                        developer: 'Edu Game Corp.',
+                        iconUrl: 'iconUrl3',
+                    }, {
+                        packageName: 'com.game.rpg',
+                        appName: '롤플레잉게임명',
+                        categoryId1: '/store/apps/category/GAME_ROLE_PLAYING',
+                        categoryName1: '롤플레잉',
+                        developer: 'Rpg Game Corp.',
+                        iconUrl: 'iconUrl4',
+                    }], function () {
+                        done()
+                    });
+                });
+            });
+
+            it('카테고리별 앱 사용 시간을 합산하여 정렬된 리스트를 반환한다', done => {
+                request.get('/apps/usages/rank/category')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .expect(200)
+                    .then(res => {
+                        res.body.length.should.be.eql(3);
+
+                        res.body[0].categoryId.should.be.eql('/store/apps/category/GAME');
+                        res.body[0].categoryName.should.be.eql('게임');
+                        res.body[0].totalUsedTime.should.be.eql(100000);
+
+                        res.body[1].categoryId.should.be.eql('/store/apps/category/COMMUNICATION');
+                        res.body[1].categoryName.should.be.eql('커뮤니케이션');
+                        res.body[1].totalUsedTime.should.be.eql(60000);
+
+                        res.body[2].categoryId.should.be.eql('/store/apps/category/TOOL');
+                        res.body[2].categoryName.should.be.eql('도구');
+                        res.body[2].totalUsedTime.should.be.eql(9999);
+                        done();
+                    }).catch(err => done(err));
+            });
+        });
+
+
+        afterEach(done => {
+            AppUsages.remove({}, () => {
+                Apps.remove({}, done);
+            });
+        });
+    });
 });
