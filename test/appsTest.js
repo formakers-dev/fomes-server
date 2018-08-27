@@ -260,12 +260,12 @@ describe('Apps', () => {
                 totalUsedTime: 9999
             }, {
                 userId: config.testUser.userId,
-                packageName: 'com.kakao.talk',
-                totalUsedTime: 40000
-            }, {
-                userId: config.testUser.userId,
                 packageName: 'com.nhn.line',
                 totalUsedTime: 20000
+            }, {
+                userId: config.testUser.userId,
+                packageName: 'com.kakao.talk',
+                totalUsedTime: 40000
             }, {
                 // 특정 앱의 사용 데이터는 있지만 해당 앱 정보가 DB에 없는 경우, 해당 앱은 제외한다.
                 userId: config.testUser.userId,

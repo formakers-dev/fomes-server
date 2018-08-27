@@ -40,7 +40,7 @@ const getAppUsageByCategory = (req, res) => {
         .then(appusages => {
             res.json(appusages.filter(appusage => appusage.appInfo !== null && appusage.appInfo !== undefined
                     && new RegExp(regex).test(appusage.appInfo.categoryId1))
-                .sort((a, b) => b.totalUsedTime > a.totalUsedTime));
+                .sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1));
         }).catch(err => console.log(err));
 };
 
@@ -85,7 +85,7 @@ const getCategoryUsage = (req, res) => {
                     categoryName: categorySumMap[key].name,
                     totalUsedTime: categorySumMap[key].totalUsedTime
                 };
-            }).sort((a, b) => b.totalUsedTime > a.totalUsedTime));
+            }).sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1));
         }).catch(err => console.log(err));
 };
 
