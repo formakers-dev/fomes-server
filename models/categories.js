@@ -7,8 +7,8 @@ const categoriesSchema = new Schema({
 });
 
 const parentCategories = {
-    '/store/apps/category/GAME': '게임',
-    '/store/apps/category/KIDS': '키즈',
+    'GAME': '게임',
+    'KIDS': '키즈',
 };
 
 const category = mongoose.model('categories', categoriesSchema);

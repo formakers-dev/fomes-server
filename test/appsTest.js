@@ -129,42 +129,42 @@ describe('Apps', () => {
                 Apps.create([{
                     packageName: 'com.test.testt',
                     appName: '테스트앱',
-                    categoryId1: '/store/apps/category/TEST',
+                    categoryId1: 'TEST',
                     categoryName1: '테스트',
                     developer: 'Test Developer',
                     iconUrl: 'testIconUrl',
                 }, {
                     packageName: 'com.nhn.android.nmap',
                     appName: '네이버지도',
-                    categoryId1: '/store/apps/category/TOOL',
+                    categoryId1: 'TOOL',
                     categoryName1: '도구',
                     developer: 'NHN Corp.',
                     iconUrl: 'iconUrl0',
                 }, {
                     packageName: 'com.kakao.talk',
                     appName: '카카오톡',
-                    categoryId1: '/store/apps/category/COMMUNICATION',
+                    categoryId1: 'COMMUNICATION',
                     categoryName1: '커뮤니케이션',
                     developer: 'Kakao Coperation',
                     iconUrl: 'iconUrl1',
                 }, {
                     packageName: 'com.nhn.line',
                     appName: '네이버 라인',
-                    categoryId1: '/store/apps/category/COMMUNICATION',
+                    categoryId1: 'COMMUNICATION',
                     categoryName1: '커뮤니케이션',
                     developer: 'NHN Corp.',
                     iconUrl: 'iconUrl2',
                 }, {
                     packageName: 'com.game.edu',
                     appName: '교육게임명',
-                    categoryId1: '/store/apps/category/GAME_EDUCATIONAL',
+                    categoryId1: 'GAME_EDUCATIONAL',
                     categoryName1: '교육',
                     developer: 'Edu Game Corp.',
                     iconUrl: 'iconUrl3',
                 }, {
                     packageName: 'com.game.rpg',
                     appName: '롤플레잉게임명',
-                    categoryId1: '/store/apps/category/GAME_ROLE_PLAYING',
+                    categoryId1: 'GAME_ROLE_PLAYING',
                     categoryName1: '롤플레잉',
                     developer: 'Rpg Game Corp.',
                     iconUrl: 'iconUrl4',
@@ -196,7 +196,7 @@ describe('Apps', () => {
 
                     res.body[0].appInfo.packageName.should.be.eql('com.kakao.talk');
                     res.body[0].appInfo.appName.should.be.eql('카카오톡');
-                    res.body[0].appInfo.categoryId1.should.be.eql('/store/apps/category/COMMUNICATION');
+                    res.body[0].appInfo.categoryId1.should.be.eql('COMMUNICATION');
                     res.body[0].appInfo.categoryName1.should.be.eql('커뮤니케이션');
                     res.body[0].appInfo.developer.should.be.eql('Kakao Coperation');
                     res.body[0].appInfo.iconUrl.should.be.eql('iconUrl1');
@@ -204,7 +204,7 @@ describe('Apps', () => {
 
                     res.body[1].appInfo.packageName.should.be.eql('com.nhn.line');
                     res.body[1].appInfo.appName.should.be.eql('네이버 라인');
-                    res.body[1].appInfo.categoryId1.should.be.eql('/store/apps/category/COMMUNICATION');
+                    res.body[1].appInfo.categoryId1.should.be.eql('COMMUNICATION');
                     res.body[1].appInfo.categoryName1.should.be.eql('커뮤니케이션');
                     res.body[1].appInfo.developer.should.be.eql('NHN Corp.');
                     res.body[1].appInfo.iconUrl.should.be.eql('iconUrl2');
@@ -223,7 +223,7 @@ describe('Apps', () => {
 
                     res.body[0].appInfo.packageName.should.be.eql('com.game.edu');
                     res.body[0].appInfo.appName.should.be.eql('교육게임명');
-                    res.body[0].appInfo.categoryId1.should.be.eql('/store/apps/category/GAME_EDUCATIONAL');
+                    res.body[0].appInfo.categoryId1.should.be.eql('GAME_EDUCATIONAL');
                     res.body[0].appInfo.categoryName1.should.be.eql('교육');
                     res.body[0].appInfo.developer.should.be.eql('Edu Game Corp.');
                     res.body[0].appInfo.iconUrl.should.be.eql('iconUrl3');
@@ -231,7 +231,7 @@ describe('Apps', () => {
 
                     res.body[1].appInfo.packageName.should.be.eql('com.game.rpg');
                     res.body[1].appInfo.appName.should.be.eql('롤플레잉게임명');
-                    res.body[1].appInfo.categoryId1.should.be.eql('/store/apps/category/GAME_ROLE_PLAYING');
+                    res.body[1].appInfo.categoryId1.should.be.eql('GAME_ROLE_PLAYING');
                     res.body[1].appInfo.categoryName1.should.be.eql('롤플레잉');
                     res.body[1].appInfo.developer.should.be.eql('Rpg Game Corp.');
                     res.body[1].appInfo.iconUrl.should.be.eql('iconUrl4');
@@ -275,28 +275,28 @@ describe('Apps', () => {
                 Apps.create([{
                     packageName: 'com.test.testt',
                     appName: '테스트앱',
-                    categoryId1: '/store/apps/category/TEST',
+                    categoryId1: 'TEST',
                     categoryName1: '테스트',
                     developer: 'Test Developer',
                     iconUrl: 'testIconUrl',
                 }, {
                     packageName: 'com.nhn.android.nmap',
                     appName: '네이버지도',
-                    categoryId1: '/store/apps/category/TOOL',
+                    categoryId1: 'TOOL',
                     categoryName1: '도구',
                     developer: 'NHN Corp.',
                     iconUrl: 'iconUrl0',
                 }, {
                     packageName: 'com.kakao.talk',
                     appName: '카카오톡',
-                    categoryId1: '/store/apps/category/COMMUNICATION',
+                    categoryId1: 'COMMUNICATION',
                     categoryName1: '커뮤니케이션',
                     developer: 'Kakao Coperation',
                     iconUrl: 'iconUrl1',
                 }, {
                     packageName: 'com.nhn.line',
                     appName: '네이버 라인',
-                    categoryId1: '/store/apps/category/COMMUNICATION',
+                    categoryId1: 'COMMUNICATION',
                     categoryName1: '커뮤니케이션',
                     developer: 'NHN Corp.',
                     iconUrl: 'iconUrl2',
@@ -314,11 +314,11 @@ describe('Apps', () => {
                     .then(res => {
                         res.body.length.should.be.eql(2);
 
-                        res.body[0].categoryId.should.be.eql('/store/apps/category/COMMUNICATION');
+                        res.body[0].categoryId.should.be.eql('COMMUNICATION');
                         res.body[0].categoryName.should.be.eql('커뮤니케이션');
                         res.body[0].totalUsedTime.should.be.eql(60000);
 
-                        res.body[1].categoryId.should.be.eql('/store/apps/category/TOOL');
+                        res.body[1].categoryId.should.be.eql('TOOL');
                         res.body[1].categoryName.should.be.eql('도구');
                         res.body[1].totalUsedTime.should.be.eql(9999);
                         done();
@@ -340,14 +340,14 @@ describe('Apps', () => {
                     Apps.insertMany([{
                         packageName: 'com.game.edu',
                         appName: '교육게임명',
-                        categoryId1: '/store/apps/category/GAME_EDUCATIONAL',
+                        categoryId1: 'GAME_EDUCATIONAL',
                         categoryName1: '교육',
                         developer: 'Edu Game Corp.',
                         iconUrl: 'iconUrl3',
                     }, {
                         packageName: 'com.game.rpg',
                         appName: '롤플레잉게임명',
-                        categoryId1: '/store/apps/category/GAME_ROLE_PLAYING',
+                        categoryId1: 'GAME_ROLE_PLAYING',
                         categoryName1: '롤플레잉',
                         developer: 'Rpg Game Corp.',
                         iconUrl: 'iconUrl4',
@@ -364,15 +364,15 @@ describe('Apps', () => {
                     .then(res => {
                         res.body.length.should.be.eql(3);
 
-                        res.body[0].categoryId.should.be.eql('/store/apps/category/GAME');
+                        res.body[0].categoryId.should.be.eql('GAME');
                         res.body[0].categoryName.should.be.eql('게임');
                         res.body[0].totalUsedTime.should.be.eql(100000);
 
-                        res.body[1].categoryId.should.be.eql('/store/apps/category/COMMUNICATION');
+                        res.body[1].categoryId.should.be.eql('COMMUNICATION');
                         res.body[1].categoryName.should.be.eql('커뮤니케이션');
                         res.body[1].totalUsedTime.should.be.eql(60000);
 
-                        res.body[2].categoryId.should.be.eql('/store/apps/category/TOOL');
+                        res.body[2].categoryId.should.be.eql('TOOL');
                         res.body[2].categoryName.should.be.eql('도구');
                         res.body[2].totalUsedTime.should.be.eql(9999);
                         done();

@@ -32,7 +32,7 @@ const postAppUsages = (req, res) => {
 };
 
 const getAppUsageByCategory = (req, res) => {
-    const regex = `/store/apps/category/${req.params.categoryId}.*`;
+    const regex = `${req.params.categoryId}.*`;
 
     AppUsages.find({userId: req.userId})
         .populate('appInfo')
@@ -55,7 +55,7 @@ const getCategoryUsage = (req, res) => {
             const categorySumMap = {};
 
             appusages.map(appusage => {
-                const regex = `(/store/apps/category/[^_]+)_.*`;
+                const regex = `([^_]+)_.*`;
                 const matchedGroups = appusage.appInfo.categoryId1.match(regex);
                 if (matchedGroups !== null && matchedGroups !== undefined) {
                     const parentCategoryId = matchedGroups[1];
