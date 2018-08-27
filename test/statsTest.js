@@ -2,11 +2,128 @@ const chai = require('chai');
 const server = require('../server');
 const config = require('../config');
 const request = require('supertest').agent(server);
-const { AppUsages, Apps } = require('../models/appUsages');
 const should = chai.should();
+const sinon = require('sinon');
+const ShortTermStats = require('../models/shortTermStats');
+const Users = require('../models/user');
+const { AppUsages, Apps } = require('../models/appUsages');
 
-describe('Apps', () => {
-    describe('POST appUsages', () => {
+describe('Stats', () => {
+    const sandbox = sinon.sandbox.create();
+
+    describe('POST /stats/short', () => {
+        const doc = [{
+            "packageName": "com.whatever.package1",
+            "startTimeStamp": 1499914700000,
+            "endTimeStamp": 1499914800000,
+            "totalUsedTime": 100000
+        },
+            {
+                "packageName": "com.whatever.package2",
+                "startTimeStamp": 1499914700001,
+                "endTimeStamp": 1499914900001,
+                "totalUsedTime": 200000
+            }];
+
+        describe('단기통계데이터를 성공적으로 저장하면', () => {
+            it('200을 리턴하고 데이터가 저장된다', (done) => {
+                request.post("/stats/short")
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .send(doc)
+                    .expect(200)
+                    .then(() => ShortTermStats.find({userId: config.testUser.userId}).sort({packageName: 1}))
+                    .then(shortTermStats => {
+                        shortTermStats.length.should.be.eql(2);
+                        verifyShortTermStatData(shortTermStats[0], 'com.whatever.package1', 1499914700000, 1499914800000, 100000);
+                        verifyShortTermStatData(shortTermStats[1], 'com.whatever.package2', 1499914700001, 1499914900001, 200000);
+
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
+
+            it('해당 유저 정보에 마지막 통계 정보 업데이트 시간이 기록된다.', (done) => {
+                sandbox.useFakeTimers(new Date("2018-05-02T13:30:00.000Z").getTime());
+
+                request.post("/stats/short")
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .send(doc)
+                    .expect(200)
+                    .then(() => Users.findOne({userId: config.testUser.userId}))
+                    .then(user => {
+                        user.lastStatsUpdateTime.should.be.eql(new Date("2018-05-02T13:30:00.000Z"));
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
+        });
+
+        it('기존에 존재하는 단기통계데이터가 있으면 덮어쓰지 않고 추가한다', (done) => {
+            const newDoc = [{
+                "packageName": "com.whatever.package1",
+                "startTimeStamp": 1499914700002,
+                "endTimeStamp": 1499914800002,
+                "totalUsedTime": 100002
+            }];
+
+            request.post("/stats/short")
+                .set('x-access-token', config.appbeeToken.valid)
+                .send(doc)
+                .expect(200)
+                .then(() => {
+                    request.post("/stats/short")
+                        .set('x-access-token', config.appbeeToken.valid)
+                        .send(newDoc)
+                        .expect(200)
+                        .then(() => ShortTermStats.find({userId: config.testUser.userId}).sort({startTimeStamp: 1}))
+                        .then(shortTermStats => {
+                            shortTermStats.length.should.be.eql(3);
+                            verifyShortTermStatData(shortTermStats[0], 'com.whatever.package1', 1499914700000, 1499914800000, 100000);
+                            verifyShortTermStatData(shortTermStats[1], 'com.whatever.package2', 1499914700001, 1499914900001, 200000);
+                            verifyShortTermStatData(shortTermStats[2], 'com.whatever.package1', 1499914700002, 1499914800002, 100002);
+
+                            done();
+                        }).catch((err) => done(err))
+                }).catch((err) => done(err));
+        });
+
+        it('단기통계데이터를 잘못된 형태로 전송한 경우, 400 에러코드를 리턴한다.', done => {
+            request.post('/stats/short')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send()
+                .expect(400)
+                .then(() => done())
+                .catch(err => done(err));
+        });
+
+        it('빈 단기통계데이터를 전송한 경우, 아무 처리없이 200을 리턴한다.', done => {
+            request.post("/stats/short")
+                .set('x-access-token', config.appbeeToken.valid)
+                .send([])
+                .expect(200)
+                .then(() => ShortTermStats.find({userId: config.testUser.userId}))
+                .then(shortTermStats => {
+                    shortTermStats.length.should.be.eql(0);
+                    done();
+                }).catch((err) => done(err));
+        });
+
+        const verifyShortTermStatData = (shortTermStat, packageName, startTimeStamp, endTimeStamp, totalUsedTime) => {
+            shortTermStat.packageName.should.be.eql(packageName);
+            shortTermStat.startTimeStamp.should.be.eql(startTimeStamp);
+            shortTermStat.endTimeStamp.should.be.eql(endTimeStamp);
+            shortTermStat.totalUsedTime.should.be.eql(totalUsedTime);
+        };
+    });
+
+    afterEach((done) => {
+        ShortTermStats.remove({userId: config.testUser.userId}, () => {
+            sandbox.restore();
+            done();
+        });
+    });
+
+    describe('POST /stats/usages/app', () => {
 
         beforeEach(done => {
             AppUsages.create([{
@@ -34,7 +151,7 @@ describe('Apps', () => {
         }];
 
         it('앱사용기록을 저장한다', done => {
-            request.post('/apps/usages')
+            request.post('/stats/usages/app')
                 .set('x-access-token', config.appbeeToken.valid)
                 .send(data)
                 .expect(200)
@@ -56,7 +173,7 @@ describe('Apps', () => {
         });
 
         it('앱사용기록 저장시 다른 유저의 데이터는 수정하지 않는다', done => {
-            request.post('/apps/usages')
+            request.post('/stats/usages/app')
                 .set('x-access-token', config.appbeeToken.valid)
                 .send(data)
                 .expect(200)
@@ -72,7 +189,7 @@ describe('Apps', () => {
         });
 
         it('앱 사용기록을 잘못된 형태로 전송한 경우, 400 에러코드를 리턴한다.', done => {
-            request.post('/apps/usages')
+            request.post('/stats/usages/app')
                 .set('x-access-token', config.appbeeToken.valid)
                 .send()
                 .expect(400)
@@ -81,7 +198,7 @@ describe('Apps', () => {
         });
 
         it('빈 앱 사용기록을 전송한 경우, 아무 처리없이 200을 리턴한다.', done => {
-            request.post('/apps/usages')
+            request.post('/stats/usages/app')
                 .set('x-access-token', config.appbeeToken.valid)
                 .send([])
                 .expect(200)
@@ -94,7 +211,7 @@ describe('Apps', () => {
         });
     });
 
-    describe('GET appUsages by category', () => {
+    describe('GET /stats/usages/app/category/{categoryId}', () => {
         before(done => {
             AppUsages.create([{
                 userId: 'anotherUserId',
@@ -175,7 +292,7 @@ describe('Apps', () => {
         });
 
         it('요청한 사용자의 데이터들만 리턴한다', done => {
-            request.get('/apps/usages/category/TOOL')
+            request.get('/stats/usages/app/category/TOOL')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
@@ -188,7 +305,7 @@ describe('Apps', () => {
         });
 
         it('지정한 카테고리의 앱 누적 사용 데이터들을 리턴한다', done => {
-            request.get('/apps/usages/category/COMMUNICATION')
+            request.get('/stats/usages/app/category/COMMUNICATION')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
@@ -215,7 +332,7 @@ describe('Apps', () => {
         });
 
         it('지정한 대분류 카테고리들의 앱 누적 사용 데이터들을 리턴한다', done => {
-            request.get('/apps/usages/category/GAME')
+            request.get('/stats/usages/app/category/GAME')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
@@ -248,7 +365,7 @@ describe('Apps', () => {
         });
     });
 
-    describe('GET rank of appUsages group by category', () => {
+    describe('GET /stats/usages/category', () => {
         beforeEach(done => {
             AppUsages.create([{
                 userId: 'anotherUserId',
@@ -306,24 +423,22 @@ describe('Apps', () => {
             });
         });
 
-        describe('/apps/usages/rank/category 가 호출되면', () => {
-            it('카테고리별 앱 사용 시간을 합산하여 정렬된 리스트를 반환한다', done => {
-                request.get('/apps/usages/rank/category')
-                    .set('x-access-token', config.appbeeToken.valid)
-                    .expect(200)
-                    .then(res => {
-                        res.body.length.should.be.eql(2);
+        it('카테고리별 앱 사용 시간을 합산하여 정렬된 리스트를 반환한다', done => {
+            request.get('/stats/usages/category')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.length.should.be.eql(2);
 
-                        res.body[0].categoryId.should.be.eql('COMMUNICATION');
-                        res.body[0].categoryName.should.be.eql('커뮤니케이션');
-                        res.body[0].totalUsedTime.should.be.eql(60000);
+                    res.body[0].categoryId.should.be.eql('COMMUNICATION');
+                    res.body[0].categoryName.should.be.eql('커뮤니케이션');
+                    res.body[0].totalUsedTime.should.be.eql(60000);
 
-                        res.body[1].categoryId.should.be.eql('TOOL');
-                        res.body[1].categoryName.should.be.eql('도구');
-                        res.body[1].totalUsedTime.should.be.eql(9999);
-                        done();
-                    }).catch(err => done(err));
-            });
+                    res.body[1].categoryId.should.be.eql('TOOL');
+                    res.body[1].categoryName.should.be.eql('도구');
+                    res.body[1].totalUsedTime.should.be.eql(9999);
+                    done();
+                }).catch(err => done(err));
         });
 
         describe('대분류에 속하는 앱을 사용하는 유저가 호출한 경우', () => {
@@ -358,7 +473,7 @@ describe('Apps', () => {
             });
 
             it('카테고리별 앱 사용 시간을 합산하여 정렬된 리스트를 반환한다', done => {
-                request.get('/apps/usages/rank/category')
+                request.get('/stats/usages/category')
                     .set('x-access-token', config.appbeeToken.valid)
                     .expect(200)
                     .then(res => {

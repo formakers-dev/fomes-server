@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const packagejson = require('./package.json');
 const statsRouter = require('./router/stats');
-const appsRouter = require('./router/apps');
 const userRouter = require('./router/user');
 const projectRouter = require('./router/project');
 const configurationRouter = require('./router/configurations');
@@ -27,7 +26,6 @@ app.get('/', (req, res) => {
 
 app.use('/user', userRouter);
 app.use('/stats', statsRouter);
-app.use('/apps', appsRouter);
 app.use('/projects', projectRouter);
 app.use('/config', configurationRouter);
 
