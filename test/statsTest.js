@@ -365,6 +365,7 @@ describe('Stats', () => {
         });
     });
 
+    // TODO: categoryUsages 관련 category2도 추가필요
     describe('GET /stats/usages/category', () => {
         beforeEach(done => {
             AppUsages.create([{
@@ -387,6 +388,14 @@ describe('Stats', () => {
                 // 특정 앱의 사용 데이터는 있지만 해당 앱 정보가 DB에 없는 경우, 해당 앱은 제외한다.
                 userId: config.testUser.userId,
                 packageName: 'com.game.empty',
+                totalUsedTime: 10000
+            }, {
+                userId: config.testUser.userId,
+                packageName: 'com.game.edu',
+                totalUsedTime: 90000
+            }, {
+                userId: config.testUser.userId,
+                packageName: 'com.game.rpg',
                 totalUsedTime: 10000
             }], function () {
                 Apps.create([{
@@ -417,84 +426,93 @@ describe('Stats', () => {
                     categoryName1: '커뮤니케이션',
                     developer: 'NHN Corp.',
                     iconUrl: 'iconUrl2',
+                }, {
+                    packageName: 'com.game.edu',
+                    appName: '교육게임명',
+                    categoryId1: 'GAME_EDUCATIONAL',
+                    categoryName1: '교육',
+                    developer: 'Edu Game Corp.',
+                    iconUrl: 'iconUrl3',
+                }, {
+                    packageName: 'com.game.rpg',
+                    appName: '롤플레잉게임명',
+                    categoryId1: 'GAME_ROLE_PLAYING',
+                    categoryName1: '롤플레잉',
+                    developer: 'Rpg Game Corp.',
+                    iconUrl: 'iconUrl4',
                 }], function () {
                     done()
                 });
             });
         });
 
-        it('카테고리별 앱 사용 시간을 합산하여 정렬된 리스트를 반환한다', done => {
+        it('대분류 카테고리별 앱 사용 시간을 합산하여 정렬된 리스트를 반환한다', done => {
             request.get('/stats/usages/category')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
-                    res.body.length.should.be.eql(2);
+                    res.body.length.should.be.eql(3);
 
-                    res.body[0].categoryId.should.be.eql('COMMUNICATION');
-                    res.body[0].categoryName.should.be.eql('커뮤니케이션');
-                    res.body[0].totalUsedTime.should.be.eql(60000);
+                    res.body[0].categoryId.should.be.eql('GAME');
+                    res.body[0].categoryName.should.be.eql('게임');
+                    res.body[0].totalUsedTime.should.be.eql(100000);
 
-                    res.body[1].categoryId.should.be.eql('TOOL');
-                    res.body[1].categoryName.should.be.eql('도구');
-                    res.body[1].totalUsedTime.should.be.eql(9999);
+                    res.body[1].categoryId.should.be.eql('COMMUNICATION');
+                    res.body[1].categoryName.should.be.eql('커뮤니케이션');
+                    res.body[1].totalUsedTime.should.be.eql(60000);
+
+                    res.body[2].categoryId.should.be.eql('TOOL');
+                    res.body[2].categoryName.should.be.eql('도구');
+                    res.body[2].totalUsedTime.should.be.eql(9999);
                     done();
                 }).catch(err => done(err));
         });
 
-        describe('대분류에 속하는 앱을 사용하는 유저가 호출한 경우', () => {
-            before(done => {
-                AppUsages.insertMany([{
-                    userId: config.testUser.userId,
-                    packageName: 'com.game.edu',
-                    totalUsedTime: 90000
-                }, {
-                    userId: config.testUser.userId,
-                    packageName: 'com.game.rpg',
-                    totalUsedTime: 10000
-                }], function () {
-                    Apps.insertMany([{
-                        packageName: 'com.game.edu',
-                        appName: '교육게임명',
-                        categoryId1: 'GAME_EDUCATIONAL',
-                        categoryName1: '교육',
-                        developer: 'Edu Game Corp.',
-                        iconUrl: 'iconUrl3',
-                    }, {
-                        packageName: 'com.game.rpg',
-                        appName: '롤플레잉게임명',
-                        categoryId1: 'GAME_ROLE_PLAYING',
-                        categoryName1: '롤플레잉',
-                        developer: 'Rpg Game Corp.',
-                        iconUrl: 'iconUrl4',
-                    }], function () {
-                        done()
-                    });
-                });
-            });
+        describe('GET /stats/usages/category/{categoryId}', () => {
 
-            it('카테고리별 앱 사용 시간을 합산하여 정렬된 리스트를 반환한다', done => {
-                request.get('/stats/usages/category')
+            it('특정 카테고리의 사용시간이 담긴 리스트를 반환한다', done => {
+                request.get('/stats/usages/category/COMMUNICATION')
                     .set('x-access-token', config.appbeeToken.valid)
                     .expect(200)
                     .then(res => {
-                        res.body.length.should.be.eql(3);
+                        res.body.length.should.be.eql(1);
 
-                        res.body[0].categoryId.should.be.eql('GAME');
-                        res.body[0].categoryName.should.be.eql('게임');
-                        res.body[0].totalUsedTime.should.be.eql(100000);
-
-                        res.body[1].categoryId.should.be.eql('COMMUNICATION');
-                        res.body[1].categoryName.should.be.eql('커뮤니케이션');
-                        res.body[1].totalUsedTime.should.be.eql(60000);
-
-                        res.body[2].categoryId.should.be.eql('TOOL');
-                        res.body[2].categoryName.should.be.eql('도구');
-                        res.body[2].totalUsedTime.should.be.eql(9999);
+                        res.body[0].categoryId.should.be.eql('COMMUNICATION');
+                        res.body[0].categoryName.should.be.eql('커뮤니케이션');
+                        res.body[0].totalUsedTime.should.be.eql(60000);
                         done();
                     }).catch(err => done(err));
             });
-        });
 
+            it('대분류 카테고리일 경우 세부 카테고리의 사용시간이 담긴 리스트를 반환한다', done => {
+                request.get('/stats/usages/category/GAME')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .expect(200)
+                    .then(res => {
+                        res.body.length.should.be.eql(2);
+
+                        res.body[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
+                        res.body[0].categoryName.should.be.eql('교육');
+                        res.body[0].totalUsedTime.should.be.eql(90000);
+
+                        res.body[1].categoryId.should.be.eql('GAME_ROLE_PLAYING');
+                        res.body[1].categoryName.should.be.eql('롤플레잉');
+                        res.body[1].totalUsedTime.should.be.eql(10000);
+                        done();
+                    }).catch(err => done(err));
+            });
+
+            it('잘못된 카테고리일 경우 빈 리스트를 반환한다', done => {
+                request.get('/stats/usages/category/NONE')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .expect(200)
+                    .then(res => {
+                        res.body.length.should.be.eql(0);
+                        done();
+                    }).catch(err => done(err));
+
+            });
+        });
 
         afterEach(done => {
             AppUsages.remove({}, () => {

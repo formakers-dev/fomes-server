@@ -80,23 +80,32 @@ const getCategoryUsage = (req, res) => {
     AppUsages.find({userId: req.userId})
         .populate('appInfo')
         .lean()
+        .then(appUsages => Promise.resolve(appUsages.filter(appusage => appusage.appInfo)))
         .then(appUsages => {
-            const categoryUsageMap = appUsages.filter(appusage => appusage.appInfo).map(appUsage => {
+            const categoryId = req.params.categoryId;
+
+            if (categoryId) {
+                appUsages = appUsages.filter(appusage => appusage.appInfo.categoryId1.match(categoryId));
+            } else {
+                appUsages = appUsages.map(appUsage => {
+                    const matchedGroups = appUsage.appInfo.categoryId1.match(`([^_]+)_.*`);
+                    if (matchedGroups) {
+                        const parentCategoryId = matchedGroups[1];
+                        if (Object.keys(parentCategories).includes(parentCategoryId)) {
+                            appUsage.appInfo.categoryId1 = parentCategoryId;
+                            appUsage.appInfo.categoryName1 = parentCategories[parentCategoryId];
+                        }
+                    }
+                    return appUsage;
+                });
+            }
+
+            const categoryUsageMap = appUsages.map(appUsage => {
                 return {
                     categoryId: appUsage.appInfo.categoryId1,
                     categoryName: appUsage.appInfo.categoryName1,
                     totalUsedTime: appUsage.totalUsedTime,
                 }
-            }).map(appUsage => {
-                const matchedGroups = appUsage.categoryId.match(`([^_]+)_.*`);
-                if (matchedGroups) {
-                    const parentCategoryId = matchedGroups[1];
-                    if (Object.keys(parentCategories).includes(parentCategoryId)) {
-                        appUsage.categoryId = parentCategoryId;
-                        appUsage.categoryName = parentCategories[parentCategoryId];
-                    }
-                }
-                return appUsage;
             }).reduce((map, appUsage) => {
                 !map[appUsage.categoryId] ?
                     map[appUsage.categoryId] = appUsage :
