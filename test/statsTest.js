@@ -398,6 +398,10 @@ describe('Stats', () => {
                 userId: config.testUser.userId,
                 packageName: 'com.game.rpg',
                 totalUsedTime: 10000
+            }, {
+                userId: config.testUser.userId,
+                packageName: 'com.game.edu2',
+                totalUsedTime: 100
             }], function () {
                 Apps.create([{
                     packageName: 'com.test.testt',
@@ -441,6 +445,13 @@ describe('Stats', () => {
                     categoryName1: '롤플레잉',
                     developer: 'Rpg Game Corp.',
                     iconUrl: 'iconUrl4',
+                }, {
+                    packageName: 'com.game.edu2',
+                    appName: '교육게임명2',
+                    categoryId1: 'GAME_EDUCATIONAL',
+                    categoryName1: '교육',
+                    developer: 'Edu Game Corp.',
+                    iconUrl: 'iconUrl5',
                 }], function () {
                     done()
                 });
@@ -454,21 +465,61 @@ describe('Stats', () => {
                 .then(res => {
                     res.body.length.should.be.eql(4);
 
+                    //
+
                     res.body[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
                     res.body[0].categoryName.should.be.eql('교육');
-                    res.body[0].totalUsedTime.should.be.eql(90000);
+                    res.body[0].totalUsedTime.should.be.eql(90100);
+                    res.body[0].appInfos.length.should.be.eql(2);
+
+                    let appInfos = res.body[0].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                    appInfos[0].packageName.should.be.eql('com.game.edu');
+                    appInfos[0].categoryId1.should.be.eql('GAME_EDUCATIONAL');
+                    appInfos[0].totalUsedTime.should.be.eql(90000);
+
+                    appInfos[1].packageName.should.be.eql('com.game.edu2');
+                    appInfos[1].categoryId1.should.be.eql('GAME_EDUCATIONAL');
+                    appInfos[1].totalUsedTime.should.be.eql(100);
+
+                    //
 
                     res.body[1].categoryId.should.be.eql('COMMUNICATION');
                     res.body[1].categoryName.should.be.eql('커뮤니케이션');
                     res.body[1].totalUsedTime.should.be.eql(60000);
+                    res.body[1].appInfos.length.should.be.eql(2);
+
+                    appInfos = res.body[1].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                    appInfos[0].packageName.should.be.eql('com.kakao.talk');
+                    appInfos[0].categoryId1.should.be.eql('COMMUNICATION');
+                    appInfos[0].totalUsedTime.should.be.eql(40000);
+
+                    appInfos[1].packageName.should.be.eql('com.nhn.line');
+                    appInfos[1].categoryId1.should.be.eql('COMMUNICATION');
+                    appInfos[1].totalUsedTime.should.be.eql(20000);
+
+                    //
 
                     res.body[2].categoryId.should.be.eql('GAME_ROLE_PLAYING');
                     res.body[2].categoryName.should.be.eql('롤플레잉');
                     res.body[2].totalUsedTime.should.be.eql(10000);
+                    res.body[2].appInfos.length.should.be.eql(1);
+
+                    appInfos = res.body[2].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                    appInfos[0].packageName.should.be.eql('com.game.rpg');
+                    appInfos[0].categoryId1.should.be.eql('GAME_ROLE_PLAYING');
+                    appInfos[0].totalUsedTime.should.be.eql(10000);
+
+                    //
 
                     res.body[3].categoryId.should.be.eql('TOOL');
                     res.body[3].categoryName.should.be.eql('도구');
                     res.body[3].totalUsedTime.should.be.eql(9999);
+                    res.body[3].appInfos.length.should.be.eql(1);
+
+                    appInfos = res.body[3].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                    appInfos[0].packageName.should.be.eql('com.nhn.android.nmap');
+                    appInfos[0].categoryId1.should.be.eql('TOOL');
+                    appInfos[0].totalUsedTime.should.be.eql(9999);
 
                     done();
                 }).catch(err => done(err));
@@ -481,17 +532,54 @@ describe('Stats', () => {
                 .then(res => {
                     res.body.length.should.be.eql(3);
 
+                    //
+
                     res.body[0].categoryId.should.be.eql('GAME');
                     res.body[0].categoryName.should.be.eql('게임');
-                    res.body[0].totalUsedTime.should.be.eql(100000);
+                    res.body[0].totalUsedTime.should.be.eql(100100);
+                    res.body[0].appInfos.length.should.be.eql(3);
+
+                    let appInfos = res.body[0].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                    appInfos[0].packageName.should.be.eql('com.game.edu');
+                    appInfos[0].categoryId1.should.be.eql('GAME_EDUCATIONAL');
+                    appInfos[0].totalUsedTime.should.be.eql(90000);
+
+                    appInfos[1].packageName.should.be.eql('com.game.rpg');
+                    appInfos[1].categoryId1.should.be.eql('GAME_ROLE_PLAYING');
+                    appInfos[1].totalUsedTime.should.be.eql(10000);
+
+                    appInfos[2].packageName.should.be.eql('com.game.edu2');
+                    appInfos[2].categoryId1.should.be.eql('GAME_EDUCATIONAL');
+                    appInfos[2].totalUsedTime.should.be.eql(100);
+
+                    //
 
                     res.body[1].categoryId.should.be.eql('COMMUNICATION');
                     res.body[1].categoryName.should.be.eql('커뮤니케이션');
                     res.body[1].totalUsedTime.should.be.eql(60000);
+                    res.body[1].appInfos.length.should.be.eql(2);
+
+                    appInfos = res.body[1].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                    appInfos[0].packageName.should.be.eql('com.kakao.talk');
+                    appInfos[0].categoryId1.should.be.eql('COMMUNICATION');
+                    appInfos[0].totalUsedTime.should.be.eql(40000);
+
+                    appInfos[1].packageName.should.be.eql('com.nhn.line');
+                    appInfos[1].categoryId1.should.be.eql('COMMUNICATION');
+                    appInfos[1].totalUsedTime.should.be.eql(20000);
+
+                    //
 
                     res.body[2].categoryId.should.be.eql('TOOL');
                     res.body[2].categoryName.should.be.eql('도구');
                     res.body[2].totalUsedTime.should.be.eql(9999);
+                    res.body[2].appInfos.length.should.be.eql(1);
+
+                    appInfos = res.body[2].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                    appInfos[0].packageName.should.be.eql('com.nhn.android.nmap');
+                    appInfos[0].categoryId1.should.be.eql('TOOL');
+                    appInfos[0].totalUsedTime.should.be.eql(9999);
+
                     done();
                 }).catch(err => done(err));
         });
@@ -508,11 +596,22 @@ describe('Stats', () => {
                         res.body[0].categoryId.should.be.eql('COMMUNICATION');
                         res.body[0].categoryName.should.be.eql('커뮤니케이션');
                         res.body[0].totalUsedTime.should.be.eql(60000);
+                        res.body[0].appInfos.length.should.be.eql(2);
+
+                        let appInfos = res.body[0].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                        appInfos[0].packageName.should.be.eql('com.kakao.talk');
+                        appInfos[0].categoryId1.should.be.eql('COMMUNICATION');
+                        appInfos[0].totalUsedTime.should.be.eql(40000);
+
+                        appInfos[1].packageName.should.be.eql('com.nhn.line');
+                        appInfos[1].categoryId1.should.be.eql('COMMUNICATION');
+                        appInfos[1].totalUsedTime.should.be.eql(20000);
+
                         done();
                     }).catch(err => done(err));
             });
 
-            it('대분류 카테고리일 경우 세부 카테고리의 사용시간이 담긴 리스트를 반환한다', done => {
+            it('대분류 카테고리일 경우, 세부 카테고리의 총 사용시간과 앱 사용 정보가 담긴 리스트를 반환한다', done => {
                 request.get('/stats/usages/category/GAME')
                     .set('x-access-token', config.appbeeToken.valid)
                     .expect(200)
@@ -521,25 +620,33 @@ describe('Stats', () => {
 
                         res.body[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
                         res.body[0].categoryName.should.be.eql('교육');
-                        res.body[0].totalUsedTime.should.be.eql(90000);
+                        res.body[0].totalUsedTime.should.be.eql(90100);
+                        res.body[0].appInfos.length.should.be.eql(2);
+
+                        let appInfos = res.body[0].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                        appInfos[0].packageName.should.be.eql('com.game.edu');
+                        appInfos[0].categoryId1.should.be.eql('GAME_EDUCATIONAL');
+                        appInfos[0].totalUsedTime.should.be.eql(90000);
+
+                        appInfos[1].packageName.should.be.eql('com.game.edu2');
+                        appInfos[1].categoryId1.should.be.eql('GAME_EDUCATIONAL');
+                        appInfos[1].totalUsedTime.should.be.eql(100);
+
 
                         res.body[1].categoryId.should.be.eql('GAME_ROLE_PLAYING');
                         res.body[1].categoryName.should.be.eql('롤플레잉');
                         res.body[1].totalUsedTime.should.be.eql(10000);
+                        res.body[1].appInfos.length.should.be.eql(1);
+
+                        appInfos = res.body[1].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                        appInfos[0].packageName.should.be.eql('com.game.rpg');
+                        appInfos[0].categoryId1.should.be.eql('GAME_ROLE_PLAYING');
+                        appInfos[0].totalUsedTime.should.be.eql(10000);
+
                         done();
                     }).catch(err => done(err));
             });
 
-            it('잘못된 카테고리일 경우 빈 리스트를 반환한다', done => {
-                request.get('/stats/usages/category/NONE')
-                    .set('x-access-token', config.appbeeToken.valid)
-                    .expect(200)
-                    .then(res => {
-                        res.body.length.should.be.eql(0);
-                        done();
-                    }).catch(err => done(err));
-
-            });
 
             it('fold 옵션이 true 인 경우, 대분류 카테고리로 합산하여 반환한다', done => {
                 request.get('/stats/usages/category/GAME?options=' + qs.escape(`{ "fold": true }`))
@@ -550,8 +657,32 @@ describe('Stats', () => {
 
                         res.body[0].categoryId.should.be.eql('GAME');
                         res.body[0].categoryName.should.be.eql('게임');
-                        res.body[0].totalUsedTime.should.be.eql(100000);
+                        res.body[0].totalUsedTime.should.be.eql(100100);
+                        res.body[0].appInfos.length.should.be.eql(3);
 
+                        let appInfos = res.body[0].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                        appInfos[0].packageName.should.be.eql('com.game.edu');
+                        appInfos[0].categoryId1.should.be.eql('GAME_EDUCATIONAL');
+                        appInfos[0].totalUsedTime.should.be.eql(90000);
+
+                        appInfos[1].packageName.should.be.eql('com.game.rpg');
+                        appInfos[1].categoryId1.should.be.eql('GAME_ROLE_PLAYING');
+                        appInfos[1].totalUsedTime.should.be.eql(10000);
+
+                        appInfos[2].packageName.should.be.eql('com.game.edu2');
+                        appInfos[2].categoryId1.should.be.eql('GAME_EDUCATIONAL');
+                        appInfos[2].totalUsedTime.should.be.eql(100);
+
+                        done();
+                    }).catch(err => done(err));
+            });
+
+            it('잘못된 카테고리일 경우 빈 리스트를 반환한다', done => {
+                request.get('/stats/usages/category/NONE')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .expect(200)
+                    .then(res => {
+                        res.body.length.should.be.eql(0);
                         done();
                     }).catch(err => done(err));
             });

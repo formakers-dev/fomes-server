@@ -86,34 +86,41 @@ const getCategoryUsage = (req, res) => {
             const options = req.query.options ? JSON.parse(qs.unescape(req.query.options)) : undefined;
             const categoryId = req.params.categoryId;
 
+            appUsages = appUsages.map(appUsage => {
+                appUsage.appInfo.totalUsedTime = appUsage.totalUsedTime;
+                return {
+                    categoryId: appUsage.appInfo.categoryId1,
+                    categoryName: appUsage.appInfo.categoryName1,
+                    totalUsedTime: appUsage.totalUsedTime,
+                    appInfos: [ appUsage.appInfo ],
+                };
+            });
+
             if (categoryId) {
-                appUsages = appUsages.filter(appusage => appusage.appInfo.categoryId1.match(categoryId));
+                appUsages = appUsages.filter(appusage => appusage.categoryId.match(categoryId));
             }
 
             if (options && options.fold === true) {
                 appUsages = appUsages.map(appUsage => {
-                    const matchedGroups = appUsage.appInfo.categoryId1.match(`([^_]+)_.*`);
+                    const matchedGroups = appUsage.categoryId.match(`([^_]+)_.*`);
                     if (matchedGroups) {
                         const parentCategoryId = matchedGroups[1];
                         if (Object.keys(parentCategories).includes(parentCategoryId)) {
-                            appUsage.appInfo.categoryId1 = parentCategoryId;
-                            appUsage.appInfo.categoryName1 = parentCategories[parentCategoryId];
+                            appUsage.categoryId = parentCategoryId;
+                            appUsage.categoryName = parentCategories[parentCategoryId];
                         }
                     }
                     return appUsage;
                 });
             }
 
-            const categoryUsageMap = appUsages.map(appUsage => {
-                return {
-                    categoryId: appUsage.appInfo.categoryId1,
-                    categoryName: appUsage.appInfo.categoryName1,
-                    totalUsedTime: appUsage.totalUsedTime,
-                }
-            }).reduce((map, appUsage) => {
-                !map[appUsage.categoryId] ?
-                    map[appUsage.categoryId] = appUsage :
+            const categoryUsageMap = appUsages.reduce((map, appUsage) => {
+                if (!map[appUsage.categoryId]) {
+                    map[appUsage.categoryId] = appUsage;
+                } else {
                     map[appUsage.categoryId].totalUsedTime += appUsage.totalUsedTime;
+                    map[appUsage.categoryId].appInfos.push(appUsage.appInfos[0]);
+                }
                 return map;
             }, {});
 
