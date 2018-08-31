@@ -1,4 +1,3 @@
-const qs = require('querystring');
 const User = require('../models/user');
 const { AppUsages } = require('../models/appUsages');
 const Stats = require('./../models/shortTermStats');
@@ -83,24 +82,30 @@ const getCategoryUsage = (req, res) => {
         .lean()
         .then(appUsages => Promise.resolve(appUsages.filter(appusage => appusage.appInfo)))
         .then(appUsages => {
-            const options = req.query.options ? JSON.parse(qs.unescape(req.query.options)) : undefined;
+            const isVerbose = req.query.verbose;
+            const isFold = req.query.fold;
             const categoryId = req.params.categoryId;
 
+            if (categoryId) {
+                appUsages = appUsages.filter(appUsage => appUsage.appInfo.categoryId1.match(categoryId));
+            }
+
             appUsages = appUsages.map(appUsage => {
-                appUsage.appInfo.totalUsedTime = appUsage.totalUsedTime;
-                return {
+                const categoryUsage = {
                     categoryId: appUsage.appInfo.categoryId1,
                     categoryName: appUsage.appInfo.categoryName1,
                     totalUsedTime: appUsage.totalUsedTime,
-                    appInfos: [ appUsage.appInfo ],
                 };
+
+                if (isVerbose) {
+                    appUsage.appInfo.totalUsedTime = appUsage.totalUsedTime;
+                    categoryUsage.appInfos = [appUsage.appInfo];
+                }
+
+                return categoryUsage;
             });
 
-            if (categoryId) {
-                appUsages = appUsages.filter(appusage => appusage.categoryId.match(categoryId));
-            }
-
-            if (options && options.fold === true) {
+            if (isFold) {
                 appUsages = appUsages.map(appUsage => {
                     const matchedGroups = appUsage.categoryId.match(`([^_]+)_.*`);
                     if (matchedGroups) {
@@ -119,7 +124,9 @@ const getCategoryUsage = (req, res) => {
                     map[appUsage.categoryId] = appUsage;
                 } else {
                     map[appUsage.categoryId].totalUsedTime += appUsage.totalUsedTime;
-                    map[appUsage.categoryId].appInfos.push(appUsage.appInfos[0]);
+                    if (isVerbose) {
+                        map[appUsage.categoryId].appInfos.push(appUsage.appInfos[0]);
+                    }
                 }
                 return map;
             }, {});
