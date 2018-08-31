@@ -1,3 +1,4 @@
+const qs = require('querystring');
 const User = require('../models/user');
 const { AppUsages } = require('../models/appUsages');
 const Stats = require('./../models/shortTermStats');
@@ -82,11 +83,14 @@ const getCategoryUsage = (req, res) => {
         .lean()
         .then(appUsages => Promise.resolve(appUsages.filter(appusage => appusage.appInfo)))
         .then(appUsages => {
+            const options = req.query.options ? JSON.parse(qs.unescape(req.query.options)) : undefined;
             const categoryId = req.params.categoryId;
 
             if (categoryId) {
                 appUsages = appUsages.filter(appusage => appusage.appInfo.categoryId1.match(categoryId));
-            } else {
+            }
+
+            if (options && options.fold === true) {
                 appUsages = appUsages.map(appUsage => {
                     const matchedGroups = appUsage.appInfo.categoryId1.match(`([^_]+)_.*`);
                     if (matchedGroups) {

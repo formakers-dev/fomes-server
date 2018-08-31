@@ -1,4 +1,5 @@
 const chai = require('chai');
+const qs = require('querystring');
 const server = require('../server');
 const config = require('../config');
 const request = require('supertest').agent(server);
@@ -451,6 +452,33 @@ describe('Stats', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
+                    res.body.length.should.be.eql(4);
+
+                    res.body[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
+                    res.body[0].categoryName.should.be.eql('교육');
+                    res.body[0].totalUsedTime.should.be.eql(90000);
+
+                    res.body[1].categoryId.should.be.eql('COMMUNICATION');
+                    res.body[1].categoryName.should.be.eql('커뮤니케이션');
+                    res.body[1].totalUsedTime.should.be.eql(60000);
+
+                    res.body[2].categoryId.should.be.eql('GAME_ROLE_PLAYING');
+                    res.body[2].categoryName.should.be.eql('롤플레잉');
+                    res.body[2].totalUsedTime.should.be.eql(10000);
+
+                    res.body[3].categoryId.should.be.eql('TOOL');
+                    res.body[3].categoryName.should.be.eql('도구');
+                    res.body[3].totalUsedTime.should.be.eql(9999);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('fold 옵션이 true 인 경우, 대분류 카테고리로 합산하여 반환한다', done => {
+            request.get('/stats/usages/category?options=' + qs.escape(`{ "fold": true }`))
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
                     res.body.length.should.be.eql(3);
 
                     res.body[0].categoryId.should.be.eql('GAME');
@@ -511,6 +539,21 @@ describe('Stats', () => {
                         done();
                     }).catch(err => done(err));
 
+            });
+
+            it('fold 옵션이 true 인 경우, 대분류 카테고리로 합산하여 반환한다', done => {
+                request.get('/stats/usages/category/GAME?options=' + qs.escape(`{ "fold": true }`))
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .expect(200)
+                    .then(res => {
+                        res.body.length.should.be.eql(1);
+
+                        res.body[0].categoryId.should.be.eql('GAME');
+                        res.body[0].categoryName.should.be.eql('게임');
+                        res.body[0].totalUsedTime.should.be.eql(100000);
+
+                        done();
+                    }).catch(err => done(err));
             });
         });
 
