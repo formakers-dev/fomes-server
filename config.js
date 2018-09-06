@@ -17,9 +17,10 @@ config.test = {
     googleClientId: '',
     testUser: {
         userId: '109974316241227718963',
-        gender: 'male',
         email: 'appbee@appbee.com',
         registrationToken: 'test_user_registration_token',
+        gender: 'male',
+        birthday: 1989,
         googleIdToken: 'test_user_google_id_token',
     },
     appbeeToken: {

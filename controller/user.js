@@ -3,6 +3,19 @@ const User = require('../models/user');
 const InvitationCodes = require('../models/invitationCodes');
 const config = require('../config');
 
+const signUpUser = (req, res, next) => {
+    User.findOne({userId: req.userId}).then(user => {
+        if (!user) {
+            req.body.signUpTime = new Date();
+        }
+
+        User.findOneAndUpdate({userId: req.userId}, {$set: req.body}, {upsert: true})
+            .exec()
+            .then(() => next())
+            .catch(err => sendError(res, err));
+    });
+};
+
 const upsertUser = (req, res, next) => {
     User.findOneAndUpdate({userId: req.userId}, {$set: req.body}, {upsert: true})
         .exec()
@@ -49,4 +62,4 @@ const sendError = (res, err) => {
     });
 };
 
-module.exports = {upsertUser, generateToken, verifyInvitationCode};
+module.exports = {signUpUser, upsertUser, generateToken, verifyInvitationCode};
