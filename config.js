@@ -21,6 +21,7 @@ config.test = {
         registrationToken: 'test_user_registration_token',
         gender: 'male',
         birthday: 1989,
+        lifeApps: ['fomes', 'appbee'],
         googleIdToken: 'test_user_google_id_token',
     },
     appbeeToken: {

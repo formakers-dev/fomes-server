@@ -12,6 +12,7 @@ const usersSchema = new Schema({
     providerId: String,
     lastStatsUpdateTime: Date,
     signUpTime: Date,
+    lifeApps: Array,
 });
 
 const user = mongoose.model('users', usersSchema);

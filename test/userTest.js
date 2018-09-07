@@ -26,6 +26,9 @@ describe('Users', () => {
                         user.gender.should.be.eql("male");
                         user.email.should.be.eql("appbee@appbee.com");
                         user.registrationToken.should.be.eql('test_user_registration_token');
+                        user.lifeApps.length.should.be.eql(2);
+                        user.lifeApps[0].should.be.eql('fomes');
+                        user.lifeApps[1].should.be.eql('appbee');
                         done();
                     });
                 })
@@ -39,7 +42,8 @@ describe('Users', () => {
 
             it('User의 특정 정보를 업데이트 한다', done => {
                 const newToken = {
-                    registrationToken: "NEW_CODE"
+                    registrationToken: "NEW_CODE",
+                    lifeApps: [ 'newApp' ],
                 };
 
                 request.post('/user')
@@ -50,8 +54,12 @@ describe('Users', () => {
                         return Users.findOne({userId: config.testUser.userId});
                     })
                     .then((result) => {
+                        result.userId.should.be.eql('109974316241227718963');
+                        result.gender.should.be.eql("male");
+                        result.email.should.be.eql("appbee@appbee.com");
                         result.registrationToken.should.be.eql("NEW_CODE");
-                        result.userId.should.be.eql(config.testUser.userId);
+                        result.lifeApps.length.should.be.eql(1);
+                        result.lifeApps[0].should.be.eql('newApp');
                         done();
                     }).catch(err => done(err));
             });
