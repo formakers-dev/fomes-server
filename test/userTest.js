@@ -29,6 +29,7 @@ describe('Users', () => {
                         user.lifeApps.length.should.be.eql(2);
                         user.lifeApps[0].should.be.eql('fomes');
                         user.lifeApps[1].should.be.eql('appbee');
+                        user.nickName.should.be.eql('test_user_nickname');
                         done();
                     });
                 })
@@ -44,6 +45,7 @@ describe('Users', () => {
                 const newToken = {
                     registrationToken: "NEW_CODE",
                     lifeApps: [ 'newApp' ],
+                    nickName: 'new_nickname',
                 };
 
                 request.post('/user')
@@ -60,6 +62,7 @@ describe('Users', () => {
                         result.registrationToken.should.be.eql("NEW_CODE");
                         result.lifeApps.length.should.be.eql(1);
                         result.lifeApps[0].should.be.eql('newApp');
+                        result.nickName.should.be.eql('new_nickname');
                         done();
                     }).catch(err => done(err));
             });

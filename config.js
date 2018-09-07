@@ -22,6 +22,7 @@ config.test = {
         gender: 'male',
         birthday: 1989,
         lifeApps: ['fomes', 'appbee'],
+        nickName: 'test_user_nickname',
         googleIdToken: 'test_user_google_id_token',
     },
     appbeeToken: {
