@@ -88,6 +88,7 @@ const googleTokenVerifier = (req, res, next) => {
         })
         .catch((err) => {
             console.log('===verifyGoogleToken:onError');
+            console.log(err);
             res.status(403).json({
                 success: false,
                 message: err.message
