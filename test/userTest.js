@@ -30,6 +30,8 @@ describe('Users', () => {
                         user.lifeApps[0].should.be.eql('fomes');
                         user.lifeApps[1].should.be.eql('appbee');
                         user.nickName.should.be.eql('test_user_nickname');
+                        user.birthday.should.be.eql(1989);
+                        user.job.should.be.eql('IT종사자');
                         done();
                     });
                 })
@@ -63,6 +65,8 @@ describe('Users', () => {
                         result.lifeApps.length.should.be.eql(1);
                         result.lifeApps[0].should.be.eql('newApp');
                         result.nickName.should.be.eql('new_nickname');
+                        result.birthday.should.be.eql(1989);
+                        result.job.should.be.eql('IT종사자');
                         done();
                     }).catch(err => done(err));
             });
@@ -131,6 +135,7 @@ describe('Users', () => {
             email : null,
             birthday: 1980,
             gender: 'female',
+            job: '학생',
             registrationToken: 'new_registration_token',
             provider: null,
             providerId: null
@@ -152,6 +157,7 @@ describe('Users', () => {
                         user.name.should.be.eql('testName');
                         user.email.should.be.eql('test@email.com');
                         user.birthday.should.be.eql(1980);
+                        user.job.should.be.eql('학생');
                         user.gender.should.be.eql('female');
                         user.provider.should.be.eql('google');
                         user.providerId.should.be.eql("109974316241227718963");
@@ -206,6 +212,7 @@ describe('Users', () => {
                         user.name.should.be.eql('testName');
                         user.email.should.be.eql('test@email.com');
                         user.birthday.should.be.eql(1989);
+                        user.job.should.be.eql('IT종사자');
                         user.gender.should.be.eql('male');
                         user.provider.should.be.eql('google');
                         user.providerId.should.be.eql("109974316241227718963");
@@ -242,6 +249,7 @@ describe('Users', () => {
                 name: 'oldName',
                 email: 'old@email.com',
                 birthday: 1900,
+                job: 'oldJob',
                 gender: 'female',
                 registrationToken: 'oldRegistrationToken',
                 signUpTime: new Date('2018-09-05T15:30:00.000Z'),
@@ -264,6 +272,7 @@ describe('Users', () => {
                             user.name.should.be.eql('testName');
                             user.email.should.be.eql('test@email.com');
                             user.birthday.should.be.eql(1989);
+                            user.job.should.be.eql('IT종사자');
                             user.gender.should.be.eql('male');
                             user.provider.should.be.eql('google');
                             user.providerId.should.be.eql("109974316241227718963");
