@@ -9,4 +9,6 @@ statsRouter.get('/usages/app/category/:categoryId', Auth.appBeeTokenVerifier, St
 statsRouter.get('/usages/category', Auth.appBeeTokenVerifier, Stats.getCategoryUsage);
 statsRouter.get('/usages/category/:categoryId', Auth.appBeeTokenVerifier, Stats.getCategoryUsage);
 
+statsRouter.post('/report/category/:categoryId/recent', Auth.appBeeTokenVerifier, Stats.getReport);
+
 module.exports = statsRouter;

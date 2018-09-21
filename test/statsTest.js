@@ -5,7 +5,8 @@ const request = require('supertest').agent(server);
 const should = chai.should();
 const sinon = require('sinon');
 const ShortTermStats = require('../models/shortTermStats');
-const Users = require('../models/user');
+const Users = require('../models/user').User;
+const UserConstants = require('../models/user').Constants;
 const { AppUsages, Apps } = require('../models/appUsages');
 
 describe('Stats', () => {
@@ -676,5 +677,832 @@ describe('Stats', () => {
                 Apps.remove({}, done);
             });
         });
+    });
+
+    describe('GET /stats/report/category/:categoryId/recent', () => {
+        describe('랭킹', () => {
+            describe('정상 케이스', () => {
+                before(done => {
+                    Users.create([
+                        config.testUser,
+                        {
+                            userId: 'peopleId1',
+                            birthday: 1943,
+                            job: 'IT종사자',
+                            gender: 'male',
+                        },
+                        {
+                            userId: 'peopleId2',
+                            birthday: 1989,
+                            job: 'IT종사자',
+                            gender: 'female',
+                        },
+                        {
+                            userId: 'peopleId3',
+                            birthday: 1990,
+                            job: '학생',
+                            gender: 'male',
+                        },
+                    ]);
+
+                    AppUsages.create([
+                        ////////// start of me ///////////////
+                        {
+                            userId: config.testUser.userId,
+                            packageName: 'com.nhn.android.nmap',
+                            totalUsedTime: 9999
+                        }, {
+                            // 특정 앱의 사용 데이터는 있지만 해당 앱 정보가 DB에 없는 경우, 해당 앱은 제외한다.
+                            userId: config.testUser.userId,
+                            packageName: 'com.game.empty',
+                            totalUsedTime: 10000
+                        }, {
+                            userId: config.testUser.userId,
+                            packageName: 'com.game.edu',
+                            totalUsedTime: 90000
+                        }, {
+                            userId: config.testUser.userId,
+                            packageName: 'com.game.rpg',
+                            totalUsedTime: 10000
+                        }, {
+                            userId: config.testUser.userId,
+                            packageName: 'com.game.edu2',
+                            totalUsedTime: 5000
+                        },
+                        ////////// end of me ///////////////
+                        {
+                            userId: 'peopleId1',
+                            packageName: 'com.game.edu2',
+                            totalUsedTime: 7000
+                        },  {
+                            userId: 'peopleId1',
+                            packageName: 'com.game.rpg',
+                            totalUsedTime: 4000
+                        }, {
+                            userId: 'peopleId2',
+                            packageName: 'com.game.rpg',
+                            totalUsedTime: 90000
+                        },{
+                            userId: 'peopleId2',
+                            packageName: 'com.game.puzzle',
+                            totalUsedTime: 10000
+                        }, {
+                            userId: 'peopleId3',
+                            packageName: 'com.game.edu',
+                            totalUsedTime: 100000
+                        }, {
+                            userId: 'peopleId3',
+                            packageName: 'com.game.puzzle',
+                            totalUsedTime: 50000
+                        }], function () {
+                        Apps.create([ {
+                            packageName: 'com.nhn.android.nmap',
+                            appName: '네이버지도',
+                            categoryId1: 'TOOL',
+                            categoryName1: '도구',
+                            developer: 'NHN Corp.',
+                            iconUrl: 'iconUrl0',
+                        }, {
+                            packageName: 'com.game.edu',
+                            appName: '교육게임명',
+                            categoryId1: 'GAME_EDUCATIONAL',
+                            categoryName1: '교육',
+                            developer: 'Edu Game Corp.',
+                            iconUrl: 'iconUrl3',
+                        }, {
+                            packageName: 'com.game.rpg',
+                            appName: '롤플레잉게임명',
+                            categoryId1: 'GAME_ROLE_PLAYING',
+                            categoryName1: '롤플레잉',
+                            developer: 'GameDuckHu Corp.',
+                            iconUrl: 'iconUrl4',
+                        }, {
+                            packageName: 'com.game.edu2',
+                            appName: '교육게임명2',
+                            categoryId1: 'GAME_EDUCATIONAL',
+                            categoryName1: '교육',
+                            developer: 'GameDuckHu Corp.',
+                            iconUrl: 'iconUrl32',
+                        }, {
+                            packageName: 'com.game.puzzle',
+                            appName: '퍼즐게임명',
+                            categoryId1: 'GAME_PUZZLE',
+                            categoryName1: '퍼즐',
+                            developer: 'Puzzle Game Corp.',
+                            iconUrl: 'iconUrl6',
+                        }], function () {
+                            done()
+                        });
+                    });
+                });
+
+                it('유저와 1등, 꼴등의 랭크 데이터를 반환한다', done => {
+                    request.post('/stats/report/category/GAME/recent')
+                        .set('x-access-token', config.appbeeToken.valid)
+                        .send(config.testUser)
+                        .expect(200)
+                        .then((res) => {
+                            res.body.totalUsedTimeRank.length.should.be.eql(3);
+
+                            res.body.totalUsedTimeRank.sort((a, b) =>  a.rank > b.rank ? 1 : -1);
+
+                            res.body.totalUsedTimeRank[0].userId.should.be.eql("peopleId3");
+                            res.body.totalUsedTimeRank[0].rank.should.be.eql(1);
+                            res.body.totalUsedTimeRank[0].content.should.be.eql(150000);
+                            res.body.totalUsedTimeRank[1].userId.should.be.eql(config.testUser.userId);
+                            res.body.totalUsedTimeRank[1].rank.should.be.eql(2);
+                            res.body.totalUsedTimeRank[1].content.should.be.eql(105000);
+                            res.body.totalUsedTimeRank[2].userId.should.be.eql("peopleId1");
+                            res.body.totalUsedTimeRank[2].rank.should.be.eql(4);
+                            res.body.totalUsedTimeRank[2].content.should.be.eql(11000);
+
+                            done();
+                        }).catch(err => done(err));
+                });
+
+                after(done => {
+                    Users.remove({}, () => {
+                        AppUsages.remove({}, () => {
+                            Apps.remove({}, done);
+                        });
+                    });
+                });
+            });
+
+            describe('나의 랭킹 정보가 없으면', () => {
+                before(done => {
+                    Users.create([
+                        config.testUser,
+                        {
+                            userId: 'peopleId1',
+                            birthday: 1943,
+                            job: 'IT종사자',
+                            gender: 'male',
+                        },
+                        {
+                            userId: 'peopleId2',
+                            birthday: 1989,
+                            job: 'IT종사자',
+                            gender: 'female',
+                        },
+                        {
+                            userId: 'peopleId3',
+                            birthday: 1990,
+                            job: '학생',
+                            gender: 'male',
+                        },
+                    ]);
+
+                    AppUsages.create([
+                        {
+                            userId: 'peopleId1',
+                            packageName: 'com.game.edu2',
+                            totalUsedTime: 7000
+                        },  {
+                            userId: 'peopleId1',
+                            packageName: 'com.game.rpg',
+                            totalUsedTime: 4000
+                        }, {
+                            userId: 'peopleId2',
+                            packageName: 'com.game.rpg',
+                            totalUsedTime: 90000
+                        },{
+                            userId: 'peopleId2',
+                            packageName: 'com.game.puzzle',
+                            totalUsedTime: 10000
+                        }, {
+                            userId: 'peopleId3',
+                            packageName: 'com.game.edu',
+                            totalUsedTime: 100000
+                        }, {
+                            userId: 'peopleId3',
+                            packageName: 'com.game.puzzle',
+                            totalUsedTime: 50000
+                        }], function () {
+                        Apps.create([ {
+                            packageName: 'com.nhn.android.nmap',
+                            appName: '네이버지도',
+                            categoryId1: 'TOOL',
+                            categoryName1: '도구',
+                            developer: 'NHN Corp.',
+                            iconUrl: 'iconUrl0',
+                        }, {
+                            packageName: 'com.game.edu',
+                            appName: '교육게임명',
+                            categoryId1: 'GAME_EDUCATIONAL',
+                            categoryName1: '교육',
+                            developer: 'Edu Game Corp.',
+                            iconUrl: 'iconUrl3',
+                        }, {
+                            packageName: 'com.game.rpg',
+                            appName: '롤플레잉게임명',
+                            categoryId1: 'GAME_ROLE_PLAYING',
+                            categoryName1: '롤플레잉',
+                            developer: 'GameDuckHu Corp.',
+                            iconUrl: 'iconUrl4',
+                        }, {
+                            packageName: 'com.game.edu2',
+                            appName: '교육게임명2',
+                            categoryId1: 'GAME_EDUCATIONAL',
+                            categoryName1: '교육',
+                            developer: 'GameDuckHu Corp.',
+                            iconUrl: 'iconUrl32',
+                        }, {
+                            packageName: 'com.game.puzzle',
+                            appName: '퍼즐게임명',
+                            categoryId1: 'GAME_PUZZLE',
+                            categoryName1: '퍼즐',
+                            developer: 'Puzzle Game Corp.',
+                            iconUrl: 'iconUrl6',
+                        }], function () {
+                            done()
+                        });
+                    });
+                });
+
+                it('204를 반환한다', done => {
+                    request.post('/stats/report/category/GAME/recent')
+                        .set('x-access-token', config.appbeeToken.valid)
+                        .send(config.testUser)
+                        .expect(204, done);
+                });
+
+                after(done => {
+                    Users.remove({}, () => {
+                        AppUsages.remove({}, () => {
+                            Apps.remove({}, done);
+                        });
+                    });
+                });
+            });
+        });
+
+        describe('특정 카테고리의 앱 사용 누적시간 데이터가 반환된다', () => {
+            before(done => {
+                Users.create([
+                    config.testUser,
+                    {
+                        userId: 'peopleId1',
+                        birthday: 1943,
+                        job: 'IT종사자',
+                        gender: 'male',
+                    },
+                    {
+                        userId: 'peopleId2',
+                        birthday: 1989,
+                        job: 'IT종사자',
+                        gender: 'female',
+                    },
+                    {
+                        userId: 'peopleId3',
+                        birthday: 1990,
+                        job: '학생',
+                        gender: 'male',
+                    },
+                ]);
+
+                AppUsages.create([
+                    ////////// start of me ///////////////
+                    {
+                        userId: config.testUser.userId,
+                        packageName: 'com.nhn.android.nmap',
+                        totalUsedTime: 9999
+                    }, {
+                        // 특정 앱의 사용 데이터는 있지만 해당 앱 정보가 DB에 없는 경우, 해당 앱은 제외한다.
+                        userId: config.testUser.userId,
+                        packageName: 'com.game.empty',
+                        totalUsedTime: 10000
+                    }, {
+                        userId: config.testUser.userId,
+                        packageName: 'com.game.edu',
+                        totalUsedTime: 90000
+                    }, {
+                        userId: config.testUser.userId,
+                        packageName: 'com.game.rpg',
+                        totalUsedTime: 10000
+                    }, {
+                        userId: config.testUser.userId,
+                        packageName: 'com.game.edu2',
+                        totalUsedTime: 5000
+                    },
+                    ////////// end of me ///////////////
+                    {
+                        userId: 'peopleId1',
+                        packageName: 'com.game.edu2',
+                        totalUsedTime: 7000
+                    },  {
+                        userId: 'peopleId1',
+                        packageName: 'com.game.rpg',
+                        totalUsedTime: 4000
+                    }, {
+                        userId: 'peopleId2',
+                        packageName: 'com.game.rpg',
+                        totalUsedTime: 90000
+                    },{
+                        userId: 'peopleId2',
+                        packageName: 'com.game.puzzle',
+                        totalUsedTime: 10000
+                    }, {
+                        userId: 'peopleId3',
+                        packageName: 'com.game.edu',
+                        totalUsedTime: 100000
+                    }, {
+                        userId: 'peopleId3',
+                        packageName: 'com.game.puzzle',
+                        totalUsedTime: 50000
+                    }], function () {
+                    Apps.create([ {
+                        packageName: 'com.nhn.android.nmap',
+                        appName: '네이버지도',
+                        categoryId1: 'TOOL',
+                        categoryName1: '도구',
+                        developer: 'NHN Corp.',
+                        iconUrl: 'iconUrl0',
+                    }, {
+                        packageName: 'com.game.edu',
+                        appName: '교육게임명',
+                        categoryId1: 'GAME_EDUCATIONAL',
+                        categoryName1: '교육',
+                        developer: 'Edu Game Corp.',
+                        iconUrl: 'iconUrl3',
+                    }, {
+                        packageName: 'com.game.rpg',
+                        appName: '롤플레잉게임명',
+                        categoryId1: 'GAME_ROLE_PLAYING',
+                        categoryName1: '롤플레잉',
+                        developer: 'GameDuckHu Corp.',
+                        iconUrl: 'iconUrl4',
+                    }, {
+                        packageName: 'com.game.edu2',
+                        appName: '교육게임명2',
+                        categoryId1: 'GAME_EDUCATIONAL',
+                        categoryName1: '교육',
+                        developer: 'GameDuckHu Corp.',
+                        iconUrl: 'iconUrl32',
+                    }, {
+                        packageName: 'com.game.puzzle',
+                        appName: '퍼즐게임명',
+                        categoryId1: 'GAME_PUZZLE',
+                        categoryName1: '퍼즐',
+                        developer: 'Puzzle Game Corp.',
+                        iconUrl: 'iconUrl6',
+                    }], function () {
+                        done()
+                    });
+                });
+            });
+
+            it('3 가지 그룹의 데이터가 반환된다', done => {
+                request.post('/stats/report/category/GAME/recent')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .send(config.testUser)
+                    .expect(200)
+                    .then((res) => {
+                        res.body.usages.length.should.be.eql(3);
+
+                        res.body.usages.sort((a, b) => a.groupTypeType > b.groupTypeType ? 1 : -1);
+
+                        res.body.usages[0].groupType.should.be.eql(UserConstants.mine);
+                        res.body.usages[1].groupType.should.be.eql(UserConstants.gender | UserConstants.age);
+                        res.body.usages[2].groupType.should.be.eql(UserConstants.job);
+                        done();
+                    }).catch(err => done(err));
+            });
+
+            describe('나의 데이터', () => {
+
+                it('요청한 유저의 앱 사용 데이터를 반환한다', done => {
+                    request.post('/stats/report/category/GAME/recent')
+                        .set('x-access-token', config.appbeeToken.valid)
+                        .send(config.testUser)
+                        .expect(200)
+                        .then((res) => {
+                            res.body.usages.sort((a, b) => a.groupType > b.groupType ? 1 : -1);
+                            const userAppUsage = res.body.usages[0].appUsages;
+
+                            userAppUsage.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                            userAppUsage.length.should.be.eql(3);
+
+                            userAppUsage[0].id.should.be.eql('com.game.edu');
+                            userAppUsage[0].name.should.be.eql('교육게임명');
+                            userAppUsage[0].totalUsedTime.should.be.eql(90000);
+                            userAppUsage[0].appInfos.length.should.be.eql(1);
+                            userAppUsage[0].appInfos[0].packageName.should.be.eql('com.game.edu');
+                            userAppUsage[0].appInfos[0].appName.should.be.eql('교육게임명');
+                            userAppUsage[0].appInfos[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
+                            userAppUsage[0].appInfos[0].categoryName.should.be.eql('교육');
+                            userAppUsage[0].appInfos[0].developer.should.be.eql('Edu Game Corp.');
+                            userAppUsage[0].appInfos[0].iconUrl.should.be.eql('iconUrl3');
+
+                            userAppUsage[1].id.should.be.eql('com.game.rpg');
+                            userAppUsage[1].name.should.be.eql('롤플레잉게임명');
+                            userAppUsage[1].totalUsedTime.should.be.eql(10000);
+                            userAppUsage[1].appInfos.length.should.be.eql(1);
+                            userAppUsage[1].appInfos[0].packageName.should.be.eql('com.game.rpg');
+                            userAppUsage[1].appInfos[0].appName.should.be.eql('롤플레잉게임명');
+                            userAppUsage[1].appInfos[0].categoryId.should.be.eql('GAME_ROLE_PLAYING');
+                            userAppUsage[1].appInfos[0].categoryName.should.be.eql('롤플레잉');
+                            userAppUsage[1].appInfos[0].developer.should.be.eql('GameDuckHu Corp.');
+                            userAppUsage[1].appInfos[0].iconUrl.should.be.eql('iconUrl4');
+
+                            userAppUsage[2].id.should.be.eql('com.game.edu2');
+                            userAppUsage[2].name.should.be.eql('교육게임명2');
+                            userAppUsage[2].totalUsedTime.should.be.eql(5000);
+                            userAppUsage[2].appInfos.length.should.be.eql(1);
+                            userAppUsage[2].appInfos[0].packageName.should.be.eql('com.game.edu2');
+                            userAppUsage[2].appInfos[0].appName.should.be.eql('교육게임명2');
+                            userAppUsage[2].appInfos[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
+                            userAppUsage[2].appInfos[0].categoryName.should.be.eql('교육');
+                            userAppUsage[2].appInfos[0].developer.should.be.eql('GameDuckHu Corp.');
+                            userAppUsage[2].appInfos[0].iconUrl.should.be.eql('iconUrl32');
+
+                            done();
+                        }).catch(err => done(err));
+                });
+
+                it('요청한 유저의 카테고리 사용 데이터를 반환한다', done => {
+                    request.post('/stats/report/category/GAME/recent')
+                        .set('x-access-token', config.appbeeToken.valid)
+                        .send(config.testUser)
+                        .expect(200)
+                        .then((res) => {
+                            res.body.usages.sort((a, b) => a.groupType > b.groupType ? 1 : -1);
+                            const userCategoryUsages = res.body.usages[0].categoryUsages;
+
+                            userCategoryUsages.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                            userCategoryUsages.length.should.be.eql(2);
+
+                            userCategoryUsages[0].id.should.be.eql('GAME_EDUCATIONAL');
+                            userCategoryUsages[0].name.should.be.eql('교육');
+                            userCategoryUsages[0].totalUsedTime.should.be.eql(95000);
+                            should.not.exist(userCategoryUsages[0].appInfos);
+
+                            userCategoryUsages[1].id.should.be.eql('GAME_ROLE_PLAYING');
+                            userCategoryUsages[1].name.should.be.eql('롤플레잉');
+                            userCategoryUsages[1].totalUsedTime.should.be.eql(10000);
+                            should.not.exist(userCategoryUsages[1].appInfos);
+
+                            done();
+                        }).catch(err => done(err));
+                });
+
+                it('요청한 유저의 개발사별 사용 데이터를 반환한다', done => {
+                    request.post('/stats/report/category/GAME/recent')
+                        .set('x-access-token', config.appbeeToken.valid)
+                        .send(config.testUser)
+                        .expect(200)
+                        .then((res) => {
+                            res.body.usages.sort((a, b) => a.groupType > b.groupType ? 1 : -1);
+                            const userDeveloperUsages = res.body.usages[0].developerUsages;
+
+                            userDeveloperUsages.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                            userDeveloperUsages.forEach(usages => {
+                                usages.appInfos.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                            });
+
+                            userDeveloperUsages.length.should.be.eql(2);
+
+                            userDeveloperUsages[0].id.should.be.eql('Edu Game Corp.');
+                            userDeveloperUsages[0].name.should.be.eql('Edu Game Corp.');
+                            userDeveloperUsages[0].totalUsedTime.should.be.eql(90000);
+
+                            userDeveloperUsages[0].appInfos.length.should.be.eql(1);
+
+                            userDeveloperUsages[0].appInfos[0].packageName.should.be.eql('com.game.edu');
+                            userDeveloperUsages[0].appInfos[0].totalUsedTime.should.be.eql(90000);
+                            userDeveloperUsages[0].appInfos[0].appName.should.be.eql('교육게임명');
+                            userDeveloperUsages[0].appInfos[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
+                            userDeveloperUsages[0].appInfos[0].categoryName.should.be.eql('교육');
+                            userDeveloperUsages[0].appInfos[0].developer.should.be.eql('Edu Game Corp.');
+                            userDeveloperUsages[0].appInfos[0].iconUrl.should.be.eql('iconUrl3');
+
+                            userDeveloperUsages[1].id.should.be.eql('GameDuckHu Corp.');
+                            userDeveloperUsages[1].name.should.be.eql('GameDuckHu Corp.');
+                            userDeveloperUsages[1].totalUsedTime.should.be.eql(15000);
+
+                            userDeveloperUsages[1].appInfos.length.should.be.eql(2);
+
+                            userDeveloperUsages[1].appInfos[0].packageName.should.be.eql('com.game.rpg');
+                            userDeveloperUsages[1].appInfos[0].totalUsedTime.should.be.eql(10000);
+                            userDeveloperUsages[1].appInfos[0].appName.should.be.eql('롤플레잉게임명');
+                            userDeveloperUsages[1].appInfos[0].categoryId.should.be.eql('GAME_ROLE_PLAYING');
+                            userDeveloperUsages[1].appInfos[0].categoryName.should.be.eql('롤플레잉');
+                            userDeveloperUsages[1].appInfos[0].developer.should.be.eql('GameDuckHu Corp.');
+                            userDeveloperUsages[1].appInfos[0].iconUrl.should.be.eql('iconUrl4');
+
+                            userDeveloperUsages[1].appInfos[1].packageName.should.be.eql('com.game.edu2');
+                            userDeveloperUsages[1].appInfos[1].totalUsedTime.should.be.eql(5000);
+                            userDeveloperUsages[1].appInfos[1].appName.should.be.eql('교육게임명2');
+                            userDeveloperUsages[1].appInfos[1].categoryId.should.be.eql('GAME_EDUCATIONAL');
+                            userDeveloperUsages[1].appInfos[1].categoryName.should.be.eql('교육');
+                            userDeveloperUsages[1].appInfos[1].developer.should.be.eql('GameDuckHu Corp.');
+                            userDeveloperUsages[1].appInfos[1].iconUrl.should.be.eql('iconUrl32');
+
+                            done();
+                        }).catch(err => done(err));
+                });
+            });
+
+            describe('성별+나이 그룹 데이터', () => {
+
+                it('사람들의 앱 누적 사용 데이터를 가져온다', done => {
+                    request.post('/stats/report/category/GAME/recent')
+                        .set('x-access-token', config.appbeeToken.valid)
+                        .send(config.testUser)
+                        .expect(200)
+                        .then((res) => {
+                            res.body.usages.sort((a, b) => a.groupType > b.groupType ? 1 : -1);
+                            const genderAgeAppUsages = res.body.usages[1].appUsages;
+
+                            genderAgeAppUsages.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+
+                            // gender + age
+                            // people 3
+                            genderAgeAppUsages.length.should.be.eql(4);
+
+                            genderAgeAppUsages[0].id.should.be.eql('com.game.edu');
+                            genderAgeAppUsages[0].name.should.be.eql('교육게임명');
+                            genderAgeAppUsages[0].totalUsedTime.should.be.eql(190000);
+                            genderAgeAppUsages[0].appInfos.length.should.be.eql(1);
+                            genderAgeAppUsages[0].appInfos[0].packageName.should.be.eql('com.game.edu');
+                            genderAgeAppUsages[0].appInfos[0].appName.should.be.eql('교육게임명');
+                            genderAgeAppUsages[0].appInfos[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
+                            genderAgeAppUsages[0].appInfos[0].categoryName.should.be.eql('교육');
+                            genderAgeAppUsages[0].appInfos[0].developer.should.be.eql('Edu Game Corp.');
+                            genderAgeAppUsages[0].appInfos[0].iconUrl.should.be.eql('iconUrl3');
+
+                            genderAgeAppUsages[1].id.should.be.eql('com.game.puzzle');
+                            genderAgeAppUsages[1].name.should.be.eql('퍼즐게임명');
+                            genderAgeAppUsages[1].totalUsedTime.should.be.eql(50000);
+                            genderAgeAppUsages[1].appInfos.length.should.be.eql(1);
+                            genderAgeAppUsages[1].appInfos[0].packageName.should.be.eql('com.game.puzzle');
+                            genderAgeAppUsages[1].appInfos[0].appName.should.be.eql('퍼즐게임명');
+                            genderAgeAppUsages[1].appInfos[0].categoryId.should.be.eql('GAME_PUZZLE');
+                            genderAgeAppUsages[1].appInfos[0].categoryName.should.be.eql('퍼즐');
+                            genderAgeAppUsages[1].appInfos[0].developer.should.be.eql('Puzzle Game Corp.');
+                            genderAgeAppUsages[1].appInfos[0].iconUrl.should.be.eql('iconUrl6');
+
+                            genderAgeAppUsages[2].id.should.be.eql('com.game.rpg');
+                            genderAgeAppUsages[2].name.should.be.eql('롤플레잉게임명');
+                            genderAgeAppUsages[2].totalUsedTime.should.be.eql(10000);
+                            genderAgeAppUsages[2].appInfos.length.should.be.eql(1);
+                            genderAgeAppUsages[2].appInfos[0].packageName.should.be.eql('com.game.rpg');
+                            genderAgeAppUsages[2].appInfos[0].appName.should.be.eql('롤플레잉게임명');
+                            genderAgeAppUsages[2].appInfos[0].categoryId.should.be.eql('GAME_ROLE_PLAYING');
+                            genderAgeAppUsages[2].appInfos[0].categoryName.should.be.eql('롤플레잉');
+                            genderAgeAppUsages[2].appInfos[0].developer.should.be.eql('GameDuckHu Corp.');
+                            genderAgeAppUsages[2].appInfos[0].iconUrl.should.be.eql('iconUrl4');
+
+                            genderAgeAppUsages[3].id.should.be.eql('com.game.edu2');
+                            genderAgeAppUsages[3].name.should.be.eql('교육게임명2');
+                            genderAgeAppUsages[3].totalUsedTime.should.be.eql(5000);
+                            genderAgeAppUsages[3].appInfos.length.should.be.eql(1);
+                            genderAgeAppUsages[3].appInfos[0].packageName.should.be.eql('com.game.edu2');
+                            genderAgeAppUsages[3].appInfos[0].appName.should.be.eql('교육게임명2');
+                            genderAgeAppUsages[3].appInfos[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
+                            genderAgeAppUsages[3].appInfos[0].categoryName.should.be.eql('교육');
+                            genderAgeAppUsages[3].appInfos[0].developer.should.be.eql('GameDuckHu Corp.');
+                            genderAgeAppUsages[3].appInfos[0].iconUrl.should.be.eql('iconUrl32');
+
+                            done();
+
+                        }).catch(err => done(err))
+                });
+
+                it('사람들의 카테고리 사용 데이터를 가져온다', done => {
+
+                    request.post('/stats/report/category/GAME/recent')
+                        .set('x-access-token', config.appbeeToken.valid)
+                        .send(config.testUser)
+                        .expect(200)
+                        .then((res) => {
+                            res.body.usages.sort((a, b) => a.groupType > b.groupType ? 1 : -1);
+                            const genderAgeCategoryUsages = res.body.usages[1].categoryUsages;
+
+                            genderAgeCategoryUsages.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+
+                            // gender + age
+                            // people 3
+                            genderAgeCategoryUsages.length.should.be.eql(3);
+
+                            genderAgeCategoryUsages[0].id.should.be.eql('GAME_EDUCATIONAL');
+                            genderAgeCategoryUsages[0].name.should.be.eql('교육');
+                            genderAgeCategoryUsages[0].totalUsedTime.should.be.eql(195000);
+                            should.not.exist(genderAgeCategoryUsages[0].appInfos);
+
+                            genderAgeCategoryUsages[1].id.should.be.eql('GAME_PUZZLE');
+                            genderAgeCategoryUsages[1].name.should.be.eql('퍼즐');
+                            genderAgeCategoryUsages[1].totalUsedTime.should.be.eql(50000);
+                            should.not.exist(genderAgeCategoryUsages[1].appInfos);
+
+                            genderAgeCategoryUsages[2].id.should.be.eql('GAME_ROLE_PLAYING');
+                            genderAgeCategoryUsages[2].name.should.be.eql('롤플레잉');
+                            genderAgeCategoryUsages[2].totalUsedTime.should.be.eql(10000);
+                            should.not.exist(genderAgeCategoryUsages[2].appInfos);
+
+                            done();
+
+                        }).catch(err => done(err))
+                });
+
+                it('사람들의 개발사별 사용 데이터를 가져온다', done => {
+                    request.post('/stats/report/category/GAME/recent')
+                        .set('x-access-token', config.appbeeToken.valid)
+                        .send(config.testUser)
+                        .expect(200)
+                        .then((res) => {
+                            res.body.usages.sort((a, b) => a.groupType > b.groupType ? 1 : -1);
+                            const genderAgeDeveloperUsages = res.body.usages[1].developerUsages;
+
+                            genderAgeDeveloperUsages.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                            genderAgeDeveloperUsages.forEach(usages => {
+                                usages.appInfos.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                            });
+
+                            genderAgeDeveloperUsages.length.should.be.eql(3);
+                            genderAgeDeveloperUsages[0].id.should.be.eql('Edu Game Corp.');
+                            genderAgeDeveloperUsages[0].name.should.be.eql('Edu Game Corp.');
+                            genderAgeDeveloperUsages[0].totalUsedTime.should.be.eql(190000);
+                            genderAgeDeveloperUsages[0].appInfos.length.should.be.eql(1);
+                            genderAgeDeveloperUsages[0].appInfos[0].packageName.should.be.eql('com.game.edu');
+                            genderAgeDeveloperUsages[0].appInfos[0].totalUsedTime.should.be.eql(190000);
+
+                            genderAgeDeveloperUsages[1].id.should.be.eql('Puzzle Game Corp.');
+                            genderAgeDeveloperUsages[1].name.should.be.eql('Puzzle Game Corp.');
+                            genderAgeDeveloperUsages[1].totalUsedTime.should.be.eql(50000);
+                            genderAgeDeveloperUsages[1].appInfos.length.should.be.eql(1);
+                            genderAgeDeveloperUsages[1].appInfos[0].packageName.should.be.eql('com.game.puzzle');
+                            genderAgeDeveloperUsages[1].appInfos[0].totalUsedTime.should.be.eql(50000);
+
+                            genderAgeDeveloperUsages[2].id.should.be.eql('GameDuckHu Corp.');
+                            genderAgeDeveloperUsages[2].name.should.be.eql('GameDuckHu Corp.');
+                            genderAgeDeveloperUsages[2].totalUsedTime.should.be.eql(15000);
+                            genderAgeDeveloperUsages[2].appInfos.length.should.be.eql(2);
+                            genderAgeDeveloperUsages[2].appInfos[0].packageName.should.be.eql('com.game.rpg');
+                            genderAgeDeveloperUsages[2].appInfos[0].totalUsedTime.should.be.eql(10000);
+                            genderAgeDeveloperUsages[2].appInfos[1].packageName.should.be.eql('com.game.edu2');
+                            genderAgeDeveloperUsages[2].appInfos[1].totalUsedTime.should.be.eql(5000);
+
+                            done();
+                        }).catch(err => done(err));
+                });
+            });
+
+            describe('직업 그룹 데이터', () => {
+
+                it('사람들의 앱 누적 사용 데이터를 가져온다', done => {
+
+                    request.post('/stats/report/category/GAME/recent')
+                        .set('x-access-token', config.appbeeToken.valid)
+                        .send(config.testUser)
+                        .expect(200)
+                        .then((res) => {
+                            res.body.usages.sort((a, b) => a.groupType > b.groupType ? 1 : -1);
+                            const jobAppUsages = res.body.usages[2].appUsages;
+
+                            jobAppUsages.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+
+                            // job
+                            // people 1, 2
+                            jobAppUsages.length.should.be.eql(4);
+                            jobAppUsages[0].id.should.be.eql('com.game.rpg');
+                            jobAppUsages[0].name.should.be.eql('롤플레잉게임명');
+                            jobAppUsages[0].totalUsedTime.should.be.eql(104000);
+                            jobAppUsages[0].appInfos.length.should.be.eql(1);
+                            jobAppUsages[0].appInfos[0].packageName.should.be.eql('com.game.rpg');
+                            jobAppUsages[0].appInfos[0].appName.should.be.eql('롤플레잉게임명');
+                            jobAppUsages[0].appInfos[0].categoryId.should.be.eql('GAME_ROLE_PLAYING');
+                            jobAppUsages[0].appInfos[0].categoryName.should.be.eql('롤플레잉');
+                            jobAppUsages[0].appInfos[0].developer.should.be.eql('GameDuckHu Corp.');
+                            jobAppUsages[0].appInfos[0].iconUrl.should.be.eql('iconUrl4');
+
+
+                            jobAppUsages[1].id.should.be.eql('com.game.edu');
+                            jobAppUsages[1].name.should.be.eql('교육게임명');
+                            jobAppUsages[1].totalUsedTime.should.be.eql(90000);
+                            jobAppUsages[1].appInfos.length.should.be.eql(1);
+                            jobAppUsages[1].appInfos[0].packageName.should.be.eql('com.game.edu');
+                            jobAppUsages[1].appInfos[0].appName.should.be.eql('교육게임명');
+                            jobAppUsages[1].appInfos[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
+                            jobAppUsages[1].appInfos[0].categoryName.should.be.eql('교육');
+                            jobAppUsages[1].appInfos[0].developer.should.be.eql('Edu Game Corp.');
+                            jobAppUsages[1].appInfos[0].iconUrl.should.be.eql('iconUrl3');
+
+                            jobAppUsages[2].id.should.be.eql('com.game.edu2');
+                            jobAppUsages[2].name.should.be.eql('교육게임명2');
+                            jobAppUsages[2].totalUsedTime.should.be.eql(12000);
+                            jobAppUsages[2].appInfos.length.should.be.eql(1);
+                            jobAppUsages[2].appInfos[0].packageName.should.be.eql('com.game.edu2');
+                            jobAppUsages[2].appInfos[0].appName.should.be.eql('교육게임명2');
+                            jobAppUsages[2].appInfos[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
+                            jobAppUsages[2].appInfos[0].categoryName.should.be.eql('교육');
+                            jobAppUsages[2].appInfos[0].developer.should.be.eql('GameDuckHu Corp.');
+                            jobAppUsages[2].appInfos[0].iconUrl.should.be.eql('iconUrl32');
+
+                            jobAppUsages[3].id.should.be.eql('com.game.puzzle');
+                            jobAppUsages[3].name.should.be.eql('퍼즐게임명');
+                            jobAppUsages[3].totalUsedTime.should.be.eql(10000);
+                            jobAppUsages[3].appInfos.length.should.be.eql(1);
+                            jobAppUsages[3].appInfos[0].packageName.should.be.eql('com.game.puzzle');
+                            jobAppUsages[3].appInfos[0].appName.should.be.eql('퍼즐게임명');
+                            jobAppUsages[3].appInfos[0].categoryId.should.be.eql('GAME_PUZZLE');
+                            jobAppUsages[3].appInfos[0].categoryName.should.be.eql('퍼즐');
+                            jobAppUsages[3].appInfos[0].developer.should.be.eql('Puzzle Game Corp.');
+                            jobAppUsages[3].appInfos[0].iconUrl.should.be.eql('iconUrl6');
+
+                            done();
+
+                        }).catch(err => done(err))
+                });
+
+                it('사람들의 카테고리 사용 데이터를 가져온다', done => {
+
+                    request.post('/stats/report/category/GAME/recent')
+                        .set('x-access-token', config.appbeeToken.valid)
+                        .send(config.testUser)
+                        .expect(200)
+                        .then((res) => {
+                            res.body.usages.sort((a, b) => a.groupType > b.groupType ? 1 : -1);
+                            const jobCategoryUsages = res.body.usages[2].categoryUsages;
+
+                            jobCategoryUsages.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+
+                            // job
+                            // people 1, 2
+                            jobCategoryUsages.length.should.be.eql(3);
+
+                            jobCategoryUsages[0].id.should.be.eql('GAME_ROLE_PLAYING');
+                            jobCategoryUsages[0].name.should.be.eql('롤플레잉');
+                            jobCategoryUsages[0].totalUsedTime.should.be.eql(104000);
+                            should.not.exist(jobCategoryUsages[0].appInfos);
+
+                            jobCategoryUsages[1].id.should.be.eql('GAME_EDUCATIONAL');
+                            jobCategoryUsages[1].name.should.be.eql('교육');
+                            jobCategoryUsages[1].totalUsedTime.should.be.eql(102000);
+                            should.not.exist(jobCategoryUsages[1].appInfos);
+
+                            jobCategoryUsages[2].id.should.be.eql('GAME_PUZZLE');
+                            jobCategoryUsages[2].name.should.be.eql('퍼즐');
+                            jobCategoryUsages[2].totalUsedTime.should.be.eql(10000);
+                            should.not.exist(jobCategoryUsages[2].appInfos);
+
+                            done();
+
+                        }).catch(err => done(err))
+                });
+
+                it('사람들의 개발사별 사용 데이터를 가져온다', done => {
+                    request.post('/stats/report/category/GAME/recent')
+                        .set('x-access-token', config.appbeeToken.valid)
+                        .send(config.testUser)
+                        .expect(200)
+                        .then((res) => {
+                            res.body.usages.sort((a, b) => a.groupType > b.groupType ? 1 : -1);
+                            const jobDeveloperUsages = res.body.usages[2].developerUsages;
+
+                            jobDeveloperUsages.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                            jobDeveloperUsages.forEach(usages => {
+                                usages.appInfos.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                            });
+
+                            jobDeveloperUsages.length.should.be.eql(3);
+                            jobDeveloperUsages[0].id.should.be.eql('GameDuckHu Corp.');
+                            jobDeveloperUsages[0].name.should.be.eql('GameDuckHu Corp.');
+                            jobDeveloperUsages[0].totalUsedTime.should.be.eql(116000);
+                            jobDeveloperUsages[0].appInfos.length.should.be.eql(2);
+                            jobDeveloperUsages[0].appInfos[0].packageName.should.be.eql('com.game.rpg');
+                            jobDeveloperUsages[0].appInfos[0].totalUsedTime.should.be.eql(104000);
+                            jobDeveloperUsages[0].appInfos[1].packageName.should.be.eql('com.game.edu2');
+                            jobDeveloperUsages[0].appInfos[1].totalUsedTime.should.be.eql(12000);
+
+                            jobDeveloperUsages[1].id.should.be.eql('Edu Game Corp.');
+                            jobDeveloperUsages[1].name.should.be.eql('Edu Game Corp.');
+                            jobDeveloperUsages[1].totalUsedTime.should.be.eql(90000);
+                            jobDeveloperUsages[1].appInfos.length.should.be.eql(1);
+                            jobDeveloperUsages[1].appInfos[0].packageName.should.be.eql('com.game.edu');
+                            jobDeveloperUsages[1].appInfos[0].totalUsedTime.should.be.eql(90000);
+
+                            jobDeveloperUsages[2].id.should.be.eql('Puzzle Game Corp.');
+                            jobDeveloperUsages[2].name.should.be.eql('Puzzle Game Corp.');
+                            jobDeveloperUsages[2].totalUsedTime.should.be.eql(10000);
+                            jobDeveloperUsages[2].appInfos.length.should.be.eql(1);
+                            jobDeveloperUsages[2].appInfos[0].packageName.should.be.eql('com.game.puzzle');
+                            jobDeveloperUsages[2].appInfos[0].totalUsedTime.should.be.eql(10000);
+
+                            done();
+                        }).catch(err => done(err));
+                });
+            });
+
+            after(done => {
+                Users.remove({}, () => {
+                    AppUsages.remove({}, () => {
+                        Apps.remove({}, done);
+                    });
+                });
+            });
+        });
+
+
     });
 });

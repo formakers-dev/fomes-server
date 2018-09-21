@@ -7,6 +7,7 @@ const appSchema = new mongoose.Schema({
     categoryId2: String,
     categoryName1: String,
     categoryName2: String,
+    categoryIds: Array,
     developer: String,
     iconUrl: String,
 });
