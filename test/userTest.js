@@ -78,6 +78,32 @@ describe('Users', () => {
             })
         });
 
+        describe('본인을 제외한 다른 사용자와 닉네임이 중복될 경우,', () => {
+            before(done => {
+                User.create([
+                    config.testUser,
+                    {
+                        userId: 'testUserId1',
+                        nickName: 'duplicatedNickName'  // testUser 와 같은 닉네임
+                    }
+                ], done);
+            });
+
+            it('409를 반환한다', done => {
+                request.post('/user')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .send({
+                        userId: config.testUser.userId,
+                        nickName: 'duplicatedNickName'
+                    })
+                    .expect(409, done);
+            });
+
+            after(done => {
+                User.remove({}, done);
+            })
+        });
+
         afterEach((done) => {
             User.remove({userId: config.testUser.userId}, () => {
                 done();
@@ -197,7 +223,14 @@ describe('Users', () => {
 
     describe('POST /user/signup/', () => {
         let clock;
-        const signUpUser = config.testUser;
+        const signUpUser = {
+            userId : config.testUser.userId,
+            name: config.testUser.name,
+            email : config.testUser.email,
+            registrationToken: config.testUser.registrationToken,
+            provider: config.testUser.provider,
+            providerId: config.testUser.providerId
+        };
 
         beforeEach(() => {
             clock = sandbox.useFakeTimers(new Date("2018-09-06T15:30:00.000Z").getTime());
@@ -213,9 +246,6 @@ describe('Users', () => {
                         user.userId.should.be.eql(config.testUser.userId);
                         user.name.should.be.eql('testName');
                         user.email.should.be.eql('test@email.com');
-                        user.birthday.should.be.eql(1992);
-                        user.job.should.be.eql('IT종사자');
-                        user.gender.should.be.eql('male');
                         user.provider.should.be.eql('google');
                         user.providerId.should.be.eql("109974316241227718963");
                         user.registrationToken.should.be.eql('test_user_registration_token');
@@ -250,10 +280,9 @@ describe('Users', () => {
                 userId: config.testUser.userId,
                 name: 'oldName',
                 email: 'old@email.com',
-                birthday: 1900,
-                job: 'oldJob',
-                gender: 'female',
                 registrationToken: 'oldRegistrationToken',
+                provider: 'oldProvider',
+                providerId: 'oldProviderId',
                 signUpTime: new Date('2018-09-05T15:30:00.000Z'),
             };
 
@@ -273,9 +302,6 @@ describe('Users', () => {
                             user.userId.should.be.eql(config.testUser.userId);
                             user.name.should.be.eql('testName');
                             user.email.should.be.eql('test@email.com');
-                            user.birthday.should.be.eql(1992);
-                            user.job.should.be.eql('IT종사자');
-                            user.gender.should.be.eql('male');
                             user.provider.should.be.eql('google');
                             user.providerId.should.be.eql("109974316241227718963");
                             user.registrationToken.should.be.eql('test_user_registration_token');
