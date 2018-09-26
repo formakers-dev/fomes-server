@@ -48,7 +48,10 @@ const postAppUsages = (req, res) => {
             bulkOps.push({
                 'updateOne': {
                     "filter": {"userId": userId, "packageName": appUsage.packageName},
-                    "update": {"totalUsedTime": appUsage.totalUsedTime},
+                    "update": {
+                        "totalUsedTime": appUsage.totalUsedTime,
+                        "updateTime": new Date()
+                    },
                     "upsert": true
                 }
             });

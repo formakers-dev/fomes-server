@@ -15,7 +15,8 @@ const appSchema = new mongoose.Schema({
 const appUsagesSchema = new mongoose.Schema({
     packageName: String,
     userId: String,
-    totalUsedTime: Number
+    totalUsedTime: Number,
+    updateTime: Date
 });
 
 appUsagesSchema.virtual('appInfo', {

@@ -125,6 +125,7 @@ describe('Stats', () => {
     });
 
     describe('POST /stats/usages/app', () => {
+        let clock;
 
         beforeEach(done => {
             AppUsages.create([{
@@ -136,6 +137,7 @@ describe('Stats', () => {
                 packageName: 'com.kakao.talk',
                 totalUsedTime: 40000
             }], function () {
+                clock = sandbox.useFakeTimers(new Date("2018-09-26T15:30:00.000Z").getTime());
                 done()
             });
         });
@@ -162,12 +164,15 @@ describe('Stats', () => {
                     docs[0].userId.should.be.eql(config.testUser.userId);
                     docs[0].packageName.should.be.eql('com.kakao.talk');
                     docs[0].totalUsedTime.should.be.eql(10000);
+                    docs[0].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
                     docs[1].userId.should.be.eql(config.testUser.userId);
                     docs[1].packageName.should.be.eql('com.naver.talk');
                     docs[1].totalUsedTime.should.be.eql(20000);
+                    docs[1].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
                     docs[2].userId.should.be.eql(config.testUser.userId);
                     docs[2].packageName.should.be.eql('com.android.com');
                     docs[2].totalUsedTime.should.be.eql(30000);
+                    docs[2].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
                     done();
                 })
                 .catch(err => done(err));
@@ -208,6 +213,7 @@ describe('Stats', () => {
         });
 
         afterEach(done => {
+            clock.restore();
             AppUsages.remove({}, done);
         });
     });
