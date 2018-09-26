@@ -6,23 +6,37 @@ const InvitationCodes = require('../models/invitationCodes');
 const config = require('../config');
 
 const signUpUser = (req, res, next) => {
-    User.findOne({userId: req.userId}).then(user => {
-        if (!user) {
-            req.body.signUpTime = new Date();
-        }
+    User.findOne({userId: req.userId})
+        .then(user => {
+            if (!user) {
+                req.body.signUpTime = new Date();
+            }
 
-        User.findOneAndUpdate({userId: req.userId}, {$set: req.body}, {upsert: true})
-            .exec()
-            .then(() => next())
-            .catch(err => sendError(res, err));
-    });
+            upsertUser(req, res, next);
+        })
+        .catch(err => sendError(res, err));
 };
 
 const upsertUser = (req, res, next) => {
-    User.findOneAndUpdate({userId: req.userId}, {$set: req.body}, {upsert: true})
-        .exec()
-        .then(() => next())
-        .catch(err => sendError(res, err));
+    const updateUser = (req, res, next) => {
+        User.findOneAndUpdate({userId: req.userId}, {$set: req.body}, {upsert: true})
+            .then(() => next())
+            .catch(err => sendError(res, err));
+    };
+
+    if (req.body.nickName) {
+        User.findOne({userId: {$ne: req.userId}, nickName: req.body.nickName})
+            .then(user => {
+                if (user) {
+                    res.sendStatus(409);
+                } else {
+                    updateUser(req, res, next);
+                }
+            })
+            .catch(err => sendError(res, err));
+    } else {
+        updateUser(req, res, next);
+    }
 };
 
 const generateToken = (req, res) => {
