@@ -125,12 +125,10 @@ const getReport = (req, res) => {
         res.json(result);
     }).catch(err => {
         console.error(err);
-
-        if (err === 'empty') {
-            res.sendStatus(204);
-        } else {
-            res.sendStatus(500)
-        }
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
     })
 };
 
@@ -176,16 +174,10 @@ const getTotalUsedTimeRankList = (userId, categoryId) => {
                 const best = sortedRanks[0];
                 const worst = sortedRanks[sortedRanks.length - 1];
 
-                if (!mine) {
-                    const errorType = 'empty';
-                    reject(errorType);
-                    return;
-                }
-
                 const result = [];
                 result.push(mine, best, worst);
 
-                resolve(result.map(rank => {
+                resolve(result.filter(rank => rank).map(rank => {
                     return {
                         userId: rank._id,
                         rank: sortedRanks.indexOf(rank) + 1,

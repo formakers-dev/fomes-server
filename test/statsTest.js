@@ -926,11 +926,22 @@ describe('Stats', () => {
                     });
                 });
 
-                it('204를 반환한다', done => {
+                it('나의 랭킹 정보를 제외하고 반환한다', done => {
                     request.post('/stats/report/category/GAME/recent')
                         .set('x-access-token', config.appbeeToken.valid)
                         .send(config.testUser)
-                        .expect(204, done);
+                        .expect(200)
+                        .then(res => {
+                            res.body.totalUsedTimeRank.length.should.be.eql(2);
+
+                            res.body.totalUsedTimeRank[0].userId.should.be.eql("peopleId3");
+                            res.body.totalUsedTimeRank[0].rank.should.be.eql(1);
+                            res.body.totalUsedTimeRank[0].content.should.be.eql(150000);
+                            res.body.totalUsedTimeRank[1].userId.should.be.eql("peopleId1");
+                            res.body.totalUsedTimeRank[1].rank.should.be.eql(3);
+                            res.body.totalUsedTimeRank[1].content.should.be.eql(11000);
+                            done();
+                        }).catch(err => done(err))
                 });
 
                 after(done => {
