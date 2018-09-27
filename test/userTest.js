@@ -33,7 +33,7 @@ describe('Users', () => {
                         user.lifeApps[1].should.be.eql('appbee');
                         user.nickName.should.be.eql('test_user_nickname');
                         user.birthday.should.be.eql(1992);
-                        user.job.should.be.eql('IT종사자');
+                        user.job.should.be.eql(1);
                         done();
                     });
                 })
@@ -68,7 +68,7 @@ describe('Users', () => {
                         result.lifeApps[0].should.be.eql('newApp');
                         result.nickName.should.be.eql('new_nickname');
                         result.birthday.should.be.eql(1992);
-                        result.job.should.be.eql('IT종사자');
+                        result.job.should.be.eql(1);
                         done();
                     }).catch(err => done(err));
             });
@@ -163,7 +163,7 @@ describe('Users', () => {
             email : null,
             birthday: 1980,
             gender: 'female',
-            job: '학생',
+            job: 3,
             registrationToken: 'new_registration_token',
             provider: null,
             providerId: null
@@ -185,7 +185,7 @@ describe('Users', () => {
                         user.name.should.be.eql('testName');
                         user.email.should.be.eql('test@email.com');
                         user.birthday.should.be.eql(1980);
-                        user.job.should.be.eql('학생');
+                        user.job.should.be.eql(3);
                         user.gender.should.be.eql('female');
                         user.provider.should.be.eql('google');
                         user.providerId.should.be.eql("109974316241227718963");
@@ -333,19 +333,19 @@ describe('Users', () => {
                     userId: "userId1",
                     gender: "female",
                     birthday: 1969,
-                    job: "IT종사자"
+                    job: 1
                 },
                 {
                     userId: "userId2",
                     gender: "male",
                     birthday: 1999,
-                    job: "주부"
+                    job: 2
                 },
                 {
                     userId: "userId3",
                     gender: "male",
                     birthday: 1989,
-                    job: "IT종사자"
+                    job: 1
                 }
             ], () => {
                 clock = sandbox.useFakeTimers(new Date("2018-09-21T15:30:00.000Z").getTime());
@@ -363,17 +363,17 @@ describe('Users', () => {
                     users[0].userId.should.be.eql("userId3");
                     users[0].gender.should.be.eql("male");
                     users[0].birthday.should.be.eql(1989);
-                    users[0].job.should.be.eql("IT종사자");
+                    users[0].job.should.be.eql(1);
 
                     users[1].userId.should.be.eql(config.testUser.userId);
                     users[1].gender.should.be.eql("male");
                     users[1].birthday.should.be.eql(1992);
-                    users[1].job.should.be.eql("IT종사자");
+                    users[1].job.should.be.eql(1);
 
                     users[2].userId.should.be.eql("userId2");
                     users[2].gender.should.be.eql("male");
                     users[2].birthday.should.be.eql(1999);
-                    users[2].job.should.be.eql("주부");
+                    users[2].job.should.be.eql(2);
 
                     done();
                 }).catch(err => done(err));
@@ -390,17 +390,17 @@ describe('Users', () => {
                     users[0].userId.should.be.eql("userId1");
                     users[0].gender.should.be.eql("female");
                     users[0].birthday.should.be.eql(1969);
-                    users[0].job.should.be.eql("IT종사자");
+                    users[0].job.should.be.eql(1);
 
                     users[1].userId.should.be.eql("userId3");
                     users[1].gender.should.be.eql("male");
                     users[1].birthday.should.be.eql(1989);
-                    users[1].job.should.be.eql("IT종사자");
+                    users[1].job.should.be.eql(1);
 
                     users[2].userId.should.be.eql(config.testUser.userId);
                     users[2].gender.should.be.eql("male");
                     users[2].birthday.should.be.eql(1992);
-                    users[2].job.should.be.eql("IT종사자");
+                    users[2].job.should.be.eql(1);
 
                     done();
                 }).catch(err => done(err));

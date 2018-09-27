@@ -15,7 +15,7 @@ const usersSchema = new Schema({
     nickName: String,
     email : String,
     birthday: Number,
-    job: String,
+    job: Number,
     gender: String,
     registrationToken: String,
     provider: String,

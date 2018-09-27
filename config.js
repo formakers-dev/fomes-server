@@ -21,7 +21,7 @@ config.test = {
         registrationToken: 'test_user_registration_token',
         gender: 'male',
         birthday: 1992,
-        job: 'IT종사자',
+        job: 1,
         lifeApps: ['fomes', 'appbee'],
         nickName: 'test_user_nickname',
         googleIdToken: 'test_user_google_id_token',

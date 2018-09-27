@@ -694,19 +694,19 @@ describe('Stats', () => {
                         {
                             userId: 'peopleId1',
                             birthday: 1943,
-                            job: 'IT종사자',
+                            job: 1,
                             gender: 'male',
                         },
                         {
                             userId: 'peopleId2',
                             birthday: 1989,
-                            job: 'IT종사자',
+                            job: 1,
                             gender: 'female',
                         },
                         {
                             userId: 'peopleId3',
                             birthday: 1990,
-                            job: '학생',
+                            job: 2,
                             gender: 'male',
                         },
                     ]);
@@ -842,19 +842,19 @@ describe('Stats', () => {
                         {
                             userId: 'peopleId1',
                             birthday: 1943,
-                            job: 'IT종사자',
+                            job: 1,
                             gender: 'male',
                         },
                         {
                             userId: 'peopleId2',
                             birthday: 1989,
-                            job: 'IT종사자',
+                            job: 1,
                             gender: 'female',
                         },
                         {
                             userId: 'peopleId3',
                             birthday: 1990,
-                            job: '학생',
+                            job: 2,
                             gender: 'male',
                         },
                     ]);
@@ -950,19 +950,19 @@ describe('Stats', () => {
                     {
                         userId: 'peopleId1',
                         birthday: 1943,
-                        job: 'IT종사자',
+                        job: 1,
                         gender: 'male',
                     },
                     {
                         userId: 'peopleId2',
                         birthday: 1989,
-                        job: 'IT종사자',
+                        job: 1,
                         gender: 'female',
                     },
                     {
                         userId: 'peopleId3',
                         birthday: 1990,
-                        job: '학생',
+                        job: 2,
                         gender: 'male',
                     },
                 ]);
