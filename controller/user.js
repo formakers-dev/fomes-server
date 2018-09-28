@@ -14,14 +14,14 @@ const signUpUser = (req, res, next) => {
 
             upsertUser(req, res, next);
         })
-        .catch(err => sendError(res, err));
+        .catch(err => sendError("signUpUser", req.userId, res, err, 500));
 };
 
 const upsertUser = (req, res, next) => {
     const updateUser = (req, res, next) => {
         User.findOneAndUpdate({userId: req.userId}, {$set: req.body}, {upsert: true})
             .then(() => next())
-            .catch(err => sendError(res, err));
+            .catch(err => sendError("upsertUser", req.userId, res, err, 500));
     };
 
     if (req.body.nickName) {
@@ -33,7 +33,7 @@ const upsertUser = (req, res, next) => {
                     updateUser(req, res, next);
                 }
             })
-            .catch(err => sendError(res, err));
+            .catch(err => sendError("upsertUser", req.userId, res, err, 500));
     } else {
         updateUser(req, res, next);
     }
@@ -46,11 +46,7 @@ const generateToken = (req, res) => {
         subject: 'AppBeeAuth'
     }, (err, newToken) => {
         if (err) {
-            console.log("====generateToken:Error" + err.message);
-            res.status(403).json({
-                success: false,
-                message: err.message
-            });
+            sendError("generateToken", req.userId, res, err, 403)
         } else {
             res.json(newToken);
         }
@@ -67,12 +63,12 @@ const verifyInvitationCode = (req, res) => {
                 res.sendStatus(412);
             }
         })
-        .catch(err => sendError(res, err));
+        .catch(err => sendError("verifyInvitationCode", req.userId, res, err, 500));
 };
 
-const sendError = (res, err) => {
-    console.log(err.message);
-    res.status(500).json({
+const sendError = (tag, userId, res, err, errCode) => {
+    console.error(tag, "userId=", userId, "err=", err);
+    res.status(errCode).json({
         success: false,
         message: err.message
     });
@@ -103,7 +99,7 @@ const getSimilarUsers = (userInfo, similarPoint) => {
 
     if (findQuery['$and'].length <= 0) {
         const errorMessage = 'Please add similarPoint!';
-        console.error(errorMessage);
+        console.error("getSimilarUsers", "userId=", userId, "err=", errorMessage);
         return new Promise((resolve, reject) => reject(errorMessage));
     }
 

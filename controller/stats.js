@@ -124,7 +124,8 @@ const getReport = (req, res) => {
 
         res.json(result);
     }).catch(err => {
-        console.error(err);
+        console.error("getReport", "userId=", req.userId, "err=", err);
+
         res.status(500).json({
             success: false,
             message: err.message
@@ -185,8 +186,8 @@ const getTotalUsedTimeRankList = (userId, categoryId) => {
                     }
                 }));
             }).catch(err => {
-            console.error(err);
-            reject(err);
+                console.error("getTotalUsedTimeRankList", "userId=", userId, "err=", err);
+                reject(err);
         })
     });
 };
@@ -279,7 +280,7 @@ const aggregateAppUsageByCategory = (userIds, categoryId) => {
 
             resolve(result)
         }).catch(err => {
-            console.error(err);
+            console.error("aggregateAppUsageByCategory", "userIds.length=", userIds.length, "cetegoryId=", categoryId, "err=", err);
             reject(err);
         })
     });
@@ -332,7 +333,7 @@ const findAppUsageByCategory = (userId, categoryId) => {
                     && new RegExp(`${categoryId}.*`).test(appusage.appInfo.categoryId1))
                     .sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1));
             }).catch(err => {
-                console.error(err);
+                console.error("findAppUsageByCategory", "userId=", userId, "err=", err);
                 reject(err)
         });
     });

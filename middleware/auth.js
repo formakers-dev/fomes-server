@@ -27,8 +27,8 @@ const appBeeTokenVerifier = (req, res, next) => {
         }
     };
 
-    const onError = (err) => {
-        console.log('===appBeeTokenVerifier:onError');
+    const onError = (userId, err) => {
+        console.error('===appBeeTokenVerifier:onError', 'userId=', userId, 'err=', err);
         res.status(err.errCode).json({
             success: false,
             message: err.message
@@ -41,7 +41,7 @@ const appBeeTokenVerifier = (req, res, next) => {
 
     check(req.headers['x-access-token'])
         .then(onSuccess)
-        .catch(onError);
+        .catch(err => onError(req.userId, err));
 };
 
 
@@ -87,8 +87,7 @@ const googleTokenVerifier = (req, res, next) => {
             next();
         })
         .catch((err) => {
-            console.log('===verifyGoogleToken:onError');
-            console.log(err);
+            console.error('===verifyGoogleToken:onError', 'userId=', req.userId, 'err=', err);
             res.status(403).json({
                 success: false,
                 message: err.message
