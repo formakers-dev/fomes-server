@@ -156,7 +156,7 @@ describe('Users', () => {
         });
     });
 
-    describe('POST /user/auth/', () => {
+    describe('POST /user/signin/', () => {
         const signInUser = {
             userId : null,
             name: null,
@@ -174,7 +174,7 @@ describe('Users', () => {
         });
 
         it('구글토큰검증 후 User정보를 업데이트한다', done => {
-            request.post('/user/auth')
+            request.post('/user/signin')
                 .set('x-id-token', config.testUser.googleIdToken)
                 .send(signInUser)
                 .expect(200)
@@ -197,7 +197,7 @@ describe('Users', () => {
         });
 
         it('구글토큰검증 후 AppBeeToken을 발급하여 리턴한다', done => {
-            request.post('/user/auth')
+            request.post('/user/signin')
                 .set('x-id-token', config.testUser.googleIdToken)
                 .send(signInUser)
                 .expect(200)
