@@ -10,7 +10,7 @@ else
 fi
 echo "version : $VERSION"
 ### end of getting version
-ARCHIVE_NAME="appbee-server-$VERSION.zip"
+ARCHIVE_NAME="fomes-server-$VERSION.zip"
 echo ARCHIVE_NAME
 
 mkdir output
