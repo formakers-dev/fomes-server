@@ -1,7 +1,7 @@
 const config = {};
 
 config.development = {
-    secret: process.env.APPBEE_SECRET_KEY,
+    secret: process.env.FOMES_SECRET_KEY,
     dbUrl: process.env.MONGO_URL,
     port: process.env.PORT || 8080,
     googleClientId: process.env.GG_CLIENT_ID,

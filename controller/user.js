@@ -43,7 +43,7 @@ const generateToken = (req, res) => {
     jwt.sign(req.body, config.secret, {
         expiresIn: '1d',
         issuer: 'formakers.net',
-        subject: 'AppBeeAuth'
+        subject: 'FomesAuth'
     }, (err, newToken) => {
         if (err) {
             sendError("generateToken", req.userId, res, err, 403)
