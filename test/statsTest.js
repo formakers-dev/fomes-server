@@ -136,6 +136,10 @@ describe('Stats', () => {
                 userId: config.testUser.userId,
                 packageName: 'com.kakao.talk',
                 totalUsedTime: 40000
+            }, {
+                userId: config.testUser.userId,
+                packageName: 'com.dummy.app',
+                totalUsedTime: 10000
             }], function () {
                 clock = sandbox.useFakeTimers(new Date("2018-09-26T15:30:00.000Z").getTime());
                 done()
@@ -153,7 +157,7 @@ describe('Stats', () => {
             totalUsedTime: 30000,
         }];
 
-        it('앱사용기록을 저장한다', done => {
+        it('앱 사용 기록을 갱신한다', done => {
             request.post('/stats/usages/app')
                 .set('x-access-token', config.appbeeToken.valid)
                 .send(data)
