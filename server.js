@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const packagejson = require('./package.json');
 const statsRouter = require('./router/stats');
 const userRouter = require('./router/user');
+const appsRouter = require('./router/apps');
 const projectRouter = require('./router/project');
 const configurationRouter = require('./router/configurations');
 const db = require('./db');
@@ -25,6 +26,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/user', userRouter);
+app.use('/apps', appsRouter);
 app.use('/stats', statsRouter);
 app.use('/projects', projectRouter);
 app.use('/config', configurationRouter);
