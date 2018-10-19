@@ -5,6 +5,8 @@ const UserConstants = require('../models/user').Constants;
 const InvitationCodes = require('../models/invitationCodes');
 const config = require('../config');
 
+//TODO : User이름 변경 -> Users
+
 const signUpUser = (req, res, next) => {
     User.findOne({userId: req.userId})
         .then(user => {
@@ -106,4 +108,13 @@ const getSimilarUsers = (userInfo, similarPoint) => {
     return User.find(findQuery);
 };
 
-module.exports = {signUpUser, upsertUser, generateToken, verifyInvitationCode, getSimilarUsers};
+const getUser = (req, res, next) => {
+    User.findOne({userId: req.userId})
+        .then(user => {
+            req.user = user;
+            next();
+        })
+        .catch(err => sendError("getUser", req.userId, res, err, 500));
+};
+
+module.exports = {signUpUser, upsertUser, generateToken, verifyInvitationCode, getSimilarUsers, getUser};

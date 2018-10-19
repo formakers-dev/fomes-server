@@ -13,8 +13,11 @@ const appSchema = new mongoose.Schema({
 });
 
 const appUsagesSchema = new mongoose.Schema({
-    packageName: String,
     userId: String,
+    birthday: Number,
+    job: Number,
+    gender: String,
+    packageName: String,
     totalUsedTime: Number,
     updateTime: Date
 });

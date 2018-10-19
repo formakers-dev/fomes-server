@@ -207,12 +207,12 @@ const findCategoryUsages = (userId, categoryId, options) => {
 };
 /** end of using by populate **/
 
-const refreshAppUsages = (userId, appUsages) => {
+const refreshAppUsages = (user, appUsages) => {
     const bulkOps = [];
 
     bulkOps.push({
         'deleteMany': {
-            'filter': { 'userId': userId }
+            'filter': { 'userId': user.userId }
         }
     });
 
@@ -220,7 +220,10 @@ const refreshAppUsages = (userId, appUsages) => {
         bulkOps.push({
             'insertOne': {
                 'document': {
-                    'userId': userId,
+                    'userId': user.userId,
+                    'birthday': user.birthday,
+                    'job': user.job,
+                    'gender': user.gender,
                     'packageName': appUsage.packageName,
                     "totalUsedTime": appUsage.totalUsedTime,
                     "updateTime": new Date()

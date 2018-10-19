@@ -26,8 +26,20 @@ describe('Stats', () => {
                 "totalUsedTime": 200000
             }];
 
+        beforeEach(done => {
+           Users.create({
+               userId: config.testUser.userId,
+               lastStatsUpdateTime: new Date("2018-01-01T00:00:00.000Z"),
+           }, done);
+        });
+
         describe('단기통계데이터를 성공적으로 저장하면', () => {
-            it('200을 리턴하고 데이터가 저장된다', (done) => {
+            before(done => {
+                sandbox.useFakeTimers(new Date("2018-05-02T13:30:00.000Z").getTime());
+                done();
+            });
+
+            it('200을 리턴하고 데이터가 통계 정보 업데이트 시간과 함께 저장된다', (done) => {
                 request.post("/stats/short")
                     .set('x-access-token', config.appbeeToken.valid)
                     .send(doc)
@@ -37,15 +49,11 @@ describe('Stats', () => {
                         shortTermStats.length.should.be.eql(2);
                         verifyShortTermStatData(shortTermStats[0], 'com.whatever.package1', 1499914700000, 1499914800000, 100000);
                         verifyShortTermStatData(shortTermStats[1], 'com.whatever.package2', 1499914700001, 1499914900001, 200000);
-
                         done();
-                    })
-                    .catch((err) => done(err));
+                    }).catch((err) => done(err));
             });
 
             it('해당 유저 정보에 마지막 통계 정보 업데이트 시간이 기록된다.', (done) => {
-                sandbox.useFakeTimers(new Date("2018-05-02T13:30:00.000Z").getTime());
-
                 request.post("/stats/short")
                     .set('x-access-token', config.appbeeToken.valid)
                     .send(doc)
@@ -56,6 +64,11 @@ describe('Stats', () => {
                         done();
                     })
                     .catch((err) => done(err));
+            });
+
+            after(done => {
+                sandbox.restore();
+                done();
             });
         });
 
@@ -115,14 +128,14 @@ describe('Stats', () => {
             shortTermStat.endTimeStamp.should.be.eql(endTimeStamp);
             shortTermStat.totalUsedTime.should.be.eql(totalUsedTime);
         };
-    });
 
-    afterEach((done) => {
-        ShortTermStats.remove({userId: config.testUser.userId}, () => {
-            sandbox.restore();
-            done();
+        afterEach((done) => {
+            Users.remove({}, () =>
+                ShortTermStats.remove({}, () => done())
+            );
         });
     });
+
 
     describe('POST /stats/usages/app', () => {
         let clock;
@@ -130,19 +143,30 @@ describe('Stats', () => {
         beforeEach(done => {
             AppUsages.create([{
                 userId: 'anotherUserId',
+                gender: 'female',
+                birthday: 1952,
+                job: 2,
                 packageName: 'com.pre.installed',
                 totalUsedTime: 9999
             }, {
                 userId: config.testUser.userId,
+                gender: 'male',
+                birthday: 1992,
+                job: 1,
                 packageName: 'com.kakao.talk',
                 totalUsedTime: 40000
             }, {
                 userId: config.testUser.userId,
+                gender: 'male',
+                birthday: 1992,
+                job: 1,
                 packageName: 'com.dummy.app',
                 totalUsedTime: 10000
             }], function () {
-                clock = sandbox.useFakeTimers(new Date("2018-09-26T15:30:00.000Z").getTime());
-                done()
+                Users.create(config.testUser, () => {
+                    clock = sandbox.useFakeTimers(new Date("2018-09-26T15:30:00.000Z").getTime());
+                    done();
+                });
             });
         });
 
@@ -165,15 +189,27 @@ describe('Stats', () => {
                 .then(() => AppUsages.find({userId: config.testUser.userId}).exec())
                 .then(docs => {
                     docs.length.should.be.eql(3);
+
                     docs[0].userId.should.be.eql(config.testUser.userId);
+                    docs[0].gender.should.be.eql('male');
+                    docs[0].birthday.should.be.eql(1992);
+                    docs[0].job.should.be.eql(1);
                     docs[0].packageName.should.be.eql('com.kakao.talk');
                     docs[0].totalUsedTime.should.be.eql(10000);
                     docs[0].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+
                     docs[1].userId.should.be.eql(config.testUser.userId);
+                    docs[1].gender.should.be.eql('male');
+                    docs[1].birthday.should.be.eql(1992);
+                    docs[1].job.should.be.eql(1);
                     docs[1].packageName.should.be.eql('com.naver.talk');
                     docs[1].totalUsedTime.should.be.eql(20000);
                     docs[1].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+
                     docs[2].userId.should.be.eql(config.testUser.userId);
+                    docs[2].gender.should.be.eql('male');
+                    docs[2].birthday.should.be.eql(1992);
+                    docs[2].job.should.be.eql(1);
                     docs[2].packageName.should.be.eql('com.android.com');
                     docs[2].totalUsedTime.should.be.eql(30000);
                     docs[2].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
@@ -191,6 +227,9 @@ describe('Stats', () => {
                 .then(docs => {
                     docs.length.should.be.eql(1);
                     docs[0].userId.should.be.eql('anotherUserId');
+                    docs[0].gender.should.be.eql('female');
+                    docs[0].birthday.should.be.eql(1952);
+                    docs[0].job.should.be.eql(2);
                     docs[0].packageName.should.be.eql('com.pre.installed');
                     docs[0].totalUsedTime.should.be.eql(9999);
                     done();
@@ -218,7 +257,9 @@ describe('Stats', () => {
 
         afterEach(done => {
             clock.restore();
-            AppUsages.remove({}, done);
+            AppUsages.remove({}, () => {
+                Users.remove({}, done);
+            });
         });
     });
 
@@ -744,9 +785,7 @@ describe('Stats', () => {
                             job: 2,
                             gender: 'male',
                         },
-                    ]);
-
-                    AppUsages.create([
+                    ], () => AppUsages.create([
                         ////////// start of me ///////////////
                         {
                             userId: config.testUser.userId,
@@ -834,7 +873,7 @@ describe('Stats', () => {
                         }], function () {
                             done()
                         });
-                    });
+                    }));
                 });
 
                 it('유저와 1등, 꼴등의 랭크 데이터를 반환한다', done => {
@@ -892,9 +931,7 @@ describe('Stats', () => {
                             job: 2,
                             gender: 'male',
                         },
-                    ]);
-
-                    AppUsages.create([
+                    ], () => AppUsages.create([
                         {
                             userId: 'peopleId1',
                             packageName: 'com.game.edu2',
@@ -958,7 +995,7 @@ describe('Stats', () => {
                         }], function () {
                             done()
                         });
-                    });
+                    }));
                 });
 
                 it('나의 랭킹 정보를 제외하고 반환한다', done => {
@@ -1011,9 +1048,7 @@ describe('Stats', () => {
                         job: 2,
                         gender: 'male',
                     },
-                ]);
-
-                AppUsages.create([
+                ], () => AppUsages.create([
                     ////////// start of me ///////////////
                     {
                         userId: config.testUser.userId,
@@ -1101,7 +1136,7 @@ describe('Stats', () => {
                     }], function () {
                         done()
                     });
-                });
+                }));
             });
 
             it('3 가지 그룹의 데이터가 반환된다', done => {

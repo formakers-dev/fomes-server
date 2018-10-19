@@ -40,7 +40,7 @@ const postAppUsages = (req, res) => {
     } else if (req.body.length < 1) {
         res.sendStatus(200);
     } else {
-        AppUsagesService.refreshAppUsages(req.userId, req.body)
+        AppUsagesService.refreshAppUsages(req.user, req.body)
             .then(() => res.sendStatus(200))
             .catch(err => {
                 console.error(err);
