@@ -147,6 +147,8 @@ describe('Stats', () => {
                 birthday: 1952,
                 job: 2,
                 packageName: 'com.pre.installed',
+                categoryId : '도구',
+                developer : '도구개발사',
                 totalUsedTime: 9999
             }, {
                 userId: config.testUser.userId,
@@ -154,6 +156,8 @@ describe('Stats', () => {
                 birthday: 1992,
                 job: 1,
                 packageName: 'com.kakao.talk',
+                categoryId : '커뮤니케이션',
+                developer : '카카오톡개발사',
                 totalUsedTime: 40000
             }, {
                 userId: config.testUser.userId,
@@ -161,13 +165,28 @@ describe('Stats', () => {
                 birthday: 1992,
                 job: 1,
                 packageName: 'com.dummy.app',
+                categoryId : '도구',
+                developer : '도구개발사',
                 totalUsedTime: 10000
-            }], function () {
-                Users.create(config.testUser, () => {
-                    clock = sandbox.useFakeTimers(new Date("2018-09-26T15:30:00.000Z").getTime());
-                    done();
-                });
-            });
+            }])
+            .then(() => Apps.create([{
+                    packageName: 'com.android.com',
+                    categoryId1: 'GAME_TOOLS',
+                    developer: '구글개발사',
+                }, {
+                    packageName: 'com.kakao.talk',
+                    categoryId1: 'GAME_COMMUNICATION',
+                    developer: '카카오톡개발사',
+                }, {
+                    packageName: 'com.naver.talk',
+                    categoryId1: 'GAME_COMMUNICATION',
+                    developer: '라인개발사',
+            }]))
+            .then(() => Users.create(config.testUser))
+            .then(() => {
+                clock = sandbox.useFakeTimers(new Date("2018-09-26T15:30:00.000Z").getTime());
+                done();
+            }).catch(err => done(err));
         });
 
         const data = [{
@@ -195,6 +214,8 @@ describe('Stats', () => {
                     docs[0].birthday.should.be.eql(1992);
                     docs[0].job.should.be.eql(1);
                     docs[0].packageName.should.be.eql('com.kakao.talk');
+                    docs[0].categoryId.should.be.eql('GAME_COMMUNICATION');
+                    docs[0].developer.should.be.eql('카카오톡개발사');
                     docs[0].totalUsedTime.should.be.eql(10000);
                     docs[0].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
 
@@ -203,6 +224,8 @@ describe('Stats', () => {
                     docs[1].birthday.should.be.eql(1992);
                     docs[1].job.should.be.eql(1);
                     docs[1].packageName.should.be.eql('com.naver.talk');
+                    docs[1].categoryId.should.be.eql('GAME_COMMUNICATION');
+                    docs[1].developer.should.be.eql('라인개발사');
                     docs[1].totalUsedTime.should.be.eql(20000);
                     docs[1].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
 
@@ -211,6 +234,8 @@ describe('Stats', () => {
                     docs[2].birthday.should.be.eql(1992);
                     docs[2].job.should.be.eql(1);
                     docs[2].packageName.should.be.eql('com.android.com');
+                    docs[2].categoryId.should.be.eql('GAME_TOOLS');
+                    docs[2].developer.should.be.eql('구글개발사');
                     docs[2].totalUsedTime.should.be.eql(30000);
                     docs[2].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
                     done();
@@ -257,9 +282,11 @@ describe('Stats', () => {
 
         afterEach(done => {
             clock.restore();
-            AppUsages.remove({}, () => {
-                Users.remove({}, done);
-            });
+            AppUsages.remove({})
+                .then(() => Users.remove({}))
+                .then(() => Apps.remove({}))
+                .then(() => done())
+                .catch(err => done(err));
         });
     });
 

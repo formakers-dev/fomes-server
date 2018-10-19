@@ -14,4 +14,9 @@ const getApps = (req, res) => {
         }).catch(err => console.log(err));
 };
 
-module.exports = { getApps };
+const getGameAppInfoForAnalysis = (packageNames) => {
+    return Apps.find({ packageName: {$in : packageNames}, categoryId1: new RegExp(`GAME.*`)},
+        { _id: false, packageName: true, categoryId1: true, developer: true});
+};
+
+module.exports = { getApps, getGameAppInfoForAnalysis };

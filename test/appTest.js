@@ -1,4 +1,3 @@
-const sinon = require('sinon');
 const server = require('../server');
 const config = require('../config');
 const request = require('supertest').agent(server);
@@ -6,8 +5,6 @@ const should = require('chai').should();
 const { Apps } = require('../models/appUsages');
 
 describe('Apps', () => {
-    const sandbox = sinon.sandbox.create();
-
     describe('POST /apps/category/:categoryId', () => {
         let testUser = config.testUser;
 
@@ -67,7 +64,6 @@ describe('Apps', () => {
                 .then(res => {
                     const apps = res.body;
 
-                    console.log(apps);
                     apps.length.should.be.eql(2);
 
                     apps.sort((a, b) => a.packageName > b.packageName ? 1 : -1);

@@ -18,6 +18,8 @@ const appUsagesSchema = new mongoose.Schema({
     job: Number,
     gender: String,
     packageName: String,
+    developer: String,
+    categoryId: String,
     totalUsedTime: Number,
     updateTime: Date
 });

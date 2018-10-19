@@ -2,6 +2,7 @@ const User = require('../models/user').User;
 const UserConstants = require('../models/user').Constants;
 const UserController = require('../controller/user');
 const Stats = require('./../models/shortTermStats');
+const Apps = require('./../controller/apps');
 const AppUsagesService = require('../services/appUsages');
 
 const postShortTermStats = (req, res) => {
@@ -40,7 +41,10 @@ const postAppUsages = (req, res) => {
     } else if (req.body.length < 1) {
         res.sendStatus(200);
     } else {
-        AppUsagesService.refreshAppUsages(req.user, req.body)
+        const appUsages = req.body;
+        Apps.getGameAppInfoForAnalysis(appUsages.map(appUsage => appUsage.packageName))
+            .lean()
+            .then(appInfos => AppUsagesService.refreshAppUsages(req.user, appInfos, appUsages))
             .then(() => res.sendStatus(200))
             .catch(err => {
                 console.error(err);

@@ -207,7 +207,7 @@ const findCategoryUsages = (userId, categoryId, options) => {
 };
 /** end of using by populate **/
 
-const refreshAppUsages = (user, appUsages) => {
+const refreshAppUsages = (user, appInfos, appUsages) => {
     const bulkOps = [];
 
     bulkOps.push({
@@ -216,7 +216,19 @@ const refreshAppUsages = (user, appUsages) => {
         }
     });
 
-    appUsages.forEach(appUsage => {
+    const appUsagesWithAppInfo = Object.values(appUsages.concat(appInfos)
+        .reduce((map, appUsage) => {
+            const key = appUsage.packageName;
+            if (!map[key]) {
+                map[key] = appUsage;
+            } else {
+                map[key] = Object.assign(map[key], appUsage);
+            }
+
+            return map;
+        }, {}));
+
+    appUsagesWithAppInfo.forEach(appUsage => {
         bulkOps.push({
             'insertOne': {
                 'document': {
@@ -225,6 +237,8 @@ const refreshAppUsages = (user, appUsages) => {
                     'job': user.job,
                     'gender': user.gender,
                     'packageName': appUsage.packageName,
+                    'developer': appUsage.developer,
+                    'categoryId': appUsage.categoryId1,
                     "totalUsedTime": appUsage.totalUsedTime,
                     "updateTime": new Date()
                 }
