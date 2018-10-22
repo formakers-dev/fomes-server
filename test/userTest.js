@@ -4,7 +4,7 @@ const config = require('../config');
 const should = require('chai').should();
 const User = require('../models/user').User;
 const UserConstants = require('../models/user').Constants;
-const UserController = require('../controller/user');
+const UserService = require('../services/user');
 const InvitationCodes = require('../models/invitationCodes');
 require('./setupSinon')();
 
@@ -323,7 +323,8 @@ describe('Users', () => {
         });
     });
 
-    describe('getSimilarUsersWithSameAge 호출 시', () => {
+    // TODO : service unit test 추가할건지 결정 후 처리하기
+    describe.skip('getSimilarUsersWithSameAge 호출 시', () => {
         let clock;
 
         before(done => {
@@ -354,7 +355,7 @@ describe('Users', () => {
         });
 
         it('동일 성별 + 동일 나이대의 유저들 리스트를 반환한다',  done => {
-            UserController.getSimilarUsers(config.testUser, UserConstants.gender | UserConstants.age)
+            UserService.getSimilarUsers(config.testUser, UserConstants.gender | UserConstants.age)
                 .then(users => {
                     users.length.should.be.eql(3);
 
@@ -380,7 +381,7 @@ describe('Users', () => {
         });
 
         it('동일 직업군 유저들 리스트를 반환한다',  done => {
-            UserController.getSimilarUsers(config.testUser, UserConstants.job)
+            UserService.getSimilarUsers(config.testUser, UserConstants.job)
                 .then(users => {
                     users.length.should.be.eql(3);
 

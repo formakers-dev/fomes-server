@@ -1,9 +1,9 @@
 const User = require('../models/user').User;
 const UserConstants = require('../models/user').Constants;
-const UserController = require('../controller/user');
 const Stats = require('./../models/shortTermStats');
-const Apps = require('./../controller/apps');
 const AppUsagesService = require('../services/appUsages');
+const AppsService = require('../services/apps');
+const UserService = require('../services/users');
 
 const postShortTermStats = (req, res) => {
     if (!Array.isArray(req.body)) {
@@ -42,7 +42,7 @@ const postAppUsages = (req, res) => {
         res.sendStatus(200);
     } else {
         const appUsages = req.body;
-        Apps.getGameAppInfoForAnalysis(appUsages.map(appUsage => appUsage.packageName))
+        AppsService.getGameAppInfoForAnalysis(appUsages.map(appUsage => appUsage.packageName))
             .lean()
             .then(appInfos => AppUsagesService.refreshAppUsages(req.user, appInfos, appUsages))
             .then(() => res.sendStatus(200))
@@ -137,7 +137,7 @@ const getReport = (req, res) => {
 
 /** start of private methods **/
 const getSimilarUsersAppUsagesByCategory = (userInfo, similarType, categoryId) => {
-    return UserController.getSimilarUsers(userInfo, similarType)
+    return UserService.getSimilarUsers(userInfo, similarType)
         .then(users => AppUsagesService.aggregateAppUsageByCategory(
             users.map(user => user.userId), categoryId)
         );

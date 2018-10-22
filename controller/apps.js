@@ -1,4 +1,4 @@
-const { Apps } = require('../models/appUsages');
+const { Apps } = require('../models/appUsages');    // TODO : 언젠가 service로 이동해야 한다
 
 const getApps = (req, res) => {
     const regex = `${req.params.categoryId}.*`;
@@ -14,9 +14,5 @@ const getApps = (req, res) => {
         }).catch(err => console.log(err));
 };
 
-const getGameAppInfoForAnalysis = (packageNames) => {
-    return Apps.find({ packageName: {$in : packageNames}, categoryId1: new RegExp(`GAME.*`)},
-        { _id: false, packageName: true, categoryId1: true, developer: true});
-};
 
-module.exports = { getApps, getGameAppInfoForAnalysis };
+module.exports = { getApps };
