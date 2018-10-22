@@ -1,12 +1,10 @@
 const jwt = require('jsonwebtoken');
 const InvitationCodes = require('../models/invitationCodes');
 const config = require('../config');
-const User = require('../models/user').User;    // TODO : 언젠가 service로 이동해야 한다
-
-//TODO : User이름 변경 -> Users
+const Users = require('../models/users').Users;    // TODO : 언젠가 service로 이동해야 한다
 
 const signUpUser = (req, res, next) => {
-    User.findOne({userId: req.userId})
+    Users.findOne({userId: req.userId})
         .then(user => {
             if (!user) {
                 req.body.signUpTime = new Date();
@@ -19,13 +17,13 @@ const signUpUser = (req, res, next) => {
 
 const upsertUser = (req, res, next) => {
     const updateUser = (req, res, next) => {
-        User.findOneAndUpdate({userId: req.userId}, {$set: req.body}, {upsert: true})
+        Users.findOneAndUpdate({userId: req.userId}, {$set: req.body}, {upsert: true})
             .then(() => next())
             .catch(err => sendError("upsertUser", req.userId, res, err, 500));
     };
 
     if (req.body.nickName) {
-        User.findOne({userId: {$ne: req.userId}, nickName: req.body.nickName})
+        Users.findOne({userId: {$ne: req.userId}, nickName: req.body.nickName})
             .then(user => {
                 if (user) {
                     res.sendStatus(409);
@@ -75,7 +73,7 @@ const sendError = (tag, userId, res, err, errCode) => {
 };
 
 const getUser = (req, res, next) => {
-    User.findOne({userId: req.userId})
+    Users.findOne({userId: req.userId})
         .then(user => {
             req.user = user;
             next();

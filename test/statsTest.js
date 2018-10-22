@@ -5,8 +5,8 @@ const request = require('supertest').agent(server);
 const should = chai.should();
 const sinon = require('sinon');
 const ShortTermStats = require('../models/shortTermStats');
-const Users = require('../models/user').User;
-const UserConstants = require('../models/user').Constants;
+const Users = require('../models/users').Users;
+const UserConstants = require('../models/users').Constants;
 const { AppUsages, Apps } = require('../models/appUsages');
 
 describe('Stats', () => {

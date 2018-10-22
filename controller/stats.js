@@ -1,5 +1,5 @@
-const User = require('../models/user').User;
-const UserConstants = require('../models/user').Constants;
+const Users = require('../models/users').Users;
+const UserConstants = require('../models/users').Constants;
 const Stats = require('./../models/shortTermStats');
 const AppUsagesService = require('../services/appUsages');
 const AppsService = require('../services/apps');
@@ -24,7 +24,7 @@ const postShortTermStats = (req, res) => {
         });
 
         Stats.bulkWrite(bulkOps).then(() =>
-            User.findOneAndUpdate({userId: req.userId},
+            Users.findOneAndUpdate({userId: req.userId},
                 {$set: {"lastStatsUpdateTime" : new Date()}},
                 {upsert: true})
         ).then(() => res.sendStatus(200))

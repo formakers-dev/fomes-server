@@ -2,9 +2,9 @@ const jwt = require('jsonwebtoken');
 const sinon = require('sinon');
 const config = require('../config');
 const should = require('chai').should();
-const User = require('../models/user').User;
-const UserConstants = require('../models/user').Constants;
-const UserService = require('../services/user');
+const Users = require('../models/users').Users;
+const UserConstants = require('../models/users').Constants;
+const UserService = require('../services/users');
 const InvitationCodes = require('../models/invitationCodes');
 require('./setupSinon')();
 
@@ -23,7 +23,7 @@ describe('Users', () => {
                 .send(testUser)
                 .expect(200)
                 .then(() => {
-                    User.findOne({userId: testUser.userId}, (err, user) => {
+                    Users.findOne({userId: testUser.userId}, (err, user) => {
                         user.userId.should.be.eql('109974316241227718963');
                         user.gender.should.be.eql("male");
                         user.email.should.be.eql("appbee@appbee.com");
@@ -42,7 +42,7 @@ describe('Users', () => {
 
         describe('기존 사용자가 존재할 경우,', () => {
             before(done => {
-                User.create(config.testUser, done);
+                Users.create(config.testUser, done);
             });
 
             it('User의 특정 정보를 업데이트 한다', done => {
@@ -57,7 +57,7 @@ describe('Users', () => {
                     .send(newToken)
                     .expect(200)
                     .then(() => {
-                        return User.findOne({userId: config.testUser.userId});
+                        return Users.findOne({userId: config.testUser.userId});
                     })
                     .then((result) => {
                         result.userId.should.be.eql('109974316241227718963');
@@ -74,13 +74,13 @@ describe('Users', () => {
             });
 
             after(done => {
-                User.remove({}, done);
+                Users.remove({}, done);
             })
         });
 
         describe('본인을 제외한 다른 사용자와 닉네임이 중복될 경우,', () => {
             before(done => {
-                User.create([
+                Users.create([
                     config.testUser,
                     {
                         userId: 'testUserId1',
@@ -100,12 +100,12 @@ describe('Users', () => {
             });
 
             after(done => {
-                User.remove({}, done);
+                Users.remove({}, done);
             })
         });
 
         afterEach((done) => {
-            User.remove({userId: config.testUser.userId}, () => {
+            Users.remove({userId: config.testUser.userId}, () => {
                 done();
             });
         });
@@ -170,7 +170,7 @@ describe('Users', () => {
         };
 
         before(done => {
-            User.create(config.testUser, done);
+            Users.create(config.testUser, done);
         });
 
         it('구글토큰검증 후 User정보를 업데이트한다', done => {
@@ -180,7 +180,7 @@ describe('Users', () => {
                 .expect(200)
                 .then((res) => {
                     res.body.should.be.not.null;
-                    User.findOne({userId: config.testUser.userId}, (err, user) => {
+                    Users.findOne({userId: config.testUser.userId}, (err, user) => {
                         user.userId.should.be.eql(config.testUser.userId);
                         user.name.should.be.eql('testName');
                         user.email.should.be.eql('test@email.com');
@@ -217,7 +217,7 @@ describe('Users', () => {
         });
 
         afterEach((done) => {
-            User.remove({userId: config.testUser.userId}, done);
+            Users.remove({userId: config.testUser.userId}, done);
         });
     });
 
@@ -236,13 +236,13 @@ describe('Users', () => {
             clock = sandbox.useFakeTimers(new Date("2018-09-06T15:30:00.000Z").getTime());
         });
 
-        it('구글토큰검증 후 User 를 가입시킨다', done => {
+        it('구글토큰검증 후 유저를 가입시킨다', done => {
             request.post('/user/signup')
                 .set('x-id-token', config.testUser.googleIdToken)
                 .send(signUpUser)
                 .expect(200)
-                .then((res) => {
-                    User.findOne({userId: config.testUser.userId}).then(user => {
+                .then(() => {
+                    Users.findOne({userId: config.testUser.userId}).then(user => {
                         user.userId.should.be.eql(config.testUser.userId);
                         user.name.should.be.eql('testName');
                         user.email.should.be.eql('test@email.com');
@@ -287,7 +287,7 @@ describe('Users', () => {
             };
 
             before(done => {
-                User.create(oldUser, done);
+                Users.create(oldUser, done);
             });
 
             it('signUpTime을 제외한 나머지 정보들을 업데이트 한다', done => {
@@ -295,8 +295,8 @@ describe('Users', () => {
                     .set('x-id-token', config.testUser.googleIdToken)
                     .send(signUpUser)
                     .expect(200)
-                    .then((res) => {
-                        User.findOne({userId: config.testUser.userId}, (err, user) => {
+                    .then(() => {
+                        Users.findOne({userId: config.testUser.userId}, (err, user) => {
                             if (err) done(err);
 
                             user.userId.should.be.eql(config.testUser.userId);
@@ -313,13 +313,13 @@ describe('Users', () => {
             });
 
             after(done => {
-                User.remove({userId: config.testUser.userId}, done);
+                Users.remove({userId: config.testUser.userId}, done);
             })
         });
 
         afterEach((done) => {
             clock.restore();
-            User.remove({userId: config.testUser.userId}, done);
+            Users.remove({userId: config.testUser.userId}, done);
         });
     });
 
@@ -328,7 +328,7 @@ describe('Users', () => {
         let clock;
 
         before(done => {
-            User.create([
+            Users.create([
                 config.testUser,
                 {
                     userId: "userId1",
@@ -409,7 +409,7 @@ describe('Users', () => {
 
         after(done => {
             clock.restore();
-            User.remove({}, done);
+            Users.remove({}, done);
         });
     });
 });

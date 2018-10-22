@@ -25,5 +25,5 @@ const usersSchema = new Schema({
     lifeApps: Array,
 });
 
-const User = mongoose.model('users', usersSchema);
-module.exports = {User, Constants};
+const Users = mongoose.model('users', usersSchema);
+module.exports = { Users, Constants };
