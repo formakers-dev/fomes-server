@@ -44,7 +44,8 @@ const postAppUsages = (req, res) => {
         const appUsages = req.body;
         AppsService.getGameAppInfoForAnalysis(appUsages.map(appUsage => appUsage.packageName))
             .lean()
-            .then(appInfos => AppUsagesService.refreshAppUsages(req.user, appInfos, appUsages))
+            .then(appInfos => AppUsagesService.refreshAppUsages(req.user, appInfos,
+                    appUsages.filter(appUsage => appInfos.map(appInfo => appInfo.packageName).includes(appUsage.packageName))))
             .then(() => res.sendStatus(200))
             .catch(err => {
                 console.error(err);

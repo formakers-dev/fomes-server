@@ -181,6 +181,10 @@ describe('Stats', () => {
                     packageName: 'com.naver.talk',
                     categoryId1: 'GAME_COMMUNICATION',
                     developer: '라인개발사',
+                }, {
+                    packageName: 'com.notgame.com',
+                    categoryId1: 'COMMUNICATION',
+                    developer: '게임사아님사',
             }]))
             .then(() => Users.create(config.testUser))
             .then(() => {
@@ -197,6 +201,9 @@ describe('Stats', () => {
             totalUsedTime: 20000,
         }, {
             packageName: 'com.android.com',
+            totalUsedTime: 30000,
+        }, {
+            packageName: 'com.notgame.com',
             totalUsedTime: 30000,
         }];
 
