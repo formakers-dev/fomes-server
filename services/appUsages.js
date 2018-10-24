@@ -1,3 +1,4 @@
+const moment = require('moment');
 const UsagesUtil = require('../utils/usages');
 const { AppUsages } = require('../models/appUsages');
 
@@ -153,6 +154,50 @@ const aggregateAppUsageByCategory = (userIds, categoryId) => {
     });
 };
 
+const getSimilarUsers = (user, page, limit) => {
+    const currentYear = moment().format('YYYY');
+    const beforeDiff = (currentYear - user.birthday) % 10;
+    const afterDiff = 10 - beforeDiff;
+
+    let query = [
+        {
+            $match: {
+                $and : [
+                    { gender: user.gender},
+                    { birthday: { $gte: user.birthday - afterDiff + 1 } },
+                    { birthday: { $lte: user.birthday + beforeDiff + 1 } },
+                ]
+            }
+        }, {
+            $group: {
+                _id: '$packageName',
+                totalUsedTime: { $sum: '$totalUsedTime' },
+                developer: { $first: '$developer' },
+                categoryId: { $first: '$categoryId' },
+            }
+        }, {
+            $project: {
+                packageName: '$_id',
+                totalUsedTime: true,
+                developer: true,
+                categoryId: true,
+            }
+        }, {
+            $sort: { totalUsedTime: -1 }
+        }
+    ];
+
+    if (page && limit) {
+        query = query.concat([{
+            $skip: (page - 1) * limit
+        }, {
+            $limit: limit
+        }]);
+    }
+
+    return AppUsages.aggregate(query);
+};
+
 /** start of using by populate **/
 const findAppUsages = (userId) => {
     const filterQuery = {};
@@ -256,4 +301,5 @@ module.exports = {
     findAppUsageByCategory,
     findCategoryUsages,
     refreshAppUsages,
+    getSimilarUsers,
 };

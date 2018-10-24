@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const InvitationCodes = require('../models/invitationCodes');
 const config = require('../config');
 const Users = require('../models/users').Users;    // TODO : 언젠가 service로 이동해야 한다
+const UserService = require('../services/users');
 
 const signUpUser = (req, res, next) => {
     Users.findOne({userId: req.userId})
@@ -73,7 +74,7 @@ const sendError = (tag, userId, res, err, errCode) => {
 };
 
 const getUser = (req, res, next) => {
-    Users.findOne({userId: req.userId})
+    UserService.getUser(req.userId)
         .then(user => {
             req.user = user;
             next();

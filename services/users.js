@@ -2,6 +2,10 @@ const moment = require('moment');
 const Users = require('../models/users').Users;
 const UserConstants = require('../models/users').Constants;
 
+const getUser = (userId) => {
+    return Users.findOne({userId: userId});
+};
+
 // similarPoint : columns of User model (plz refer to User's Constants)
 const getSimilarUsers = (userInfo, similarPoint) => {
     const findQuery = { '$and' : [] };
@@ -34,4 +38,4 @@ const getSimilarUsers = (userInfo, similarPoint) => {
     return Users.find(findQuery);
 };
 
-module.exports = { getSimilarUsers };
+module.exports = { getUser, getSimilarUsers };

@@ -8,6 +8,7 @@ const usersRouter = require('./router/users');
 const appsRouter = require('./router/apps');
 const projectsRouter = require('./router/projects');
 const configurationRouter = require('./router/configurations');
+const recommendRouter = require('./router/recommend');
 const db = require('./db');
 const port = require('./config').port;
 
@@ -30,6 +31,7 @@ app.use('/apps', appsRouter);
 app.use('/stats', statsRouter);
 app.use('/projects', projectsRouter);
 app.use('/config', configurationRouter);
+app.use('/recommend', recommendRouter);
 
 app.listen(port, () => {
     console.log('Express App on http port ' + port);
