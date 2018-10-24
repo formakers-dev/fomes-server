@@ -16,12 +16,11 @@ const getSimilarUsers = (userInfo, similarPoint) => {
 
     if ((similarPoint & UserConstants.age) === UserConstants.age) {
         const currentYear = moment().format('YYYY');
-        const beforeDiff = (currentYear - userInfo.birthday) % 10;
-        const afterDiff = 10 - beforeDiff;
+        const age = getAge(userInfo.birthday);
 
         findQuery['$and'].push(
-            { birthday: { $gte: userInfo.birthday - afterDiff + 1 } },
-            { birthday: { $lte: userInfo.birthday + beforeDiff + 1 } }
+            { birthday: { $gte: currentYear - age - 10 + 1 } },
+            { birthday: { $lte: currentYear - age + 1 } }
         );
     }
 
@@ -38,4 +37,10 @@ const getSimilarUsers = (userInfo, similarPoint) => {
     return Users.find(findQuery);
 };
 
-module.exports = { getUser, getSimilarUsers };
+// utils...? model...?????
+const getAge = (birthday) => {
+    const currentYear = moment().format('YYYY');
+    return Math.floor((currentYear - birthday) / 10) * 10;
+};
+
+module.exports = { getUser, getSimilarUsers, getAge };
