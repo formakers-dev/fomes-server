@@ -44,15 +44,21 @@ const postAppUsages = (req, res) => {
         const bulkOps = [];
         const userId = req.userId;
 
+        bulkOps.push({
+            'deleteMany': {
+                'filter': { 'userId': userId }
+            }
+        });
+
         req.body.forEach(appUsage => {
             bulkOps.push({
-                'updateOne': {
-                    "filter": {"userId": userId, "packageName": appUsage.packageName},
-                    "update": {
+                'insertOne': {
+                    'document': {
+                        'userId': userId,
+                        'packageName': appUsage.packageName,
                         "totalUsedTime": appUsage.totalUsedTime,
                         "updateTime": new Date()
-                    },
-                    "upsert": true
+                    }
                 }
             });
         });
