@@ -23,6 +23,7 @@ const usersSchema = new Schema({
     lastStatsUpdateTime: Date,
     signUpTime: Date,
     lifeApps: Array,
+    wishList: Array,
 });
 
 const Users = mongoose.model('users', usersSchema);

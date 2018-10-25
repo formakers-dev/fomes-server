@@ -3,6 +3,7 @@ const InvitationCodes = require('../models/invitationCodes');
 const config = require('../config');
 const Users = require('../models/users').Users;    // TODO : 언젠가 service로 이동해야 한다
 const UserService = require('../services/users');
+const AppService = require('../services/apps');
 
 const signUpUser = (req, res, next) => {
     Users.findOne({userId: req.userId})
@@ -82,9 +83,20 @@ const getUser = (req, res, next) => {
         .catch(err => sendError("getUser", req.userId, res, err, 500));
 };
 
+const saveAppToWishList = (req, res) => {
+    const userId = req.userId;
+    const packageName = req.body.packageName;
+
+    UserService.upsertWishList(userId, packageName)
+        .then(() => AppService.upsertWishedBy(packageName, userId))
+        .then(() => res.sendStatus(200))
+        .catch(err => sendError('saveAppToWishList', req.userId, res, err, 500));
+};
+
 module.exports = {signUpUser,
     upsertUser,
     generateToken,
     verifyInvitationCode,
-    getUser
+    getUser,
+    saveAppToWishList
 };

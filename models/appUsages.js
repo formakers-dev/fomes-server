@@ -10,6 +10,7 @@ const appSchema = new mongoose.Schema({
     categoryIds: Array,
     developer: String,
     iconUrl: String,
+    wishedBy: Array,
 });
 
 const appUsagesSchema = new mongoose.Schema({

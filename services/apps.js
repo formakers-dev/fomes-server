@@ -37,4 +37,9 @@ const getGameAppInfoForAnalysis = (packageNames) => {
         { _id: false, packageName: true, categoryId1: true, developer: true });
 };
 
-module.exports = { combineAppInfos, getGameAppInfoForAnalysis };
+const upsertWishedBy = (packageName, userId) => {
+    return Apps.findOneAndUpdate({ packageName: packageName },
+        { $addToSet: { wishedBy: userId } }, { upsert: true });
+}
+
+module.exports = { combineAppInfos, getGameAppInfoForAnalysis, upsertWishedBy };

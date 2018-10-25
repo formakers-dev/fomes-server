@@ -3,6 +3,7 @@ const sinon = require('sinon');
 const config = require('../config');
 const should = require('chai').should();
 const Users = require('../models/users').Users;
+const Apps = require('../models/appUsages').Apps;
 const UserConstants = require('../models/users').Constants;
 const UserService = require('../services/users');
 const InvitationCodes = require('../models/invitationCodes');
@@ -410,6 +411,91 @@ describe('Users', () => {
         after(done => {
             clock.restore();
             Users.remove({}, done);
+        });
+    });
+
+    describe('POST /user/wishlist/', () => {
+        const requestBody = {
+            packageName: 'com.test.expected'
+        };
+
+        const appInfo = {
+            packageName: 'com.test.expected'
+        };
+
+        describe('정상 케이스', function () {
+            beforeEach(done => {
+                config.testUser.wishList = [ 'com.test.one', 'com.test.two' ];
+
+                Users.create(config.testUser)
+                    .then(() => Apps.create(appInfo))
+                    .then(() => done())
+                    .catch(err => done(err));
+            });
+
+            it('요청한 유저의 보관함에 요청된 앱을 추가한다', done => {
+                request.post('/user/wishlist/')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .send(requestBody)
+                    .expect(200)
+                    .then(() => Users.findOne({userId: config.testUser.userId}))
+                    .then(user => {
+                        user.wishList.length.should.be.eql(3);
+                        user.wishList.should.be.includes('com.test.expected');
+                        return Apps.findOne({packageName: 'com.test.expected' })
+                    })
+                    .then(app => {
+                        app.wishedBy.length.should.be.eql(1);
+                        app.wishedBy[0].should.be.eql(config.testUser.userId);
+                    })
+                    .then(() => done())
+                    .catch(err => done(err));
+            });
+
+            afterEach(done => {
+                Users.remove({})
+                    .then(() => Apps.remove({}))
+                    .then(() => done())
+                    .catch(err => done(err));
+            });
+        });
+
+
+        describe('요청한 앱이 위시리스트에 이미 존재하는 경우', () => {
+            beforeEach(done => {
+                config.testUser.wishList = [ 'com.test.expected' ];
+
+                Users.create(config.testUser)
+                    .then(() => Apps.create(appInfo))
+                    .then(() => done())
+                    .catch(err => done(err));
+            });
+
+            it('해당 데이터를 업데이트 한다', done => {
+                request.post('/user/wishlist/')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .send(requestBody)
+                    .expect(200)
+                    .then(() => Users.findOne({userId: config.testUser.userId}))
+                    .then(user => {
+                        user.wishList.length.should.be.eql(1);
+                        user.wishList[0].should.be.eql('com.test.expected');
+                        return Apps.findOne({packageName: 'com.test.expected' })
+                    })
+                    .then(app => {
+                        app.wishedBy.length.should.be.eql(1);
+                        app.wishedBy[0].should.be.eql(config.testUser.userId);
+                    })
+                    .then(() => done())
+                    .catch(err => done(err));
+            });
+
+            afterEach(done => {
+                Users.remove({})
+                    .then(() => Apps.remove({}))
+                    .then(() => done())
+                    .catch(err => done(err));
+            });
         });
     });
 });

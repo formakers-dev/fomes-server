@@ -43,4 +43,8 @@ const getAge = (birthday) => {
     return Math.floor((currentYear - birthday) / 10) * 10;
 };
 
-module.exports = { getUser, getSimilarUsers, getAge };
+const upsertWishList = (userId, app) => {
+    return Users.findOneAndUpdate({ userId: userId }, { $addToSet: { wishList: app } }, { upsert: true });
+};
+
+module.exports = { getUser, getSimilarUsers, getAge, upsertWishList };
