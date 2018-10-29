@@ -16,6 +16,9 @@ const getSimilarUserAppUsageList = (req, res) => {
         .then(appUsages => AppService.combineAppInfos(appUsages))
         .then(appUsagesWithAppInfo => {
             res.json(appUsagesWithAppInfo.map(item => {
+                item.wishedByMe = !!(item.wishedBy && item.wishedBy.includes(req.userId));
+                delete item.wishedBy;
+
                 return {
                     criteria: criteria,
                     app: item

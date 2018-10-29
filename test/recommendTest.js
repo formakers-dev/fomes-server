@@ -121,6 +121,7 @@ describe('Recommend', () => {
                            categoryId1: 'GAME_EDUCATIONAL',
                            categoryName1: '교육',
                            iconUrl: 'iconUrl3',
+                           wishedBy: [config.testUser.userId, 'user2']
                        }, {
                            packageName: 'com.game.rpg',
                            appName: '롤플레잉게임명',
@@ -128,6 +129,7 @@ describe('Recommend', () => {
                            categoryId1: 'GAME_ROLE_PLAYING',
                            categoryName1: '롤플레잉',
                            iconUrl: 'iconUrl4',
+                           wishedBy: ['user3']
                        }, {
                            packageName: 'com.game.edu2',
                            appName: '교육게임명2',
@@ -142,6 +144,7 @@ describe('Recommend', () => {
                            categoryId1: 'GAME_PUZZLE',
                            categoryName1: '퍼즐',
                            iconUrl: 'iconUrl6',
+                           wishedBy: ['user4', config.testUser.userId]
                        }]))
                    .then(() => done())
                    .catch(err => done(err))
@@ -168,6 +171,7 @@ describe('Recommend', () => {
                    res.body[0].app.categoryName.should.be.eql('교육');
                    res.body[0].app.developer.should.be.eql('Edu Game Corp.');
                    res.body[0].app.iconUrl.should.be.eql('iconUrl3');
+                   res.body[0].app.wishedByMe.should.be.eql(true);
 
                    res.body[1].criteria.length.should.be.eql(2);
                    res.body[1].criteria[0].should.be.eql("20대");
@@ -180,6 +184,7 @@ describe('Recommend', () => {
                    res.body[1].app.categoryName.should.be.eql('퍼즐');
                    res.body[1].app.developer.should.be.eql('Puzzle Game Corp.');
                    res.body[1].app.iconUrl.should.be.eql('iconUrl6');
+                   res.body[1].app.wishedByMe.should.be.eql(true);
 
                    res.body[2].criteria.length.should.be.eql(2);
                    res.body[2].criteria[0].should.be.eql("20대");
@@ -192,6 +197,7 @@ describe('Recommend', () => {
                    res.body[2].app.categoryName.should.be.eql('롤플레잉');
                    res.body[2].app.developer.should.be.eql('GameDuckHu Corp.');
                    res.body[2].app.iconUrl.should.be.eql('iconUrl4');
+                   res.body[2].app.wishedByMe.should.be.eql(false);
 
                    res.body[3].criteria.length.should.be.eql(2);
                    res.body[3].criteria[0].should.be.eql("20대");
@@ -204,6 +210,7 @@ describe('Recommend', () => {
                    res.body[3].app.categoryName.should.be.eql('교육');
                    res.body[3].app.developer.should.be.eql('GameDuckHu Corp.');
                    res.body[3].app.iconUrl.should.be.eql('iconUrl32');
+                   res.body[3].app.wishedByMe.should.be.eql(false);
 
                    done();
                }).catch(err => done(err));
@@ -241,5 +248,5 @@ describe('Recommend', () => {
                .then(() => done())
                .catch(err => done(err));
        });
-   }) 
+   })
 });
