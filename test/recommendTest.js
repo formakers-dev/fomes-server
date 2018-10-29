@@ -151,7 +151,7 @@ describe('Recommend', () => {
         });
 
         it('추천 게임 리스트를 반환한다', done => {
-            request.get('/recommend/apps/GAME')
+            request.get('/recommend/apps/GAME?page=1&limit=10')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then((res) => {
@@ -248,7 +248,7 @@ describe('Recommend', () => {
             });
 
             it('데모그래픽 목록만 반환한다', done => {
-                request.get('/recommend/apps/GAME')
+                request.get('/recommend/apps/GAME?page=1&limit=10')
                     .set('x-access-token', config.appbeeToken.valid)
                     .expect(200)
                     .then((res) => {
@@ -258,6 +258,27 @@ describe('Recommend', () => {
 
                         done();
                     }).catch(err => done(err));
+            });
+        });
+
+
+        describe('잘못된 페이징 정보 입력 시', function () {
+            it('페이징 옵션 미지정 시 400오류를 반환한다', done => {
+                request.get('/recommend/apps/GAME')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .expect(400, done);
+            });
+
+            it('페이징 옵션으로 0 이하의 값을 지정 시 400오류를 반환한다', done => {
+                request.get('/recommend/apps/GAME?page=-1&limit=0')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .expect(400, done);
+            });
+
+            it('페이징 옵션으로 문자 입력 시 400오류를 반환한다', done => {
+                request.get('/recommend/apps/GAME?page=a&limit=b')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .expect(400, done);
             });
         });
 

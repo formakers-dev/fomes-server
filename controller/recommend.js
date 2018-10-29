@@ -38,6 +38,11 @@ const getFavoriteCategoryRecommendApps = (categoryUsages, userId) => {
 };
 
 const getRecommendApps = (req, res) => {
+    if (!isValidPageAndLimitParameter(req)) {
+        res.sendStatus(400);
+        return;
+    }
+
     // TODO: let 없애기, reject 관련 처리 추가 필요
     let result = [];
 
@@ -64,6 +69,19 @@ const getRecommendApps = (req, res) => {
                 message: err.message
             });
         });
+};
+
+const isValidPageAndLimitParameter = (req) => {
+    const pageNumber = parseInt(req.query.page);
+    const limitNumber = parseInt(req.query.limit);
+
+    if (isNaN(pageNumber) || isNaN(limitNumber)) {
+        return false;
+    } else if (pageNumber < 1 || limitNumber < 1) {
+        return false;
+    }
+
+    return true;
 };
 
 const convertToRecommendApps = (recommendInfo, appUsages, userId) => {
