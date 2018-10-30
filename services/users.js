@@ -8,10 +8,10 @@ const getUser = (userId) => {
 
 // similarPoint : columns of User model (plz refer to User's Constants)
 const getSimilarUsers = (userInfo, similarPoint) => {
-    const findQuery = { '$and' : [] };
+    const findQuery = {'$and': []};
 
     if ((similarPoint & UserConstants.gender) === UserConstants.gender) {
-        findQuery['$and'].push({ gender: userInfo.gender });
+        findQuery['$and'].push({gender: userInfo.gender});
     }
 
     if ((similarPoint & UserConstants.age) === UserConstants.age) {
@@ -19,13 +19,13 @@ const getSimilarUsers = (userInfo, similarPoint) => {
         const age = getAge(userInfo.birthday);
 
         findQuery['$and'].push(
-            { birthday: { $gte: currentYear - age - 10 + 1 } },
-            { birthday: { $lte: currentYear - age + 1 } }
+            {birthday: {$gte: currentYear - age - 10 + 1}},
+            {birthday: {$lte: currentYear - age + 1}}
         );
     }
 
     if ((similarPoint & UserConstants.job) === UserConstants.job) {
-        findQuery['$and'].push({ job: userInfo.job });
+        findQuery['$and'].push({job: userInfo.job});
     }
 
     if (findQuery['$and'].length <= 0) {
@@ -43,8 +43,12 @@ const getAge = (birthday) => {
     return Math.floor((currentYear - birthday) / 10) * 10;
 };
 
-const upsertWishList = (userId, app) => {
-    return Users.findOneAndUpdate({ userId: userId }, { $addToSet: { wishList: app } }, { upsert: true });
+const upsertWishList = (userId, packageName) => {
+    return Users.findOneAndUpdate({userId: userId}, {$addToSet: {wishList: packageName}}, {upsert: true});
 };
 
-module.exports = { getUser, getSimilarUsers, getAge, upsertWishList };
+const removeAppFromWishList = (userId, packageName) => {
+    return Users.findOneAndUpdate({userId: userId}, {$pull: {wishList: packageName}});
+};
+
+module.exports = {getUser, getSimilarUsers, getAge, upsertWishList, removeAppFromWishList};

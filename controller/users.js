@@ -93,10 +93,22 @@ const saveAppToWishList = (req, res) => {
         .catch(err => sendError('saveAppToWishList', req.userId, res, err, 500));
 };
 
-module.exports = {signUpUser,
+const removeAppFromWishList = (req, res) => {
+    const userId = req.userId;
+    const packageName = req.params.packageName;
+
+    UserService.removeAppFromWishList(userId, packageName)
+        .then(() => AppService.removeUserFromWishedBy(packageName, userId))
+        .then(() => res.sendStatus(200))
+        .catch(err => sendError('removeAppFromWishList', req.userId, res, err, 500));
+};
+
+module.exports = {
+    signUpUser,
     upsertUser,
     generateToken,
     verifyInvitationCode,
     getUser,
-    saveAppToWishList
+    saveAppToWishList,
+    removeAppFromWishList
 };

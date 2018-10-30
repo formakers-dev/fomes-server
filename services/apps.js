@@ -33,13 +33,18 @@ const combineAppInfos = (appUsages) => {
 };
 
 const getGameAppInfoForAnalysis = (packageNames) => {
-    return Apps.find({ packageName: { $in: packageNames }, categoryId1: new RegExp(`GAME.*`) },
-        { _id: false, packageName: true, categoryId1: true, developer: true });
+    return Apps.find({packageName: {$in: packageNames}, categoryId1: new RegExp(`GAME.*`)},
+        {_id: false, packageName: true, categoryId1: true, developer: true});
 };
 
 const upsertWishedBy = (packageName, userId) => {
-    return Apps.findOneAndUpdate({ packageName: packageName },
-        { $addToSet: { wishedBy: userId } }, { upsert: true });
-}
+    return Apps.findOneAndUpdate({packageName: packageName},
+        {$addToSet: {wishedBy: userId}}, {upsert: true});
+};
 
-module.exports = { combineAppInfos, getGameAppInfoForAnalysis, upsertWishedBy };
+const removeUserFromWishedBy = (packageName, userId) => {
+    return Apps.findOneAndUpdate({packageName: packageName},
+        {$pull: {wishedBy: userId}});
+};
+
+module.exports = {combineAppInfos, getGameAppInfoForAnalysis, upsertWishedBy, removeUserFromWishedBy};

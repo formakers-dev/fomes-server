@@ -49,7 +49,7 @@ describe('Users', () => {
             it('User의 특정 정보를 업데이트 한다', done => {
                 const newToken = {
                     registrationToken: "NEW_CODE",
-                    lifeApps: [ 'newApp' ],
+                    lifeApps: ['newApp'],
                     nickName: 'new_nickname',
                 };
 
@@ -159,9 +159,9 @@ describe('Users', () => {
 
     describe('POST /user/signin/', () => {
         const signInUser = {
-            userId : null,
+            userId: null,
             name: null,
-            email : null,
+            email: null,
             birthday: 1980,
             gender: 'female',
             job: 3,
@@ -206,7 +206,7 @@ describe('Users', () => {
                     const appBeeToken = res.body;
 
                     jwt.verify(appBeeToken, config.secret, (err, decoded) => {
-                        if(!err) {
+                        if (!err) {
                             decoded.userId.should.be.eql(config.testUser.userId);
                             done();
                         } else {
@@ -225,9 +225,9 @@ describe('Users', () => {
     describe('POST /user/signup/', () => {
         let clock;
         const signUpUser = {
-            userId : config.testUser.userId,
+            userId: config.testUser.userId,
             name: config.testUser.name,
-            email : config.testUser.email,
+            email: config.testUser.email,
             registrationToken: config.testUser.registrationToken,
             provider: config.testUser.provider,
             providerId: config.testUser.providerId
@@ -265,7 +265,7 @@ describe('Users', () => {
                     const appBeeToken = res.body;
 
                     jwt.verify(appBeeToken, config.secret, (err, decoded) => {
-                        if(!err) {
+                        if (!err) {
                             decoded.userId.should.be.eql(config.testUser.userId);
                             done();
                         } else {
@@ -355,7 +355,7 @@ describe('Users', () => {
             });
         });
 
-        it('동일 성별 + 동일 나이대의 유저들 리스트를 반환한다',  done => {
+        it('동일 성별 + 동일 나이대의 유저들 리스트를 반환한다', done => {
             UserService.getSimilarUsers(config.testUser, UserConstants.gender | UserConstants.age)
                 .then(users => {
                     users.length.should.be.eql(3);
@@ -381,7 +381,7 @@ describe('Users', () => {
                 }).catch(err => done(err));
         });
 
-        it('동일 직업군 유저들 리스트를 반환한다',  done => {
+        it('동일 직업군 유저들 리스트를 반환한다', done => {
             UserService.getSimilarUsers(config.testUser, UserConstants.job)
                 .then(users => {
                     users.length.should.be.eql(3);
@@ -425,7 +425,7 @@ describe('Users', () => {
 
         describe('정상 케이스', function () {
             beforeEach(done => {
-                config.testUser.wishList = [ 'com.test.one', 'com.test.two' ];
+                config.testUser.wishList = ['com.test.one', 'com.test.two'];
 
                 Users.create(config.testUser)
                     .then(() => Apps.create(appInfo))
@@ -442,7 +442,7 @@ describe('Users', () => {
                     .then(user => {
                         user.wishList.length.should.be.eql(3);
                         user.wishList.should.be.includes('com.test.expected');
-                        return Apps.findOne({packageName: 'com.test.expected' })
+                        return Apps.findOne({packageName: 'com.test.expected'})
                     })
                     .then(app => {
                         app.wishedBy.length.should.be.eql(1);
@@ -463,7 +463,7 @@ describe('Users', () => {
 
         describe('요청한 앱이 위시리스트에 이미 존재하는 경우', () => {
             beforeEach(done => {
-                config.testUser.wishList = [ 'com.test.expected' ];
+                config.testUser.wishList = ['com.test.expected'];
 
                 Users.create(config.testUser)
                     .then(() => Apps.create(appInfo))
@@ -480,11 +480,59 @@ describe('Users', () => {
                     .then(user => {
                         user.wishList.length.should.be.eql(1);
                         user.wishList[0].should.be.eql('com.test.expected');
-                        return Apps.findOne({packageName: 'com.test.expected' })
+                        return Apps.findOne({packageName: 'com.test.expected'})
                     })
                     .then(app => {
                         app.wishedBy.length.should.be.eql(1);
                         app.wishedBy[0].should.be.eql(config.testUser.userId);
+                    })
+                    .then(() => done())
+                    .catch(err => done(err));
+            });
+
+            afterEach(done => {
+                Users.remove({})
+                    .then(() => Apps.remove({}))
+                    .then(() => done())
+                    .catch(err => done(err));
+            });
+        });
+    });
+
+    describe('DELETE /user/wishlist/{packageName}', () => {
+        const appInfo = [{
+            packageName: 'com.test.one',
+            wishedBy: [config.testUser.userId]
+        }, {
+            packageName: 'com.test.two',
+            wishedBy: [config.testUser.userId, 'user007']
+        }, {
+            packageName: 'com.test.unregistered',
+        }];
+
+        describe('정상 케이스', function () {
+            beforeEach(done => {
+                config.testUser.wishList = ['com.test.one', 'com.test.two'];
+
+                Users.create(config.testUser)
+                    .then(() => Apps.create(appInfo))
+                    .then(() => done())
+                    .catch(err => done(err));
+            });
+
+            it('요청한 유저의 보관함에서 요청된 앱을 삭제한다', done => {
+                request.delete('/user/wishlist/com.test.one')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .send()
+                    .expect(200)
+                    .then(() => Users.findOne({userId: config.testUser.userId}))
+                    .then(user => {
+                        user.wishList.length.should.be.eql(1);
+                        user.wishList.should.be.includes('com.test.two');
+                        return Apps.findOne({packageName: 'com.test.one'})
+                    })
+                    .then(app => {
+                        app.wishedBy.length.should.be.eql(0);
                     })
                     .then(() => done())
                     .catch(err => done(err));
