@@ -226,6 +226,34 @@ const getCategoryAppUsages = (categoryId) => {
     return AppUsages.aggregate(query);
 };
 
+const getDeveloperAppUsages = (developer) => {
+    let query = [
+        {
+            $match: {
+                developer: developer,
+            }
+        }, {
+            $group: {
+                _id: '$packageName',
+                totalUsedTime: { $sum: '$totalUsedTime' },
+                developer: { $first: '$developer' },
+                categoryId: { $first: '$categoryId' },
+            }
+        }, {
+            $project: {
+                packageName: '$_id',
+                totalUsedTime: true,
+                developer: true,
+                categoryId: true,
+            }
+        }, {
+            $sort: { totalUsedTime: -1 }
+        }
+    ];
+
+    return AppUsages.aggregate(query);
+};
+
 /** start of using by populate **/
 const findAppUsages = (userId) => {
     const filterQuery = {};
@@ -331,4 +359,5 @@ module.exports = {
     refreshAppUsages,
     getSimilarUsers,
     getCategoryAppUsages,
+    getDeveloperAppUsages,
 };

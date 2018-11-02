@@ -37,6 +37,22 @@ const getFavoriteCategoryRecommendApps = (categoryUsages, userId) => {
         .then(appUsages => convertToRecommendApps(recommendInfo, appUsages, userId));
 };
 
+const getFavoriteDeveloperRecommendApps = (developerUsages, userId) => {
+    if (!developerUsages || developerUsages.length === 0) {
+        return Promise.resolve([]);
+    }
+
+    const recommendInfo = {recommendType: RecommendType.favoriteDeveloper, criteria: []};
+    const sortedDeveloperUsages = developerUsages.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+
+    return Promise.resolve(sortedDeveloperUsages[0])
+        .then(favoriteDeveloperUsage => {
+            recommendInfo.criteria.push(favoriteDeveloperUsage.name);
+            return AppUsageService.getDeveloperAppUsages(favoriteDeveloperUsage.id);
+        })
+        .then(appUsages => convertToRecommendApps(recommendInfo, appUsages, userId));
+};
+
 const getRecommendApps = (req, res) => {
     if (!isValidPageAndLimitParameter(req)) {
         res.sendStatus(400);
@@ -45,6 +61,7 @@ const getRecommendApps = (req, res) => {
 
     // TODO: let 없애기, reject 관련 처리 추가 필요
     let result = [];
+    let myAppUsages;
 
     // result.appUsages
     // result.categoryUsages
@@ -56,10 +73,15 @@ const getRecommendApps = (req, res) => {
             return AppUsageService.aggregateAppUsageByCategory(req.userId, req.params.categoryId);
         })
         .then(userUsages => {
-            return getFavoriteCategoryRecommendApps(userUsages.categoryUsages, req.userId)
+            myAppUsages = userUsages;
+            return getFavoriteCategoryRecommendApps(myAppUsages.categoryUsages, req.userId)
         })
         .then(favoriteCategoryRecommendApps => {
             result = result.concat(favoriteCategoryRecommendApps);
+            return getFavoriteDeveloperRecommendApps(myAppUsages.developerUsages, req.userId)
+        })
+        .then(favoriteDeveloperRecommendApps => {
+            result = result.concat(favoriteDeveloperRecommendApps);
             res.json(result);
         })
         .catch(err => {

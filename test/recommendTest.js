@@ -96,6 +96,15 @@ describe('Recommend', () => {
                         developer: 'Edu Game Corp.',
                         categoryId: 'GAME_EDUCATIONAL',
                     }, {
+                        userId: 'peopleId4',
+                        packageName: 'com.game.edurpg',
+                        totalUsedTime: 300,
+                        birthday: 2000,
+                        job: 1,
+                        gender: 'female',
+                        developer: 'Edu Game Corp.',
+                        categoryId: 'GAME_ROLE_PLAYING',
+                    }, {
                         userId: 'peopleId3',
                         packageName: 'com.game.puzzle',
                         totalUsedTime: 50000,
@@ -122,6 +131,14 @@ describe('Recommend', () => {
                         categoryName1: '교육',
                         iconUrl: 'iconUrl3',
                         wishedBy: [config.testUser.userId, 'user2']
+                    }, {
+                        packageName: 'com.game.edurpg',
+                        appName: '교육RPG',
+                        developer: 'Edu Game Corp.',
+                        categoryId1: 'GAME_ROLE_PLAYING',
+                        categoryName1: '롤플레잉',
+                        iconUrl: 'iconUrl3',
+                        wishedBy: ['user2']
                     }, {
                         packageName: 'com.game.rpg',
                         appName: '롤플레잉게임명',
@@ -155,7 +172,7 @@ describe('Recommend', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then((res) => {
-                    res.body.length.should.be.eql(6);
+                    res.body.length.should.be.eql(8);
 
                     res.body[0].criteria.length.should.be.eql(2);
                     res.body[0].criteria[0].should.be.eql("20대");
@@ -236,6 +253,30 @@ describe('Recommend', () => {
                     res.body[5].app.developer.should.be.eql('GameDuckHu Corp.');
                     res.body[5].app.totalUsedTime.should.be.eql(12000);
                     res.body[5].app.wishedByMe.should.be.eql(false);
+
+                    res.body[6].criteria.length.should.be.eql(1);
+                    res.body[6].criteria[0].should.be.eql("Edu Game Corp.");
+                    res.body[6].recommendType.should.be.eql(2);
+
+                    res.body[6].app.packageName.should.be.eql('com.game.edu');
+                    res.body[6].app.appName.should.be.eql('교육게임명');
+                    res.body[6].app.categoryId.should.be.eql('GAME_EDUCATIONAL');
+                    res.body[6].app.categoryName.should.be.eql('교육');
+                    res.body[6].app.developer.should.be.eql('Edu Game Corp.');
+                    res.body[6].app.totalUsedTime.should.be.eql(190000);
+                    res.body[6].app.wishedByMe.should.be.eql(true);
+
+                    res.body[7].criteria.length.should.be.eql(1);
+                    res.body[7].criteria[0].should.be.eql("Edu Game Corp.");
+                    res.body[7].recommendType.should.be.eql(2);
+
+                    res.body[7].app.packageName.should.be.eql('com.game.edurpg');
+                    res.body[7].app.appName.should.be.eql('교육RPG');
+                    res.body[7].app.categoryId.should.be.eql('GAME_ROLE_PLAYING');
+                    res.body[7].app.categoryName.should.be.eql('롤플레잉');
+                    res.body[7].app.developer.should.be.eql('Edu Game Corp.');
+                    res.body[7].app.totalUsedTime.should.be.eql(300);
+                    res.body[7].app.wishedByMe.should.be.eql(false);
 
                     done();
                 }).catch(err => done(err));
