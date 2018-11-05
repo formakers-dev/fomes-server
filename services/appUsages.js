@@ -154,7 +154,8 @@ const aggregateAppUsageByCategory = (userIds, categoryId) => {
     });
 };
 
-const getSimilarUsers = (user, page, limit) => {
+/** Start for Recommend Features **/
+const getSimilarUsers = (user, page, limit, excludeUserId) => {
     const currentYear = moment().format('YYYY');
     const beforeDiff = (currentYear - user.birthday) % 10;
     const afterDiff = 10 - beforeDiff;
@@ -163,6 +164,7 @@ const getSimilarUsers = (user, page, limit) => {
         {
             $match: {
                 $and : [
+                    { userId: {$ne : excludeUserId}},
                     { gender: user.gender},
                     { birthday: { $gte: user.birthday - afterDiff + 1 } },
                     { birthday: { $lte: user.birthday + beforeDiff + 1 } },
@@ -198,11 +200,14 @@ const getSimilarUsers = (user, page, limit) => {
     return AppUsages.aggregate(query);
 };
 
-const getCategoryAppUsages = (categoryId) => {
+const getCategoryAppUsages = (categoryId, excludeUserId) => {
     let query = [
         {
             $match: {
-                categoryId: categoryId,
+                $and: [
+                    { userId: { $ne : excludeUserId }},
+                    { categoryId: categoryId }
+                ]
             }
         }, {
             $group: {
@@ -226,11 +231,51 @@ const getCategoryAppUsages = (categoryId) => {
     return AppUsages.aggregate(query);
 };
 
-const getDeveloperAppUsages = (developer) => {
+const getDeveloperAppUsages = (developer, excludeUserId) => {
     let query = [
         {
             $match: {
-                developer: developer,
+                $and: [
+                    { userId: {$ne : excludeUserId}},
+                    { developer: developer }
+                ]
+            }
+        }, {
+            $group: {
+                _id: '$packageName',
+                totalUsedTime: { $sum: '$totalUsedTime' },
+                developer: { $first: '$developer' },
+                categoryId: { $first: '$categoryId' },
+            }
+        }, {
+            $project: {
+                packageName: '$_id',
+                totalUsedTime: true,
+                developer: true,
+                categoryId: true,
+            }
+        }, {
+            $sort: { totalUsedTime: -1 }
+        }
+    ];
+
+    return AppUsages.aggregate(query);
+};
+
+const getUsersAppUsages = (userIds, excludePackageName, excludeUserId) => {
+    const excludeUserIdIndex = userIds.indexOf(excludeUserId);
+
+    if (excludeUserIdIndex > -1) {
+        userIds.splice( userIds.indexOf(excludeUserId), 1 );
+    }
+
+    const query = [
+        {
+            $match: {
+                $and : [
+                    { packageName: {$ne : excludePackageName}},
+                    { userId: {$in : userIds}},
+                ]
             }
         }, {
             $group: {
@@ -350,6 +395,13 @@ const refreshAppUsages = (user, appInfos, appUsages) => {
     return AppUsages.bulkWrite(bulkOps);
 };
 
+const getUserIdsUsingApp = (packageName) => {
+  return AppUsages.aggregate([
+      {$match: {packageName : packageName}},
+      {$group: {_id: '$userId'}}
+  ]).then(userIds => Promise.resolve(userIds.map(userId => userId._id)));
+};
+
 
 module.exports = {
     getTotalUsedTimeRankList,
@@ -360,4 +412,6 @@ module.exports = {
     getSimilarUsers,
     getCategoryAppUsages,
     getDeveloperAppUsages,
+    getUsersAppUsages,
+    getUserIdsUsingApp,
 };

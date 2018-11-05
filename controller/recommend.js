@@ -8,14 +8,15 @@ const getRecommendApps = (req, res) => {
         return;
     }
 
-    // result.appUsages
-
     AppUsageService.aggregateAppUsageByCategory(req.userId, req.params.categoryId)
-        .then(userUsages => {
+        .then(userUsage => {
+            const excludePackageNames = userUsage.appUsages.map(userAppUsage => userAppUsage.appInfos[0].packageName);
+
             return Promise.all([
-                    RecommendAppsService.getSimilarUserRecommendApps(req.userId, req.query.page, req.query.limit),
-                    RecommendAppsService.getFavoriteCategoryRecommendApps(userUsages.categoryUsages, req.userId),
-                    RecommendAppsService.getFavoriteDeveloperRecommendApps(userUsages.developerUsages, req.userId)
+                    RecommendAppsService.getSimilarUserRecommendApps(req.userId, excludePackageNames, req.query.page, req.query.limit),
+                    RecommendAppsService.getFavoriteCategoryRecommendApps(userUsage.categoryUsages, excludePackageNames, req.userId),
+                    RecommendAppsService.getFavoriteDeveloperRecommendApps(userUsage.developerUsages, excludePackageNames, req.userId),
+                    RecommendAppsService.getFavoriteAppRecommendApps(userUsage.appUsages, excludePackageNames, req.userId),
                 ]);
         })
         .then(recommendApps => {
