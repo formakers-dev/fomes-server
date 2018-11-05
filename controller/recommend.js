@@ -26,6 +26,14 @@ const getRecommendApps = (req, res) => {
                 result = result.concat(recommendAppsByRecommendType);
             });
 
+            result = result.sort((a, b) => {
+                if (a.rank === b.rank) {
+                    return a.recommendType > b.recommendType ? -1 : 1;
+                } else {
+                    return a.rank < b.rank ? -1 : 1;
+                }
+            });
+
             res.json(result);
         })
         .catch(err => {

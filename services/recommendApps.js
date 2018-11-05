@@ -84,6 +84,8 @@ const getFavoriteAppRecommendApps = (appUsages, excludePackageNames, userId) => 
 
 const convertToRecommendApps = (recommendInfo, appUsages, excludePackageNames, userId) => {
     return new Promise((resolve, reject) => {
+        let rank = 1;
+
         Promise.resolve(appUsages.filter(i => i.developer && i.categoryId && !excludePackageNames.includes(i.packageName)))
             .then(appUsages => AppService.combineAppInfos(appUsages))
             .then(appUsagesWithAppInfo => resolve(
@@ -91,6 +93,7 @@ const convertToRecommendApps = (recommendInfo, appUsages, excludePackageNames, u
                     return {
                         recommendType: recommendInfo.recommendType,
                         criteria: recommendInfo.criteria,
+                        rank: rank++,
                         app: AppService.replaceWishedByToWishedByMe(item, userId)
                     };
                 })))
