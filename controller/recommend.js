@@ -8,30 +8,23 @@ const getRecommendApps = (req, res) => {
         return;
     }
 
-    // TODO: let 없애기, reject 관련 처리 추가 필요
-    let result = [];
-    let myAppUsages;
-
     // result.appUsages
-    // result.categoryUsages
-    // result.developerUsages
 
-    RecommendAppsService.getSimilarUserRecommendApps(req.userId, req.query.page, req.query.limit)
-        .then(similarUserRecommendApps => {
-            result = result.concat(similarUserRecommendApps);
-            //Just Only For Performance
-            return AppUsageService.aggregateAppUsageByCategory(req.userId, req.params.categoryId);
-        })
+    AppUsageService.aggregateAppUsageByCategory(req.userId, req.params.categoryId)
         .then(userUsages => {
-            myAppUsages = userUsages;
-            return RecommendAppsService.getFavoriteCategoryRecommendApps(myAppUsages.categoryUsages, req.userId)
+            return Promise.all([
+                    RecommendAppsService.getSimilarUserRecommendApps(req.userId, req.query.page, req.query.limit),
+                    RecommendAppsService.getFavoriteCategoryRecommendApps(userUsages.categoryUsages, req.userId),
+                    RecommendAppsService.getFavoriteDeveloperRecommendApps(userUsages.developerUsages, req.userId)
+                ]);
         })
-        .then(favoriteCategoryRecommendApps => {
-            result = result.concat(favoriteCategoryRecommendApps);
-            return RecommendAppsService.getFavoriteDeveloperRecommendApps(myAppUsages.developerUsages, req.userId)
-        })
-        .then(favoriteDeveloperRecommendApps => {
-            result = result.concat(favoriteDeveloperRecommendApps);
+        .then(recommendApps => {
+            let result = [];
+
+            recommendApps.forEach((recommendAppsByRecommendType) => {
+                result = result.concat(recommendAppsByRecommendType);
+            });
+
             res.json(result);
         })
         .catch(err => {
