@@ -4,9 +4,11 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const packagejson = require('./package.json');
 const statsRouter = require('./router/stats');
-const userRouter = require('./router/user');
-const projectRouter = require('./router/project');
+const usersRouter = require('./router/users');
+const appsRouter = require('./router/apps');
+const projectsRouter = require('./router/projects');
 const configurationRouter = require('./router/configurations');
+const recommendRouter = require('./router/recommend');
 const db = require('./db');
 const port = require('./config').port;
 
@@ -24,10 +26,12 @@ app.get('/', (req, res) => {
     res.send('Hello AppBee Mobile Server (' + process.env.NODE_ENV + ' v' +  packagejson.version +')');
 });
 
-app.use('/user', userRouter);
+app.use('/user', usersRouter);
+app.use('/apps', appsRouter);
 app.use('/stats', statsRouter);
-app.use('/projects', projectRouter);
+app.use('/projects', projectsRouter);
 app.use('/config', configurationRouter);
+app.use('/recommend', recommendRouter);
 
 app.listen(port, () => {
     console.log('Express App on http port ' + port);

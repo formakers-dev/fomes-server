@@ -5,8 +5,8 @@ const request = require('supertest').agent(server);
 const should = chai.should();
 const sinon = require('sinon');
 const ShortTermStats = require('../models/shortTermStats');
-const Users = require('../models/user').User;
-const UserConstants = require('../models/user').Constants;
+const Users = require('../models/users').Users;
+const UserConstants = require('../models/users').Constants;
 const { AppUsages, Apps } = require('../models/appUsages');
 
 describe('Stats', () => {
@@ -26,8 +26,20 @@ describe('Stats', () => {
                 "totalUsedTime": 200000
             }];
 
+        beforeEach(done => {
+           Users.create({
+               userId: config.testUser.userId,
+               lastStatsUpdateTime: new Date("2018-01-01T00:00:00.000Z"),
+           }, done);
+        });
+
         describe('단기통계데이터를 성공적으로 저장하면', () => {
-            it('200을 리턴하고 데이터가 저장된다', (done) => {
+            before(done => {
+                sandbox.useFakeTimers(new Date("2018-05-02T13:30:00.000Z").getTime());
+                done();
+            });
+
+            it('200을 리턴하고 데이터가 통계 정보 업데이트 시간과 함께 저장된다', (done) => {
                 request.post("/stats/short")
                     .set('x-access-token', config.appbeeToken.valid)
                     .send(doc)
@@ -37,15 +49,11 @@ describe('Stats', () => {
                         shortTermStats.length.should.be.eql(2);
                         verifyShortTermStatData(shortTermStats[0], 'com.whatever.package1', 1499914700000, 1499914800000, 100000);
                         verifyShortTermStatData(shortTermStats[1], 'com.whatever.package2', 1499914700001, 1499914900001, 200000);
-
                         done();
-                    })
-                    .catch((err) => done(err));
+                    }).catch((err) => done(err));
             });
 
             it('해당 유저 정보에 마지막 통계 정보 업데이트 시간이 기록된다.', (done) => {
-                sandbox.useFakeTimers(new Date("2018-05-02T13:30:00.000Z").getTime());
-
                 request.post("/stats/short")
                     .set('x-access-token', config.appbeeToken.valid)
                     .send(doc)
@@ -56,6 +64,11 @@ describe('Stats', () => {
                         done();
                     })
                     .catch((err) => done(err));
+            });
+
+            after(done => {
+                sandbox.restore();
+                done();
             });
         });
 
@@ -115,14 +128,14 @@ describe('Stats', () => {
             shortTermStat.endTimeStamp.should.be.eql(endTimeStamp);
             shortTermStat.totalUsedTime.should.be.eql(totalUsedTime);
         };
-    });
 
-    afterEach((done) => {
-        ShortTermStats.remove({userId: config.testUser.userId}, () => {
-            sandbox.restore();
-            done();
+        afterEach((done) => {
+            Users.remove({}, () =>
+                ShortTermStats.remove({}, () => done())
+            );
         });
     });
+
 
     describe('POST /stats/usages/app', () => {
         let clock;
@@ -130,20 +143,54 @@ describe('Stats', () => {
         beforeEach(done => {
             AppUsages.create([{
                 userId: 'anotherUserId',
+                gender: 'female',
+                birthday: 1952,
+                job: 2,
                 packageName: 'com.pre.installed',
+                categoryId : '도구',
+                developer : '도구개발사',
                 totalUsedTime: 9999
             }, {
                 userId: config.testUser.userId,
+                gender: 'male',
+                birthday: 1992,
+                job: 1,
                 packageName: 'com.kakao.talk',
+                categoryId : '커뮤니케이션',
+                developer : '카카오톡개발사',
                 totalUsedTime: 40000
             }, {
                 userId: config.testUser.userId,
+                gender: 'male',
+                birthday: 1992,
+                job: 1,
                 packageName: 'com.dummy.app',
+                categoryId : '도구',
+                developer : '도구개발사',
                 totalUsedTime: 10000
-            }], function () {
+            }])
+            .then(() => Apps.create([{
+                    packageName: 'com.android.com',
+                    categoryId1: 'GAME_TOOLS',
+                    developer: '구글개발사',
+                }, {
+                    packageName: 'com.kakao.talk',
+                    categoryId1: 'GAME_COMMUNICATION',
+                    developer: '카카오톡개발사',
+                }, {
+                    packageName: 'com.naver.talk',
+                    categoryId1: 'GAME_COMMUNICATION',
+                    developer: '라인개발사',
+                }, {
+                    packageName: 'com.notgame.com',
+                    categoryId1: 'COMMUNICATION',
+                    developer: '게임사아님사',
+            }]))
+            .then(() => Users.create(config.testUser))
+            .then(() => {
                 clock = sandbox.useFakeTimers(new Date("2018-09-26T15:30:00.000Z").getTime());
-                done()
-            });
+                done();
+            }).catch(err => done(err));
         });
 
         const data = [{
@@ -155,6 +202,9 @@ describe('Stats', () => {
         }, {
             packageName: 'com.android.com',
             totalUsedTime: 30000,
+        }, {
+            packageName: 'com.notgame.com',
+            totalUsedTime: 30000,
         }];
 
         it('앱 사용 기록을 갱신한다', done => {
@@ -165,16 +215,34 @@ describe('Stats', () => {
                 .then(() => AppUsages.find({userId: config.testUser.userId}).exec())
                 .then(docs => {
                     docs.length.should.be.eql(3);
+
                     docs[0].userId.should.be.eql(config.testUser.userId);
+                    docs[0].gender.should.be.eql('male');
+                    docs[0].birthday.should.be.eql(1992);
+                    docs[0].job.should.be.eql(1);
                     docs[0].packageName.should.be.eql('com.kakao.talk');
+                    docs[0].categoryId.should.be.eql('GAME_COMMUNICATION');
+                    docs[0].developer.should.be.eql('카카오톡개발사');
                     docs[0].totalUsedTime.should.be.eql(10000);
                     docs[0].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+
                     docs[1].userId.should.be.eql(config.testUser.userId);
+                    docs[1].gender.should.be.eql('male');
+                    docs[1].birthday.should.be.eql(1992);
+                    docs[1].job.should.be.eql(1);
                     docs[1].packageName.should.be.eql('com.naver.talk');
+                    docs[1].categoryId.should.be.eql('GAME_COMMUNICATION');
+                    docs[1].developer.should.be.eql('라인개발사');
                     docs[1].totalUsedTime.should.be.eql(20000);
                     docs[1].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+
                     docs[2].userId.should.be.eql(config.testUser.userId);
+                    docs[2].gender.should.be.eql('male');
+                    docs[2].birthday.should.be.eql(1992);
+                    docs[2].job.should.be.eql(1);
                     docs[2].packageName.should.be.eql('com.android.com');
+                    docs[2].categoryId.should.be.eql('GAME_TOOLS');
+                    docs[2].developer.should.be.eql('구글개발사');
                     docs[2].totalUsedTime.should.be.eql(30000);
                     docs[2].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
                     done();
@@ -191,6 +259,9 @@ describe('Stats', () => {
                 .then(docs => {
                     docs.length.should.be.eql(1);
                     docs[0].userId.should.be.eql('anotherUserId');
+                    docs[0].gender.should.be.eql('female');
+                    docs[0].birthday.should.be.eql(1952);
+                    docs[0].job.should.be.eql(2);
                     docs[0].packageName.should.be.eql('com.pre.installed');
                     docs[0].totalUsedTime.should.be.eql(9999);
                     done();
@@ -218,7 +289,11 @@ describe('Stats', () => {
 
         afterEach(done => {
             clock.restore();
-            AppUsages.remove({}, done);
+            AppUsages.remove({})
+                .then(() => Users.remove({}))
+                .then(() => Apps.remove({}))
+                .then(() => done())
+                .catch(err => done(err));
         });
     });
 
@@ -308,6 +383,7 @@ describe('Stats', () => {
                 .expect(200)
                 .then(res => {
                     res.body.length.should.be.eql(1);
+                    console.log(res.body);
 
                     res.body[0].userId.should.be.eql(config.testUser.userId);
 
@@ -322,21 +398,29 @@ describe('Stats', () => {
                 .then(res => {
                     res.body.length.should.be.eql(2);
 
-                    res.body[0].appInfo.packageName.should.be.eql('com.kakao.talk');
-                    res.body[0].appInfo.appName.should.be.eql('카카오톡');
-                    res.body[0].appInfo.categoryId1.should.be.eql('COMMUNICATION');
-                    res.body[0].appInfo.categoryName1.should.be.eql('커뮤니케이션');
-                    res.body[0].appInfo.developer.should.be.eql('Kakao Coperation');
-                    res.body[0].appInfo.iconUrl.should.be.eql('iconUrl1');
-                    res.body[0].totalUsedTime.should.be.eql(40000);
+                    console.log(res.body);
 
-                    res.body[1].appInfo.packageName.should.be.eql('com.nhn.line');
-                    res.body[1].appInfo.appName.should.be.eql('네이버 라인');
-                    res.body[1].appInfo.categoryId1.should.be.eql('COMMUNICATION');
-                    res.body[1].appInfo.categoryName1.should.be.eql('커뮤니케이션');
-                    res.body[1].appInfo.developer.should.be.eql('NHN Corp.');
-                    res.body[1].appInfo.iconUrl.should.be.eql('iconUrl2');
+                    res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+
+                    res.body[0].id.should.be.eql('com.kakao.talk');
+                    res.body[0].name.should.be.eql('카카오톡');
+                    res.body[0].totalUsedTime.should.be.eql(40000);
+                    res.body[0].appInfos[0].packageName.should.be.eql('com.kakao.talk');
+                    res.body[0].appInfos[0].appName.should.be.eql('카카오톡');
+                    res.body[0].appInfos[0].categoryId1.should.be.eql('COMMUNICATION');
+                    res.body[0].appInfos[0].categoryName1.should.be.eql('커뮤니케이션');
+                    res.body[0].appInfos[0].developer.should.be.eql('Kakao Coperation');
+                    res.body[0].appInfos[0].iconUrl.should.be.eql('iconUrl1');
+
+                    res.body[1].id.should.be.eql('com.nhn.line');
+                    res.body[1].name.should.be.eql('네이버 라인');
                     res.body[1].totalUsedTime.should.be.eql(20000);
+                    res.body[1].appInfos[0].packageName.should.be.eql('com.nhn.line');
+                    res.body[1].appInfos[0].appName.should.be.eql('네이버 라인');
+                    res.body[1].appInfos[0].categoryId1.should.be.eql('COMMUNICATION');
+                    res.body[1].appInfos[0].categoryName1.should.be.eql('커뮤니케이션');
+                    res.body[1].appInfos[0].developer.should.be.eql('NHN Corp.');
+                    res.body[1].appInfos[0].iconUrl.should.be.eql('iconUrl2');
 
                     done();
                 }).catch(err => done(err));
@@ -349,21 +433,27 @@ describe('Stats', () => {
                 .then(res => {
                     res.body.length.should.be.eql(2);
 
-                    res.body[0].appInfo.packageName.should.be.eql('com.game.edu');
-                    res.body[0].appInfo.appName.should.be.eql('교육게임명');
-                    res.body[0].appInfo.categoryId1.should.be.eql('GAME_EDUCATIONAL');
-                    res.body[0].appInfo.categoryName1.should.be.eql('교육');
-                    res.body[0].appInfo.developer.should.be.eql('Edu Game Corp.');
-                    res.body[0].appInfo.iconUrl.should.be.eql('iconUrl3');
-                    res.body[0].totalUsedTime.should.be.eql(90000);
+                    res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
 
-                    res.body[1].appInfo.packageName.should.be.eql('com.game.rpg');
-                    res.body[1].appInfo.appName.should.be.eql('롤플레잉게임명');
-                    res.body[1].appInfo.categoryId1.should.be.eql('GAME_ROLE_PLAYING');
-                    res.body[1].appInfo.categoryName1.should.be.eql('롤플레잉');
-                    res.body[1].appInfo.developer.should.be.eql('Rpg Game Corp.');
-                    res.body[1].appInfo.iconUrl.should.be.eql('iconUrl4');
+                    res.body[0].id.should.be.eql('com.game.edu');
+                    res.body[0].name.should.be.eql('교육게임명');
+                    res.body[0].totalUsedTime.should.be.eql(90000);
+                    res.body[0].appInfos[0].packageName.should.be.eql('com.game.edu');
+                    res.body[0].appInfos[0].appName.should.be.eql('교육게임명');
+                    res.body[0].appInfos[0].categoryId1.should.be.eql('GAME_EDUCATIONAL');
+                    res.body[0].appInfos[0].categoryName1.should.be.eql('교육');
+                    res.body[0].appInfos[0].developer.should.be.eql('Edu Game Corp.');
+                    res.body[0].appInfos[0].iconUrl.should.be.eql('iconUrl3');
+
+                    res.body[1].id.should.be.eql('com.game.rpg');
+                    res.body[1].name.should.be.eql('롤플레잉게임명');
                     res.body[1].totalUsedTime.should.be.eql(10000);
+                    res.body[1].appInfos[0].packageName.should.be.eql('com.game.rpg');
+                    res.body[1].appInfos[0].appName.should.be.eql('롤플레잉게임명');
+                    res.body[1].appInfos[0].categoryId1.should.be.eql('GAME_ROLE_PLAYING');
+                    res.body[1].appInfos[0].categoryName1.should.be.eql('롤플레잉');
+                    res.body[1].appInfos[0].developer.should.be.eql('Rpg Game Corp.');
+                    res.body[1].appInfos[0].iconUrl.should.be.eql('iconUrl4');
 
                     done();
                 }).catch(err => done(err));
@@ -468,27 +558,30 @@ describe('Stats', () => {
             });
         });
 
-        it('대분류 카테고리별 앱 사용 시간을 합산하여 정렬된 리스트를 반환한다', done => {
+        it('카테고리별 앱 사용 시간을 합산하여 정렬된 리스트를 반환한다', done => {
             request.get('/stats/usages/category')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
+                    console.log(res.body);
                     res.body.length.should.be.eql(4);
 
-                    res.body[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
-                    res.body[0].categoryName.should.be.eql('교육');
+                    res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+
+                    res.body[0].id.should.be.eql('GAME_EDUCATIONAL');
+                    res.body[0].name.should.be.eql('교육');
                     res.body[0].totalUsedTime.should.be.eql(90100);
 
-                    res.body[1].categoryId.should.be.eql('COMMUNICATION');
-                    res.body[1].categoryName.should.be.eql('커뮤니케이션');
+                    res.body[1].id.should.be.eql('COMMUNICATION');
+                    res.body[1].name.should.be.eql('커뮤니케이션');
                     res.body[1].totalUsedTime.should.be.eql(60000);
 
-                    res.body[2].categoryId.should.be.eql('GAME_ROLE_PLAYING');
-                    res.body[2].categoryName.should.be.eql('롤플레잉');
+                    res.body[2].id.should.be.eql('GAME_ROLE_PLAYING');
+                    res.body[2].name.should.be.eql('롤플레잉');
                     res.body[2].totalUsedTime.should.be.eql(10000);
 
-                    res.body[3].categoryId.should.be.eql('TOOL');
-                    res.body[3].categoryName.should.be.eql('도구');
+                    res.body[3].id.should.be.eql('TOOL');
+                    res.body[3].name.should.be.eql('도구');
                     res.body[3].totalUsedTime.should.be.eql(9999);
 
                     done();
@@ -502,16 +595,18 @@ describe('Stats', () => {
                 .then(res => {
                     res.body.length.should.be.eql(3);
 
-                    res.body[0].categoryId.should.be.eql('GAME');
-                    res.body[0].categoryName.should.be.eql('게임');
+                    res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+
+                    res.body[0].id.should.be.eql('GAME');
+                    res.body[0].name.should.be.eql('게임');
                     res.body[0].totalUsedTime.should.be.eql(100100);
 
-                    res.body[1].categoryId.should.be.eql('COMMUNICATION');
-                    res.body[1].categoryName.should.be.eql('커뮤니케이션');
+                    res.body[1].id.should.be.eql('COMMUNICATION');
+                    res.body[1].name.should.be.eql('커뮤니케이션');
                     res.body[1].totalUsedTime.should.be.eql(60000);
 
-                    res.body[2].categoryId.should.be.eql('TOOL');
-                    res.body[2].categoryName.should.be.eql('도구');
+                    res.body[2].id.should.be.eql('TOOL');
+                    res.body[2].name.should.be.eql('도구');
                     res.body[2].totalUsedTime.should.be.eql(9999);
 
                     done();
@@ -525,12 +620,15 @@ describe('Stats', () => {
                 .then(res => {
                     res.body.length.should.be.eql(4);
 
-                    res.body[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
-                    res.body[0].categoryName.should.be.eql('교육');
+                    res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+
+                    res.body[0].id.should.be.eql('GAME_EDUCATIONAL');
+                    res.body[0].name.should.be.eql('교육');
                     res.body[0].totalUsedTime.should.be.eql(90100);
                     res.body[0].appInfos.length.should.be.eql(2);
 
                     let appInfos = res.body[0].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                    console.log(appInfos);
                     appInfos[0].packageName.should.be.eql('com.game.edu');
                     appInfos[0].categoryId1.should.be.eql('GAME_EDUCATIONAL');
                     appInfos[0].totalUsedTime.should.be.eql(90000);
@@ -541,8 +639,8 @@ describe('Stats', () => {
 
                     //
 
-                    res.body[1].categoryId.should.be.eql('COMMUNICATION');
-                    res.body[1].categoryName.should.be.eql('커뮤니케이션');
+                    res.body[1].id.should.be.eql('COMMUNICATION');
+                    res.body[1].name.should.be.eql('커뮤니케이션');
                     res.body[1].totalUsedTime.should.be.eql(60000);
                     res.body[1].appInfos.length.should.be.eql(2);
 
@@ -557,8 +655,8 @@ describe('Stats', () => {
 
                     //
 
-                    res.body[2].categoryId.should.be.eql('GAME_ROLE_PLAYING');
-                    res.body[2].categoryName.should.be.eql('롤플레잉');
+                    res.body[2].id.should.be.eql('GAME_ROLE_PLAYING');
+                    res.body[2].name.should.be.eql('롤플레잉');
                     res.body[2].totalUsedTime.should.be.eql(10000);
                     res.body[2].appInfos.length.should.be.eql(1);
 
@@ -569,8 +667,8 @@ describe('Stats', () => {
 
                     //
 
-                    res.body[3].categoryId.should.be.eql('TOOL');
-                    res.body[3].categoryName.should.be.eql('도구');
+                    res.body[3].id.should.be.eql('TOOL');
+                    res.body[3].name.should.be.eql('도구');
                     res.body[3].totalUsedTime.should.be.eql(9999);
                     res.body[3].appInfos.length.should.be.eql(1);
 
@@ -592,8 +690,10 @@ describe('Stats', () => {
                     .then(res => {
                         res.body.length.should.be.eql(1);
 
-                        res.body[0].categoryId.should.be.eql('COMMUNICATION');
-                        res.body[0].categoryName.should.be.eql('커뮤니케이션');
+                        res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+
+                        res.body[0].id.should.be.eql('COMMUNICATION');
+                        res.body[0].name.should.be.eql('커뮤니케이션');
                         res.body[0].totalUsedTime.should.be.eql(60000);
 
                         done();
@@ -607,12 +707,14 @@ describe('Stats', () => {
                     .then(res => {
                         res.body.length.should.be.eql(2);
 
-                        res.body[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
-                        res.body[0].categoryName.should.be.eql('교육');
+                        res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+
+                        res.body[0].id.should.be.eql('GAME_EDUCATIONAL');
+                        res.body[0].name.should.be.eql('교육');
                         res.body[0].totalUsedTime.should.be.eql(90100);
 
-                        res.body[1].categoryId.should.be.eql('GAME_ROLE_PLAYING');
-                        res.body[1].categoryName.should.be.eql('롤플레잉');
+                        res.body[1].id.should.be.eql('GAME_ROLE_PLAYING');
+                        res.body[1].name.should.be.eql('롤플레잉');
                         res.body[1].totalUsedTime.should.be.eql(10000);
 
                         done();
@@ -627,8 +729,10 @@ describe('Stats', () => {
                     .then(res => {
                         res.body.length.should.be.eql(1);
 
-                        res.body[0].categoryId.should.be.eql('GAME');
-                        res.body[0].categoryName.should.be.eql('게임');
+                        res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+
+                        res.body[0].id.should.be.eql('GAME');
+                        res.body[0].name.should.be.eql('게임');
                         res.body[0].totalUsedTime.should.be.eql(100100);
 
                         done();
@@ -642,8 +746,10 @@ describe('Stats', () => {
                     .then(res => {
                         res.body.length.should.be.eql(2);
 
-                        res.body[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
-                        res.body[0].categoryName.should.be.eql('교육');
+                        res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+
+                        res.body[0].id.should.be.eql('GAME_EDUCATIONAL');
+                        res.body[0].name.should.be.eql('교육');
                         res.body[0].totalUsedTime.should.be.eql(90100);
                         res.body[0].appInfos.length.should.be.eql(2);
 
@@ -657,8 +763,8 @@ describe('Stats', () => {
                         appInfos[1].totalUsedTime.should.be.eql(100);
 
 
-                        res.body[1].categoryId.should.be.eql('GAME_ROLE_PLAYING');
-                        res.body[1].categoryName.should.be.eql('롤플레잉');
+                        res.body[1].id.should.be.eql('GAME_ROLE_PLAYING');
+                        res.body[1].name.should.be.eql('롤플레잉');
                         res.body[1].totalUsedTime.should.be.eql(10000);
                         res.body[1].appInfos.length.should.be.eql(1);
 
@@ -713,9 +819,7 @@ describe('Stats', () => {
                             job: 2,
                             gender: 'male',
                         },
-                    ]);
-
-                    AppUsages.create([
+                    ], () => AppUsages.create([
                         ////////// start of me ///////////////
                         {
                             userId: config.testUser.userId,
@@ -803,7 +907,7 @@ describe('Stats', () => {
                         }], function () {
                             done()
                         });
-                    });
+                    }));
                 });
 
                 it('유저와 1등, 꼴등의 랭크 데이터를 반환한다', done => {
@@ -861,9 +965,7 @@ describe('Stats', () => {
                             job: 2,
                             gender: 'male',
                         },
-                    ]);
-
-                    AppUsages.create([
+                    ], () => AppUsages.create([
                         {
                             userId: 'peopleId1',
                             packageName: 'com.game.edu2',
@@ -927,7 +1029,7 @@ describe('Stats', () => {
                         }], function () {
                             done()
                         });
-                    });
+                    }));
                 });
 
                 it('나의 랭킹 정보를 제외하고 반환한다', done => {
@@ -980,9 +1082,7 @@ describe('Stats', () => {
                         job: 2,
                         gender: 'male',
                     },
-                ]);
-
-                AppUsages.create([
+                ], () => AppUsages.create([
                     ////////// start of me ///////////////
                     {
                         userId: config.testUser.userId,
@@ -1070,7 +1170,7 @@ describe('Stats', () => {
                     }], function () {
                         done()
                     });
-                });
+                }));
             });
 
             it('3 가지 그룹의 데이터가 반환된다', done => {
@@ -1148,9 +1248,12 @@ describe('Stats', () => {
                         .expect(200)
                         .then((res) => {
                             res.body.usages.sort((a, b) => a.groupType > b.groupType ? 1 : -1);
+                            console.log(res.body);
                             const userCategoryUsages = res.body.usages[0].categoryUsages;
 
                             userCategoryUsages.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+
+                            console.log(userCategoryUsages);
                             userCategoryUsages.length.should.be.eql(2);
 
                             userCategoryUsages[0].id.should.be.eql('GAME_EDUCATIONAL');

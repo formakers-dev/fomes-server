@@ -23,7 +23,8 @@ const usersSchema = new Schema({
     lastStatsUpdateTime: Date,
     signUpTime: Date,
     lifeApps: Array,
+    wishList: Array,
 });
 
-const User = mongoose.model('users', usersSchema);
-module.exports = {User, Constants};
+const Users = mongoose.model('users', usersSchema);
+module.exports = { Users, Constants };

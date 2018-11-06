@@ -10,11 +10,17 @@ const appSchema = new mongoose.Schema({
     categoryIds: Array,
     developer: String,
     iconUrl: String,
+    wishedBy: Array,
 });
 
 const appUsagesSchema = new mongoose.Schema({
-    packageName: String,
     userId: String,
+    birthday: Number,
+    job: Number,
+    gender: String,
+    packageName: String,
+    developer: String,
+    categoryId: String,
     totalUsedTime: Number,
     updateTime: Date
 });
