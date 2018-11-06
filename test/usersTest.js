@@ -546,4 +546,94 @@ describe('Users', () => {
             });
         });
     });
+
+    describe('GET /user/wishlist/', () => {
+        beforeEach(done => {
+            config.testUser.wishList = ['com.game.edu', 'com.game.edu2'];
+
+            Users.create(config.testUser)
+                .then(() => Apps.create([
+                    {
+                        packageName: 'com.game.edu',
+                        appName: '교육게임명',
+                        developer: 'Edu Game Corp.',
+                        categoryId1: 'GAME_EDUCATIONAL',
+                        categoryName1: '교육',
+                        iconUrl: 'iconUrl3',
+                        wishedBy: [config.testUser.userId, 'user2']
+                    }, {
+                        packageName: 'com.game.rpg',
+                        appName: '롤플레잉게임명',
+                        developer: 'GameDuckHu Corp.',
+                        categoryId1: 'GAME_ROLE_PLAYING',
+                        categoryName1: '롤플레잉',
+                        iconUrl: 'iconUrl4',
+                        wishedBy: ['user3']
+                    }, {
+                        packageName: 'com.game.edu2',
+                        appName: '교육게임명2',
+                        developer: 'GameDuckHu Corp.',
+                        categoryId1: 'GAME_EDUCATIONAL',
+                        categoryName1: '교육',
+                        iconUrl: 'iconUrl32',
+                        wishedBy: [config.testUser.userId]
+                    }]))
+                .then(() => done())
+                .catch(err => done(err))
+        });
+
+        it('등록된 위시리스트를 반환한다', done => {
+            request.get('/user/wishlist')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then((res) => {
+                    res.body.length.should.be.eql(2);
+
+                    res.body = res.body.sort((a, b) => a.packageName > b.packageName);
+
+                    res.body[0].packageName.should.be.eql('com.game.edu');
+                    res.body[0].appName.should.be.eql('교육게임명');
+                    res.body[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
+                    res.body[0].categoryName.should.be.eql('교육');
+                    res.body[0].developer.should.be.eql('Edu Game Corp.');
+                    res.body[0].iconUrl.should.be.eql('iconUrl3');
+                    res.body[0].wishedByMe.should.be.eql(true);
+
+                    res.body[1].packageName.should.be.eql('com.game.edu2');
+                    res.body[1].appName.should.be.eql('교육게임명2');
+                    res.body[1].categoryId.should.be.eql('GAME_EDUCATIONAL');
+                    res.body[1].categoryName.should.be.eql('교육');
+                    res.body[1].developer.should.be.eql('GameDuckHu Corp.');
+                    res.body[1].iconUrl.should.be.eql('iconUrl32');
+                    res.body[1].wishedByMe.should.be.eql(true);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        describe('위시리스트가 없는 경우', () => {
+            beforeEach(done => {
+                Users.findOneAndUpdate({userId: config.testUser.userId}, {wishList: []})
+                    .then(() => done());
+            });
+
+            it('빈 위시리스트를 반환한다', done => {
+                request.get('/user/wishlist')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .expect(200)
+                    .then((res) => {
+                        res.body.length.should.be.eql(0);
+
+                        done();
+                    }).catch(err => done(err));
+            });
+        });
+
+        afterEach(done => {
+            Users.remove({})
+                .then(() => Apps.remove({}))
+                .then(() => done())
+                .catch(err => done(err));
+        });
+    });
 });

@@ -74,7 +74,7 @@ const convertToRecommendApps = (recommendInfo, appUsages, userId) => {
                     return {
                         recommendType: recommendInfo.recommendType,
                         criteria: recommendInfo.criteria,
-                        app: replaceWishedByToWishedByMe(item, userId)
+                        app: AppService.replaceWishedByToWishedByMe(item, userId)
                     };
                 })))
             .catch(err => {
@@ -84,10 +84,8 @@ const convertToRecommendApps = (recommendInfo, appUsages, userId) => {
     });
 };
 
-const replaceWishedByToWishedByMe = (item, userId) => {
-    item.wishedByMe = !!(item.wishedBy && item.wishedBy.includes(userId));
-    delete item.wishedBy;
-    return item;
+module.exports = {
+    getSimilarUserRecommendApps,
+    getFavoriteCategoryRecommendApps,
+    getFavoriteDeveloperRecommendApps
 };
-
-module.exports = {getSimilarUserRecommendApps, getFavoriteCategoryRecommendApps, getFavoriteDeveloperRecommendApps};

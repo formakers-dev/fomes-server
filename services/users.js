@@ -51,4 +51,22 @@ const removeAppFromWishList = (userId, packageName) => {
     return Users.findOneAndUpdate({userId: userId}, {$pull: {wishList: packageName}});
 };
 
-module.exports = {getUser, getSimilarUsers, getAge, upsertWishList, removeAppFromWishList};
+const getWishList = (userId) => {
+    return new Promise((resolve, reject) => {
+        getUser(userId)
+            .then(user => resolve(user.wishList))
+            .catch(err => {
+                console.log('getWishList', err);
+                reject(err);
+            });
+    });
+};
+
+module.exports = {
+    getUser,
+    getSimilarUsers,
+    getAge,
+    upsertWishList,
+    removeAppFromWishList,
+    getWishList
+};

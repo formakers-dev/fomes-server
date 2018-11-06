@@ -1,24 +1,9 @@
 const {Apps} = require('../models/appUsages');
 
 const combineAppInfos = (appUsages) => {
-    return Apps.find({packageName: {$in: appUsages.map(i => i.packageName)}})
-        .lean()
-        .then(appInfos => Promise.resolve(
-            appInfos.map(appInfo => {
-                appInfo.categoryId = appInfo.categoryId1;
-                appInfo.categoryName = appInfo.categoryName1;
-
-                // TODO : List 형태로 구조 변경되면 아래 코드도 변경해야 한다
-                delete appInfo.categoryId1;
-                delete appInfo.categoryId2;
-                delete appInfo.categoryName1;
-                delete appInfo.categoryName2;
-
-                return appInfo;
-            })
-        ))
-        .then(appInfos => Promise.resolve(
-            Object.values(appUsages.concat(appInfos)
+    return getAppsWithRepresentativeCategory(appUsages.map(i => i.packageName))
+        .then(convertedApps => Promise.resolve(
+            Object.values(appUsages.concat(convertedApps)
                 .reduce((map, appUsage) => {
                     const key = appUsage.packageName;
                     if (!map[key]) {
@@ -30,6 +15,30 @@ const combineAppInfos = (appUsages) => {
                     return map;
                 }, {})))
         ).catch(err => Promise.reject(err));
+};
+
+const getAppsWithRepresentativeCategory = (packageNames) => {
+    return Apps.find({packageName: {$in: packageNames}})
+        .lean()
+        .then(apps => convertCategoryInfoToRepresentativeCategory(apps))
+        .catch(err => Promise.reject(err));
+};
+
+const convertCategoryInfoToRepresentativeCategory = (apps) => {
+    return Promise.resolve(
+        apps.map(app => {
+            app.categoryId = app.categoryId1;
+            app.categoryName = app.categoryName1;
+
+            // TODO : List 형태로 구조 변경되면 아래 코드도 변경해야 한다
+            delete app.categoryId1;
+            delete app.categoryId2;
+            delete app.categoryName1;
+            delete app.categoryName2;
+
+            return app;
+        })
+    );
 };
 
 const getGameAppInfoForAnalysis = (packageNames) => {
@@ -47,4 +56,17 @@ const removeUserFromWishedBy = (packageName, userId) => {
         {$pull: {wishedBy: userId}});
 };
 
-module.exports = {combineAppInfos, getGameAppInfoForAnalysis, upsertWishedBy, removeUserFromWishedBy};
+const replaceWishedByToWishedByMe = (app, userId) => {
+    app.wishedByMe = !!(app.wishedBy && app.wishedBy.includes(userId));
+    delete app.wishedBy;
+    return app;
+};
+
+module.exports = {
+    combineAppInfos,
+    getGameAppInfoForAnalysis,
+    upsertWishedBy,
+    removeUserFromWishedBy,
+    replaceWishedByToWishedByMe,
+    getAppsWithRepresentativeCategory
+};

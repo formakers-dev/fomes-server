@@ -103,6 +103,21 @@ const removeAppFromWishList = (req, res) => {
         .catch(err => sendError('removeAppFromWishList', req.userId, res, err, 500));
 };
 
+const getWishList = (req, res) => {
+    UserService.getWishList(req.userId)
+        .then(packageNames => AppService.getAppsWithRepresentativeCategory(packageNames))
+        .then(apps => res.json(
+            apps.map(app => AppService.replaceWishedByToWishedByMe(app, req.userId))
+        ))
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({
+                success: false,
+                message: err.message
+            });
+        });
+};
+
 module.exports = {
     signUpUser,
     upsertUser,
@@ -110,5 +125,6 @@ module.exports = {
     verifyInvitationCode,
     getUser,
     saveAppToWishList,
-    removeAppFromWishList
+    removeAppFromWishList,
+    getWishList,
 };
