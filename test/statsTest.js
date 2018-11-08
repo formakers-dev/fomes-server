@@ -7,7 +7,7 @@ const sinon = require('sinon');
 const ShortTermStats = require('../models/shortTermStats');
 const Users = require('../models/users').Users;
 const UserConstants = require('../models/users').Constants;
-const { AppUsages, Apps } = require('../models/appUsages');
+const {AppUsages, Apps} = require('../models/appUsages');
 
 describe('Stats', () => {
     const sandbox = sinon.sandbox.create();
@@ -27,10 +27,10 @@ describe('Stats', () => {
             }];
 
         beforeEach(done => {
-           Users.create({
-               userId: config.testUser.userId,
-               lastStatsUpdateTime: new Date("2018-01-01T00:00:00.000Z"),
-           }, done);
+            Users.create({
+                userId: config.testUser.userId,
+                lastStatsUpdateTime: new Date("2018-01-01T00:00:00.000Z"),
+            }, done);
         });
 
         describe('단기통계데이터를 성공적으로 저장하면', () => {
@@ -147,8 +147,8 @@ describe('Stats', () => {
                 birthday: 1952,
                 job: 2,
                 packageName: 'com.pre.installed',
-                categoryId : '도구',
-                developer : '도구개발사',
+                categoryId: '도구',
+                developer: '도구개발사',
                 totalUsedTime: 9999
             }, {
                 userId: config.testUser.userId,
@@ -156,8 +156,8 @@ describe('Stats', () => {
                 birthday: 1992,
                 job: 1,
                 packageName: 'com.kakao.talk',
-                categoryId : '커뮤니케이션',
-                developer : '카카오톡개발사',
+                categoryId: '커뮤니케이션',
+                developer: '카카오톡개발사',
                 totalUsedTime: 40000
             }, {
                 userId: config.testUser.userId,
@@ -165,11 +165,11 @@ describe('Stats', () => {
                 birthday: 1992,
                 job: 1,
                 packageName: 'com.dummy.app',
-                categoryId : '도구',
-                developer : '도구개발사',
+                categoryId: '도구',
+                developer: '도구개발사',
                 totalUsedTime: 10000
             }])
-            .then(() => Apps.create([{
+                .then(() => Apps.create([{
                     packageName: 'com.android.com',
                     categoryId1: 'GAME_TOOLS',
                     developer: '구글개발사',
@@ -185,12 +185,12 @@ describe('Stats', () => {
                     packageName: 'com.notgame.com',
                     categoryId1: 'COMMUNICATION',
                     developer: '게임사아님사',
-            }]))
-            .then(() => Users.create(config.testUser))
-            .then(() => {
-                clock = sandbox.useFakeTimers(new Date("2018-09-26T15:30:00.000Z").getTime());
-                done();
-            }).catch(err => done(err));
+                }]))
+                .then(() => Users.create(config.testUser))
+                .then(() => {
+                    clock = sandbox.useFakeTimers(new Date("2018-09-26T15:30:00.000Z").getTime());
+                    done();
+                }).catch(err => done(err));
         });
 
         const data = [{
@@ -400,7 +400,7 @@ describe('Stats', () => {
 
                     console.log(res.body);
 
-                    res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                    res.body.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
 
                     res.body[0].id.should.be.eql('com.kakao.talk');
                     res.body[0].name.should.be.eql('카카오톡');
@@ -433,7 +433,7 @@ describe('Stats', () => {
                 .then(res => {
                     res.body.length.should.be.eql(2);
 
-                    res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                    res.body.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
 
                     res.body[0].id.should.be.eql('com.game.edu');
                     res.body[0].name.should.be.eql('교육게임명');
@@ -566,7 +566,7 @@ describe('Stats', () => {
                     console.log(res.body);
                     res.body.length.should.be.eql(4);
 
-                    res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                    res.body.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
 
                     res.body[0].id.should.be.eql('GAME_EDUCATIONAL');
                     res.body[0].name.should.be.eql('교육');
@@ -595,7 +595,7 @@ describe('Stats', () => {
                 .then(res => {
                     res.body.length.should.be.eql(3);
 
-                    res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                    res.body.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
 
                     res.body[0].id.should.be.eql('GAME');
                     res.body[0].name.should.be.eql('게임');
@@ -620,14 +620,14 @@ describe('Stats', () => {
                 .then(res => {
                     res.body.length.should.be.eql(4);
 
-                    res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                    res.body.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
 
                     res.body[0].id.should.be.eql('GAME_EDUCATIONAL');
                     res.body[0].name.should.be.eql('교육');
                     res.body[0].totalUsedTime.should.be.eql(90100);
                     res.body[0].appInfos.length.should.be.eql(2);
 
-                    let appInfos = res.body[0].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                    let appInfos = res.body[0].appInfos.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
                     console.log(appInfos);
                     appInfos[0].packageName.should.be.eql('com.game.edu');
                     appInfos[0].categoryId1.should.be.eql('GAME_EDUCATIONAL');
@@ -644,7 +644,7 @@ describe('Stats', () => {
                     res.body[1].totalUsedTime.should.be.eql(60000);
                     res.body[1].appInfos.length.should.be.eql(2);
 
-                    appInfos = res.body[1].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                    appInfos = res.body[1].appInfos.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
                     appInfos[0].packageName.should.be.eql('com.kakao.talk');
                     appInfos[0].categoryId1.should.be.eql('COMMUNICATION');
                     appInfos[0].totalUsedTime.should.be.eql(40000);
@@ -660,7 +660,7 @@ describe('Stats', () => {
                     res.body[2].totalUsedTime.should.be.eql(10000);
                     res.body[2].appInfos.length.should.be.eql(1);
 
-                    appInfos = res.body[2].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                    appInfos = res.body[2].appInfos.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
                     appInfos[0].packageName.should.be.eql('com.game.rpg');
                     appInfos[0].categoryId1.should.be.eql('GAME_ROLE_PLAYING');
                     appInfos[0].totalUsedTime.should.be.eql(10000);
@@ -672,7 +672,7 @@ describe('Stats', () => {
                     res.body[3].totalUsedTime.should.be.eql(9999);
                     res.body[3].appInfos.length.should.be.eql(1);
 
-                    appInfos = res.body[3].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                    appInfos = res.body[3].appInfos.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
                     appInfos[0].packageName.should.be.eql('com.nhn.android.nmap');
                     appInfos[0].categoryId1.should.be.eql('TOOL');
                     appInfos[0].totalUsedTime.should.be.eql(9999);
@@ -690,7 +690,7 @@ describe('Stats', () => {
                     .then(res => {
                         res.body.length.should.be.eql(1);
 
-                        res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                        res.body.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
 
                         res.body[0].id.should.be.eql('COMMUNICATION');
                         res.body[0].name.should.be.eql('커뮤니케이션');
@@ -707,7 +707,7 @@ describe('Stats', () => {
                     .then(res => {
                         res.body.length.should.be.eql(2);
 
-                        res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                        res.body.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
 
                         res.body[0].id.should.be.eql('GAME_EDUCATIONAL');
                         res.body[0].name.should.be.eql('교육');
@@ -729,7 +729,7 @@ describe('Stats', () => {
                     .then(res => {
                         res.body.length.should.be.eql(1);
 
-                        res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                        res.body.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
 
                         res.body[0].id.should.be.eql('GAME');
                         res.body[0].name.should.be.eql('게임');
@@ -746,14 +746,14 @@ describe('Stats', () => {
                     .then(res => {
                         res.body.length.should.be.eql(2);
 
-                        res.body.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                        res.body.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
 
                         res.body[0].id.should.be.eql('GAME_EDUCATIONAL');
                         res.body[0].name.should.be.eql('교육');
                         res.body[0].totalUsedTime.should.be.eql(90100);
                         res.body[0].appInfos.length.should.be.eql(2);
 
-                        let appInfos = res.body[0].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                        let appInfos = res.body[0].appInfos.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
                         appInfos[0].packageName.should.be.eql('com.game.edu');
                         appInfos[0].categoryId1.should.be.eql('GAME_EDUCATIONAL');
                         appInfos[0].totalUsedTime.should.be.eql(90000);
@@ -768,7 +768,7 @@ describe('Stats', () => {
                         res.body[1].totalUsedTime.should.be.eql(10000);
                         res.body[1].appInfos.length.should.be.eql(1);
 
-                        appInfos = res.body[1].appInfos.sort((a, b) =>  a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+                        appInfos = res.body[1].appInfos.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
                         appInfos[0].packageName.should.be.eql('com.game.rpg');
                         appInfos[0].categoryId1.should.be.eql('GAME_ROLE_PLAYING');
                         appInfos[0].totalUsedTime.should.be.eql(10000);
@@ -795,81 +795,102 @@ describe('Stats', () => {
         });
     });
 
-    describe('GET /stats/report/category/:categoryId/recent', () => {
+    describe('POST /stats/report/category/:categoryId/recent', () => {
         describe('랭킹', () => {
             describe('정상 케이스', () => {
                 before(done => {
-                    Users.create([
-                        config.testUser,
-                        {
-                            userId: 'peopleId1',
-                            birthday: 1943,
-                            job: 1,
-                            gender: 'male',
-                        },
-                        {
-                            userId: 'peopleId2',
-                            birthday: 1989,
-                            job: 1,
-                            gender: 'female',
-                        },
-                        {
-                            userId: 'peopleId3',
-                            birthday: 1990,
-                            job: 2,
-                            gender: 'male',
-                        },
-                    ], () => AppUsages.create([
-                        ////////// start of me ///////////////
-                        {
-                            userId: config.testUser.userId,
-                            packageName: 'com.nhn.android.nmap',
-                            totalUsedTime: 9999
-                        }, {
-                            // 특정 앱의 사용 데이터는 있지만 해당 앱 정보가 DB에 없는 경우, 해당 앱은 제외한다.
-                            userId: config.testUser.userId,
-                            packageName: 'com.game.empty',
-                            totalUsedTime: 10000
-                        }, {
-                            userId: config.testUser.userId,
-                            packageName: 'com.game.edu',
-                            totalUsedTime: 90000
-                        }, {
-                            userId: config.testUser.userId,
-                            packageName: 'com.game.rpg',
-                            totalUsedTime: 10000
-                        }, {
-                            userId: config.testUser.userId,
-                            packageName: 'com.game.edu2',
-                            totalUsedTime: 5000
-                        },
-                        ////////// end of me ///////////////
-                        {
-                            userId: 'peopleId1',
-                            packageName: 'com.game.edu2',
-                            totalUsedTime: 7000
-                        },  {
-                            userId: 'peopleId1',
-                            packageName: 'com.game.rpg',
-                            totalUsedTime: 4000
-                        }, {
-                            userId: 'peopleId2',
-                            packageName: 'com.game.rpg',
-                            totalUsedTime: 90000
-                        },{
-                            userId: 'peopleId2',
-                            packageName: 'com.game.puzzle',
-                            totalUsedTime: 10000
-                        }, {
-                            userId: 'peopleId3',
-                            packageName: 'com.game.edu',
-                            totalUsedTime: 100000
-                        }, {
-                            userId: 'peopleId3',
-                            packageName: 'com.game.puzzle',
-                            totalUsedTime: 50000
-                        }], function () {
-                        Apps.create([ {
+                        Users.create([
+                            config.testUser,
+                            {
+                                userId: 'peopleId1',
+                                birthday: 1943,
+                                job: 1,
+                                gender: 'male',
+                            },
+                            {
+                                userId: 'peopleId2',
+                                birthday: 1989,
+                                job: 1,
+                                gender: 'female',
+                            },
+                            {
+                                userId: 'peopleId3',
+                                birthday: 1990,
+                                job: 2,
+                                gender: 'male',
+                            },
+                            {
+                                userId: 'uninstalledOldPeople',
+                                birthday: 1970,
+                                job: 1,
+                                gender: 'male',
+                            }])
+                        .then(() => AppUsages.create([
+                            ////////// start of me ///////////////
+                            {
+                                userId: config.testUser.userId,
+                                packageName: 'com.nhn.android.nmap',
+                                totalUsedTime: 9999,
+                                categoryId: 'TOOL'
+                            }, {
+                                // 특정 앱의 사용 데이터는 있지만 해당 앱 정보가 DB에 없는 경우, 해당 앱은 제외한다.
+                                userId: config.testUser.userId,
+                                packageName: 'com.game.empty',
+                                totalUsedTime: 10000
+                            }, {
+                                userId: config.testUser.userId,
+                                packageName: 'com.game.edu',
+                                totalUsedTime: 90000,
+                                categoryId: 'GAME_EDUCATIONAL'
+                            }, {
+                                userId: config.testUser.userId,
+                                packageName: 'com.game.rpg',
+                                totalUsedTime: 10000,
+                                categoryId: 'GAME_ROLE_PLAYING'
+                            }, {
+                                userId: config.testUser.userId,
+                                packageName: 'com.game.edu2',
+                                totalUsedTime: 5000,
+                                categoryId: 'GAME_EDUCATIONAL'
+                            },
+                            ////////// end of me ///////////////
+                            {
+                                userId: 'peopleId1',
+                                packageName: 'com.game.edu2',
+                                totalUsedTime: 7000,
+                                categoryId: 'GAME_EDUCATIONAL'
+                            }, {
+                                userId: 'peopleId1',
+                                packageName: 'com.game.rpg',
+                                totalUsedTime: 4000,
+                                categoryId: 'GAME_ROLE_PLAYING'
+                            }, {
+                                userId: 'peopleId2',
+                                packageName: 'com.game.rpg',
+                                totalUsedTime: 90000,
+                                categoryId: 'GAME_ROLE_PLAYING'
+                            }, {
+                                userId: 'peopleId2',
+                                packageName: 'com.game.puzzle',
+                                totalUsedTime: 10000,
+                                categoryId: 'GAME_PUZZLE'
+                            }, {
+                                userId: 'peopleId3',
+                                packageName: 'com.game.edu',
+                                totalUsedTime: 100000,
+                                categoryId: 'GAME_EDUCATIONAL'
+                            }, {
+                                userId: 'peopleId3',
+                                packageName: 'com.game.puzzle',
+                                totalUsedTime: 50000,
+                                categoryId: 'GAME_PUZZLE'
+                            }, {
+                                // 특정 앱의 사용 데이터는 있지만 비정규화 이전 버전 앱 사용으로 categoryId가 AppUsages에 없는 경우, 해당 앱은 제외한다.
+                                userId: 'uninstalledOldPeople',
+                                packageName: 'com.game.puzzle',
+                                totalUsedTime: 7777777777
+                            }]))
+                        .then(() => Apps.create([{
                             packageName: 'com.nhn.android.nmap',
                             appName: '네이버지도',
                             categoryId1: 'TOOL',
@@ -904,11 +925,10 @@ describe('Stats', () => {
                             categoryName1: '퍼즐',
                             developer: 'Puzzle Game Corp.',
                             iconUrl: 'iconUrl6',
-                        }], function () {
-                            done()
-                        });
-                    }));
-                });
+                        }]))
+                        .then(() => done());
+                    }
+                );
 
                 it('유저와 1등, 꼴등의 랭크 데이터를 반환한다', done => {
                     request.post('/stats/report/category/GAME/recent')
@@ -918,7 +938,7 @@ describe('Stats', () => {
                         .then((res) => {
                             res.body.totalUsedTimeRank.length.should.be.eql(3);
 
-                            res.body.totalUsedTimeRank.sort((a, b) =>  a.rank > b.rank ? 1 : -1);
+                            res.body.totalUsedTimeRank.sort((a, b) => a.rank > b.rank ? 1 : -1);
 
                             res.body.totalUsedTimeRank[0].userId.should.be.eql("peopleId3");
                             res.body.totalUsedTimeRank[0].rank.should.be.eql(1);
@@ -969,29 +989,35 @@ describe('Stats', () => {
                         {
                             userId: 'peopleId1',
                             packageName: 'com.game.edu2',
-                            totalUsedTime: 7000
-                        },  {
+                            totalUsedTime: 7000,
+                            categoryId: 'GAME_EDUCATIONAL'
+                        }, {
                             userId: 'peopleId1',
                             packageName: 'com.game.rpg',
-                            totalUsedTime: 4000
+                            totalUsedTime: 4000,
+                            categoryId: 'GAME_ROLE_PLAYING'
                         }, {
                             userId: 'peopleId2',
                             packageName: 'com.game.rpg',
-                            totalUsedTime: 90000
-                        },{
+                            totalUsedTime: 90000,
+                            categoryId: 'GAME_ROLE_PLAYING'
+                        }, {
                             userId: 'peopleId2',
                             packageName: 'com.game.puzzle',
-                            totalUsedTime: 10000
+                            totalUsedTime: 10000,
+                            categoryId: 'GAME_PUZZLE'
                         }, {
                             userId: 'peopleId3',
                             packageName: 'com.game.edu',
-                            totalUsedTime: 100000
+                            totalUsedTime: 100000,
+                            categoryId: 'GAME_EDUCATIONAL'
                         }, {
                             userId: 'peopleId3',
                             packageName: 'com.game.puzzle',
-                            totalUsedTime: 50000
+                            totalUsedTime: 50000,
+                            categoryId: 'GAME_PUZZLE'
                         }], function () {
-                        Apps.create([ {
+                        Apps.create([{
                             packageName: 'com.nhn.android.nmap',
                             appName: '네이버지도',
                             categoryId1: 'TOOL',
@@ -1111,7 +1137,7 @@ describe('Stats', () => {
                         userId: 'peopleId1',
                         packageName: 'com.game.edu2',
                         totalUsedTime: 7000
-                    },  {
+                    }, {
                         userId: 'peopleId1',
                         packageName: 'com.game.rpg',
                         totalUsedTime: 4000
@@ -1119,7 +1145,7 @@ describe('Stats', () => {
                         userId: 'peopleId2',
                         packageName: 'com.game.rpg',
                         totalUsedTime: 90000
-                    },{
+                    }, {
                         userId: 'peopleId2',
                         packageName: 'com.game.puzzle',
                         totalUsedTime: 10000
@@ -1132,7 +1158,7 @@ describe('Stats', () => {
                         packageName: 'com.game.puzzle',
                         totalUsedTime: 50000
                     }], function () {
-                    Apps.create([ {
+                    Apps.create([{
                         packageName: 'com.nhn.android.nmap',
                         appName: '네이버지도',
                         categoryId1: 'TOOL',

@@ -4,56 +4,31 @@ const { AppUsages } = require('../models/appUsages');
 
 const getTotalUsedTimeRankList = (userId, categoryId) => {
     return new Promise((resolve, reject) => {
-        AppUsages.aggregate([{
-            $lookup: {
-                from: 'apps',
-                let: {upper_packagName: '$packageName'},
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: {$eq: ['$packageName', '$$upper_packagName']},
-                            categoryId1: { $regex: new RegExp(categoryId) }
-                        }
-                    },
-                    {
-                        $project: {
-                            categoryId: '$categoryId1',
-                            categoryName: '$categoryName1',
-                            appName: '$appName',
-                            developer: '$developer',
-                            iconUrl: '$iconUrl'
-                        }
-                    }
-                ],
-                as: 'appInfo'
-            }
-        },
-            {$match: {appInfo: {$gt: {}}}},
-            {$match: {appInfo: {$gt: {}}}},
-            {$unwind: "$appInfo"},
+        AppUsages.aggregate([
+            {$match: {categoryId: { $regex: new RegExp(categoryId) }}},
             {
                 $group: {
                     _id: '$userId', totalUsedTime: {$sum: '$totalUsedTime'},
                 }
             }
         ])
-            .then(ranks => {
-                const sortedRanks = ranks.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
-                const mine = sortedRanks.filter(rank => rank._id === userId)[0];
-                const best = sortedRanks[0];
-                const worst = sortedRanks[sortedRanks.length - 1];
+        .then(ranks => {
+            const sortedRanks = ranks.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+            const mine = sortedRanks.filter(rank => rank._id === userId)[0];
+            const best = sortedRanks[0];
+            const worst = sortedRanks[sortedRanks.length - 1];
 
-                const result = [];
-                result.push(mine, best, worst);
+            const result = [];
+            result.push(mine, best, worst);
 
-                resolve(result.filter(rank => rank).map(rank => {
-                    return {
-                        userId: rank._id,
-                        rank: sortedRanks.indexOf(rank) + 1,
-                        content: rank.totalUsedTime
-                    }
-                }));
-            }).catch(err => {
+            resolve(result.filter(rank => rank).map(rank => {
+                return {
+                    userId: rank._id,
+                    rank: sortedRanks.indexOf(rank) + 1,
+                    content: rank.totalUsedTime
+                }
+            }));
+        }).catch(err => {
             console.error("getTotalUsedTimeRankList", "userId=", userId, "err=", err);
             reject(err);
         })
