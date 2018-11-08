@@ -35,19 +35,19 @@ const getTotalUsedTimeRankList = (userId, categoryId) => {
     });
 };
 
+const createQueryConditionForArray = (values) => {
+    return (values instanceof Array) ? {"$in": values} : values;
+};
+
 const aggregateAppUsageByCategory = (userIds, categoryId) => {
     return new Promise((resolve, reject) => {
-        const filterQuery = {};
+        const filterQuery = {
+            userId : createQueryConditionForArray(userIds),
+            categoryId : new RegExp(categoryId)
+        };
 
-        if (userIds instanceof Array) {
-            filterQuery.userId = {
-                "$in": userIds
-            }
-        } else {
-            filterQuery.userId = userIds;
-        }
-
-        AppUsages.aggregate([ { $match: filterQuery },
+        AppUsages.aggregate([
+            { $match: filterQuery },
             {
                 $lookup: {
                     from: 'apps',
@@ -55,8 +55,7 @@ const aggregateAppUsageByCategory = (userIds, categoryId) => {
                     pipeline: [
                         {
                             $match: {
-                                $expr: { $eq: ['$packageName', '$$upper_packageName'] },
-                                categoryId1: new RegExp(categoryId)
+                                $expr: { $eq: ['$packageName', '$$upper_packageName'] }
                             }
                         },
                         {

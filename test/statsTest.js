@@ -1113,7 +1113,8 @@ describe('Stats', () => {
                     {
                         userId: config.testUser.userId,
                         packageName: 'com.nhn.android.nmap',
-                        totalUsedTime: 9999
+                        totalUsedTime: 9999,
+                        categoryId: 'TOOL'
                     }, {
                         // 특정 앱의 사용 데이터는 있지만 해당 앱 정보가 DB에 없는 경우, 해당 앱은 제외한다.
                         userId: config.testUser.userId,
@@ -1122,41 +1123,50 @@ describe('Stats', () => {
                     }, {
                         userId: config.testUser.userId,
                         packageName: 'com.game.edu',
-                        totalUsedTime: 90000
+                        totalUsedTime: 90000,
+                        categoryId: 'GAME_EDUCATIONAL'
                     }, {
                         userId: config.testUser.userId,
                         packageName: 'com.game.rpg',
-                        totalUsedTime: 10000
+                        totalUsedTime: 10000,
+                        categoryId: 'GAME_ROLE_PLAYING'
                     }, {
                         userId: config.testUser.userId,
                         packageName: 'com.game.edu2',
-                        totalUsedTime: 5000
+                        totalUsedTime: 5000,
+                        categoryId: 'GAME_EDUCATIONAL'
                     },
                     ////////// end of me ///////////////
                     {
                         userId: 'peopleId1',
                         packageName: 'com.game.edu2',
-                        totalUsedTime: 7000
+                        totalUsedTime: 7000,
+                        categoryId: 'GAME_EDUCATIONAL'
                     }, {
                         userId: 'peopleId1',
                         packageName: 'com.game.rpg',
-                        totalUsedTime: 4000
+                        totalUsedTime: 4000,
+                        categoryId: 'GAME_ROLE_PLAYING'
                     }, {
                         userId: 'peopleId2',
                         packageName: 'com.game.rpg',
-                        totalUsedTime: 90000
+                        totalUsedTime: 90000,
+                        categoryId: 'GAME_ROLE_PLAYING'
                     }, {
                         userId: 'peopleId2',
                         packageName: 'com.game.puzzle',
-                        totalUsedTime: 10000
+                        totalUsedTime: 10000,
+                        categoryId: 'GAME_PUZZLE'
                     }, {
                         userId: 'peopleId3',
                         packageName: 'com.game.edu',
-                        totalUsedTime: 100000
+                        totalUsedTime: 100000,
+                        categoryId: 'GAME_EDUCATIONAL'
                     }, {
                         userId: 'peopleId3',
                         packageName: 'com.game.puzzle',
-                        totalUsedTime: 50000
+                        totalUsedTime: 50000,
+                        categoryId: 'GAME_PUZZLE'
                     }], function () {
                     Apps.create([{
                         packageName: 'com.nhn.android.nmap',
