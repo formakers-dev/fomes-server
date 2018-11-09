@@ -140,8 +140,9 @@ const getReport = (req, res) => {
 const getSimilarUsersAppUsagesByCategory = (userInfo, similarType, categoryId) => {
     return UserService.getSimilarUsers(userInfo, similarType)
         .then(users => AppUsagesService.aggregateAppUsageByCategory(
-            users.map(user => user.userId), categoryId)
-        );
+            users.map(user => user.userId),
+            categoryId
+        ));
 };
 /** end of private methods **/
 

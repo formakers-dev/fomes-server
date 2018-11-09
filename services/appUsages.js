@@ -1,6 +1,7 @@
 const moment = require('moment');
 const UsagesUtil = require('../utils/usages');
 const { AppUsages } = require('../models/appUsages');
+const AppService = require('../services/apps');
 
 const getTotalUsedTimeRankList = (userId, categoryId) => {
     return new Promise((resolve, reject) => {
@@ -120,7 +121,7 @@ const aggregateAppUsageByCategory = (userIds, categoryId) => {
                 name: "developer",
             }, { isVerbose: true }));
 
-            resolve(result)
+            resolve(result);
         }).catch(err => {
             console.error("aggregateAppUsageByCategory", "userIds.length=", userIds.length, "cetegoryId=", categoryId, "err=", err);
             reject(err);
@@ -336,17 +337,7 @@ const refreshAppUsages = (user, appInfos, appUsages) => {
         }
     });
 
-    const appUsagesWithAppInfo = Object.values(appUsages.concat(appInfos)
-        .reduce((map, appUsage) => {
-            const key = appUsage.packageName;
-            if (!map[key]) {
-                map[key] = appUsage;
-            } else {
-                map[key] = Object.assign(map[key], appUsage);
-            }
-
-            return map;
-        }, {}));
+    const appUsagesWithAppInfo = UsagesUtil.concatAppInfoFields(appUsages, appInfos);
 
     appUsagesWithAppInfo.forEach(appUsage => {
         bulkOps.push({
@@ -376,6 +367,13 @@ const getUserIdsUsingApp = (packageName) => {
   ]).then(userIds => Promise.resolve(userIds.map(userId => userId._id)));
 };
 
+const combineAppInfos = (appUsages) => {
+    const packageNames = appUsages.map(i => i.packageName);
+
+    return AppService.getAppsWithRepresentativeCategory(packageNames)
+        .then(appInfos => Promise.resolve(UsagesUtil.concatAppInfoFields(appUsages, appInfos)))
+        .catch(err => Promise.reject(err));
+};
 
 module.exports = {
     getTotalUsedTimeRankList,
@@ -388,4 +386,5 @@ module.exports = {
     getDeveloperAppUsages,
     getUsersAppUsages,
     getUserIdsUsingApp,
+    combineAppInfos,
 };

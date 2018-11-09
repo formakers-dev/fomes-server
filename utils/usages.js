@@ -59,4 +59,18 @@ const summary = (usages) => {
     }, {}));
 };
 
-module.exports = { convertToUsages, summary };
+const concatAppInfoFields = (appUsages, appInfos) => {
+    return Object.values(appUsages.concat(appInfos)
+        .reduce((map, appUsage) => {
+            const key = appUsage.packageName;
+            if (!map[key]) {
+                map[key] = appUsage;
+            } else {
+                map[key] = Object.assign(map[key], appUsage);
+            }
+
+            return map;
+        }, {}));
+};
+
+module.exports = { convertToUsages, summary, concatAppInfoFields };
