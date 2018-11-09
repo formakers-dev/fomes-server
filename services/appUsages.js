@@ -1,78 +1,54 @@
 const moment = require('moment');
 const UsagesUtil = require('../utils/usages');
 const { AppUsages } = require('../models/appUsages');
+const AppService = require('../services/apps');
 
 const getTotalUsedTimeRankList = (userId, categoryId) => {
     return new Promise((resolve, reject) => {
-        AppUsages.aggregate([{
-            $lookup: {
-                from: 'apps',
-                let: {upper_packagName: '$packageName'},
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: {$eq: ['$packageName', '$$upper_packagName']},
-                            categoryId1: { $regex: new RegExp(categoryId) }
-                        }
-                    },
-                    {
-                        $project: {
-                            categoryId: '$categoryId1',
-                            categoryName: '$categoryName1',
-                            appName: '$appName',
-                            developer: '$developer',
-                            iconUrl: '$iconUrl'
-                        }
-                    }
-                ],
-                as: 'appInfo'
-            }
-        },
-            {$match: {appInfo: {$gt: {}}}},
-            {$match: {appInfo: {$gt: {}}}},
-            {$unwind: "$appInfo"},
+        AppUsages.aggregate([
+            {$match: {categoryId: { $regex: new RegExp(categoryId) }}},
             {
                 $group: {
                     _id: '$userId', totalUsedTime: {$sum: '$totalUsedTime'},
                 }
             }
         ])
-            .then(ranks => {
-                const sortedRanks = ranks.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
-                const mine = sortedRanks.filter(rank => rank._id === userId)[0];
-                const best = sortedRanks[0];
-                const worst = sortedRanks[sortedRanks.length - 1];
+        .then(ranks => {
+            const sortedRanks = ranks.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
+            const mine = sortedRanks.filter(rank => rank._id === userId)[0];
+            const best = sortedRanks[0];
+            const worst = sortedRanks[sortedRanks.length - 1];
 
-                const result = [];
-                result.push(mine, best, worst);
+            const result = [];
+            result.push(mine, best, worst);
 
-                resolve(result.filter(rank => rank).map(rank => {
-                    return {
-                        userId: rank._id,
-                        rank: sortedRanks.indexOf(rank) + 1,
-                        content: rank.totalUsedTime
-                    }
-                }));
-            }).catch(err => {
+            resolve(result.filter(rank => rank).map(rank => {
+                return {
+                    userId: rank._id,
+                    rank: sortedRanks.indexOf(rank) + 1,
+                    content: rank.totalUsedTime
+                }
+            }));
+        }).catch(err => {
             console.error("getTotalUsedTimeRankList", "userId=", userId, "err=", err);
             reject(err);
         })
     });
 };
 
+const createQueryConditionForArray = (values) => {
+    return (values instanceof Array) ? {"$in": values} : values;
+};
+
 const aggregateAppUsageByCategory = (userIds, categoryId) => {
     return new Promise((resolve, reject) => {
-        const filterQuery = {};
+        const filterQuery = {
+            userId : createQueryConditionForArray(userIds),
+            categoryId : new RegExp(categoryId)
+        };
 
-        if (userIds instanceof Array) {
-            filterQuery.userId = {
-                "$in": userIds
-            }
-        } else {
-            filterQuery.userId = userIds;
-        }
-
-        AppUsages.aggregate([ { $match: filterQuery },
+        AppUsages.aggregate([
+            { $match: filterQuery },
             {
                 $lookup: {
                     from: 'apps',
@@ -80,8 +56,7 @@ const aggregateAppUsageByCategory = (userIds, categoryId) => {
                     pipeline: [
                         {
                             $match: {
-                                $expr: { $eq: ['$packageName', '$$upper_packageName'] },
-                                categoryId1: new RegExp(categoryId)
+                                $expr: { $eq: ['$packageName', '$$upper_packageName'] }
                             }
                         },
                         {
@@ -146,7 +121,7 @@ const aggregateAppUsageByCategory = (userIds, categoryId) => {
                 name: "developer",
             }, { isVerbose: true }));
 
-            resolve(result)
+            resolve(result);
         }).catch(err => {
             console.error("aggregateAppUsageByCategory", "userIds.length=", userIds.length, "cetegoryId=", categoryId, "err=", err);
             reject(err);
@@ -362,17 +337,7 @@ const refreshAppUsages = (user, appInfos, appUsages) => {
         }
     });
 
-    const appUsagesWithAppInfo = Object.values(appUsages.concat(appInfos)
-        .reduce((map, appUsage) => {
-            const key = appUsage.packageName;
-            if (!map[key]) {
-                map[key] = appUsage;
-            } else {
-                map[key] = Object.assign(map[key], appUsage);
-            }
-
-            return map;
-        }, {}));
+    const appUsagesWithAppInfo = UsagesUtil.concatAppInfoFields(appUsages, appInfos);
 
     appUsagesWithAppInfo.forEach(appUsage => {
         bulkOps.push({
@@ -383,8 +348,11 @@ const refreshAppUsages = (user, appInfos, appUsages) => {
                     'job': user.job,
                     'gender': user.gender,
                     'packageName': appUsage.packageName,
+                    'appName': appUsage.appName,
                     'developer': appUsage.developer,
                     'categoryId': appUsage.categoryId1,
+                    'categoryName': appUsage.categoryName1,
+                    'iconUrl': appUsage.iconUrl,
                     "totalUsedTime": appUsage.totalUsedTime,
                     "updateTime": new Date()
                 }
@@ -402,6 +370,13 @@ const getUserIdsUsingApp = (packageName) => {
   ]).then(userIds => Promise.resolve(userIds.map(userId => userId._id)));
 };
 
+const combineAppInfos = (appUsages) => {
+    const packageNames = appUsages.map(i => i.packageName);
+
+    return AppService.getAppsWithRepresentativeCategory(packageNames)
+        .then(appInfos => Promise.resolve(UsagesUtil.concatAppInfoFields(appUsages, appInfos)))
+        .catch(err => Promise.reject(err));
+};
 
 module.exports = {
     getTotalUsedTimeRankList,
@@ -414,4 +389,5 @@ module.exports = {
     getDeveloperAppUsages,
     getUsersAppUsages,
     getUserIdsUsingApp,
+    combineAppInfos,
 };

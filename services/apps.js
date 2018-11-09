@@ -1,22 +1,5 @@
 const {Apps} = require('../models/appUsages');
 
-const combineAppInfos = (appUsages) => {
-    return getAppsWithRepresentativeCategory(appUsages.map(i => i.packageName))
-        .then(convertedApps => Promise.resolve(
-            Object.values(appUsages.concat(convertedApps)
-                .reduce((map, appUsage) => {
-                    const key = appUsage.packageName;
-                    if (!map[key]) {
-                        map[key] = appUsage;
-                    } else {
-                        map[key] = Object.assign(map[key], appUsage);
-                    }
-
-                    return map;
-                }, {})))
-        ).catch(err => Promise.reject(err));
-};
-
 const getAppsWithRepresentativeCategory = (packageNames) => {
     return Apps.find({packageName: {$in: packageNames}})
         .lean()
@@ -63,7 +46,6 @@ const replaceWishedByToWishedByMe = (app, userId) => {
 };
 
 module.exports = {
-    combineAppInfos,
     getGameAppInfoForAnalysis,
     upsertWishedBy,
     removeUserFromWishedBy,

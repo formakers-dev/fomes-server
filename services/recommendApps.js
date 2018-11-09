@@ -87,7 +87,7 @@ const convertToRecommendApps = (recommendInfo, appUsages, excludePackageNames, u
         let rank = 1;
 
         Promise.resolve(appUsages.filter(i => i.developer && i.categoryId && !excludePackageNames.includes(i.packageName)))
-            .then(appUsages => AppService.combineAppInfos(appUsages))
+            .then(appUsages => AppUsageService.combineAppInfos(appUsages))
             .then(appUsagesWithAppInfo => resolve(
                 appUsagesWithAppInfo.map(item => {
                     return {
