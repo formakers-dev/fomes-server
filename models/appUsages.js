@@ -19,8 +19,11 @@ const appUsagesSchema = new mongoose.Schema({
     job: Number,
     gender: String,
     packageName: String,
+    appName: String,
     developer: String,
     categoryId: String,
+    categoryName: String,
+    iconUrl: String,
     totalUsedTime: Number,
     updateTime: Date
 });

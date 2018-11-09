@@ -348,8 +348,11 @@ const refreshAppUsages = (user, appInfos, appUsages) => {
                     'job': user.job,
                     'gender': user.gender,
                     'packageName': appUsage.packageName,
+                    'appName': appUsage.appName,
                     'developer': appUsage.developer,
                     'categoryId': appUsage.categoryId1,
+                    'categoryName': appUsage.categoryName1,
+                    'iconUrl': appUsage.iconUrl,
                     "totalUsedTime": appUsage.totalUsedTime,
                     "updateTime": new Date()
                 }
