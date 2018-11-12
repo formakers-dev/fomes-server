@@ -147,7 +147,10 @@ describe('Stats', () => {
                 birthday: 1952,
                 job: 2,
                 packageName: 'com.pre.installed',
-                categoryId: '도구',
+                categoryId: 'TOOL',
+                categoryName: '도구',
+                appName: '설치된앱',
+                iconUrl: 'iconUrlForInstalled',
                 developer: '도구개발사',
                 totalUsedTime: 9999
             }, {
@@ -156,7 +159,10 @@ describe('Stats', () => {
                 birthday: 1992,
                 job: 1,
                 packageName: 'com.kakao.talk',
-                categoryId: '커뮤니케이션',
+                categoryId: 'GAME_COMMUNICATION',
+                categoryName: '게임커뮤니케이션',
+                appName: '카카오앱',
+                iconUrl: 'iconUrlForKakao',
                 developer: '카카오톡개발사',
                 totalUsedTime: 40000
             }, {
@@ -165,26 +171,41 @@ describe('Stats', () => {
                 birthday: 1992,
                 job: 1,
                 packageName: 'com.dummy.app',
-                categoryId: '도구',
+                categoryId: 'TOOLS',
+                categoryName: '도구',
+                appName: '더미앱',
+                iconUrl: 'iconUrlForDummy',
                 developer: '도구개발사',
                 totalUsedTime: 10000
             }])
                 .then(() => Apps.create([{
                     packageName: 'com.android.com',
+                    appName: '안드로이드앱',
                     categoryId1: 'GAME_TOOLS',
+                    categoryName1: '게임도구',
                     developer: '구글개발사',
+                    iconUrl: 'iconUrlForAndroid',
                 }, {
                     packageName: 'com.kakao.talk',
+                    appName: '카카오톡앱',
                     categoryId1: 'GAME_COMMUNICATION',
+                    categoryName1: '게임커뮤니케이션',
                     developer: '카카오톡개발사',
+                    iconUrl: 'iconUrlForKakao',
                 }, {
                     packageName: 'com.naver.talk',
+                    appName: '라인앱',
                     categoryId1: 'GAME_COMMUNICATION',
+                    categoryName1: '게임커뮤니케이션',
                     developer: '라인개발사',
+                    iconUrl: 'iconUrlForNaver',
                 }, {
                     packageName: 'com.notgame.com',
+                    appName: '게임아님앱',
                     categoryId1: 'COMMUNICATION',
+                    categoryName1: '커뮤니케이션',
                     developer: '게임사아님사',
+                    iconUrl: 'iconUrlForNotGame',
                 }]))
                 .then(() => Users.create(config.testUser))
                 .then(() => {
@@ -216,34 +237,45 @@ describe('Stats', () => {
                 .then(docs => {
                     docs.length.should.be.eql(3);
 
+                    docs = docs.sort((a,b) => (a.packageName > b.packageName) ? 1 : -1);
+
                     docs[0].userId.should.be.eql(config.testUser.userId);
                     docs[0].gender.should.be.eql('male');
                     docs[0].birthday.should.be.eql(1992);
                     docs[0].job.should.be.eql(1);
-                    docs[0].packageName.should.be.eql('com.kakao.talk');
-                    docs[0].categoryId.should.be.eql('GAME_COMMUNICATION');
-                    docs[0].developer.should.be.eql('카카오톡개발사');
-                    docs[0].totalUsedTime.should.be.eql(10000);
+                    docs[0].packageName.should.be.eql('com.android.com');
+                    docs[0].appName.should.be.eql('안드로이드앱');
+                    docs[0].categoryId.should.be.eql('GAME_TOOLS');
+                    docs[0].categoryName.should.be.eql('게임도구');
+                    docs[0].iconUrl.should.be.eql('iconUrlForAndroid');
+                    docs[0].developer.should.be.eql('구글개발사');
+                    docs[0].totalUsedTime.should.be.eql(30000);
                     docs[0].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
 
                     docs[1].userId.should.be.eql(config.testUser.userId);
                     docs[1].gender.should.be.eql('male');
                     docs[1].birthday.should.be.eql(1992);
                     docs[1].job.should.be.eql(1);
-                    docs[1].packageName.should.be.eql('com.naver.talk');
+                    docs[1].packageName.should.be.eql('com.kakao.talk');
+                    docs[1].appName.should.be.eql('카카오톡앱');
                     docs[1].categoryId.should.be.eql('GAME_COMMUNICATION');
-                    docs[1].developer.should.be.eql('라인개발사');
-                    docs[1].totalUsedTime.should.be.eql(20000);
+                    docs[1].categoryName.should.be.eql('게임커뮤니케이션');
+                    docs[1].iconUrl.should.be.eql('iconUrlForKakao');
+                    docs[1].developer.should.be.eql('카카오톡개발사');
+                    docs[1].totalUsedTime.should.be.eql(10000);
                     docs[1].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
 
                     docs[2].userId.should.be.eql(config.testUser.userId);
                     docs[2].gender.should.be.eql('male');
                     docs[2].birthday.should.be.eql(1992);
                     docs[2].job.should.be.eql(1);
-                    docs[2].packageName.should.be.eql('com.android.com');
-                    docs[2].categoryId.should.be.eql('GAME_TOOLS');
-                    docs[2].developer.should.be.eql('구글개발사');
-                    docs[2].totalUsedTime.should.be.eql(30000);
+                    docs[2].packageName.should.be.eql('com.naver.talk');
+                    docs[2].appName.should.be.eql('라인앱');
+                    docs[2].categoryId.should.be.eql('GAME_COMMUNICATION');
+                    docs[2].categoryName.should.be.eql('게임커뮤니케이션');
+                    docs[2].iconUrl.should.be.eql('iconUrlForNaver');
+                    docs[2].developer.should.be.eql('라인개발사');
+                    docs[2].totalUsedTime.should.be.eql(20000);
                     docs[2].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
                     done();
                 })
