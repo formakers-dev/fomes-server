@@ -30,6 +30,9 @@ describe('Recommend', () => {
                         job: 1,
                         developer: 'Edu Game Corp.',
                         categoryId: 'GAME_EDUCATIONAL',
+                        categoryName: '교육',
+                        iconUrl: 'iconUrl3',
+                        appName: '교육게임명',
                     }, {
                         userId: config.testUser.userId,
                         packageName: 'com.game.rpg',
@@ -39,6 +42,9 @@ describe('Recommend', () => {
                         job: 1,
                         developer: 'GameDuckHu Corp.',
                         categoryId: 'GAME_ROLE_PLAYING',
+                        categoryName: '롤플레잉',
+                        iconUrl: 'iconUrl4',
+                        appName: '롤플레잉게임명',
                     }, {
                         userId: config.testUser.userId,
                         packageName: 'com.game.edu2',
@@ -48,6 +54,9 @@ describe('Recommend', () => {
                         job: 1,
                         developer: 'GameDuckHu Corp.',
                         categoryId: 'GAME_EDUCATIONAL',
+                        categoryName: '교육',
+                        iconUrl: 'iconUrl32',
+                        appName: '교육게임명2',
                     },
                     ////////// end of me ///////////////
                     {
@@ -59,6 +68,9 @@ describe('Recommend', () => {
                         gender: 'male',
                         developer: 'GameDuckHu Corp.',
                         categoryId: 'GAME_EDUCATIONAL',
+                        categoryName: '교육',
+                        iconUrl: 'iconUrl32',
+                        appName: '교육게임명2',
                     }, {
                         userId: 'peopleId1',
                         packageName: 'com.game.rpg',
@@ -68,6 +80,9 @@ describe('Recommend', () => {
                         gender: 'male',
                         developer: 'GameDuckHu Corp.',
                         categoryId: 'GAME_ROLE_PLAYING',
+                        categoryName: '롤플레잉',
+                        iconUrl: 'iconUrl4',
+                        appName: '롤플레잉게임명',
                     }, {
                         userId: 'peopleId2',
                         packageName: 'com.game.rpg',
@@ -77,6 +92,9 @@ describe('Recommend', () => {
                         gender: 'female',
                         developer: 'GameDuckHu Corp.',
                         categoryId: 'GAME_ROLE_PLAYING',
+                        categoryName: '롤플레잉',
+                        iconUrl: 'iconUrl4',
+                        appName: '롤플레잉게임명',
                     }, {
                         userId: 'peopleId2',
                         packageName: 'com.game.puzzle',
@@ -86,6 +104,9 @@ describe('Recommend', () => {
                         gender: 'female',
                         developer: 'Puzzle Game Corp.',
                         categoryId: 'GAME_PUZZLE',
+                        categoryName: '퍼즐',
+                        iconUrl: 'iconUrl6',
+                        appName: '퍼즐게임명',
                     }, {
                         userId: 'peopleId3',
                         packageName: 'com.game.edu',
@@ -95,6 +116,9 @@ describe('Recommend', () => {
                         gender: 'male',
                         developer: 'Edu Game Corp.',
                         categoryId: 'GAME_EDUCATIONAL',
+                        categoryName: '교육',
+                        iconUrl: 'iconUrl3',
+                        appName: '교육게임명',
                     }, {
                         userId: 'peopleId4',
                         packageName: 'com.game.edurpg',
@@ -104,6 +128,9 @@ describe('Recommend', () => {
                         gender: 'female',
                         developer: 'Edu Game Corp.',
                         categoryId: 'GAME_ROLE_PLAYING',
+                        categoryName: '롤플레잉',
+                        iconUrl: 'iconUrl3',
+                        appName: '교육RPG',
                     }, {
                         userId: 'peopleId3',
                         packageName: 'com.game.puzzle',
@@ -113,6 +140,9 @@ describe('Recommend', () => {
                         gender: 'male',
                         developer: 'Puzzle Game Corp.',
                         categoryId: 'GAME_PUZZLE',
+                        categoryName: '퍼즐',
+                        iconUrl: 'iconUrl6',
+                        appName: '퍼즐게임명',
                     }, {
                         userId: 'peopleId5',
                         packageName: 'com.game.edurpg',
@@ -122,6 +152,9 @@ describe('Recommend', () => {
                         gender: 'male',
                         developer: 'Edu Game Corp.',
                         categoryId: 'GAME_ROLE_PLAYING',
+                        categoryName: '롤플레잉',
+                        iconUrl: 'iconUrl3',
+                        appName: '교육RPG',
                     }, {
                         userId: 'peopleId5',
                         packageName: 'com.game.edu3',
@@ -131,6 +164,9 @@ describe('Recommend', () => {
                         gender: 'male',
                         developer: 'GameDuckHu Corp.',
                         categoryId: 'GAME_EDUCATIONAL',
+                        categoryName: '교육',
+                        iconUrl: 'iconUrl33',
+                        appName: '교육게임명3',
                     }
                 ]))
                 .then(() => Apps.create([
