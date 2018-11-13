@@ -50,40 +50,15 @@ const aggregateAppUsageByCategory = (userIds, categoryId) => {
         AppUsages.aggregate([
             { $match: filterQuery },
             {
-                $lookup: {
-                    from: 'apps',
-                    let: { upper_packageName: '$packageName' },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: { $eq: ['$packageName', '$$upper_packageName'] }
-                            }
-                        },
-                        {
-                            $project: {
-                                categoryId: '$categoryId1',
-                                categoryName: '$categoryName1',
-                                appName: '$appName',
-                                developer: '$developer',
-                                iconUrl: '$iconUrl'
-                            }
-                        }
-                    ],
-                    as: 'appInfo'
-                }
-            },
-            { $match: {appInfo: {$gt: {}}} },
-            { $unwind: "$appInfo" },
-            {
                 $group: {
                     _id: '$packageName',
                     totalUsedTime: { $sum: '$totalUsedTime' },
                     packageName : { $first: '$packageName' },
-                    appName: { $first: '$appInfo.appName' },
-                    categoryId : { $first: '$appInfo.categoryId' },
-                    categoryName: { $first: '$appInfo.categoryName' },
-                    developer: { $first: '$appInfo.developer' },
-                    iconUrl: { $first: '$appInfo.iconUrl' }
+                    appName: { $first: '$appName' },
+                    categoryId : { $first: '$categoryId' },
+                    categoryName: { $first: '$categoryName' },
+                    developer: { $first: '$developer' },
+                    iconUrl: { $first: '$iconUrl' }
                 }
             }
         ]).then(appUsages => {
