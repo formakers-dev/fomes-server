@@ -12,13 +12,12 @@ const getRecommendApps = (req, res) => {
         .then(userUsage => {
             const excludePackageNames = userUsage.appUsages.map(userAppUsage => userAppUsage.appInfos[0].packageName);
 
-            return RecommendAppsService.getSimilarUserRecommendApps(req.userId, excludePackageNames, req.query.page, req.query.limit);
-            // return Promise.all([
-            //         RecommendAppsService.getSimilarUserRecommendApps(req.userId, excludePackageNames, req.query.page, req.query.limit),
-            //         RecommendAppsService.getFavoriteCategoryRecommendApps(userUsage.categoryUsages, excludePackageNames, req.userId),
-            //         RecommendAppsService.getFavoriteDeveloperRecommendApps(userUsage.developerUsages, excludePackageNames, req.userId),
-            //         RecommendAppsService.getFavoriteAppRecommendApps(userUsage.appUsages, excludePackageNames, req.userId),
-            //     ]);
+            return Promise.all([
+                    RecommendAppsService.getSimilarUserRecommendApps(req.userId, excludePackageNames, req.query.page, req.query.limit),
+                    RecommendAppsService.getFavoriteCategoryRecommendApps(userUsage.categoryUsages, excludePackageNames, req.userId),
+                    RecommendAppsService.getFavoriteDeveloperRecommendApps(userUsage.developerUsages, excludePackageNames, req.userId),
+                    RecommendAppsService.getFavoriteAppRecommendApps(userUsage.appUsages, excludePackageNames, req.userId),
+                ]);
         })
         .then(recommendApps => {
             let result = [];
