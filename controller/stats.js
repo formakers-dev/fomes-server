@@ -57,47 +57,6 @@ const postAppUsages = (req, res) => {
     }
 };
 
-// '/usages/app/category/:categoryId'
-const getAppUsageByCategory = (req, res) => {
-    console.log("getAppUsageByCategory", "userId=", req.userId, "categoryId=", req.params.categoryId);
-
-    const options = {
-        isVerbose: req.query.verbose,
-        isFold: req.query.fold
-    };
-
-    AppUsagesService.findAppUsageByCategory(req.userId, req.params.categoryId, options)
-        .then(appUsage => res.json(appUsage))
-        .catch(err => {
-            console.error(err);
-            res.status(500).json({
-                success: false,
-                message: err.message
-            });
-        });
-};
-
-// '/usages/category'
-// '/usages/category/:categoryId'
-const getCategoryUsage = (req, res) => {
-    console.log("getCategoryUsage", "userId=", req.userId, "categoryId=", req.params.categoryId);
-
-    const options = {
-        isVerbose: req.query.verbose,
-        isFold: req.query.fold
-    };
-
-    AppUsagesService.findCategoryUsages(req.userId, req.params.categoryId, options)
-        .then(categoryUsages => res.json(categoryUsages))
-        .catch(err => {
-            console.error(err);
-            res.status(500).json({
-                success: false,
-                message: err.message
-            });
-        });
-};
-
 const getReport = (req, res) => {
     console.log("getReport", "userId=", req.userId, "categoryId=", req.params.categoryId);
 
@@ -146,4 +105,4 @@ const getSimilarUsersAppUsagesByCategory = (userInfo, similarType, categoryId) =
 };
 /** end of private methods **/
 
-module.exports = {postShortTermStats, postAppUsages, getAppUsageByCategory, getCategoryUsage, getReport};
+module.exports = {postShortTermStats, postAppUsages, getReport};
