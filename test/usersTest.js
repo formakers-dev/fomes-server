@@ -371,7 +371,6 @@ describe('Users', () => {
                     users.length.should.be.eql(3);
 
                     users.sort((a, b) => a.birthday > b.birthday ? 1 : -1);
-                    console.log(users);
 
                     users[0].userId.should.be.eql("userId1");
                     users[0].gender.should.be.eql("female");

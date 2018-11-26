@@ -1,7 +1,7 @@
 const { parentCategories } = require('../models/categories');
 
 const convertToUsages = (appUsages, propertySet, options) => {
-    console.log("convertToUsages", "propertySet=", propertySet, "options=", options);
+    // console.log("convertToUsages", "propertySet=", propertySet, "options=", options);
 
     return appUsages.map(usage => {
         const result = {
@@ -34,7 +34,7 @@ const convertToUsages = (appUsages, propertySet, options) => {
             result.appInfos = appInfos;
         }
 
-        console.log("convertToUsages", result);
+        // console.log("convertToUsages", result);
 
         return result;
     })

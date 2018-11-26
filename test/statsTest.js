@@ -836,12 +836,10 @@ describe('Stats', () => {
                         .expect(200)
                         .then((res) => {
                             res.body.usages.sort((a, b) => a.groupType > b.groupType ? 1 : -1);
-                            console.log(res.body);
                             const userCategoryUsages = res.body.usages[0].categoryUsages;
 
                             userCategoryUsages.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
 
-                            console.log(userCategoryUsages);
                             userCategoryUsages.length.should.be.eql(2);
 
                             userCategoryUsages[0].id.should.be.eql('GAME_EDUCATIONAL');

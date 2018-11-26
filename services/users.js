@@ -56,7 +56,7 @@ const getWishList = (userId) => {
         getUser(userId)
             .then(user => resolve(user.wishList))
             .catch(err => {
-                console.log('getWishList', err);
+                console.error('getWishList', err);
                 reject(err);
             });
     });

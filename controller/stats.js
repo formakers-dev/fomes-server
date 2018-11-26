@@ -29,7 +29,7 @@ const postShortTermStats = (req, res) => {
                 {upsert: true})
         ).then(() => res.sendStatus(200))
         .catch(err => {
-                console.log(JSON.stringify(err, null, 2));
+                console.error(JSON.stringify(err, null, 2));
                 res.sendStatus(500);
             });
     }
