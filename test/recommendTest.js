@@ -6,8 +6,15 @@ const should = chai.should();
 const Users = require('../models/users').Users;
 const AppUsages = require('../models/appUsages').AppUsages;
 const Apps = require('../models/appUsages').Apps;
+const helper = require('./commonTestHelper');
 
 describe('Recommend', () => {
+    before(done => {
+        helper.commonBefore()
+            .then(() => done())
+            .catch(err => done(err));
+    });
+
     describe('GET /recommend/apps', () => {
         beforeEach(done => {
             Users.create(config.testUser)
@@ -374,5 +381,11 @@ describe('Recommend', () => {
                 .then(() => done())
                 .catch(err => done(err));
         });
+    });
+
+    after(done => {
+        helper.commonAfter()
+            .then(() => done())
+            .catch(err => done(err));
     });
 });

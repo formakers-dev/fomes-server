@@ -3,8 +3,15 @@ const config = require('../config');
 const request = require('supertest').agent(server);
 const should = require('chai').should();
 const { Apps } = require('../models/appUsages');
+const helper = require('./commonTestHelper');
 
 describe('Apps', () => {
+    before(done => {
+        helper.commonBefore()
+            .then(() => done())
+            .catch(err => done(err));
+    });
+
     describe('POST /apps/category/:categoryId', () => {
         let testUser = config.testUser;
 
@@ -80,4 +87,10 @@ describe('Apps', () => {
             Apps.remove({}, done);
         });
     });
+
+    after(done => {
+        helper.commonAfter()
+            .then(() => done())
+            .catch(err => done(err));
+    })
 });

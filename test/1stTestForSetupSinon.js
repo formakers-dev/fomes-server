@@ -1,9 +1,8 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const should = chai.should();
-const setupSinon = require('./setupSinon');
 
-setupSinon();
+require('./commonTestHelper').setupSinon();
 chai.use(chaiHttp);
 
 const server = require('../server');

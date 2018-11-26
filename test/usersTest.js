@@ -7,45 +7,23 @@ const Apps = require('../models/appUsages').Apps;
 const UserConstants = require('../models/users').Constants;
 const UserService = require('../services/users');
 const InvitationCodes = require('../models/invitationCodes');
-require('./setupSinon')();
+const helper = require('./commonTestHelper');
+helper.setupSinon();
 
 const server = require('../server');
 const request = require('supertest').agent(server);
 
 describe('Users', () => {
+    before(done => {
+        helper.commonBefore()
+            .then(() => done())
+            .catch(err => done(err));
+    });
+
     const sandbox = sinon.sandbox.create();
 
     describe('POST /user/', () => {
-        let testUser = config.testUser;
-
-        it('User정보를 저장한다', done => {
-            request.post('/user')
-                .set('x-access-token', config.appbeeToken.valid)
-                .send(testUser)
-                .expect(200)
-                .then(() => {
-                    Users.findOne({userId: testUser.userId}, (err, user) => {
-                        user.userId.should.be.eql('109974316241227718963');
-                        user.gender.should.be.eql("male");
-                        user.email.should.be.eql("appbee@appbee.com");
-                        user.registrationToken.should.be.eql('test_user_registration_token');
-                        user.lifeApps.length.should.be.eql(2);
-                        user.lifeApps[0].should.be.eql('fomes');
-                        user.lifeApps[1].should.be.eql('appbee');
-                        user.nickName.should.be.eql('test_user_nickname');
-                        user.birthday.should.be.eql(1992);
-                        user.job.should.be.eql(1);
-                        done();
-                    });
-                })
-                .catch(err => done(err));
-        });
-
         describe('기존 사용자가 존재할 경우,', () => {
-            before(done => {
-                Users.create(config.testUser, done);
-            });
-
             it('User의 특정 정보를 업데이트 한다', done => {
                 const newToken = {
                     registrationToken: "NEW_CODE",
@@ -57,9 +35,7 @@ describe('Users', () => {
                     .set('x-access-token', config.appbeeToken.valid)
                     .send(newToken)
                     .expect(200)
-                    .then(() => {
-                        return Users.findOne({userId: config.testUser.userId});
-                    })
+                    .then(() => Users.findOne({userId: config.testUser.userId}))
                     .then((result) => {
                         result.userId.should.be.eql('109974316241227718963');
                         result.gender.should.be.eql("male");
@@ -73,16 +49,11 @@ describe('Users', () => {
                         done();
                     }).catch(err => done(err));
             });
-
-            after(done => {
-                Users.remove({}, done);
-            })
         });
 
         describe('본인을 제외한 다른 사용자와 닉네임이 중복될 경우,', () => {
             before(done => {
                 Users.create([
-                    config.testUser,
                     {
                         userId: 'testUserId1',
                         nickName: 'duplicatedNickName'  // testUser 와 같은 닉네임
@@ -101,37 +72,50 @@ describe('Users', () => {
             });
 
             after(done => {
-                Users.remove({}, done);
-            })
-        });
-
-        afterEach((done) => {
-            Users.remove({userId: config.testUser.userId}, () => {
-                done();
+                Users.remove({userId : {$ne : config.testUser.userId}}, done);
             });
         });
     });
 
     describe('GET /user/verifyToken', () => {
-        it('토큰이 유효한 경우 200을 리턴한다', done => {
-            request.get('/user/verifyToken')
-                .set('x-access-token', config.appbeeToken.valid)
-                .send()
-                .expect(200, done);
+        describe('요청한 유저가 존재하는 경우' , () => {
+            it('토큰이 유효한 경우 200을 리턴한다', done => {
+                request.get('/user/verifyToken')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .send()
+                    .expect(200, done);
+            });
+
+            it('토큰이 만료된 경우 401을 리턴한다', done => {
+                request.get('/user/verifyToken')
+                    .set('x-access-token', config.appbeeToken.expired)
+                    .send()
+                    .expect(401, done);
+            });
+
+            it('토큰이 잘못된 경우 403을 리턴한다', done => {
+                request.get('/user/verifyToken')
+                    .set('x-access-token', config.appbeeToken.invalid)
+                    .send()
+                    .expect(403, done);
+            });
         });
 
-        it('토큰이 만료된 경우 401을 리턴한다', done => {
-            request.get('/user/verifyToken')
-                .set('x-access-token', config.appbeeToken.expired)
-                .send()
-                .expect(401, done);
-        });
+        describe('요청한 유저가 존재하지 않는 경우' , () => {
+            before(done => {
+                Users.remove({}, done);
+            });
 
-        it('토큰이 잘못된 경우 403을 리턴한다', done => {
-            request.get('/user/verifyToken')
-                .set('x-access-token', config.appbeeToken.invalid)
-                .send()
-                .expect(403, done);
+            it('토큰의 유효성과 관련없이, 403을 리턴한다', done => {
+                request.get('/user/verifyToken')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .send()
+                    .expect(403, done);
+            });
+
+            after(done => {
+                Users.create(config.testUser, done);
+            });
         });
     });
 
@@ -636,4 +620,10 @@ describe('Users', () => {
                 .catch(err => done(err));
         });
     });
+
+    after(done => {
+        helper.commonAfter()
+            .then(() => done())
+            .catch(err => done(err));
+    })
 });

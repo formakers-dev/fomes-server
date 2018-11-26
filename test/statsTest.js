@@ -8,9 +8,16 @@ const ShortTermStats = require('../models/shortTermStats');
 const Users = require('../models/users').Users;
 const UserConstants = require('../models/users').Constants;
 const {AppUsages, Apps} = require('../models/appUsages');
+const helper = require('./commonTestHelper');
 
 describe('Stats', () => {
     const sandbox = sinon.sandbox.create();
+
+    before(done => {
+        helper.commonBefore()
+            .then(() => done())
+            .catch(err => done(err));
+    });
 
     describe('POST /stats/short', () => {
         const doc = [{
@@ -1210,4 +1217,10 @@ describe('Stats', () => {
 
 
     });
+
+    after(done => {
+        helper.commonAfter()
+            .then(() => done())
+            .catch(err => done(err));
+    })
 });

@@ -1,6 +1,7 @@
 const sinon = require('sinon');
 const Auth = require('../middleware/auth');
 const config = require('../config');
+const Users = require('../models/users').Users;
 
 const setupSinon = () => {
     try {
@@ -13,8 +14,16 @@ const setupSinon = () => {
             req.userId = config.testUser.userId;
             return next();
         });
-    } catch(e) {
+    } catch (e) {
     }
 };
 
-module.exports = setupSinon;
+const commonBefore = () => {
+    return Users.create(config.testUser);
+};
+
+const commonAfter = () => {
+    return Users.remove({});
+};
+
+module.exports = {setupSinon, commonBefore, commonAfter};
