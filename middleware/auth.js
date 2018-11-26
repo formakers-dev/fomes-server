@@ -4,10 +4,18 @@ const config = require('../config');
 const UserService = require('../services/users');
 
 const appBeeTokenVerifier = (req, res, next) => {
+    const createErrorResponse = (userId, errCode, errMessage) => {
+        return {
+            userId: userId,
+            errCode: errCode,
+            errMessage: errMessage
+        };
+    };
+
     const check = (token) => {
         if (!token) {
             return new Promise((resolve, reject) => {
-                reject(new Error("Has no token"));
+                reject(createErrorResponse(undefined, 403, "Has no token"));
             });
         } else {
             return new Promise(
@@ -19,16 +27,16 @@ const appBeeTokenVerifier = (req, res, next) => {
                                     if (user) {
                                         resolve(decoded);
                                     } else {
-                                        reject(403, 'The user does NOT exist');
+                                        reject(createErrorResponse(decoded.userId, 403, 'The user does NOT exist'));
                                     }
                                 }).catch(err => {
                                     console.error(err);
-                                    reject(500, 'Internal Server Error');
+                                    reject(createErrorResponse(decoded.userId, 500, 'Internal Server Error'));
                                 });
                         } else if (err instanceof jwt.TokenExpiredError) {
-                            reject(401, err.message);
+                            reject(createErrorResponse(undefined, 401, err.message));
                         } else {
-                            reject(403, err.message);
+                            reject(createErrorResponse(undefined, 403, err.message));
                         }
                     })
                 }
@@ -36,11 +44,11 @@ const appBeeTokenVerifier = (req, res, next) => {
         }
     };
 
-    const onError = (userId, errCode, errMessage) => {
-        console.error('===appBeeTokenVerifier:onError', 'userId=', userId, 'err=', errCode, ':', errMessage);
-        res.status(errCode).json({
+    const onError = (reason) => {
+        console.error('===appBeeTokenVerifier:onError', 'userId=', reason.userId, 'err=', reason.errCode, ':', reason.errMessage);
+        res.status(reason.errCode).json({
             success: false,
-            message: errMessage
+            message: reason.errMessage
         });
     };
     const onSuccess = (decoded) => {
@@ -50,7 +58,8 @@ const appBeeTokenVerifier = (req, res, next) => {
 
     check(req.headers['x-access-token'])
         .then(onSuccess)
-        .catch((errCode, errMessage) => onError(req.userId, errCode, errMessage));
+        .catch((reason) => onError(reason));
+
 };
 
 
