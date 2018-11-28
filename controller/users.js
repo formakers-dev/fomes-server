@@ -25,14 +25,8 @@ const upsertUser = (req, res, next) => {
     };
 
     if (req.body.nickName) {
-        Users.findOne({userId: {$ne: req.userId}, nickName: req.body.nickName})
-            .then(user => {
-                if (user) {
-                    res.sendStatus(409);
-                } else {
-                    updateUser(req, res, next);
-                }
-            })
+        UserService.isDuplicatedNickName(req.userId, req.body.nickName)
+            .then(isDuplicated => !isDuplicated ? updateUser(req, res, next) : res.sendStatus(409))
             .catch(err => sendError("upsertUser", req.userId, res, err, 500));
     } else {
         updateUser(req, res, next);
@@ -64,6 +58,23 @@ const verifyInvitationCode = (req, res) => {
             }
         })
         .catch(err => sendError("verifyInvitationCode", req.userId, res, err, 500));
+};
+
+const verifyUserInfo = (req, res) => {
+    if (Object.keys(req.query).length === 0) {
+        sendError("verifyUserInfo", req.userId, res, { message: 'Empty Params'}, 422);
+        return;
+    }
+
+    UserService.isDuplicatedNickName(req.userId, req.query.nickName)
+        .then(isDuplicated => {
+            if (!isDuplicated) {
+                res.sendStatus(200);
+            } else {
+                sendError("verifyUserInfo", req.userId, res, { message: 'Duplicated NickName'}, 409);
+            }
+        })
+        .catch(err => sendError("verifyUserInfo", req.userId, res, err, 500));
 };
 
 const sendError = (tag, userId, res, err, errCode) => {
@@ -123,6 +134,7 @@ module.exports = {
     upsertUser,
     generateToken,
     verifyInvitationCode,
+    verifyUserInfo,
     getUser,
     saveAppToWishList,
     removeAppFromWishList,

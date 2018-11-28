@@ -62,11 +62,28 @@ const getWishList = (userId) => {
     });
 };
 
+const isDuplicatedNickName = (userId, nickName) => {
+    console.log("userService nickName=", nickName);
+    return new Promise((resolve, reject) => {
+        Users.findOne({userId: {$ne: userId}, nickName: nickName})
+            .then(user => {
+                console.log("userService", user);
+                if (user) {
+                    resolve(true);
+                } else {
+                    resolve(false)
+                }
+            })
+            .catch(err => reject(err));
+    });
+}
+
 module.exports = {
     getUser,
     getSimilarUsers,
     getAge,
     upsertWishList,
     removeAppFromWishList,
-    getWishList
+    getWishList,
+    isDuplicatedNickName
 };

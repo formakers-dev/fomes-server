@@ -141,6 +141,50 @@ describe('Users', () => {
         });
     });
 
+    describe('GET /user/verify/info', () => {
+        before(done => {
+            Users.create([
+                {
+                    userId: 'testUserId1',
+                    nickName: 'duplicatedNickName'  // testUser 와 같은 닉네임
+                }
+            ], done);
+        });
+
+        it('전달된 닉네임이 존재하지 않으면 200를 리턴한다', done => {
+            request.get('/user/verify/info?nickName=new_nickname')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send()
+                .expect(200, done);
+        });
+
+        it('전달된 닉네임이 이미 존재하는 경우 409를 리턴한다', done => {
+            request.get('/user/verify/info?nickName=duplicatedNickName')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send()
+                .expect(409, done);
+        });
+
+        it('전달된 닉네임이 존재하지만 본인의 닉네임인 경우에는 200를 리턴한다', done => {
+            request.get('/user/verify/info?nickName=test_user_nickname')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send()
+                .expect(200, done);
+        });
+
+        it('전달된 파라미터가 없는 경우 422를 리턴한다', done => {
+            request.get('/user/verify/info')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send()
+                .expect(422, done);
+        });
+
+        after(done => {
+            // Users.remove({userId : {$ne : config.testUser.userId}}, done);
+            Users.remove({}, done);
+        });
+    });
+
     describe('POST /user/signin/', () => {
         const signInUser = {
             userId: null,
