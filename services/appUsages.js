@@ -1,5 +1,6 @@
 const moment = require('moment');
 const UsagesUtil = require('../utils/usages');
+const PagingUtil = require('../utils/paging');
 const { AppUsages } = require('../models/appUsages');
 const AppService = require('../services/apps');
 
@@ -104,18 +105,6 @@ const aggregateAppUsageByCategory = (userIds, categoryId) => {
     });
 };
 
-const appendPagingQuery = (query, page, limit) => {
-    if (page && limit) {
-        return query.concat([{
-            $skip: (page - 1) * limit
-        }, {
-            $limit: limit
-        }]);
-    } else {
-        return query;
-    }
-};
-
 /** Start for Recommend Features **/
 const getSimilarUserAppUsages = (user, excludeUserId, excludePackageNames, page, limit) => {
     const currentYear = moment().format('YYYY');
@@ -152,12 +141,12 @@ const getSimilarUserAppUsages = (user, excludeUserId, excludePackageNames, page,
         }
     ];
 
-    query = appendPagingQuery(query, page, limit);
+    query = PagingUtil.appendPagingQuery(query, page, limit);
 
     return AppUsages.aggregate(query);
 };
 
-const getCategoryAppUsages = (categoryId, excludeUserId, excludePackageNames) => {
+const getCategoryAppUsages = (categoryId, excludeUserId, excludePackageNames, page, limit) => {
     let query = [
         {
             $match: {
@@ -184,10 +173,12 @@ const getCategoryAppUsages = (categoryId, excludeUserId, excludePackageNames) =>
         }
     ];
 
+    query = PagingUtil.appendPagingQuery(query, page, limit);
+
     return AppUsages.aggregate(query);
 };
 
-const getDeveloperAppUsages = (developer, excludeUserId, excludePackageNames) => {
+const getDeveloperAppUsages = (developer, excludeUserId, excludePackageNames, page, limit) => {
     let query = [
         {
             $match: {
@@ -214,10 +205,12 @@ const getDeveloperAppUsages = (developer, excludeUserId, excludePackageNames) =>
         }
     ];
 
+    query = PagingUtil.appendPagingQuery(query, page, limit);
+
     return AppUsages.aggregate(query);
 };
 
-const getUsersAppUsages = (userIds, favoritePackageName, excludeUserId, excludePackageNames) => {
+const getUsersAppUsages = (userIds, favoritePackageName, excludeUserId, excludePackageNames, page, limit) => {
     const excludeUserIdIndex = userIds.indexOf(excludeUserId);
     excludePackageNames.push(favoritePackageName);
 
@@ -225,7 +218,7 @@ const getUsersAppUsages = (userIds, favoritePackageName, excludeUserId, excludeP
         userIds.splice( userIds.indexOf(excludeUserId), 1 );
     }
 
-    const query = [
+    let query = [
         {
             $match: {
                 packageName: {$nin : excludePackageNames},
@@ -249,6 +242,8 @@ const getUsersAppUsages = (userIds, favoritePackageName, excludeUserId, excludeP
             $sort: { totalUsedTime: -1 }
         }
     ];
+
+    query = PagingUtil.appendPagingQuery(query, page, limit);
 
     return AppUsages.aggregate(query);
 };
