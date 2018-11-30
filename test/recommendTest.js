@@ -242,10 +242,8 @@ describe('Recommend', () => {
                 .then((res) => {
                     res.body.length.should.be.eql(6);
 
-                    res.body[0].criteria.length.should.be.eql(2);
-                    res.body[0].criteria[0].should.be.eql("20대");
-                    res.body[0].criteria[1].should.be.eql("남성");
                     res.body[0].recommendType.should.be.eql(4);
+                    res.body[0].criteria.should.be.eql(["20대","남성"]);
                     res.body[0].rank.should.be.eql(1);
 
                     res.body[0].app.packageName.should.be.eql('com.game.puzzle');
@@ -257,9 +255,8 @@ describe('Recommend', () => {
                     res.body[0].app.totalUsedTime.should.be.eql(50000);
                     res.body[0].app.wishedByMe.should.be.eql(true);
 
-                    res.body[1].criteria.length.should.be.eql(1);
-                    res.body[1].criteria[0].should.be.eql("교육");
                     res.body[1].recommendType.should.be.eql(3);
+                    res.body[1].criteria.should.be.eql(["교육"]);
                     res.body[1].rank.should.be.eql(1);
 
                     res.body[1].app.packageName.should.be.eql('com.game.edu3');
@@ -271,9 +268,8 @@ describe('Recommend', () => {
                     res.body[1].app.totalUsedTime.should.be.eql(15000);
                     res.body[1].app.wishedByMe.should.be.eql(false);
 
-                    res.body[2].criteria.length.should.be.eql(1);
-                    res.body[2].criteria[0].should.be.eql("Edu Game Corp.");
                     res.body[2].recommendType.should.be.eql(2);
+                    res.body[2].criteria.should.be.eql(["Edu Game Corp."]);
                     res.body[2].rank.should.be.eql(1);
 
                     res.body[2].app.packageName.should.be.eql('com.game.edurpg');
@@ -285,9 +281,8 @@ describe('Recommend', () => {
                     res.body[2].app.totalUsedTime.should.be.eql(45300);
                     res.body[2].app.wishedByMe.should.be.eql(false);
 
-                    res.body[3].criteria.length.should.be.eql(1);
-                    res.body[3].criteria[0].should.be.eql('교육게임명');
                     res.body[3].recommendType.should.be.eql(1);
+                    res.body[3].criteria.should.be.eql(['교육게임명']);
                     res.body[3].rank.should.be.eql(1);
 
                     res.body[3].app.packageName.should.be.eql('com.game.puzzle');
@@ -299,10 +294,8 @@ describe('Recommend', () => {
                     res.body[3].app.totalUsedTime.should.be.eql(50000);
                     res.body[3].app.wishedByMe.should.be.eql(true);
 
-                    res.body[4].criteria.length.should.be.eql(2);
-                    res.body[4].criteria[0].should.be.eql("20대");
-                    res.body[4].criteria[1].should.be.eql("남성");
                     res.body[4].recommendType.should.be.eql(4);
+                    res.body[4].criteria.should.be.eql(["20대","남성"]);
                     res.body[4].rank.should.be.eql(2);
 
                     res.body[4].app.packageName.should.be.eql('com.game.edurpg');
@@ -314,10 +307,8 @@ describe('Recommend', () => {
                     res.body[4].app.totalUsedTime.should.be.eql(45000);
                     res.body[4].app.wishedByMe.should.be.eql(false);
 
-                    res.body[5].criteria.length.should.be.eql(2);
-                    res.body[5].criteria[0].should.be.eql("20대");
-                    res.body[5].criteria[1].should.be.eql("남성");
                     res.body[5].recommendType.should.be.eql(4);
+                    res.body[5].criteria.should.be.eql(["20대","남성"]);
                     res.body[5].rank.should.be.eql(3);
 
                     res.body[5].app.packageName.should.be.eql('com.game.edu3');
