@@ -5,7 +5,7 @@ const getMinAppVersionCode = (req, res) => {
         .exec()
         .then(configuration => res.json(configuration.minAppVersionCode))
         .catch(err => {
-            console.log(err);
+            console.error(err);
             res.send(err);
         });
 };
@@ -17,7 +17,7 @@ const getExcludePackageNames = (req, res) => {
             res.json(configuration.excludeAnalysisPackageNames);
         })
         .catch(err => {
-            console.log(err);
+            console.error(err);
             res.send(err);
         });
 };

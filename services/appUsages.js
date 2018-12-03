@@ -1,5 +1,6 @@
 const moment = require('moment');
 const UsagesUtil = require('../utils/usages');
+const PagingUtil = require('../utils/paging');
 const { AppUsages } = require('../models/appUsages');
 const AppService = require('../services/apps');
 
@@ -105,7 +106,7 @@ const aggregateAppUsageByCategory = (userIds, categoryId) => {
 };
 
 /** Start for Recommend Features **/
-const getSimilarUsers = (user, page, limit, excludeUserId) => {
+const getSimilarUserAppUsages = (user, excludeUserId, excludePackageNames, page, limit) => {
     const currentYear = moment().format('YYYY');
     const beforeDiff = (currentYear - user.birthday) % 10;
     const afterDiff = 10 - beforeDiff;
@@ -115,6 +116,7 @@ const getSimilarUsers = (user, page, limit, excludeUserId) => {
             $match: {
                 $and : [
                     { userId: {$ne : excludeUserId}},
+                    { packageName: {$nin : excludePackageNames}},
                     { gender: user.gender},
                     { birthday: { $gte: user.birthday - afterDiff + 1 } },
                     { birthday: { $lte: user.birthday + beforeDiff + 1 } },
@@ -139,25 +141,18 @@ const getSimilarUsers = (user, page, limit, excludeUserId) => {
         }
     ];
 
-    if (page && limit) {
-        query = query.concat([{
-            $skip: (page - 1) * limit
-        }, {
-            $limit: limit
-        }]);
-    }
+    query = PagingUtil.appendPagingQuery(query, page, limit);
 
     return AppUsages.aggregate(query);
 };
 
-const getCategoryAppUsages = (categoryId, excludeUserId) => {
+const getCategoryAppUsages = (categoryId, excludeUserId, excludePackageNames, page, limit) => {
     let query = [
         {
             $match: {
-                $and: [
-                    { userId: { $ne : excludeUserId }},
-                    { categoryId: categoryId }
-                ]
+                categoryId: categoryId,
+                userId: { $ne : excludeUserId },
+                packageName: {$nin : excludePackageNames}
             }
         }, {
             $group: {
@@ -178,17 +173,18 @@ const getCategoryAppUsages = (categoryId, excludeUserId) => {
         }
     ];
 
+    query = PagingUtil.appendPagingQuery(query, page, limit);
+
     return AppUsages.aggregate(query);
 };
 
-const getDeveloperAppUsages = (developer, excludeUserId) => {
+const getDeveloperAppUsages = (developer, excludeUserId, excludePackageNames, page, limit) => {
     let query = [
         {
             $match: {
-                $and: [
-                    { userId: {$ne : excludeUserId}},
-                    { developer: developer }
-                ]
+                developer: developer,
+                userId: {$ne : excludeUserId},
+                packageName: {$nin : excludePackageNames}
             }
         }, {
             $group: {
@@ -209,23 +205,24 @@ const getDeveloperAppUsages = (developer, excludeUserId) => {
         }
     ];
 
+    query = PagingUtil.appendPagingQuery(query, page, limit);
+
     return AppUsages.aggregate(query);
 };
 
-const getUsersAppUsages = (userIds, excludePackageName, excludeUserId) => {
+const getUsersAppUsages = (userIds, favoritePackageName, excludeUserId, excludePackageNames, page, limit) => {
     const excludeUserIdIndex = userIds.indexOf(excludeUserId);
+    excludePackageNames.push(favoritePackageName);
 
     if (excludeUserIdIndex > -1) {
         userIds.splice( userIds.indexOf(excludeUserId), 1 );
     }
 
-    const query = [
+    let query = [
         {
             $match: {
-                $and : [
-                    { packageName: {$ne : excludePackageName}},
-                    { userId: {$in : userIds}},
-                ]
+                packageName: {$nin : excludePackageNames},
+                userId: {$in : userIds}
             }
         }, {
             $group: {
@@ -245,6 +242,8 @@ const getUsersAppUsages = (userIds, excludePackageName, excludeUserId) => {
             $sort: { totalUsedTime: -1 }
         }
     ];
+
+    query = PagingUtil.appendPagingQuery(query, page, limit);
 
     return AppUsages.aggregate(query);
 };
@@ -293,14 +292,6 @@ const findAppUsageByCategory = (userId, categoryId, options) => {
     });
 };
 
-const findCategoryUsages = (userId, categoryId, options) => {
-    return findAppUsageByCategory(userId, categoryId, options)
-        .then(appUsages => Promise.resolve(UsagesUtil.summary(
-                UsagesUtil.convertToUsages(appUsages, { id: "categoryId1", name: "categoryName1"}, options)
-            )
-        ))
-        .catch(err => Promise.reject(err));
-};
 /** end of using by populate **/
 
 const refreshAppUsages = (user, appInfos, appUsages) => {
@@ -357,9 +348,8 @@ module.exports = {
     getTotalUsedTimeRankList,
     aggregateAppUsageByCategory,
     findAppUsageByCategory,
-    findCategoryUsages,
     refreshAppUsages,
-    getSimilarUsers,
+    getSimilarUserAppUsages,
     getCategoryAppUsages,
     getDeveloperAppUsages,
     getUsersAppUsages,

@@ -4,6 +4,7 @@ const request = require('supertest').agent(server);
 const config = require('../config');
 const Configurations = require('../models/configurations');
 const should = chai.should();
+const helper = require('./commonTestHelper');
 
 describe('Configurations', () => {
 
@@ -12,8 +13,11 @@ describe('Configurations', () => {
         excludeAnalysisPackageNames: ['com.kakao.talk', 'com.line.talk']
     };
 
-    beforeEach((done) => {
-        Configurations.create(configurationData, done);
+    before((done) => {
+        helper.commonBefore()
+            .then(() => Configurations.create(configurationData))
+            .then(() => done())
+            .catch(err => done(err));
     });
 
     describe('GET /config/version', () => {
@@ -41,7 +45,10 @@ describe('Configurations', () => {
         });
     });
 
-    afterEach((done) => {
-        Configurations.remove({}, done);
+    after((done) => {
+        helper.commonAfter()
+            .then(() => Configurations.remove({}))
+            .then(() => done())
+            .catch(err => done(err));
     });
 });

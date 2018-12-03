@@ -8,12 +8,14 @@ const should = chai.should();
 
 const Projects = require('../models/projects');
 const ParticipationHistories = require('../models/participationHistories');
+const helper = require('./commonTestHelper');
 
 describe('Project', () => {
     const sandbox = sinon.sandbox.create();
     const testProjectId = 1508998212204;
 
-    const data = [{
+    const data = [
+        {
         "projectId": testProjectId,
         "customerId": "testCustomerId",
         "name": "토르 - 기준스키마. 지우지마세요!!!",
@@ -211,6 +213,12 @@ describe('Project', () => {
         "videoUrl": "aaa.video.url",
         "status": "registered"
     }];
+
+    before(done => {
+        helper.commonBefore()
+            .then(() => done())
+            .catch(err => done(err));
+    });
 
     beforeEach(done => {
         Projects.create(data, done);
@@ -627,5 +635,11 @@ describe('Project', () => {
                 done();
             });
         });
+    });
+
+    after(done => {
+        helper.commonAfter()
+            .then(() => done())
+            .catch(err => done(err));
     });
 });

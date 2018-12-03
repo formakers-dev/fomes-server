@@ -1,14 +1,23 @@
 const isValidPageAndLimit = (page, limit) => {
-    const pageNumber = parseInt(page);
-    const limitNumber = parseInt(limit);
-
-    if (isNaN(pageNumber) || isNaN(limitNumber)) {
+    if (isNaN(page) || isNaN(limit)) {
         return false;
-    } else if (pageNumber < 1 || limitNumber < 1) {
+    } else if (page < 1 || limit < 1) {
         return false;
     }
 
     return true;
 };
 
-module.exports = { isValidPageAndLimit };
+const appendPagingQuery = (query, page, limit) => {
+    if (page && limit) {
+        return query.concat([{
+            $skip: (page - 1) * limit
+        }, {
+            $limit: limit
+        }]);
+    } else {
+        return query;
+    }
+};
+
+module.exports = { isValidPageAndLimit, appendPagingQuery };

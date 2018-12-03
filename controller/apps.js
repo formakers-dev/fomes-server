@@ -9,9 +9,9 @@ const getApps = (req, res) => {
         .skip((page - 1) * limit)
         .limit(limit)
         .then(apps => {
-            console.log(apps.length);
+            // console.log(apps.length);
             res.json(apps);
-        }).catch(err => console.log(err));
+        }).catch(err => console.error(err));
 };
 
 

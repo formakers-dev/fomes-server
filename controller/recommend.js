@@ -1,24 +1,27 @@
-const pagingUtil = require('../utils/paging');
+const PagingUtil = require('../utils/paging');
 const RecommendAppsService = require('../services/recommendApps');
 const AppUsageService = require('../services/appUsages');
 
 const getRecommendApps = (req, res) => {
-    if (!pagingUtil.isValidPageAndLimit(req.query.page, req.query.limit)) {
+    const page = parseInt(req.query.page);
+    const eachLimit = (req.query.eachLimit) ? parseInt(req.query.eachLimit) : 5;
+    const userId = req.userId;
+
+    if (!PagingUtil.isValidPageAndLimit(page, eachLimit)) {
         res.sendStatus(400);
         return;
     }
 
-    AppUsageService.aggregateAppUsageByCategory(req.userId, req.params.categoryId)
+    AppUsageService.aggregateAppUsageByCategory(userId, req.params.categoryId)
         .then(userUsage => {
             const excludePackageNames = userUsage.appUsages.map(userAppUsage => userAppUsage.appInfos[0].packageName);
 
-            return RecommendAppsService.getSimilarUserRecommendApps(req.userId, excludePackageNames, req.query.page, req.query.limit);
-            // return Promise.all([
-            //         RecommendAppsService.getSimilarUserRecommendApps(req.userId, excludePackageNames, req.query.page, req.query.limit),
-            //         RecommendAppsService.getFavoriteCategoryRecommendApps(userUsage.categoryUsages, excludePackageNames, req.userId),
-            //         RecommendAppsService.getFavoriteDeveloperRecommendApps(userUsage.developerUsages, excludePackageNames, req.userId),
-            //         RecommendAppsService.getFavoriteAppRecommendApps(userUsage.appUsages, excludePackageNames, req.userId),
-            //     ]);
+            return Promise.all([
+                    RecommendAppsService.getSimilarUserRecommendApps(userId, excludePackageNames, page, eachLimit),
+                    RecommendAppsService.getFavoriteCategoryRecommendApps(userUsage.categoryUsages, userId, excludePackageNames, page, eachLimit),
+                    RecommendAppsService.getFavoriteDeveloperRecommendApps(userUsage.developerUsages, userId, excludePackageNames, page, eachLimit),
+                    RecommendAppsService.getFavoriteAppRecommendApps(userUsage.appUsages, userId, excludePackageNames, page, eachLimit),
+                ]);
         })
         .then(recommendApps => {
             let result = [];

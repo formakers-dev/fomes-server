@@ -9,6 +9,8 @@ usersRouter.post('/signup', Auth.googleTokenVerifier, Users.signUpUser, Users.ge
 usersRouter.post('/wishlist', Auth.appBeeTokenVerifier, Users.saveAppToWishList);
 usersRouter.get('/verifyToken', Auth.appBeeTokenVerifier, (req, res) => res.sendStatus(200));
 usersRouter.get('/verifyInvitationCode/:code', Users.verifyInvitationCode);
+usersRouter.get('/verify/info', Auth.appBeeTokenVerifier, Users.verifyUserInfo);
+
 usersRouter.delete('/wishlist/:packageName', Auth.appBeeTokenVerifier, Users.removeAppFromWishList);
 usersRouter.get('/wishlist', Auth.appBeeTokenVerifier, Users.getWishList);
 

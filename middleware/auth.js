@@ -1,25 +1,42 @@
 const GoogleAuth = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
+const UserService = require('../services/users');
 
 const appBeeTokenVerifier = (req, res, next) => {
+    const createErrorResponse = (userId, errCode, errMessage) => {
+        return {
+            userId: userId,
+            errCode: errCode,
+            errMessage: errMessage
+        };
+    };
+
     const check = (token) => {
         if (!token) {
             return new Promise((resolve, reject) => {
-                reject(new Error("Has no token"));
+                reject(createErrorResponse(undefined, 403, "Has no token"));
             });
         } else {
             return new Promise(
                 (resolve, reject) => {
                     jwt.verify(token, config.secret, (err, decoded) => {
-                        if(!err) {
-                            resolve(decoded);
-                        } else if(err instanceof jwt.TokenExpiredError) {
-                            err.errCode = 401;
-                            reject(err);
+                        if (!err) {
+                            UserService.getUser(decoded.userId)
+                                .then(user => {
+                                    if (user) {
+                                        resolve(decoded);
+                                    } else {
+                                        reject(createErrorResponse(decoded.userId, 403, 'The user does NOT exist'));
+                                    }
+                                }).catch(err => {
+                                    console.error(err);
+                                    reject(createErrorResponse(decoded.userId, 500, 'Internal Server Error'));
+                                });
+                        } else if (err instanceof jwt.TokenExpiredError) {
+                            reject(createErrorResponse(undefined, 401, err.message));
                         } else {
-                            err.errCode = 403;
-                            reject(err);
+                            reject(createErrorResponse(undefined, 403, err.message));
                         }
                     })
                 }
@@ -27,11 +44,11 @@ const appBeeTokenVerifier = (req, res, next) => {
         }
     };
 
-    const onError = (userId, err) => {
-        console.error('===appBeeTokenVerifier:onError', 'userId=', userId, 'err=', err);
-        res.status(err.errCode).json({
+    const onError = (reason) => {
+        console.error('===appBeeTokenVerifier:onError', 'userId=', reason.userId, 'err=', reason.errCode, ':', reason.errMessage);
+        res.status(reason.errCode).json({
             success: false,
-            message: err.message
+            message: reason.errMessage
         });
     };
     const onSuccess = (decoded) => {
@@ -41,7 +58,8 @@ const appBeeTokenVerifier = (req, res, next) => {
 
     check(req.headers['x-access-token'])
         .then(onSuccess)
-        .catch(err => onError(req.userId, err));
+        .catch((reason) => onError(reason));
+
 };
 
 
