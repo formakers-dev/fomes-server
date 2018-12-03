@@ -1,36 +1,28 @@
 const jwt = require('jsonwebtoken');
 const InvitationCodes = require('../models/invitationCodes');
 const config = require('../config');
-const Users = require('../models/users').Users;    // TODO : 언젠가 service로 이동해야 한다
 const UserService = require('../services/users');
 const AppService = require('../services/apps');
 
 const signUpUser = (req, res, next) => {
-    Users.findOne({userId: req.userId})
+    UserService.getUser(req.userId)
         .then(user => {
             if (!user) {
                 req.body.signUpTime = new Date();
             }
 
-            upsertUser(req, res, next);
+            return UserService.upsertUser(req.userId, req.body);
         })
+        .then(() => next())
         .catch(err => sendError("signUpUser", req.userId, res, err, 500));
 };
 
 const upsertUser = (req, res, next) => {
-    const updateUser = (req, res, next) => {
-        Users.findOneAndUpdate({userId: req.userId}, {$set: req.body}, {upsert: true})
-            .then(() => next())
-            .catch(err => sendError("upsertUser", req.userId, res, err, 500));
-    };
-
-    if (req.body.nickName) {
-        UserService.isDuplicatedNickName(req.userId, req.body.nickName)
-            .then(isDuplicated => !isDuplicated ? updateUser(req, res, next) : res.sendStatus(409))
-            .catch(err => sendError("upsertUser", req.userId, res, err, 500));
-    } else {
-        updateUser(req, res, next);
-    }
+    UserService.upsertUser(req.userId, req.body)
+        .then(() => next())
+        .catch(err => {
+            sendError("upsertUser", req.userId, res, err, (err instanceof UserService.NickNameDuplicationError) ? 409 : 500);
+        });
 };
 
 const generateToken = (req, res) => {

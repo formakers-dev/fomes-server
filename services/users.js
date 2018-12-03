@@ -2,8 +2,31 @@ const moment = require('moment');
 const Users = require('../models/users').Users;
 const UserConstants = require('../models/users').Constants;
 
+// 다른 에러 타입 많아지는 경우 통합 고려
+class NickNameDuplicationError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+    }
+}
+
 const getUser = (userId) => {
     return Users.findOne({userId: userId});
+};
+
+const upsertUser = (userId, user) => {
+    if (user.nickName) {
+        return isDuplicatedNickName(userId, user.nickName)
+                .then(isDuplicted => {
+                    if (isDuplicted) {
+                        throw new NickNameDuplicationError();
+                    } else {
+                        return Users.findOneAndUpdate({userId: userId}, {$set: user}, {upsert: true});
+                    }
+                });
+    } else {
+        return Users.findOneAndUpdate({userId: userId}, {$set: user}, {upsert: true});
+    }
 };
 
 // similarPoint : columns of User model (plz refer to User's Constants)
@@ -71,19 +94,21 @@ const isDuplicatedNickName = (userId, nickName) => {
                 if (user) {
                     resolve(true);
                 } else {
-                    resolve(false)
+                    resolve(false);
                 }
             })
             .catch(err => reject(err));
     });
-}
+};
 
 module.exports = {
     getUser,
+    upsertUser,
     getSimilarUsers,
     getAge,
     upsertWishList,
     removeAppFromWishList,
     getWishList,
-    isDuplicatedNickName
+    isDuplicatedNickName,
+    NickNameDuplicationError
 };
