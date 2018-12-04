@@ -8,7 +8,7 @@ const getRecommendApps = (req, res) => {
     const userId = req.userId;
 
     if (!PagingUtil.isValidPageAndLimit(page, eachLimit)) {
-        res.sendStatus(400);
+        res.sendStatus(412);
         return;
     }
 

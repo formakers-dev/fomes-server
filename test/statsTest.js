@@ -108,11 +108,11 @@ describe('Stats', () => {
                 }).catch((err) => done(err));
         });
 
-        it('단기통계데이터를 잘못된 형태로 전송한 경우, 400 에러코드를 리턴한다.', done => {
+        it('단기통계데이터를 잘못된 형태로 전송한 경우, 412 에러코드를 리턴한다.', done => {
             request.post('/stats/short')
                 .set('x-access-token', config.appbeeToken.valid)
                 .send()
-                .expect(400)
+                .expect(412)
                 .then(() => done())
                 .catch(err => done(err));
         });
@@ -308,11 +308,11 @@ describe('Stats', () => {
                 .catch(err => done(err));
         });
 
-        it('앱 사용기록을 잘못된 형태로 전송한 경우, 400 에러코드를 리턴한다.', done => {
+        it('앱 사용기록을 잘못된 형태로 전송한 경우, 412 에러코드를 리턴한다.', done => {
             request.post('/stats/usages/app')
                 .set('x-access-token', config.appbeeToken.valid)
                 .send()
-                .expect(400)
+                .expect(412)
                 .then(() => done())
                 .catch(err => done(err));
         });

@@ -441,22 +441,22 @@ describe('Recommend', () => {
 
 
         describe('잘못된 페이징 정보 입력 시', function () {
-            it('페이징 옵션 미지정 시 400오류를 반환한다', done => {
+            it('페이징 옵션 미지정 시 412오류를 반환한다', done => {
                 request.get('/recommend/apps/GAME')
                     .set('x-access-token', config.appbeeToken.valid)
-                    .expect(400, done);
+                    .expect(412, done);
             });
 
-            it('페이징 옵션으로 0 이하의 값을 지정 시 400오류를 반환한다', done => {
+            it('페이징 옵션으로 0 이하의 값을 지정 시 412오류를 반환한다', done => {
                 request.get('/recommend/apps/GAME?page=-1')
                     .set('x-access-token', config.appbeeToken.valid)
-                    .expect(400, done);
+                    .expect(412, done);
             });
 
-            it('페이징 옵션으로 문자 입력 시 400오류를 반환한다', done => {
+            it('페이징 옵션으로 문자 입력 시 412오류를 반환한다', done => {
                 request.get('/recommend/apps/GAME?page=a')
                     .set('x-access-token', config.appbeeToken.valid)
-                    .expect(400, done);
+                    .expect(412, done);
             });
         });
 
