@@ -32,7 +32,7 @@ const generateToken = (req, res) => {
         subject: 'FomesAuth'
     }, (err, newToken) => {
         if (err) {
-            sendError("generateToken", req.userId, res, err, 403)
+            sendError("generateToken", req.userId, res, err, 500)
         } else {
             res.json(newToken);
         }
