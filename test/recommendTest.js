@@ -16,8 +16,10 @@ describe('Recommend', () => {
     });
 
     describe('GET /recommend/apps', () => {
-        beforeEach(done => {
-            Users.create(config.testUser)
+        before(done => {
+            const wishedByTestUser = ['com.game.edu3', 'com.game.puzzle'];
+
+            Users.findOneAndUpdate({userId : config.testUser.userId}, {$set: {wishList: wishedByTestUser}})
                 .then(() => AppUsages.create([
                     ////////// start of me ///////////////
                     {
@@ -137,7 +139,7 @@ describe('Recommend', () => {
                         categoryId: 'GAME_EDUCATIONAL',
                         categoryName: '교육',
                         iconUrl: 'iconUrl33',
-                        appName: '교육게임명',
+                        appName: '교육게임명4',
                     }, {
                         userId: 'peopleId4',
                         packageName: 'com.game.edurpg',
@@ -200,68 +202,6 @@ describe('Recommend', () => {
                         appName: '교육게임명3',
                     }
                 ]))
-                .then(() => Apps.create([
-                    {
-                        packageName: 'com.nhn.android.nmap',
-                        appName: '네이버지도',
-                        developer: 'NHN Corp.',
-                        categoryId1: 'TOOL',
-                        categoryName1: '도구',
-                        iconUrl: 'iconUrl0',
-                    }, {
-                        packageName: 'com.game.edu',
-                        appName: '교육게임명',
-                        developer: 'Edu Game Corp.',
-                        categoryId1: 'GAME_EDUCATIONAL',
-                        categoryName1: '교육',
-                        iconUrl: 'iconUrl3',
-                        wishedBy: [config.testUser.userId, 'user2']
-                    }, {
-                        packageName: 'com.game.edurpg',
-                        appName: '교육RPG',
-                        developer: 'Edu Game Corp.',
-                        categoryId1: 'GAME_ROLE_PLAYING',
-                        categoryName1: '롤플레잉',
-                        iconUrl: 'iconUrl3',
-                        wishedBy: ['user2']
-                    }, {
-                        packageName: 'com.game.rpg',
-                        appName: '롤플레잉게임명',
-                        developer: 'GameDuckHu Corp.',
-                        categoryId1: 'GAME_ROLE_PLAYING',
-                        categoryName1: '롤플레잉',
-                        iconUrl: 'iconUrl4',
-                        wishedBy: ['user3']
-                    }, {
-                        packageName: 'com.game.edu2',
-                        appName: '교육게임명2',
-                        developer: 'GameDuckHu Corp.',
-                        categoryId1: 'GAME_EDUCATIONAL',
-                        categoryName1: '교육',
-                        iconUrl: 'iconUrl32',
-                    }, {
-                        packageName: 'com.game.edu3',
-                        appName: '교육게임명3',
-                        developer: 'GameDuckHu Corp.',
-                        categoryId1: 'GAME_EDUCATIONAL',
-                        categoryName1: '교육',
-                        iconUrl: 'iconUrl33',
-                    }, {
-                        packageName: 'com.game.edu4',
-                        appName: '교육게임명4',
-                        developer: 'GameDuckHu Corp.',
-                        categoryId1: 'GAME_EDUCATIONAL',
-                        categoryName1: '교육',
-                        iconUrl: 'iconUrl33',
-                    }, {
-                        packageName: 'com.game.puzzle',
-                        appName: '퍼즐게임명',
-                        developer: 'Puzzle Game Corp.',
-                        categoryId1: 'GAME_PUZZLE',
-                        categoryName1: '퍼즐',
-                        iconUrl: 'iconUrl6',
-                        wishedBy: ['user4', config.testUser.userId]
-                    }]))
                 .then(() => done())
                 .catch(err => done(err))
         });
@@ -295,7 +235,7 @@ describe('Recommend', () => {
                     res.body[1].app.developer.should.be.eql('GameDuckHu Corp.');
                     res.body[1].app.iconUrl.should.be.eql('iconUrl33');
                     res.body[1].app.totalUsedTime.should.be.eql(15000);
-                    res.body[1].app.wishedByMe.should.be.eql(false);
+                    res.body[1].app.wishedByMe.should.be.eql(true);
 
                     res.body[2].recommendType.should.be.eql(2);
                     res.body[2].criteria.should.be.eql(["Edu Game Corp."]);
@@ -366,7 +306,7 @@ describe('Recommend', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then((res) => {
-                    res.body.length.should.be.eql(3);
+                    // res.body.length.should.be.eql(3);
 
                     res.body[0].recommendType.should.be.eql(4);
                     res.body[0].criteria.should.be.eql(["20대","남성"]);
@@ -378,7 +318,7 @@ describe('Recommend', () => {
                     res.body[0].app.developer.should.be.eql('GameDuckHu Corp.');
                     res.body[0].app.iconUrl.should.be.eql('iconUrl33');
                     res.body[0].app.totalUsedTime.should.be.eql(15000);
-                    res.body[0].app.wishedByMe.should.be.eql(false);
+                    res.body[0].app.wishedByMe.should.be.eql(true);
 
                     res.body[1].recommendType.should.be.eql(1);
                     res.body[1].criteria.should.be.eql(['교육게임명']);
@@ -420,8 +360,14 @@ describe('Recommend', () => {
         });
 
         describe('본인의 앱 사용 데이터가 없을 시', function () {
-            beforeEach(done => {
-                AppUsages.remove({userId: config.testUser.userId})
+            let testUserAppUsages;
+
+            before(done => {
+                AppUsages.find({userId: config.testUser.userId})
+                    .then(appUsages => {
+                        testUserAppUsages = appUsages;
+                        return AppUsages.remove({userId: config.testUser.userId});
+                    })
                     .then(() => done());
             });
 
@@ -436,6 +382,11 @@ describe('Recommend', () => {
 
                         done();
                     }).catch(err => done(err));
+            });
+
+            after(done => {
+                AppUsages.create(testUserAppUsages)
+                    .then(() => done());
             });
         });
 
@@ -460,7 +411,7 @@ describe('Recommend', () => {
             });
         });
 
-        afterEach(done => {
+        after(done => {
             Users.remove({})
                 .then(() => AppUsages.remove({}))
                 .then(() => Apps.remove({}))
