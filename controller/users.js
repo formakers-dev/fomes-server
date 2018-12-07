@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const InvitationCodes = require('../models/invitationCodes');
 const config = require('../config');
+const ControllerUtil = require('../utils/controller');
 const UserService = require('../services/users');
 const AppService = require('../services/apps');
 
@@ -14,14 +15,14 @@ const signUpUser = (req, res, next) => {
             return UserService.upsertUser(req.userId, req.body);
         })
         .then(() => next())
-        .catch(err => sendError("signUpUser", req.userId, res, err, 500));
+        .catch(err => ControllerUtil.sendError("signUpUser", req.userId, res, err, 500));
 };
 
 const upsertUser = (req, res, next) => {
     UserService.upsertUser(req.userId, req.body)
         .then(() => next())
         .catch(err => {
-            sendError("upsertUser", req.userId, res, err, (err instanceof UserService.NickNameDuplicationError) ? 409 : 500);
+            ControllerUtil.sendError("upsertUser", req.userId, res, err, (err instanceof UserService.NickNameDuplicationError) ? 409 : 500);
         });
 };
 
@@ -32,7 +33,7 @@ const generateToken = (req, res) => {
         subject: 'FomesAuth'
     }, (err, newToken) => {
         if (err) {
-            sendError("generateToken", req.userId, res, err, 500)
+            ControllerUtil.sendError("generateToken", req.userId, res, err, 500);
         } else {
             res.json(newToken);
         }
@@ -49,12 +50,12 @@ const verifyInvitationCode = (req, res) => {
                 res.sendStatus(412);
             }
         })
-        .catch(err => sendError("verifyInvitationCode", req.userId, res, err, 500));
+        .catch(err => ControllerUtil.sendError("verifyInvitationCode", req.userId, res, err, 500));
 };
 
 const verifyUserInfo = (req, res) => {
     if (Object.keys(req.query).length === 0) {
-        sendError("verifyUserInfo", req.userId, res, { message: 'Empty Params'}, 422);
+        ControllerUtil.sendError("verifyUserInfo", req.userId, res, { message: 'Empty Params'}, 422);
         return;
     }
 
@@ -63,18 +64,10 @@ const verifyUserInfo = (req, res) => {
             if (!isDuplicated) {
                 res.sendStatus(200);
             } else {
-                sendError("verifyUserInfo", req.userId, res, { message: 'Duplicated NickName'}, 409);
+                ControllerUtil.sendError("verifyUserInfo", req.userId, res, { message: 'Duplicated NickName'}, 409);
             }
         })
-        .catch(err => sendError("verifyUserInfo", req.userId, res, err, 500));
-};
-
-const sendError = (tag, userId, res, err, errCode) => {
-    console.error(tag, "userId=", userId, "err=", err);
-    res.status(errCode).json({
-        success: false,
-        message: err.message
-    });
+        .catch(err => ControllerUtil.sendError("verifyUserInfo", req.userId, res, err, 500));
 };
 
 const getUser = (req, res, next) => {
@@ -83,7 +76,7 @@ const getUser = (req, res, next) => {
             req.user = user;
             next();
         })
-        .catch(err => sendError("getUser", req.userId, res, err, 500));
+        .catch(err => ControllerUtil.sendError("getUser", req.userId, res, err, 500));
 };
 
 const saveAppToWishList = (req, res) => {
@@ -93,7 +86,7 @@ const saveAppToWishList = (req, res) => {
     UserService.upsertWishList(userId, packageName)
         .then(() => AppService.upsertWishedBy(packageName, userId))
         .then(() => res.sendStatus(200))
-        .catch(err => sendError('saveAppToWishList', req.userId, res, err, 500));
+        .catch(err => ControllerUtil.sendError('saveAppToWishList', req.userId, res, err, 500));
 };
 
 const removeAppFromWishList = (req, res) => {
@@ -103,22 +96,14 @@ const removeAppFromWishList = (req, res) => {
     UserService.removeAppFromWishList(userId, packageName)
         .then(() => AppService.removeUserFromWishedBy(packageName, userId))
         .then(() => res.sendStatus(200))
-        .catch(err => sendError('removeAppFromWishList', req.userId, res, err, 500));
+        .catch(err => ControllerUtil.sendError('removeAppFromWishList', req.userId, res, err, 500));
 };
 
 const getWishList = (req, res) => {
     UserService.getWishList(req.userId)
-        .then(packageNames => AppService.getAppsWithRepresentativeCategory(packageNames))
-        .then(apps => res.json(
-            apps.map(app => AppService.replaceWishedByToWishedByMe(app, req.userId))
-        ))
-        .catch(err => {
-            console.error(err);
-            res.status(500).json({
-                success: false,
-                message: err.message
-            });
-        });
+        .then(packageNames => AppService.getAppsForPublic(packageNames, req.userId))
+        .then(apps => res.json(apps))
+        .catch(err => ControllerUtil.sendError('getWishList', req.userId, res, err, 500));
 };
 
 module.exports = {

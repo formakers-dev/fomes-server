@@ -1,27 +1,44 @@
 const {Apps} = require('../models/appUsages');
 
-const getAppsWithRepresentativeCategory = (packageNames) => {
-    return Apps.find({packageName: {$in: packageNames}})
-        .lean()
-        .then(apps => convertCategoryInfoToRepresentativeCategory(apps))
+class NotFoundAppError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+    }
+}
+
+const getAppForPublic = (packageName, userId) => {
+    return Apps.findOne({packageName : packageName})
+        .then(app => {
+            if (app)
+                return convertToPublicAppInfo(app, userId);
+            else
+                throw new NotFoundAppError();
+        })
         .catch(err => Promise.reject(err));
 };
 
-const convertCategoryInfoToRepresentativeCategory = (apps) => {
-    return Promise.resolve(
-        apps.map(app => {
-            app.categoryId = app.categoryId1;
-            app.categoryName = app.categoryName1;
+const getAppsForPublic = (packageNames, userId) => {
+    return Apps.find({packageName : {$in: packageNames}})
+        .then(apps => apps.map(app => convertToPublicAppInfo(app, userId)))
+        .catch(err => Promise.reject(err));
+};
 
-            // TODO : List 형태로 구조 변경되면 아래 코드도 변경해야 한다
-            delete app.categoryId1;
-            delete app.categoryId2;
-            delete app.categoryName1;
-            delete app.categoryName2;
-
-            return app;
-        })
-    );
+const convertToPublicAppInfo = (app, userId) => {
+    return {
+        packageName : app.packageName,
+        appName : app.appName,
+        categoryId : app.categoryId1,
+        categoryName : app.categoryName1,
+        developer : app.developer,
+        iconUrl : app.iconUrl,
+        star : app.star,
+        installsMin : app.installsMin,
+        installsMax : app.installsMax,
+        contentsRating : app.contentsRating,
+        imageUrls : app.imageUrls,
+        wishedByMe : !!(app.wishedBy && app.wishedBy.includes(userId))
+    };
 };
 
 const getGameAppInfoForAnalysis = (packageNames) => {
@@ -39,16 +56,11 @@ const removeUserFromWishedBy = (packageName, userId) => {
         {$pull: {wishedBy: userId}});
 };
 
-const replaceWishedByToWishedByMe = (app, userId) => {
-    app.wishedByMe = !!(app.wishedBy && app.wishedBy.includes(userId));
-    delete app.wishedBy;
-    return app;
-};
-
 module.exports = {
     getGameAppInfoForAnalysis,
     upsertWishedBy,
     removeUserFromWishedBy,
-    replaceWishedByToWishedByMe,
-    getAppsWithRepresentativeCategory
+    getAppForPublic,
+    getAppsForPublic,
+    NotFoundAppError,
 };

@@ -2,7 +2,7 @@ const Users = require('../models/users').Users;
 const UserConstants = require('../models/users').Constants;
 const Stats = require('./../models/shortTermStats');
 const AppUsagesService = require('../services/appUsages');
-const AppsService = require('../services/apps');
+const AppService = require('../services/apps');
 const UserService = require('../services/users');
 
 const postShortTermStats = (req, res) => {
@@ -42,7 +42,7 @@ const postAppUsages = (req, res) => {
         res.sendStatus(200);
     } else {
         const appUsages = req.body;
-        AppsService.getGameAppInfoForAnalysis(appUsages.map(appUsage => appUsage.packageName))
+        AppService.getGameAppInfoForAnalysis(appUsages.map(appUsage => appUsage.packageName))
             .lean()
             .then(appInfos => AppUsagesService.refreshAppUsages(req.user, appInfos,
                     appUsages.filter(appUsage => appInfos.map(appInfo => appInfo.packageName).includes(appUsage.packageName))))

@@ -1,18 +1,12 @@
-const { Apps } = require('../models/appUsages');    // TODO : 언젠가 service로 이동해야 한다
+const AppService = require('../services/apps');
+const ControllerUtil = require('../utils/controller');
 
-const getApps = (req, res) => {
-    const regex = `${req.params.categoryId}.*`;
-    const page = req.query.page;
-    const limit = req.query.limit;
-
-    Apps.find({categoryId1: new RegExp(regex)})
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .then(apps => {
-            // console.log(apps.length);
-            res.json(apps);
-        }).catch(err => console.error(err));
+const getApp = (req, res) => {
+    AppService.getAppForPublic(req.params.packageName, req.userId)
+        .then(app => res.json(app))
+        .catch(err => {
+            ControllerUtil.sendError("getApp", req.userId, res, err, (err instanceof AppService.NotFoundAppError) ? 412 : 500);
+        });
 };
 
-
-module.exports = { getApps };
+module.exports = { getApp };
