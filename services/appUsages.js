@@ -64,7 +64,6 @@ const aggregateAppUsageByCategory = (userIds, categoryId) => {
         ]).then(appUsages => {
             const result = {};
 
-            // appUsages
             appUsages = appUsages.map(appUsage => {
                 return {
                     id: appUsage.packageName,
@@ -84,13 +83,11 @@ const aggregateAppUsageByCategory = (userIds, categoryId) => {
 
             result.appUsages = appUsages;
 
-            // categoryUsages
             result.categoryUsages = UsagesUtil.summary(UsagesUtil.convertToUsages(appUsages, {
                 id: "categoryId",
                 name: "categoryName",
             }, { isVerbose: false }));
 
-            // developerUsages
             result.developerUsages = UsagesUtil.summary(UsagesUtil.convertToUsages(appUsages, {
                 id: "developer",
                 name: "developer",
@@ -125,6 +122,7 @@ const getSimilarUserAppUsages = (user, excludePackageNames, page, limit) => {
         }, {
             $group: {
                 _id: '$packageName',
+                packageName: { $first: '$packageName' },
                 totalUsedTime: { $sum: '$totalUsedTime' },
                 developer: { $first: '$developer' },
                 categoryId: { $first: '$categoryId' },
@@ -134,13 +132,7 @@ const getSimilarUserAppUsages = (user, excludePackageNames, page, limit) => {
             }
         }, {
             $project: {
-                packageName: '$_id',
-                totalUsedTime: true,
-                developer: true,
-                categoryId: true,
-                categoryName: true,
-                appName: true,
-                iconUrl: true,
+                _id: false
             }
         }, {
             $sort: { totalUsedTime: -1 }
@@ -163,6 +155,7 @@ const getCategoryAppUsages = (categoryId, excludeUserId, excludePackageNames, pa
         }, {
             $group: {
                 _id: '$packageName',
+                packageName: { $first: '$packageName' },
                 totalUsedTime: { $sum: '$totalUsedTime' },
                 developer: { $first: '$developer' },
                 categoryId: { $first: '$categoryId' },
@@ -172,13 +165,7 @@ const getCategoryAppUsages = (categoryId, excludeUserId, excludePackageNames, pa
             }
         }, {
             $project: {
-                packageName: '$_id',
-                totalUsedTime: true,
-                developer: true,
-                categoryId: true,
-                categoryName: true,
-                appName: true,
-                iconUrl: true,
+                _id: false
             }
         }, {
             $sort: { totalUsedTime: -1 }
@@ -201,6 +188,7 @@ const getDeveloperAppUsages = (developer, excludeUserId, excludePackageNames, pa
         }, {
             $group: {
                 _id: '$packageName',
+                packageName: { $first: '$packageName' },
                 totalUsedTime: { $sum: '$totalUsedTime' },
                 developer: { $first: '$developer' },
                 categoryId: { $first: '$categoryId' },
@@ -210,13 +198,7 @@ const getDeveloperAppUsages = (developer, excludeUserId, excludePackageNames, pa
             }
         }, {
             $project: {
-                packageName: '$_id',
-                totalUsedTime: true,
-                developer: true,
-                categoryId: true,
-                categoryName: true,
-                appName: true,
-                iconUrl: true,
+                _id: false
             }
         }, {
             $sort: { totalUsedTime: -1 }
@@ -245,6 +227,7 @@ const getUsersAppUsages = (userIds, favoritePackageName, excludeUserId, excludeP
         }, {
             $group: {
                 _id: '$packageName',
+                packageName: { $first: '$packageName' },
                 totalUsedTime: { $sum: '$totalUsedTime' },
                 developer: { $first: '$developer' },
                 categoryId: { $first: '$categoryId' },
@@ -254,13 +237,7 @@ const getUsersAppUsages = (userIds, favoritePackageName, excludeUserId, excludeP
             }
         }, {
             $project: {
-                packageName: '$_id',
-                totalUsedTime: true,
-                developer: true,
-                categoryId: true,
-                categoryName: true,
-                appName: true,
-                iconUrl: true,
+                _id: false
             }
         }, {
             $sort: { totalUsedTime: -1 }
