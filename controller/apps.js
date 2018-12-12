@@ -5,7 +5,8 @@ const getApp = (req, res) => {
     AppService.getAppForPublic(req.params.packageName, req.userId)
         .then(app => res.json(app))
         .catch(err => {
-            ControllerUtil.sendError("getApp", req.userId, res, err, (err instanceof AppService.NotFoundAppError) ? 412 : 500);
+            res.status((err instanceof AppService.NotFoundAppError) ? 412 : 500)
+                .json(ControllerUtil.convertErrorToJson("getApp", req.userId, err));
         });
 };
 

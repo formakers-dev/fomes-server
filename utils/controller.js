@@ -1,9 +1,10 @@
-const sendError = (tag, userId, res, err, errCode) => {
+const convertErrorToJson = (tag, userId, err) => {
     console.error(tag, "userId=", userId, "err=", err);
-    res.status(errCode).json({
+
+    return {
         success: false,
         message: err.message
-    });
+    };
 };
 
-module.exports = { sendError };
+module.exports = { convertErrorToJson };
