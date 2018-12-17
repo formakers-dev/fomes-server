@@ -33,6 +33,7 @@ const appUsagesSchema = new mongoose.Schema({
     updateTime: Date
 });
 
+// TODO: 버추얼 스키마 제거
 appUsagesSchema.virtual('appInfo', {
     ref: 'apps',
     localField: 'packageName',

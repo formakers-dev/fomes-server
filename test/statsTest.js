@@ -8,6 +8,7 @@ const ShortTermStats = require('../models/shortTermStats');
 const Users = require('../models/users').Users;
 const UserConstants = require('../models/users').Constants;
 const {AppUsages, Apps} = require('../models/appUsages');
+const UncrawledApps = require('../models/uncrawledApps');
 const helper = require('./commonTestHelper');
 
 describe('Stats', () => {
@@ -232,6 +233,9 @@ describe('Stats', () => {
         }, {
             packageName: 'com.notgame.com',
             totalUsedTime: 30000,
+        }, {
+            packageName: 'com.unknown.game',
+            totalUsedTime: 12000,
         }];
 
         it('앱 사용 기록을 갱신한다', done => {
@@ -308,6 +312,21 @@ describe('Stats', () => {
                 .catch(err => done(err));
         });
 
+        it('앱 사용기록 저장 시 게임으로 확인되지 않는 경우, UncrawledApps에 저장한다.', done => {
+            request.post('/stats/usages/app')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send(data)
+                .expect(200)
+                .then(() => UncrawledApps.find({}).exec())
+                .then(docs => {
+                    docs.length.should.be.eql(2);
+                    docs[0].packageName.should.be.eql('com.notgame.com');
+                    docs[1].packageName.should.be.eql('com.unknown.game');
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
         it('앱 사용기록을 잘못된 형태로 전송한 경우, 412 에러코드를 리턴한다.', done => {
             request.post('/stats/usages/app')
                 .set('x-access-token', config.appbeeToken.valid)
@@ -331,6 +350,7 @@ describe('Stats', () => {
             AppUsages.remove({})
                 .then(() => Users.remove({}))
                 .then(() => Apps.remove({}))
+                .then(() => UncrawledApps.remove({}))
                 .then(() => done())
                 .catch(err => done(err));
         });

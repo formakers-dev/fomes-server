@@ -4,6 +4,7 @@ const Stats = require('./../models/shortTermStats');
 const AppUsagesService = require('../services/appUsages');
 const AppService = require('../services/apps');
 const UserService = require('../services/users');
+const UncrawledAppsService = require('../services/uncrawledApps');
 
 const postShortTermStats = (req, res) => {
     if (!Array.isArray(req.body)) {
@@ -44,8 +45,16 @@ const postAppUsages = (req, res) => {
         const appUsages = req.body;
         AppService.getGameAppInfoForAnalysis(appUsages.map(appUsage => appUsage.packageName))
             .lean()
-            .then(appInfos => AppUsagesService.refreshAppUsages(req.user, appInfos,
-                    appUsages.filter(appUsage => appInfos.map(appInfo => appInfo.packageName).includes(appUsage.packageName))))
+            .then(appInfos => {
+                const packageNames = appInfos.map(appInfo => appInfo.packageName);
+                const identifiedAppUsages = appUsages.filter(appUsage => packageNames.includes(appUsage.packageName));
+                const unidentifiedAppUsages = appUsages.filter(appUsage => !(packageNames.includes(appUsage.packageName)));
+
+                return Promise.all([
+                    AppUsagesService.refreshAppUsages(req.user, appInfos, identifiedAppUsages),
+                    UncrawledAppsService.saveApps(unidentifiedAppUsages.map(i => i.packageName))
+                ]);
+            })
             .then(() => res.sendStatus(200))
             .catch(err => {
                 console.error(err);
