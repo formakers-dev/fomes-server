@@ -37,7 +37,7 @@ const convertToPublicAppInfo = (app, userId) => {
         installsMax : app.installsMax,
         contentsRating : app.contentsRating,
         imageUrls : app.imageUrls,
-        wishedByMe : !!(app.wishedBy && app.wishedBy.includes(userId))
+        isWished : !!(app.wishedBy && app.wishedBy.includes(userId))
     };
 };
 

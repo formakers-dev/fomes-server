@@ -92,7 +92,7 @@ const convertToRecommendApps = (recommendInfo, appUsages, user) => {
                     recommendType: recommendInfo.recommendType,
                     criteria: recommendInfo.criteria,
                     rank: rank++,
-                    app: setWishedByMeToAppUsage(appUsage, user.wishList)
+                    app: setisWishedToAppUsage(appUsage, user.wishList)
                 };
             })))
         .catch(err => {
@@ -101,8 +101,8 @@ const convertToRecommendApps = (recommendInfo, appUsages, user) => {
         });
 };
 
-const setWishedByMeToAppUsage = (appUsage, wishList) => {
-    appUsage.wishedByMe = !!(wishList && wishList.includes(appUsage.packageName));
+const setisWishedToAppUsage = (appUsage, wishList) => {
+    appUsage.isWished = !!(wishList && wishList.includes(appUsage.packageName));
     return appUsage;
 };
 

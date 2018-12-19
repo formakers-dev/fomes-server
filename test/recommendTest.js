@@ -223,7 +223,7 @@ describe('Recommend', () => {
                     res.body[0].app.developer.should.be.eql('Puzzle Game Corp.');
                     res.body[0].app.iconUrl.should.be.eql('iconUrl6');
                     res.body[0].app.totalUsedTime.should.be.eql(50000);
-                    res.body[0].app.wishedByMe.should.be.eql(true);
+                    res.body[0].app.isWished.should.be.eql(true);
 
                     res.body[1].recommendType.should.be.eql(3);
                     res.body[1].criteria.should.be.eql(["교육"]);
@@ -235,7 +235,7 @@ describe('Recommend', () => {
                     res.body[1].app.developer.should.be.eql('GameDuckHu Corp.');
                     res.body[1].app.iconUrl.should.be.eql('iconUrl33');
                     res.body[1].app.totalUsedTime.should.be.eql(15000);
-                    res.body[1].app.wishedByMe.should.be.eql(true);
+                    res.body[1].app.isWished.should.be.eql(true);
 
                     res.body[2].recommendType.should.be.eql(2);
                     res.body[2].criteria.should.be.eql(["Edu Game Corp."]);
@@ -247,7 +247,7 @@ describe('Recommend', () => {
                     res.body[2].app.developer.should.be.eql('Edu Game Corp.');
                     res.body[2].app.iconUrl.should.be.eql('iconUrl3');
                     res.body[2].app.totalUsedTime.should.be.eql(47300);
-                    res.body[2].app.wishedByMe.should.be.eql(false);
+                    res.body[2].app.isWished.should.be.eql(false);
 
                     res.body[3].recommendType.should.be.eql(1);
                     res.body[3].criteria.should.be.eql(['교육게임명']);
@@ -259,7 +259,7 @@ describe('Recommend', () => {
                     res.body[3].app.developer.should.be.eql('Puzzle Game Corp.');
                     res.body[3].app.iconUrl.should.be.eql('iconUrl6');
                     res.body[3].app.totalUsedTime.should.be.eql(50000);
-                    res.body[3].app.wishedByMe.should.be.eql(true);
+                    res.body[3].app.isWished.should.be.eql(true);
 
                     res.body[4].recommendType.should.be.eql(4);
                     res.body[4].criteria.should.be.eql(["20대","남성"]);
@@ -271,7 +271,7 @@ describe('Recommend', () => {
                     res.body[4].app.developer.should.be.eql('Edu Game Corp.');
                     res.body[4].app.iconUrl.should.be.eql('iconUrl3');
                     res.body[4].app.totalUsedTime.should.be.eql(47000);
-                    res.body[4].app.wishedByMe.should.be.eql(false);
+                    res.body[4].app.isWished.should.be.eql(false);
 
                     res.body[5].recommendType.should.be.eql(3);
                     res.body[5].criteria.should.be.eql(["교육"]);
@@ -283,7 +283,7 @@ describe('Recommend', () => {
                     res.body[5].app.developer.should.be.eql('GameDuckHu Corp.');
                     res.body[5].app.iconUrl.should.be.eql('iconUrl33');
                     res.body[5].app.totalUsedTime.should.be.eql(3000);
-                    res.body[5].app.wishedByMe.should.be.eql(false);
+                    res.body[5].app.isWished.should.be.eql(false);
 
                     res.body[6].recommendType.should.be.eql(1);
                     res.body[6].criteria.should.be.eql(['교육게임명']);
@@ -295,7 +295,7 @@ describe('Recommend', () => {
                     res.body[6].app.developer.should.be.eql('GameDuckHu Corp.');
                     res.body[6].app.iconUrl.should.be.eql('iconUrl33');
                     res.body[6].app.totalUsedTime.should.be.eql(3000);
-                    res.body[6].app.wishedByMe.should.be.eql(false);
+                    res.body[6].app.isWished.should.be.eql(false);
 
                     done();
                 }).catch(err => done(err));
@@ -318,7 +318,7 @@ describe('Recommend', () => {
                     res.body[0].app.developer.should.be.eql('GameDuckHu Corp.');
                     res.body[0].app.iconUrl.should.be.eql('iconUrl33');
                     res.body[0].app.totalUsedTime.should.be.eql(15000);
-                    res.body[0].app.wishedByMe.should.be.eql(true);
+                    res.body[0].app.isWished.should.be.eql(true);
 
                     res.body[1].recommendType.should.be.eql(1);
                     res.body[1].criteria.should.be.eql(['교육게임명']);
@@ -330,7 +330,7 @@ describe('Recommend', () => {
                     res.body[1].app.developer.should.be.eql('Edu Game Corp.');
                     res.body[1].app.iconUrl.should.be.eql('iconUrl3');
                     res.body[1].app.totalUsedTime.should.be.eql(2000);
-                    res.body[1].app.wishedByMe.should.be.eql(false);
+                    res.body[1].app.isWished.should.be.eql(false);
 
                     res.body[2].recommendType.should.be.eql(4);
                     res.body[2].criteria.should.be.eql(["20대","남성"]);
@@ -342,7 +342,7 @@ describe('Recommend', () => {
                     res.body[2].app.developer.should.be.eql('GameDuckHu Corp.');
                     res.body[2].app.iconUrl.should.be.eql('iconUrl33');
                     res.body[2].app.totalUsedTime.should.be.eql(3000);
-                    res.body[2].app.wishedByMe.should.be.eql(false);
+                    res.body[2].app.isWished.should.be.eql(false);
 
                     done();
                 }).catch(err => done(err));

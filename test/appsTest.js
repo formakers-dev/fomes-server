@@ -62,7 +62,7 @@ describe('Apps', () => {
                     app.installsMax.should.be.eql(100000);
                     app.contentsRating.should.be.eql('만 12세 이상');
                     app.imageUrls.should.be.eql(['http://edu-url.com', 'http://edu-url2.com']);
-                    app.wishedByMe.should.be.eql(true);
+                    app.isWished.should.be.eql(true);
 
                     done();
                 })

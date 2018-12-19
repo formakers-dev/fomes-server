@@ -624,7 +624,7 @@ describe('Users', () => {
                     res.body[0].categoryName.should.be.eql('교육');
                     res.body[0].developer.should.be.eql('Edu Game Corp.');
                     res.body[0].iconUrl.should.be.eql('iconUrl3');
-                    res.body[0].wishedByMe.should.be.eql(true);
+                    res.body[0].isWished.should.be.eql(true);
 
                     res.body[1].packageName.should.be.eql('com.game.edu2');
                     res.body[1].appName.should.be.eql('교육게임명2');
@@ -632,7 +632,7 @@ describe('Users', () => {
                     res.body[1].categoryName.should.be.eql('교육');
                     res.body[1].developer.should.be.eql('GameDuckHu Corp.');
                     res.body[1].iconUrl.should.be.eql('iconUrl32');
-                    res.body[1].wishedByMe.should.be.eql(true);
+                    res.body[1].isWished.should.be.eql(true);
 
                     done();
                 }).catch(err => done(err));
