@@ -1,25 +1,17 @@
 const Configurations = require('./../models/configurations');
 
-const getMinAppVersionCode = (req, res) => {
+const getMinAppVersionCode = (req, res, next) => {
     Configurations.findOne({})
         .exec()
         .then(configuration => res.json(configuration.minAppVersionCode))
-        .catch(err => {
-            console.error(err);
-            res.send(err);
-        });
+        .catch(err => next(err));
 };
 
-const getExcludePackageNames = (req, res) => {
+const getExcludePackageNames = (req, res, next) => {
     Configurations.findOne({})
         .exec()
-        .then(configuration => {
-            res.json(configuration.excludeAnalysisPackageNames);
-        })
-        .catch(err => {
-            console.error(err);
-            res.send(err);
-        });
+        .then(configuration => res.json(configuration.excludeAnalysisPackageNames))
+        .catch(err => next(err));
 };
 
 module.exports = {getMinAppVersionCode, getExcludePackageNames};

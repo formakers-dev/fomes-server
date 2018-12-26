@@ -6,9 +6,10 @@ const AppService = require('../services/apps');
 const UserService = require('../services/users');
 const UncrawledAppsService = require('../services/uncrawledApps');
 
-const postShortTermStats = (req, res) => {
+const postShortTermStats = (req, res, next) => {
     if (!Array.isArray(req.body)) {
-        res.sendStatus(412);
+        res.status(412);
+        next(new Error('Empty ShortTermStats'));
     } else if (req.body.length < 1) {
         res.sendStatus(200);
     } else {
@@ -29,16 +30,14 @@ const postShortTermStats = (req, res) => {
                 {$set: {"lastStatsUpdateTime" : new Date()}},
                 {upsert: true}))
             .then(() => res.sendStatus(200))
-            .catch(err => {
-                console.error(JSON.stringify(err, null, 2));
-                res.sendStatus(500);
-            });
+            .catch(err => next(err));
     }
 };
 
-const postAppUsages = (req, res) => {
+const postAppUsages = (req, res, next) => {
     if (!Array.isArray(req.body)) {
-        res.sendStatus(412);
+        res.status(412);
+        next(new Error('Empty AppUsages'));
     } else if (req.body.length < 1) {
         res.sendStatus(200);
     } else {
@@ -56,17 +55,11 @@ const postAppUsages = (req, res) => {
                 ]);
             })
             .then(() => res.sendStatus(200))
-            .catch(err => {
-                console.error(err);
-                res.status(500).json({
-                    success: false,
-                    message: err.message
-                });
-            });
+            .catch(err => next(err));
     }
 };
 
-const getReport = (req, res) => {
+const getReport = (req, res, next) => {
     console.log("getReport", "userId=", req.userId, "categoryId=", req.params.categoryId);
 
     const result = { totalUsedTimeRank: [], usages: [] };
@@ -94,14 +87,7 @@ const getReport = (req, res) => {
         result.usages.push(jobAppUsages);
 
         res.json(result);
-    }).catch(err => {
-        console.error("getReport", "userId=", req.userId, "err=", err);
-
-        res.status(500).json({
-            success: false,
-            message: err.message
-        });
-    })
+    }).catch(err => next(err))
 };
 
 /** start of private methods **/

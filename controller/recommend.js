@@ -3,13 +3,14 @@ const RecommendAppsService = require('../services/recommendApps');
 const AppUsageService = require('../services/appUsages');
 const UserService = require('../services/users');
 
-const getRecommendApps = (req, res) => {
+const getRecommendApps = (req, res, next) => {
     const page = parseInt(req.query.page);
     const eachLimit = (req.query.eachLimit) ? parseInt(req.query.eachLimit) : 5;
     let user;
 
     if (!PagingUtil.isValidPageAndLimit(page, eachLimit)) {
-        res.sendStatus(412);
+        res.status(412);
+        next(new Error('Invalid Paging Parameter'));
         return;
     }
 
@@ -37,13 +38,7 @@ const getRecommendApps = (req, res) => {
             }
         }))
         .then(sortedResult => res.json(sortedResult))
-        .catch(err => {
-            console.error(err);
-            res.status(500).json({
-                success: false,
-                message: err.message
-            });
-        });
+        .catch(err => next(err));
 };
 
 module.exports = {getRecommendApps};

@@ -1,26 +1,26 @@
 const Projects = require('../models/projects');
 const ParticipationHistories = require('../models/participationHistories');
 
-const getProject = (req, res) => {
+const getProject = (req, res, next) => {
     const projectId = parseInt(req.params.id);
 
     Projects.findOne({projectId: projectId, status: 'registered'})
         .select('-interviews')
         .exec()
         .then(project => res.json(project))
-        .catch(err => sendStatus500Error(err, res));
+        .catch(err => next(err));
 };
 
-const getProjectList = (req, res) => {
+const getProjectList = (req, res, next) => {
     Projects.find({status: 'registered'})
         .select('-interviews')
         .sort({projectId: 1})
         .exec()
         .then(projects => res.json(projects))
-        .catch(err => sendStatus500Error(err, res));
+        .catch(err => next(err));
 };
 
-const getInterview = (req, res) => {
+const getInterview = (req, res, next) => {
     const userId = req.userId;
 
     Projects.aggregate([
@@ -38,8 +38,8 @@ const getInterview = (req, res) => {
         .exec()
         .then(projectInterviews => {
             if (!projectInterviews || projectInterviews.length === 0) {
-                res.sendStatus(406);
-                return;
+                res.status(406);
+                throw new Error('Does not exist the Interview');
             }
 
             const interview = projectInterviews[0].interviews;
@@ -55,10 +55,10 @@ const getInterview = (req, res) => {
 
             res.json(projectInterviews[0]);
         })
-        .catch(err => sendStatus500Error(err, res));
+        .catch(err => next(err));
 };
 
-const getInterviewList = (req, res) => {
+const getInterviewList = (req, res, next) => {
     const currentTime = new Date();
     const userId = req.userId;
 
@@ -78,7 +78,7 @@ const getInterviewList = (req, res) => {
     ])
         .exec()
         .then(projectInterviews => res.json(filterRegisterdInterviews(userId, projectInterviews)))
-        .catch(err => sendStatus500Error(err, res));
+        .catch(err => next(err));
 };
 
 const filterRegisterdInterviews = (userId, projectInterviews) => {
@@ -96,7 +96,7 @@ const isAvailableToParticipate = (interview) => {
     return (Object.keys(interview.timeSlot).filter(key => interview.timeSlot[key] !== '').length < interview.totalCount);
 };
 
-const getRegisteredInterviewList = (req, res) => {
+const getRegisteredInterviewList = (req, res, next) => {
     const currentTime = new Date();
     const userId = req.userId;
 
@@ -145,10 +145,10 @@ const getRegisteredInterviewList = (req, res) => {
 
             res.json(projects);
         })
-        .catch(err => sendStatus500Error(err, res));
+        .catch(err => next(err));
 };
 
-const postParticipate = (req, res) => {
+const postParticipate = (req, res, next) => {
     const projectId = parseInt(req.params.id);
     const interviewSeq = parseInt(req.params.seq);
     const slotId = req.params.slotId;
@@ -178,16 +178,22 @@ const postParticipate = (req, res) => {
             //TODO: 다른 프로젝트,인터뷰의 동일 시간대에 참여 중인 경우 에러 처리
             if (interview.status !== 'registered') {
                 res.sendStatus(406);
+                throw new Error();
             } else if (currentTime <= interview.openDate || currentTime >= interview.closeDate) {
                 res.sendStatus(412);
+                throw new Error();
             } else if (!isAvailableToParticipate(interview)) {
                 res.sendStatus(412);
+                throw new Error();
             } else if (!Object.keys(interview.timeSlot).includes(slotId)) {
                 res.sendStatus(416);
+                throw new Error();
             } else if (interview.timeSlot[slotId] !== "") {
                 res.sendStatus(409);
+                throw new Error();
             } else if (Object.keys(interview.timeSlot).filter(id => interview.timeSlot[id] === userId).length > 0) {
                 res.sendStatus(405);
+                throw new Error();
             } else {
                 setTimeSlotWithUserId(projectId, interviewSeq, slotId, userId)
                     .then(() => {
@@ -195,10 +201,12 @@ const postParticipate = (req, res) => {
                             .then(() => res.sendStatus(200))
                             .catch(() => res.sendStatus(200));
                     })
-                    .catch(err => sendStatus500Error(err, res));
+                    .catch(err => {
+                        throw err;
+                    });
             }
         })
-        .catch(err => sendStatus500Error(err, res));
+        .catch(err => next(err));
 };
 
 const setTimeSlotWithUserId = (projectId, interviewSeq, slotId, userId) => {
@@ -210,7 +218,7 @@ const setTimeSlotWithUserId = (projectId, interviewSeq, slotId, userId) => {
         {$set: updateTargetSlot}, {upsert: true}).exec();
 };
 
-const cancelParticipation = (req, res) => {
+const cancelParticipation = (req, res, next) => {
     const projectId = parseInt(req.params.id);
     const interviewSeq = parseInt(req.params.seq);
     const slotId = req.params.slotId;
@@ -242,10 +250,13 @@ const cancelParticipation = (req, res) => {
 
             if (!Object.keys(interview.timeSlot).includes(slotId)) {
                 res.sendStatus(416);
+                throw new Error();
             } else if (currentTime >= deadline) {
                 res.sendStatus(412);
+                throw new Error();
             } else if (Object.keys(interview.timeSlot).filter(id => (id === slotId && interview.timeSlot[id] !== userId)).length > 0) {
                 res.sendStatus(406);
+                throw new Error();
             } else {
                 setTimeSlotWithUserId(projectId, interviewSeq, slotId, '')
                     .then(() => {
@@ -253,10 +264,12 @@ const cancelParticipation = (req, res) => {
                             .then(() => res.sendStatus(200))
                             .catch(() => res.sendStatus(200));
                     })
-                    .catch(err => sendStatus500Error(err, res));
+                    .catch(err => {
+                        throw err;
+                    });
             }
         })
-        .catch(err => sendStatus500Error(err, res));
+        .catch(err => next(err));
 
 };
 
@@ -268,11 +281,6 @@ const createParticipationHistory = (userId, type, projectId, interviewSeq, slotI
         interviewSeq: interviewSeq,
         slotId: slotId
     });
-};
-
-const sendStatus500Error = (err, res) => {
-    console.error(err);
-    res.sendStatus(500);
 };
 
 module.exports = {
