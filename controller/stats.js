@@ -5,11 +5,11 @@ const AppUsagesService = require('../services/appUsages');
 const AppService = require('../services/apps');
 const UserService = require('../services/users');
 const UncrawledAppsService = require('../services/uncrawledApps');
+const Boom = require('boom');
 
 const postShortTermStats = (req, res, next) => {
     if (!Array.isArray(req.body)) {
-        res.status(412);
-        next(new Error('Empty ShortTermStats'));
+        next(Boom.preconditionFailed('Empty ShortTermStats'));
     } else if (req.body.length < 1) {
         res.sendStatus(200);
     } else {
@@ -36,8 +36,7 @@ const postShortTermStats = (req, res, next) => {
 
 const postAppUsages = (req, res, next) => {
     if (!Array.isArray(req.body)) {
-        res.status(412);
-        next(new Error('Empty AppUsages'));
+        next(Boom.preconditionFailed('Empty AppUsages'));
     } else if (req.body.length < 1) {
         res.sendStatus(200);
     } else {

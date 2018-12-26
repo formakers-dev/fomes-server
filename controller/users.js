@@ -3,6 +3,7 @@ const InvitationCodes = require('../models/invitationCodes');
 const config = require('../config');
 const UserService = require('../services/users');
 const AppService = require('../services/apps');
+const Boom = require('boom');
 
 const signUpUser = (req, res, next) => {
     UserService.getUser(req.userId)
@@ -21,8 +22,7 @@ const upsertUser = (req, res, next) => {
     UserService.upsertUser(req.userId, req.body)
         .then(() => next())
         .catch(err => {
-            res.status((err instanceof UserService.NickNameDuplicationError) ? 409 : 500);
-            next(err);
+            next((err instanceof UserService.NickNameDuplicationError)? Boom.conflict() : err);
         });
 };
 
@@ -47,8 +47,7 @@ const verifyInvitationCode = (req, res, next) => {
             if (code) {
                 res.sendStatus(200);
             } else {
-                res.status(412);
-                throw new Error('Wrong Invitation Code');
+                throw Boom.preconditionFailed('Wrong Invitation Code');
             }
         })
         .catch(err => next(err));
@@ -56,8 +55,7 @@ const verifyInvitationCode = (req, res, next) => {
 
 const verifyUserInfo = (req, res, next) => {
     if (Object.keys(req.query).length === 0) {
-        res.status(422);
-        next(new Error('Empty Params'));
+        next(Boom.badData('Empty Params'));
         return;
     }
 
@@ -66,8 +64,7 @@ const verifyUserInfo = (req, res, next) => {
             if (!isDuplicated) {
                 res.sendStatus(200);
             } else {
-                res.status(409);
-                throw new Error('Duplicated NickName');
+                throw Boom.conflict('Duplicated NickName');
             }
         })
         .catch(err => next(err));

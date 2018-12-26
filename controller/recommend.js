@@ -2,6 +2,7 @@ const PagingUtil = require('../utils/paging');
 const RecommendAppsService = require('../services/recommendApps');
 const AppUsageService = require('../services/appUsages');
 const UserService = require('../services/users');
+const Boom = require('boom');
 
 const getRecommendApps = (req, res, next) => {
     const page = parseInt(req.query.page);
@@ -9,8 +10,7 @@ const getRecommendApps = (req, res, next) => {
     let user;
 
     if (!PagingUtil.isValidPageAndLimit(page, eachLimit)) {
-        res.status(412);
-        next(new Error('Invalid Paging Parameter'));
+        next(Boom.preconditionFailed('Invalid Paging Parameter'));
         return;
     }
 

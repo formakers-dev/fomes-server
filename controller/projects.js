@@ -1,12 +1,12 @@
 const Projects = require('../models/projects');
 const ParticipationHistories = require('../models/participationHistories');
+const Boom = require('boom');
 
 const getProject = (req, res, next) => {
     const projectId = parseInt(req.params.id);
 
     Projects.findOne({projectId: projectId, status: 'registered'})
         .select('-interviews')
-        .exec()
         .then(project => res.json(project))
         .catch(err => next(err));
 };
@@ -15,7 +15,6 @@ const getProjectList = (req, res, next) => {
     Projects.find({status: 'registered'})
         .select('-interviews')
         .sort({projectId: 1})
-        .exec()
         .then(projects => res.json(projects))
         .catch(err => next(err));
 };
@@ -35,11 +34,9 @@ const getInterview = (req, res, next) => {
             }
         }
     ])
-        .exec()
         .then(projectInterviews => {
             if (!projectInterviews || projectInterviews.length === 0) {
-                res.status(406);
-                throw new Error('Does not exist the Interview');
+                throw Boom.notAcceptable('Does not exist the Interview');
             }
 
             const interview = projectInterviews[0].interviews;
@@ -76,7 +73,6 @@ const getInterviewList = (req, res, next) => {
         },
         {$sort: {'interviews.interviewDate': -1, 'projectId': 1, 'interviews.seq': 1}}
     ])
-        .exec()
         .then(projectInterviews => res.json(filterRegisterdInterviews(userId, projectInterviews)))
         .catch(err => next(err));
 };
@@ -134,7 +130,6 @@ const getRegisteredInterviewList = (req, res, next) => {
         },
         {$sort: {'interviews.interviewDate': -1}}
     ])
-        .exec()
         .then(projects => {
             projects.forEach(project => {
                 const timeSlot = project.interviews.timeSlot;
@@ -171,29 +166,22 @@ const postParticipate = (req, res, next) => {
             }
         }
     ])
-        .exec()
         .then(interviews => {
             const interview = interviews[0];
 
             //TODO: 다른 프로젝트,인터뷰의 동일 시간대에 참여 중인 경우 에러 처리
             if (interview.status !== 'registered') {
-                res.sendStatus(406);
-                throw new Error();
+                throw Boom.notAcceptable();
             } else if (currentTime <= interview.openDate || currentTime >= interview.closeDate) {
-                res.sendStatus(412);
-                throw new Error();
+                throw Boom.preconditionFailed();
             } else if (!isAvailableToParticipate(interview)) {
-                res.sendStatus(412);
-                throw new Error();
+                throw Boom.preconditionFailed();
             } else if (!Object.keys(interview.timeSlot).includes(slotId)) {
-                res.sendStatus(416);
-                throw new Error();
+                throw Boom.rangeNotSatisfiable();
             } else if (interview.timeSlot[slotId] !== "") {
-                res.sendStatus(409);
-                throw new Error();
+                throw Boom.conflict();
             } else if (Object.keys(interview.timeSlot).filter(id => interview.timeSlot[id] === userId).length > 0) {
-                res.sendStatus(405);
-                throw new Error();
+                throw Boom.methodNotAllowed();
             } else {
                 setTimeSlotWithUserId(projectId, interviewSeq, slotId, userId)
                     .then(() => {
@@ -241,22 +229,18 @@ const cancelParticipation = (req, res, next) => {
             }
         }
     ])
-        .exec()
         .then(interviews => {
             const interview = interviews[0];
             const hour = parseInt(slotId.substr(4));
             const deadline = interview.interviewDate;
             deadline.setHours(hour, 0, 0, 0);
 
-            if (!Object.keys(interview.timeSlot).includes(slotId)) {
-                res.sendStatus(416);
-                throw new Error();
-            } else if (currentTime >= deadline) {
-                res.sendStatus(412);
-                throw new Error();
+            if (currentTime >= deadline) {
+                throw Boom.preconditionFailed();
+            } else if (!Object.keys(interview.timeSlot).includes(slotId)) {
+                throw Boom.rangeNotSatisfiable();
             } else if (Object.keys(interview.timeSlot).filter(id => (id === slotId && interview.timeSlot[id] !== userId)).length > 0) {
-                res.sendStatus(406);
-                throw new Error();
+                throw Boom.notAcceptable();
             } else {
                 setTimeSlotWithUserId(projectId, interviewSeq, slotId, '')
                     .then(() => {
@@ -270,7 +254,6 @@ const cancelParticipation = (req, res, next) => {
             }
         })
         .catch(err => next(err));
-
 };
 
 const createParticipationHistory = (userId, type, projectId, interviewSeq, slotId) => {
