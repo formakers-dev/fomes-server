@@ -1,0 +1,139 @@
+const chai = require('chai');
+const server = require('../server');
+const config = require('../config');
+const request = require('supertest').agent(server);
+const sinon = require('sinon');
+const should = chai.should();
+
+const Requests = require('../models/requests');
+const helper = require('./commonTestHelper');
+
+describe('Requests', () => {
+    const sandbox = sinon.sandbox.create();
+
+    const data = [
+        {
+            title : "전체 유저 대상 테스트",
+            subTitle: "targetUserIds 가 없어요",
+            type: "ONLINE",
+            typeTags: ['1:1', "인터뷰"],
+            openDate: new Date('2018-12-26'),
+            closeDate: new Date('2018-12-31'),
+            actionType: 'link',
+            action: 'https://www.google.com'
+        }, {
+            title : "타겟팅 된 테스트",
+            subTitle: "적합한 테스터는 너야너 너야너",
+            type: "ONLINE",
+            typeTags: ['1:1', "인터뷰"],
+            openDate: new Date('2018-12-26'),
+            closeDate: new Date('2018-12-31'),
+            actionType: 'link',
+            action: 'https://www.google.com',
+            targetUserIds: [config.testUser.userId, "anotherUserId"]
+        }, {
+            title : "타겟팅 되지 않은 테스트",
+            subTitle: "응 탈락",
+            type: "ONLINE",
+            typeTags: ['1:1', "인터뷰"],
+            openDate: new Date('2018-12-26'),
+            closeDate: new Date('2018-12-31'),
+            actionType: 'link',
+            action: 'https://www.google.com',
+            targetUserIds: ['anotherUserId']
+        }, {
+            title : "아무도 타겟팅 되지 않은 테스트",
+            subTitle: "응 모두 탈락",
+            type: "ONLINE",
+            typeTags: ['1:1', "인터뷰"],
+            openDate: new Date('2018-12-26'),
+            closeDate: new Date('2018-12-31'),
+            actionType: 'link',
+            action: 'https://www.google.com',
+            targetUserIds: []
+        },  {
+            title : "이미 참여한 테스트",
+            subTitle: "참여했다",
+            type: "ONLINE",
+            typeTags: ['1:1', "인터뷰"],
+            openDate: new Date('2018-12-26'),
+            closeDate: new Date('2018-12-31'),
+            actionType: 'link',
+            action: 'https://www.google.com',
+            registeredUserIds: [config.testUser.userId]
+        }
+    ];
+
+    before(done => {
+        helper.commonBefore()
+            .then(() => Requests.create(data))
+            .then(() => done())
+            .catch(err => done(err));
+    });
+
+    describe('GET /requests', () => {
+        let clock;
+
+        beforeEach(() => {
+            clock = sandbox.useFakeTimers(new Date("2018-12-28T02:30:00.000Z").getTime());
+        });
+
+        it('참여 가능한 피드백 요청 목록을 조회한다', done => {
+            request.get('/requests')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.sort((a, b) => a.title > b.title ? 1 : -1);
+
+                    res.body.length.should.be.eql(2);
+
+                    res.body[0].title.should.be.eql('전체 유저 대상 테스트');
+                    res.body[0].subTitle.should.be.eql('targetUserIds 가 없어요');
+                    should.not.exist(res.body[0].targetUserIds);
+                    should.not.exist(res.body[0].registeredUserIds);
+
+                    res.body[1].title.should.be.eql('타겟팅 된 테스트');
+                    res.body[1].subTitle.should.be.eql('적합한 테스터는 너야너 너야너');
+                    should.not.exist(res.body[1].targetUserIds);
+                    should.not.exist(res.body[1].registeredUserIds);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('오픈되지 않은 요청 건은 조회하지 않는다', done => {
+            clock = sandbox.useFakeTimers(new Date("2018-11-01T02:30:00.000Z").getTime());
+
+            request.get('/requests')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.length.should.be.eql(0);
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('마감기간이 지난 요청 건은 조회하지 않는다', done => {
+            clock = sandbox.useFakeTimers(new Date("2019-01-30T02:30:00.000Z").getTime());
+
+            request.get('/requests')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.length.should.be.eql(0);
+                    done();
+                }).catch(err => done(err));
+        });
+
+        afterEach(() => {
+            clock.restore();
+        })
+    });
+
+    after(done => {
+        helper.commonAfter()
+            .then(() => Requests.remove({}))
+            .then(() => done())
+            .catch(err => done(err));
+    });
+});
