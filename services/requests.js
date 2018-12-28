@@ -1,6 +1,6 @@
 const Requests = require('../models/requests');
 
-const getValidRequests = (userId) => {
+const findValidRequests = (userId) => {
     const currentTime = new Date();
 
     return Requests.find({
@@ -14,6 +14,14 @@ const getValidRequests = (userId) => {
         }, {targetUserIds: 0, registeredUserIds: 0 });
 };
 
+const updateRegistered = (userId, requestId) => {
+    return Requests.findOneAndUpdate({ $and: [
+                { id: requestId },
+                { registeredUserIds: { $nin: [ userId ] } }
+           ]}, { $push: { registeredUserIds: userId } }, { upsert: true });
+};
+
 module.exports = {
-    getValidRequests
+    findValidRequests,
+    updateRegistered
 };

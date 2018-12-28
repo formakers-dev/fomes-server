@@ -13,6 +13,7 @@ describe('Requests', () => {
 
     const data = [
         {
+            id : 1,
             title : "전체 유저 대상 테스트",
             subTitle: "targetUserIds 가 없어요",
             type: "ONLINE",
@@ -22,6 +23,7 @@ describe('Requests', () => {
             actionType: 'link',
             action: 'https://www.google.com'
         }, {
+            id : 2,
             title : "타겟팅 된 테스트",
             subTitle: "적합한 테스터는 너야너 너야너",
             type: "ONLINE",
@@ -32,6 +34,7 @@ describe('Requests', () => {
             action: 'https://www.google.com',
             targetUserIds: [config.testUser.userId, "anotherUserId"]
         }, {
+            id : 3,
             title : "타겟팅 되지 않은 테스트",
             subTitle: "응 탈락",
             type: "ONLINE",
@@ -42,6 +45,7 @@ describe('Requests', () => {
             action: 'https://www.google.com',
             targetUserIds: ['anotherUserId']
         }, {
+            id : 4,
             title : "아무도 타겟팅 되지 않은 테스트",
             subTitle: "응 모두 탈락",
             type: "ONLINE",
@@ -52,6 +56,7 @@ describe('Requests', () => {
             action: 'https://www.google.com',
             targetUserIds: []
         },  {
+            id : 5,
             title : "이미 참여한 테스트",
             subTitle: "참여했다",
             type: "ONLINE",
@@ -66,7 +71,12 @@ describe('Requests', () => {
 
     before(done => {
         helper.commonBefore()
-            .then(() => Requests.create(data))
+            .then(() => done())
+            .catch(err => done(err));
+    });
+
+    beforeEach(done => {
+        Requests.create(data)
             .then(() => done())
             .catch(err => done(err));
     });
@@ -130,9 +140,45 @@ describe('Requests', () => {
         })
     });
 
+    describe('POST /requests/:id/register', () => {
+        it('요청한 유저를 등록(참여) 리스트에 추가한다', done => {
+            request.post('/requests/1/register')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(() => Requests.findOne({id: 1}))
+                .then(res => {
+                    res.registeredUserIds.length.should.be.eql(1);
+                    res.registeredUserIds[0].should.be.eql(config.testUser.userId);
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        it('요청한 유저가 이미 등록(참여)된 경우에는 등록 리스트에 추가하지 않는다', done => {
+            request.post('/requests/5/register')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(() => Requests.findOne({id: 5}))
+                .then(res => {
+                    console.log(res);
+                    res.registeredUserIds.length.should.be.eql(1);
+                    res.registeredUserIds[0].should.be.eql(config.testUser.userId);
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
+    });
+
+    afterEach(done => {
+        Requests.remove({})
+            .then(() => done())
+            .catch(err => done(err));
+    });
+
     after(done => {
         helper.commonAfter()
-            .then(() => Requests.remove({}))
             .then(() => done())
             .catch(err => done(err));
     });
