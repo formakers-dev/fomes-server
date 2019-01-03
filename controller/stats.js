@@ -61,11 +61,12 @@ const postAppUsages = (req, res, next) => {
 const getReport = (req, res, next) => {
     console.log("getReport", "userId=", req.userId, "categoryId=", req.params.categoryId);
 
-    const result = { totalUsedTimeRank: [], usages: [] };
+    const result = { totalUsedTimeRank: [], usages: [], totalUserCount: 0 };
 
     // 사용시간 순위
-    AppUsagesService.getTotalUsedTimeRankList(req.userId, req.params.categoryId).then(ranks => {
-        result.totalUsedTimeRank = ranks;
+    AppUsagesService.getTotalUsedTimeOverview(req.userId, req.params.categoryId).then(res => {
+        result.totalUsedTimeRank = res.ranks;
+        result.totalUserCount = res.totalUserCount;
 
         // 요청한 유저의 앱 사용 데이터
         return AppUsagesService.aggregateAppUsageByCategory(req.userId, req.params.categoryId);

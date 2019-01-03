@@ -3,7 +3,7 @@ const UsagesUtil = require('../utils/usages');
 const PagingUtil = require('../utils/paging');
 const { AppUsages } = require('../models/appUsages');
 
-const getTotalUsedTimeRankList = (userId, categoryId) => {
+const getTotalUsedTimeOverview = (userId, categoryId) => {
     return new Promise((resolve, reject) => {
         AppUsages.aggregate([
             {$match: {categoryId: { $regex: new RegExp(categoryId) }}},
@@ -19,18 +19,22 @@ const getTotalUsedTimeRankList = (userId, categoryId) => {
             const best = sortedRanks[0];
             const worst = sortedRanks[sortedRanks.length - 1];
 
-            const result = [];
-            result.push(mine, best, worst);
+            const result = { ranks: [], totalUsedTime: 0 };
 
-            resolve(result.filter(rank => rank).map(rank => {
+            result.ranks.push(mine, best, worst);
+            result.ranks = result.ranks.filter(rank => rank).map(rank => {
                 return {
                     userId: rank._id,
                     rank: sortedRanks.indexOf(rank) + 1,
-                    content: rank.totalUsedTime
+                    content: rank.totalUsedTime,
                 }
-            }));
+            });
+
+            result.totalUserCount = sortedRanks.length;
+
+            resolve(result);
         }).catch(err => {
-            console.error("getTotalUsedTimeRankList", "userId=", userId, "err=", err);
+            console.error("getTotalUsedTimeOverview", "userId=", userId, "err=", err);
             reject(err);
         })
     });
@@ -340,7 +344,7 @@ const getUserIdsUsingApp = (packageName) => {
 };
 
 module.exports = {
-    getTotalUsedTimeRankList,
+    getTotalUsedTimeOverview,
     aggregateAppUsageByCategory,
     findAppUsageByCategory,
     refreshAppUsages,

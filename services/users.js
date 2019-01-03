@@ -90,7 +90,6 @@ const isDuplicatedNickName = (userId, nickName) => {
     return new Promise((resolve, reject) => {
         Users.findOne({userId: {$ne: userId}, nickName: nickName})
             .then(user => {
-                console.log("userService", user);
                 if (user) {
                     resolve(true);
                 } else {

@@ -584,6 +584,8 @@ describe('Stats', () => {
                             res.body.totalUsedTimeRank[2].rank.should.be.eql(4);
                             res.body.totalUsedTimeRank[2].content.should.be.eql(11000);
 
+                            res.body.totalUserCount.should.be.eql(4);
+
                             done();
                         }).catch(err => done(err));
                 });
@@ -608,6 +610,9 @@ describe('Stats', () => {
                             res.body.totalUsedTimeRank[1].userId.should.be.eql("peopleId1");
                             res.body.totalUsedTimeRank[1].rank.should.be.eql(3);
                             res.body.totalUsedTimeRank[1].content.should.be.eql(11000);
+
+                            res.body.totalUserCount.should.be.eql(3);
+
                             done();
                         }).catch(err => done(err))
                 });
