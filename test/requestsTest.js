@@ -95,30 +95,109 @@ describe('Requests', () => {
                 .then(res => {
                     res.body.sort((a, b) => a.title > b.title ? 1 : -1);
 
-                    res.body.length.should.be.eql(2);
+                    res.body.length.should.be.eql(3);
 
-                    res.body[0].title.should.be.eql('전체 유저 대상 테스트');
-                    res.body[0].subTitle.should.be.eql('targetUserIds 가 없어요');
-                    should.not.exist(res.body[0].targetUserIds);
-                    should.not.exist(res.body[0].registeredUserIds);
+                    res.body[0].title.should.be.eql('이미 참여한 테스트');
+                    res.body[0].subTitle.should.be.eql('참여했다');
+                    res.body[0].type.should.be.eql('ONLINE');
+                    res.body[0].typeTags.length.should.be.eql(2);
+                    res.body[0].typeTags[0].should.be.eql('1:1');
+                    res.body[0].typeTags[1].should.be.eql('인터뷰');
+                    res.body[0].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
+                    res.body[0].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
+                    res.body[0].actionType.should.be.eql('link');
+                    res.body[0].action.should.be.eql('https://www.google.com');
+                    res.body[0].isOpened.should.be.eql(true);
+                    res.body[0].isRegistered.should.be.eql(true);
 
-                    res.body[1].title.should.be.eql('타겟팅 된 테스트');
-                    res.body[1].subTitle.should.be.eql('적합한 테스터는 너야너 너야너');
+                    res.body[1].title.should.be.eql('전체 유저 대상 테스트');
+                    res.body[1].subTitle.should.be.eql('targetUserIds 가 없어요');
+                    res.body[1].type.should.be.eql('ONLINE');
+                    res.body[1].typeTags.length.should.be.eql(2);
+                    res.body[1].typeTags[0].should.be.eql('1:1');
+                    res.body[1].typeTags[1].should.be.eql('인터뷰');
+                    res.body[1].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
+                    res.body[1].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
+                    res.body[1].actionType.should.be.eql('link');
+                    res.body[1].action.should.be.eql('https://www.google.com');
+                    res.body[1].isOpened.should.be.eql(true);
+                    res.body[1].isRegistered.should.be.eql(false);
                     should.not.exist(res.body[1].targetUserIds);
                     should.not.exist(res.body[1].registeredUserIds);
+
+                    res.body[2].title.should.be.eql('타겟팅 된 테스트');
+                    res.body[2].subTitle.should.be.eql('적합한 테스터는 너야너 너야너');
+                    res.body[2].type.should.be.eql('ONLINE');
+                    res.body[2].typeTags.length.should.be.eql(2);
+                    res.body[2].typeTags[0].should.be.eql('1:1');
+                    res.body[2].typeTags[1].should.be.eql('인터뷰');
+                    res.body[2].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
+                    res.body[2].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
+                    res.body[2].actionType.should.be.eql('link');
+                    res.body[2].action.should.be.eql('https://www.google.com');
+                    res.body[2].isOpened.should.be.eql(true);
+                    res.body[2].isRegistered.should.be.eql(false);
+                    should.not.exist(res.body[2].targetUserIds);
+                    should.not.exist(res.body[2].registeredUserIds);
 
                     done();
                 }).catch(err => done(err));
         });
 
-        it('오픈되지 않은 요청 건은 조회하지 않는다', done => {
+        it('오픈되지 않은 요청 건도 조회한다', done => {
             clock = sandbox.useFakeTimers(new Date("2018-11-01T02:30:00.000Z").getTime());
 
             request.get('/requests')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
-                    res.body.length.should.be.eql(0);
+                    res.body.sort((a, b) => a.title > b.title ? 1 : -1);
+
+                    res.body.length.should.be.eql(3);
+
+                    res.body[0].title.should.be.eql('이미 참여한 테스트');
+                    res.body[0].subTitle.should.be.eql('참여했다');
+                    res.body[0].type.should.be.eql('ONLINE');
+                    res.body[0].typeTags.length.should.be.eql(2);
+                    res.body[0].typeTags[0].should.be.eql('1:1');
+                    res.body[0].typeTags[1].should.be.eql('인터뷰');
+                    res.body[0].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
+                    res.body[0].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
+                    res.body[0].actionType.should.be.eql('link');
+                    res.body[0].action.should.be.eql('https://www.google.com');
+                    res.body[0].isOpened.should.be.eql(false);
+                    res.body[0].isRegistered.should.be.eql(true);
+
+                    res.body[1].title.should.be.eql('전체 유저 대상 테스트');
+                    res.body[1].subTitle.should.be.eql('targetUserIds 가 없어요');
+                    res.body[1].type.should.be.eql('ONLINE');
+                    res.body[1].typeTags.length.should.be.eql(2);
+                    res.body[1].typeTags[0].should.be.eql('1:1');
+                    res.body[1].typeTags[1].should.be.eql('인터뷰');
+                    res.body[1].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
+                    res.body[1].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
+                    res.body[1].actionType.should.be.eql('link');
+                    res.body[1].action.should.be.eql('https://www.google.com');
+                    res.body[1].isOpened.should.be.eql(false);
+                    res.body[1].isRegistered.should.be.eql(false);
+                    should.not.exist(res.body[1].targetUserIds);
+                    should.not.exist(res.body[1].registeredUserIds);
+
+                    res.body[2].title.should.be.eql('타겟팅 된 테스트');
+                    res.body[2].subTitle.should.be.eql('적합한 테스터는 너야너 너야너');
+                    res.body[2].type.should.be.eql('ONLINE');
+                    res.body[2].typeTags.length.should.be.eql(2);
+                    res.body[2].typeTags[0].should.be.eql('1:1');
+                    res.body[2].typeTags[1].should.be.eql('인터뷰');
+                    res.body[2].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
+                    res.body[2].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
+                    res.body[2].actionType.should.be.eql('link');
+                    res.body[2].action.should.be.eql('https://www.google.com');
+                    res.body[2].isOpened.should.be.eql(false);
+                    res.body[2].isRegistered.should.be.eql(false);
+                    should.not.exist(res.body[2].targetUserIds);
+                    should.not.exist(res.body[2].registeredUserIds);
+
                     done();
                 }).catch(err => done(err));
         });
