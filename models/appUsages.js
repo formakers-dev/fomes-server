@@ -10,6 +10,11 @@ const appSchema = new mongoose.Schema({
     categoryIds: Array,
     developer: String,
     iconUrl: String,
+    star : Number,
+    installsMin : Number,
+    installsMax : Number,
+    contentsRating : String,
+    imageUrls : Array,
     wishedBy: Array,
 });
 
@@ -28,6 +33,7 @@ const appUsagesSchema = new mongoose.Schema({
     updateTime: Date
 });
 
+// TODO: 버추얼 스키마 제거
 appUsagesSchema.virtual('appInfo', {
     ref: 'apps',
     localField: 'packageName',

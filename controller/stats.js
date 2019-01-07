@@ -2,12 +2,14 @@ const Users = require('../models/users').Users;
 const UserConstants = require('../models/users').Constants;
 const Stats = require('./../models/shortTermStats');
 const AppUsagesService = require('../services/appUsages');
-const AppsService = require('../services/apps');
+const AppService = require('../services/apps');
 const UserService = require('../services/users');
+const UncrawledAppsService = require('../services/uncrawledApps');
+const Boom = require('boom');
 
-const postShortTermStats = (req, res) => {
+const postShortTermStats = (req, res, next) => {
     if (!Array.isArray(req.body)) {
-        res.sendStatus(400);
+        next(Boom.preconditionFailed('Empty ShortTermStats'));
     } else if (req.body.length < 1) {
         res.sendStatus(200);
     } else {
@@ -26,45 +28,45 @@ const postShortTermStats = (req, res) => {
         Stats.bulkWrite(bulkOps).then(() =>
             Users.findOneAndUpdate({userId: req.userId},
                 {$set: {"lastStatsUpdateTime" : new Date()}},
-                {upsert: true})
-        ).then(() => res.sendStatus(200))
-        .catch(err => {
-                console.error(JSON.stringify(err, null, 2));
-                res.sendStatus(500);
-            });
+                {upsert: true}))
+            .then(() => res.sendStatus(200))
+            .catch(err => next(err));
     }
 };
 
-const postAppUsages = (req, res) => {
+const postAppUsages = (req, res, next) => {
     if (!Array.isArray(req.body)) {
-        res.sendStatus(400);
+        next(Boom.preconditionFailed('Empty AppUsages'));
     } else if (req.body.length < 1) {
         res.sendStatus(200);
     } else {
         const appUsages = req.body;
-        AppsService.getGameAppInfoForAnalysis(appUsages.map(appUsage => appUsage.packageName))
+        AppService.getGameAppInfoForAnalysis(appUsages.map(appUsage => appUsage.packageName))
             .lean()
-            .then(appInfos => AppUsagesService.refreshAppUsages(req.user, appInfos,
-                    appUsages.filter(appUsage => appInfos.map(appInfo => appInfo.packageName).includes(appUsage.packageName))))
+            .then(appInfos => {
+                const packageNames = appInfos.map(appInfo => appInfo.packageName);
+                const identifiedAppUsages = appUsages.filter(appUsage => packageNames.includes(appUsage.packageName));
+                const unidentifiedAppUsages = appUsages.filter(appUsage => !(packageNames.includes(appUsage.packageName)));
+
+                return Promise.all([
+                    AppUsagesService.refreshAppUsages(req.user, appInfos, identifiedAppUsages),
+                    UncrawledAppsService.saveApps(unidentifiedAppUsages.map(i => i.packageName))
+                ]);
+            })
             .then(() => res.sendStatus(200))
-            .catch(err => {
-                console.error(err);
-                res.status(500).json({
-                    success: false,
-                    message: err.message
-                });
-            });
+            .catch(err => next(err));
     }
 };
 
-const getReport = (req, res) => {
+const getReport = (req, res, next) => {
     console.log("getReport", "userId=", req.userId, "categoryId=", req.params.categoryId);
 
-    const result = { totalUsedTimeRank: [], usages: [] };
+    const result = { totalUsedTimeRank: [], usages: [], totalUserCount: 0 };
 
     // 사용시간 순위
-    AppUsagesService.getTotalUsedTimeRankList(req.userId, req.params.categoryId).then(ranks => {
-        result.totalUsedTimeRank = ranks;
+    AppUsagesService.getTotalUsedTimeOverview(req.userId, req.params.categoryId).then(res => {
+        result.totalUsedTimeRank = res.ranks;
+        result.totalUserCount = res.totalUserCount;
 
         // 요청한 유저의 앱 사용 데이터
         return AppUsagesService.aggregateAppUsageByCategory(req.userId, req.params.categoryId);
@@ -85,14 +87,7 @@ const getReport = (req, res) => {
         result.usages.push(jobAppUsages);
 
         res.json(result);
-    }).catch(err => {
-        console.error("getReport", "userId=", req.userId, "err=", err);
-
-        res.status(500).json({
-            success: false,
-            message: err.message
-        });
-    })
+    }).catch(err => next(err))
 };
 
 /** start of private methods **/

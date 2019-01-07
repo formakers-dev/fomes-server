@@ -1,6 +1,5 @@
 const UserService = require('../services/users');
 const AppUsageService = require('../services/appUsages');
-const AppService = require('../services/apps');
 
 const RecommendType = {
     favoriteApp: 1,
@@ -9,23 +8,20 @@ const RecommendType = {
     similarDemographic: 4,
 };
 
-const getSimilarUserRecommendApps = (userId, excludePackageNames, page, limit) => {
+const getSimilarUserRecommendApps = (user, excludePackageNames, page, limit) => {
     const recommendInfo = {recommendType: RecommendType.similarDemographic, criteria: []};
+    recommendInfo.criteria.push(UserService.getAge(user.birthday) + "대");
+    recommendInfo.criteria.push(user.gender === "male" ? "남성" : "여성");
 
-    return UserService.getUser(userId)
-        .then(user => {
-            recommendInfo.criteria.push(UserService.getAge(user.birthday) + "대");
-            recommendInfo.criteria.push(user.gender === "male" ? "남성" : "여성");
-            return AppUsageService.getSimilarUserAppUsages(user, userId, excludePackageNames, page, limit);
-        })
-        .then(similarUsersAppUsages => convertToRecommendApps(recommendInfo, similarUsersAppUsages, userId))
+    return AppUsageService.getSimilarUserAppUsages(user, excludePackageNames, page, limit)
+        .then(similarUsersAppUsages => convertToRecommendApps(recommendInfo, similarUsersAppUsages, user))
         .catch(err => {
-            console.error("getSimilarUserRecommendApps", "userId=", userId, "err=", err);
+            console.error("getSimilarUserRecommendApps", "userId=", user.userId, "err=", err);
             return Promise.reject(err);
         });
 };
 
-const getFavoriteCategoryRecommendApps = (categoryUsages, userId, excludePackageNames, page, limit) => {
+const getFavoriteCategoryRecommendApps = (categoryUsages, user, excludePackageNames, page, limit) => {
     if (!categoryUsages || categoryUsages.length === 0) {
         return Promise.resolve([]);
     }
@@ -36,16 +32,16 @@ const getFavoriteCategoryRecommendApps = (categoryUsages, userId, excludePackage
     return Promise.resolve(sortedCategoryUsages[0])
         .then(favoriteCategoryUsage => {
             recommendInfo.criteria.push(favoriteCategoryUsage.name);
-            return AppUsageService.getCategoryAppUsages(favoriteCategoryUsage.id, userId, excludePackageNames, page, limit);
+            return AppUsageService.getCategoryAppUsages(favoriteCategoryUsage.id, user.userId, excludePackageNames, page, limit);
         })
-        .then(categoryAppUsages => convertToRecommendApps(recommendInfo, categoryAppUsages, userId))
+        .then(categoryAppUsages => convertToRecommendApps(recommendInfo, categoryAppUsages, user))
         .catch(err => {
-            console.error("getFavoriteCategoryRecommendApps", "userId=", userId, "err=", err);
+            console.error("getFavoriteCategoryRecommendApps", "userId=", user.userId, "err=", err);
             return Promise.reject(err);
         });
 };
 
-const getFavoriteDeveloperRecommendApps = (developerUsages, userId, excludePackageNames, page, limit) => {
+const getFavoriteDeveloperRecommendApps = (developerUsages, user, excludePackageNames, page, limit) => {
     if (!developerUsages || developerUsages.length === 0) {
         return Promise.resolve([]);
     }
@@ -56,16 +52,16 @@ const getFavoriteDeveloperRecommendApps = (developerUsages, userId, excludePacka
     return Promise.resolve(sortedDeveloperUsages[0])
         .then(favoriteDeveloperUsage => {
             recommendInfo.criteria.push(favoriteDeveloperUsage.name);
-            return AppUsageService.getDeveloperAppUsages(favoriteDeveloperUsage.id, userId, excludePackageNames, page, limit);
+            return AppUsageService.getDeveloperAppUsages(favoriteDeveloperUsage.id, user.userId, excludePackageNames, page, limit);
         })
-        .then(developerAppUsages => convertToRecommendApps(recommendInfo, developerAppUsages, userId))
+        .then(developerAppUsages => convertToRecommendApps(recommendInfo, developerAppUsages, user))
         .catch(err => {
-            console.error("getFavoriteDeveloperRecommendApps", "userId=", userId, "err=", err);
+            console.error("getFavoriteDeveloperRecommendApps", "userId=", user.userId, "err=", err);
             return Promise.reject(err);
         });
 };
 
-const getFavoriteAppRecommendApps = (appUsages, userId, excludePackageNames, page, limit) => {
+const getFavoriteAppRecommendApps = (appUsages, user, excludePackageNames, page, limit) => {
     if (!appUsages || appUsages.length === 0) {
         return Promise.resolve([]);
     }
@@ -78,30 +74,36 @@ const getFavoriteAppRecommendApps = (appUsages, userId, excludePackageNames, pag
             recommendInfo.criteria.push(favoriteAppUsage.name);
             return AppUsageService.getUserIdsUsingApp(favoriteAppUsage.id);
         })
-        .then(userIds => AppUsageService.getUsersAppUsages(userIds, sortedAppUsages[0].id, userId, excludePackageNames, page, limit))
-        .then(usersAppUsages => convertToRecommendApps(recommendInfo, usersAppUsages, userId));
+        .then(userIds => AppUsageService.getUsersAppUsages(userIds, sortedAppUsages[0].id, user.userId, excludePackageNames, page, limit))
+        .then(usersAppUsages => convertToRecommendApps(recommendInfo, usersAppUsages, user))
+        .catch(err => {
+            console.error("getFavoriteAppRecommendApps", "userId=", user.userId, "err=", err);
+            return Promise.reject(err);
+        });
 };
 
-const convertToRecommendApps = (recommendInfo, appUsages, userId) => {
-    return new Promise((resolve, reject) => {
-        let rank = 1;
+const convertToRecommendApps = (recommendInfo, appUsages, user) => {
+    let rank = 1;
 
-        Promise.resolve(appUsages.filter(i => i.developer && i.categoryId))
-            .then(appUsages => AppUsageService.combineAppInfos(appUsages))
-            .then(appUsagesWithAppInfo => resolve(
-                appUsagesWithAppInfo.map(item => {
-                    return {
-                        recommendType: recommendInfo.recommendType,
-                        criteria: recommendInfo.criteria,
-                        rank: rank++,
-                        app: AppService.replaceWishedByToWishedByMe(item, userId)
-                    };
-                })))
-            .catch(err => {
-                console.error("convertToRecommendApps", "userId=", userId, "recommendInfo=", recommendInfo, "err=", err);
-                reject(err);
-            });
-    });
+    return Promise.resolve(appUsages.filter(i => i.developer && i.categoryId))
+        .then(filteredAppUsages => Promise.resolve(
+            filteredAppUsages.map(appUsage => {
+                return {
+                    recommendType: recommendInfo.recommendType,
+                    criteria: recommendInfo.criteria,
+                    rank: rank++,
+                    app: setisWishedToAppUsage(appUsage, user.wishList)
+                };
+            })))
+        .catch(err => {
+            console.error("convertToRecommendApps", "userId=", user.userId, "recommendInfo=", recommendInfo, "err=", err);
+            return Promise.reject(err);
+        });
+};
+
+const setisWishedToAppUsage = (appUsage, wishList) => {
+    appUsage.isWished = !!(wishList && wishList.includes(appUsage.packageName));
+    return appUsage;
 };
 
 module.exports = {

@@ -10,7 +10,7 @@ const Projects = require('../models/projects');
 const ParticipationHistories = require('../models/participationHistories');
 const helper = require('./commonTestHelper');
 
-describe('Project', () => {
+describe.skip('Project', () => {
     const sandbox = sinon.sandbox.create();
     const testProjectId = 1508998212204;
 

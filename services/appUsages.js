@@ -2,9 +2,8 @@ const moment = require('moment');
 const UsagesUtil = require('../utils/usages');
 const PagingUtil = require('../utils/paging');
 const { AppUsages } = require('../models/appUsages');
-const AppService = require('../services/apps');
 
-const getTotalUsedTimeRankList = (userId, categoryId) => {
+const getTotalUsedTimeOverview = (userId, categoryId) => {
     return new Promise((resolve, reject) => {
         AppUsages.aggregate([
             {$match: {categoryId: { $regex: new RegExp(categoryId) }}},
@@ -20,18 +19,22 @@ const getTotalUsedTimeRankList = (userId, categoryId) => {
             const best = sortedRanks[0];
             const worst = sortedRanks[sortedRanks.length - 1];
 
-            const result = [];
-            result.push(mine, best, worst);
+            const result = { ranks: [], totalUsedTime: 0 };
 
-            resolve(result.filter(rank => rank).map(rank => {
+            result.ranks.push(mine, best, worst);
+            result.ranks = result.ranks.filter(rank => rank).map(rank => {
                 return {
                     userId: rank._id,
                     rank: sortedRanks.indexOf(rank) + 1,
-                    content: rank.totalUsedTime
+                    content: rank.totalUsedTime,
                 }
-            }));
+            });
+
+            result.totalUserCount = sortedRanks.length;
+
+            resolve(result);
         }).catch(err => {
-            console.error("getTotalUsedTimeRankList", "userId=", userId, "err=", err);
+            console.error("getTotalUsedTimeOverview", "userId=", userId, "err=", err);
             reject(err);
         })
     });
@@ -65,7 +68,6 @@ const aggregateAppUsageByCategory = (userIds, categoryId) => {
         ]).then(appUsages => {
             const result = {};
 
-            // appUsages
             appUsages = appUsages.map(appUsage => {
                 return {
                     id: appUsage.packageName,
@@ -85,13 +87,11 @@ const aggregateAppUsageByCategory = (userIds, categoryId) => {
 
             result.appUsages = appUsages;
 
-            // categoryUsages
             result.categoryUsages = UsagesUtil.summary(UsagesUtil.convertToUsages(appUsages, {
                 id: "categoryId",
                 name: "categoryName",
             }, { isVerbose: false }));
 
-            // developerUsages
             result.developerUsages = UsagesUtil.summary(UsagesUtil.convertToUsages(appUsages, {
                 id: "developer",
                 name: "developer",
@@ -106,35 +106,37 @@ const aggregateAppUsageByCategory = (userIds, categoryId) => {
 };
 
 /** Start for Recommend Features **/
-const getSimilarUserAppUsages = (user, excludeUserId, excludePackageNames, page, limit) => {
+const getSimilarUserAppUsages = (user, excludePackageNames, page, limit) => {
     const currentYear = moment().format('YYYY');
     const beforeDiff = (currentYear - user.birthday) % 10;
     const afterDiff = 10 - beforeDiff;
+    const excludeUserId = user.userId;
 
     let query = [
         {
             $match: {
-                $and : [
-                    { userId: {$ne : excludeUserId}},
-                    { packageName: {$nin : excludePackageNames}},
-                    { gender: user.gender},
-                    { birthday: { $gte: user.birthday - afterDiff + 1 } },
-                    { birthday: { $lte: user.birthday + beforeDiff + 1 } },
-                ]
+                userId: {$ne : excludeUserId},
+                packageName: {$nin : excludePackageNames},
+                gender: user.gender,
+                birthday: {
+                    $gte: user.birthday - afterDiff + 1,
+                    $lte: user.birthday + beforeDiff + 1
+                },
             }
         }, {
             $group: {
                 _id: '$packageName',
+                packageName: { $first: '$packageName' },
                 totalUsedTime: { $sum: '$totalUsedTime' },
                 developer: { $first: '$developer' },
                 categoryId: { $first: '$categoryId' },
+                categoryName: { $first: '$categoryName' },
+                appName: { $first: '$appName' },
+                iconUrl: { $first: '$iconUrl' },
             }
         }, {
             $project: {
-                packageName: '$_id',
-                totalUsedTime: true,
-                developer: true,
-                categoryId: true,
+                _id: false
             }
         }, {
             $sort: { totalUsedTime: -1 }
@@ -157,16 +159,17 @@ const getCategoryAppUsages = (categoryId, excludeUserId, excludePackageNames, pa
         }, {
             $group: {
                 _id: '$packageName',
+                packageName: { $first: '$packageName' },
                 totalUsedTime: { $sum: '$totalUsedTime' },
                 developer: { $first: '$developer' },
                 categoryId: { $first: '$categoryId' },
+                categoryName: { $first: '$categoryName' },
+                appName: { $first: '$appName' },
+                iconUrl: { $first: '$iconUrl' },
             }
         }, {
             $project: {
-                packageName: '$_id',
-                totalUsedTime: true,
-                developer: true,
-                categoryId: true,
+                _id: false
             }
         }, {
             $sort: { totalUsedTime: -1 }
@@ -189,16 +192,17 @@ const getDeveloperAppUsages = (developer, excludeUserId, excludePackageNames, pa
         }, {
             $group: {
                 _id: '$packageName',
+                packageName: { $first: '$packageName' },
                 totalUsedTime: { $sum: '$totalUsedTime' },
                 developer: { $first: '$developer' },
                 categoryId: { $first: '$categoryId' },
+                categoryName: { $first: '$categoryName' },
+                appName: { $first: '$appName' },
+                iconUrl: { $first: '$iconUrl' },
             }
         }, {
             $project: {
-                packageName: '$_id',
-                totalUsedTime: true,
-                developer: true,
-                categoryId: true,
+                _id: false
             }
         }, {
             $sort: { totalUsedTime: -1 }
@@ -227,16 +231,17 @@ const getUsersAppUsages = (userIds, favoritePackageName, excludeUserId, excludeP
         }, {
             $group: {
                 _id: '$packageName',
+                packageName: { $first: '$packageName' },
                 totalUsedTime: { $sum: '$totalUsedTime' },
                 developer: { $first: '$developer' },
                 categoryId: { $first: '$categoryId' },
+                categoryName: { $first: '$categoryName' },
+                appName: { $first: '$appName' },
+                iconUrl: { $first: '$iconUrl' },
             }
         }, {
             $project: {
-                packageName: '$_id',
-                totalUsedTime: true,
-                developer: true,
-                categoryId: true,
+                _id: false
             }
         }, {
             $sort: { totalUsedTime: -1 }
@@ -331,21 +336,15 @@ const refreshAppUsages = (user, appInfos, appUsages) => {
 
 const getUserIdsUsingApp = (packageName) => {
   return AppUsages.aggregate([
-      {$match: {packageName : packageName}},
-      {$group: {_id: '$userId'}}
-  ]).then(userIds => Promise.resolve(userIds.map(userId => userId._id)));
-};
-
-const combineAppInfos = (appUsages) => {
-    const packageNames = appUsages.map(i => i.packageName);
-
-    return AppService.getAppsWithRepresentativeCategory(packageNames)
-        .then(appInfos => Promise.resolve(UsagesUtil.concatAppInfoFields(appUsages, appInfos)))
+            {$match: {packageName : packageName}},
+            {$group: {_id: '$userId'}}
+        ])
+        .then(userIds => Promise.resolve(userIds.map(userId => userId._id)))
         .catch(err => Promise.reject(err));
 };
 
 module.exports = {
-    getTotalUsedTimeRankList,
+    getTotalUsedTimeOverview,
     aggregateAppUsageByCategory,
     findAppUsageByCategory,
     refreshAppUsages,
@@ -354,5 +353,4 @@ module.exports = {
     getDeveloperAppUsages,
     getUsersAppUsages,
     getUserIdsUsingApp,
-    combineAppInfos,
 };

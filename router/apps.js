@@ -1,8 +1,8 @@
 const express = require('express');
 const appRouter = express.Router();
-const Apps = require('../controller/apps');
+const AppController = require('../controller/apps');
 const Auth = require('../middleware/auth');
 
-appRouter.get('/category/:categoryId', Auth.appBeeTokenVerifier, Apps.getApps);
+appRouter.get('/:packageName', Auth.appBeeTokenVerifier, AppController.getApp);
 
 module.exports = appRouter;
