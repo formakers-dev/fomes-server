@@ -6,7 +6,6 @@ const Users = require('../models/users').Users;
 const Apps = require('../models/appUsages').Apps;
 const UserConstants = require('../models/users').Constants;
 const UserService = require('../services/users');
-const InvitationCodes = require('../models/invitationCodes');
 const helper = require('./commonTestHelper');
 helper.setupSinon();
 
@@ -116,28 +115,6 @@ describe('Users', () => {
             after(done => {
                 Users.create(config.testUser, done);
             });
-        });
-    });
-
-    describe('GET /user/verifyInvitationCode/{code}', () => {
-        before(done => {
-            InvitationCodes.create({code: 'VALIDCODE'}, done);
-        });
-
-        it('등록코드가 유효한 경우 true를 리턴한다', done => {
-            request.get('/user/verifyInvitationCode/VALIDCODE')
-                .send()
-                .expect(200, done);
-        });
-
-        it('등록코드가 유효하지 않은 경우 false를 리턴한다', done => {
-            request.get('/user/verifyInvitationCode/INVALIDCODE')
-                .send()
-                .expect(412, done);
-        });
-
-        after(done => {
-            InvitationCodes.remove({}, done);
         });
     });
 

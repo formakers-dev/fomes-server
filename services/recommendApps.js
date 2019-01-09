@@ -10,7 +10,9 @@ const RecommendType = {
 
 const getSimilarUserRecommendApps = (user, excludePackageNames, page, limit) => {
     const recommendInfo = {recommendType: RecommendType.similarDemographic, criteria: []};
-    recommendInfo.criteria.push(UserService.getAge(user.birthday) + "대");
+
+    const age = UserService.getAge(user.birthday);
+    recommendInfo.criteria.push((age < 10) ? "10대 미만" : age + "대");
     recommendInfo.criteria.push(user.gender === "male" ? "남성" : "여성");
 
     return AppUsageService.getSimilarUserAppUsages(user, excludePackageNames, page, limit)

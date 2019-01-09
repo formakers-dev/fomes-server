@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const InvitationCodes = require('../models/invitationCodes');
 const config = require('../config');
 const UserService = require('../services/users');
 const AppService = require('../services/apps');
@@ -38,19 +37,6 @@ const generateToken = (req, res, next) => {
             res.json(newToken);
         }
     });
-};
-
-const verifyInvitationCode = (req, res, next) => {
-    InvitationCodes.findOne({code: req.params.code})
-        .exec()
-        .then(code => {
-            if (code) {
-                res.sendStatus(200);
-            } else {
-                throw Boom.preconditionFailed('Wrong Invitation Code');
-            }
-        })
-        .catch(err => next(err));
 };
 
 const verifyUserInfo = (req, res, next) => {
@@ -110,7 +96,6 @@ module.exports = {
     signUpUser,
     upsertUser,
     generateToken,
-    verifyInvitationCode,
     verifyUserInfo,
     getUser,
     saveAppToWishList,
