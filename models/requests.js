@@ -13,7 +13,7 @@ const requestSchema = new Schema({
     actionType: String,
     action: String,
     targetUserIds: false,
-    registeredUserIds: Array,
+    completedUserIds: Array,
 });
 
 module.exports = mongoose.model('requests', requestSchema);

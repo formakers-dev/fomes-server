@@ -14,6 +14,10 @@ const getUser = (userId) => {
     return Users.findOne({userId: userId});
 };
 
+const getUserId = (email) => {
+    return Users.findOne({email: email}, {userId : true});
+};
+
 const upsertUser = (userId, user) => {
     if (user.nickName) {
         return isDuplicatedNickName(userId, user.nickName)
@@ -102,6 +106,7 @@ const isDuplicatedNickName = (userId, nickName) => {
 
 module.exports = {
     getUser,
+    getUserId,
     upsertUser,
     getSimilarUsers,
     getAge,

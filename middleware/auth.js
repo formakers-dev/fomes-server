@@ -113,4 +113,17 @@ const googleTokenVerifier = (req, res, next) => {
         });
 };
 
-module.exports = {appBeeTokenVerifier, googleTokenVerifier};
+const apiKeyVerifier = (req, res, next) => {
+    const buffer = new Buffer(req.headers['x-access-token'], 'base64');
+    const email = buffer.toString('ascii').trim();
+
+    console.log(email);
+    UserService.getUserId(email)
+        .then(user => {
+            console.log("user", user);
+            req.userId = user.userId;
+            next();
+        });
+};
+
+module.exports = {appBeeTokenVerifier, googleTokenVerifier, apiKeyVerifier};

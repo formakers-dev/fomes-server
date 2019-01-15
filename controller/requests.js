@@ -6,13 +6,13 @@ const getRequestList = (req, res, next) => {
         .catch(err => next(err))
 };
 
-const postRegister = (req, res, next) => {
-    RequestsService.updateRegistered(req.userId, req.params.id)
+const postComplete = (req, res, next) => {
+    RequestsService.updateCompleted(req.params.id, req.userId)
         .then(() => res.sendStatus(200))
         .catch(err => next(err));
-}
+};
 
 module.exports = {
     getRequestList,
-    postRegister
+    postComplete
 };

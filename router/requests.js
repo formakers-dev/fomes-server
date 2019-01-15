@@ -5,6 +5,6 @@ const Auth = require('../middleware/auth');
 
 router.get('/', Auth.appBeeTokenVerifier, RequestController.getRequestList);
 
-router.post('/:id/register', Auth.appBeeTokenVerifier, RequestController.postRegister);
+router.post('/:id/complete', Auth.apiKeyVerifier, RequestController.postComplete);
 
 module.exports = router;

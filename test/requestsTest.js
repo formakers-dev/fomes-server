@@ -65,7 +65,7 @@ describe('Requests', () => {
             closeDate: new Date('2018-12-31'),
             actionType: 'link',
             action: 'https://www.google.com',
-            registeredUserIds: [config.testUser.userId]
+            completedUserIds: [config.testUser.userId],
         }
     ];
 
@@ -108,7 +108,7 @@ describe('Requests', () => {
                     res.body[0].actionType.should.be.eql('link');
                     res.body[0].action.should.be.eql('https://www.google.com');
                     res.body[0].isOpened.should.be.eql(true);
-                    res.body[0].isRegistered.should.be.eql(true);
+                    res.body[0].isCompleted.should.be.eql(true);
 
                     res.body[1].title.should.be.eql('전체 유저 대상 테스트');
                     res.body[1].subTitle.should.be.eql('targetUserIds 가 없어요');
@@ -121,9 +121,9 @@ describe('Requests', () => {
                     res.body[1].actionType.should.be.eql('link');
                     res.body[1].action.should.be.eql('https://www.google.com');
                     res.body[1].isOpened.should.be.eql(true);
-                    res.body[1].isRegistered.should.be.eql(false);
+                    res.body[1].isCompleted.should.be.eql(false);
                     should.not.exist(res.body[1].targetUserIds);
-                    should.not.exist(res.body[1].registeredUserIds);
+                    should.not.exist(res.body[1].completedUserIds);
 
                     res.body[2].title.should.be.eql('타겟팅 된 테스트');
                     res.body[2].subTitle.should.be.eql('적합한 테스터는 너야너 너야너');
@@ -136,9 +136,9 @@ describe('Requests', () => {
                     res.body[2].actionType.should.be.eql('link');
                     res.body[2].action.should.be.eql('https://www.google.com');
                     res.body[2].isOpened.should.be.eql(true);
-                    res.body[2].isRegistered.should.be.eql(false);
+                    res.body[2].isCompleted.should.be.eql(false);
                     should.not.exist(res.body[2].targetUserIds);
-                    should.not.exist(res.body[2].registeredUserIds);
+                    should.not.exist(res.body[2].completedUserIds);
 
                     done();
                 }).catch(err => done(err));
@@ -166,7 +166,7 @@ describe('Requests', () => {
                     res.body[0].actionType.should.be.eql('link');
                     res.body[0].action.should.be.eql('https://www.google.com');
                     res.body[0].isOpened.should.be.eql(false);
-                    res.body[0].isRegistered.should.be.eql(true);
+                    res.body[0].isCompleted.should.be.eql(true);
 
                     res.body[1].title.should.be.eql('전체 유저 대상 테스트');
                     res.body[1].subTitle.should.be.eql('targetUserIds 가 없어요');
@@ -179,9 +179,9 @@ describe('Requests', () => {
                     res.body[1].actionType.should.be.eql('link');
                     res.body[1].action.should.be.eql('https://www.google.com');
                     res.body[1].isOpened.should.be.eql(false);
-                    res.body[1].isRegistered.should.be.eql(false);
+                    res.body[1].isCompleted.should.be.eql(false);
                     should.not.exist(res.body[1].targetUserIds);
-                    should.not.exist(res.body[1].registeredUserIds);
+                    should.not.exist(res.body[1].completedUserIds);
 
                     res.body[2].title.should.be.eql('타겟팅 된 테스트');
                     res.body[2].subTitle.should.be.eql('적합한 테스터는 너야너 너야너');
@@ -194,9 +194,9 @@ describe('Requests', () => {
                     res.body[2].actionType.should.be.eql('link');
                     res.body[2].action.should.be.eql('https://www.google.com');
                     res.body[2].isOpened.should.be.eql(false);
-                    res.body[2].isRegistered.should.be.eql(false);
+                    res.body[2].isCompleted.should.be.eql(false);
                     should.not.exist(res.body[2].targetUserIds);
-                    should.not.exist(res.body[2].registeredUserIds);
+                    should.not.exist(res.body[2].completedUserIds);
 
                     done();
                 }).catch(err => done(err));
@@ -219,30 +219,30 @@ describe('Requests', () => {
         })
     });
 
-    describe('POST /requests/:id/register', () => {
-        it('요청한 유저를 등록(참여) 리스트에 추가한다', done => {
-            request.post('/requests/1/register')
-                .set('x-access-token', config.appbeeToken.valid)
+    describe('POST /requests/:id/complete', () => {
+        it('요청한 유저를 완료 리스트에 추가한다', done => {
+            request.post('/requests/1/complete')
+                .set('api-key', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
                 .then(() => Requests.findOne({id: 1}))
                 .then(res => {
-                    res.registeredUserIds.length.should.be.eql(1);
-                    res.registeredUserIds[0].should.be.eql(config.testUser.userId);
+                    res.completedUserIds.length.should.be.eql(1);
+                    res.completedUserIds[0].should.be.eql(config.testUser.userId);
 
                     done();
                 })
                 .catch(err => done(err));
         });
 
-        it('요청한 유저가 이미 등록(참여)된 경우에는 등록 리스트에 추가하지 않는다', done => {
-            request.post('/requests/5/register')
-                .set('x-access-token', config.appbeeToken.valid)
+        it('요청한 유저가 이미 완료한 경우에는 완료 리스트에 추가하지 않는다', done => {
+            request.post('/requests/5/complete')
+                .set('api-key', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
                 .then(() => Requests.findOne({id: 5}))
                 .then(res => {
                     console.log(res);
-                    res.registeredUserIds.length.should.be.eql(1);
-                    res.registeredUserIds[0].should.be.eql(config.testUser.userId);
+                    res.completedUserIds.length.should.be.eql(1);
+                    res.completedUserIds[0].should.be.eql(config.testUser.userId);
 
                     done();
                 })

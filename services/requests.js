@@ -25,22 +25,24 @@ const findValidRequests = (userId) => {
                 isOpened: {
                     $lte: ["$openDate", currentTime]
                 },
-                isRegistered: {
-                    $in : [userId, "$registeredUserIds"]
-                },
+                isCompleted: {
+                    $in : [userId, "$completedUserIds"]
+                }
             }
         }
     ]);
 };
 
-const updateRegistered = (userId, requestId) => {
-    return Requests.findOneAndUpdate({ $and: [
-                { id: requestId },
-                { registeredUserIds: { $nin: [ userId ] } }
-           ]}, { $push: { registeredUserIds: userId } }, { upsert: true });
+const updateCompleted = (requestId, userId) => {
+    return Requests.findOneAndUpdate({
+        $and: [
+            {id: requestId},
+            {completedUserIds: {$nin: [userId]}}
+        ]
+    }, {$push: {completedUserIds: userId}}, {upsert: true});
 };
 
 module.exports = {
     findValidRequests,
-    updateRegistered
+    updateCompleted
 };
