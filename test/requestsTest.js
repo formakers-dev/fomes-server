@@ -222,7 +222,7 @@ describe('Requests', () => {
     describe('POST /requests/:id/complete', () => {
         it('요청한 유저를 완료 리스트에 추가한다', done => {
             request.post('/requests/1/complete')
-                .set('api-key', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
                 .then(() => Requests.findOne({id: 1}))
                 .then(res => {
@@ -236,7 +236,7 @@ describe('Requests', () => {
 
         it('요청한 유저가 이미 완료한 경우에는 완료 리스트에 추가하지 않는다', done => {
             request.post('/requests/5/complete')
-                .set('api-key', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
                 .then(() => Requests.findOne({id: 5}))
                 .then(res => {

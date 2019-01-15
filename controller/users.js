@@ -38,11 +38,18 @@ const generateToken = (req, res, next) => {
         name : req.body.name
     };
 
-    jwt.sign(tokenData, config.secret, {
-        expiresIn: '1d',
+    const option = {
         issuer: 'formakers.net',
         subject: 'FomesAuth'
-    }, (err, newToken) => {
+    };
+
+    if (process.env.NODE_ENV === 'production') {
+        option.expiresIn = '1d';
+    } else {
+        option.expiresIn = '5m';
+    }
+
+    jwt.sign(tokenData, config.secret, option, (err, newToken) => {
         if (err) {
             next(err);
         } else {
