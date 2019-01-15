@@ -23,11 +23,12 @@ describe('Users', () => {
 
     describe('POST /user/', () => {
         describe('기존 사용자가 존재할 경우,', () => {
-            it('User의 특정 정보를 업데이트 한다', done => {
+            it('User의 UserId을 제외한 나머지 정보를 업데이트 한다', done => {
                 const newToken = {
                     registrationToken: "NEW_CODE",
                     lifeApps: ['newApp'],
                     nickName: 'new_nickname',
+                    userId: 'newUserId'
                 };
 
                 request.post('/user')
@@ -164,7 +165,7 @@ describe('Users', () => {
 
     describe('POST /user/signin/', () => {
         const signInUser = {
-            userId: null,
+            userId: 'shouldIgnoreThisId',
             name: null,
             email: null,
             birthday: 1980,
@@ -179,7 +180,7 @@ describe('Users', () => {
             Users.create(config.testUser, done);
         });
 
-        it('구글토큰검증 후 User정보를 업데이트한다', done => {
+        it('구글토큰검증 후 userId를 제외한 User정보를 업데이트한다', done => {
             request.post('/user/signin')
                 .set('x-id-token', config.testUser.googleIdToken)
                 .send(signInUser)
@@ -212,7 +213,11 @@ describe('Users', () => {
 
                     jwt.verify(appBeeToken, config.secret, (err, decoded) => {
                         if (!err) {
+                            decoded.provider.should.be.eql('google');
+                            decoded.providerId.should.be.eql("109974316241227718963");
                             decoded.userId.should.be.eql(config.testUser.userId);
+                            decoded.email.should.be.eql('test@email.com');
+                            decoded.name.should.be.eql('testName');
                             done();
                         } else {
                             done('Invalid AppBee token is generated!!!');
@@ -271,7 +276,11 @@ describe('Users', () => {
 
                     jwt.verify(appBeeToken, config.secret, (err, decoded) => {
                         if (!err) {
+                            decoded.provider.should.be.eql('google');
+                            decoded.providerId.should.be.eql("109974316241227718963");
                             decoded.userId.should.be.eql(config.testUser.userId);
+                            decoded.email.should.be.eql('test@email.com');
+                            decoded.name.should.be.eql('testName');
                             done();
                         } else {
                             done('Invalid AppBee token is generated!!!');

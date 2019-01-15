@@ -18,6 +18,10 @@ const signUpUser = (req, res, next) => {
 };
 
 const upsertUser = (req, res, next) => {
+    if (req.body && req.body.userId) {
+        delete req.body.userId;
+    }
+
     UserService.upsertUser(req.userId, req.body)
         .then(() => next())
         .catch(err => {
@@ -26,7 +30,15 @@ const upsertUser = (req, res, next) => {
 };
 
 const generateToken = (req, res, next) => {
-    jwt.sign(req.body, config.secret, {
+    const tokenData = {
+        provider : req.body.provider,
+        providerId : req.body.providerId,
+        userId : req.userId,
+        email : req.body.email,
+        name : req.body.name
+    };
+
+    jwt.sign(tokenData, config.secret, {
         expiresIn: '1d',
         issuer: 'formakers.net',
         subject: 'FomesAuth'
