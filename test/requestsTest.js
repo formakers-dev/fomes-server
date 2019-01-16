@@ -3,6 +3,7 @@ const server = require('../server');
 const config = require('../config');
 const request = require('supertest').agent(server);
 const sinon = require('sinon');
+const axios = require('axios');
 const should = chai.should();
 
 const BetaTests = require('../models/betaTests');
@@ -220,6 +221,15 @@ describe('BetaTests', () => {
     });
 
     describe('POST /beta-tests/:id/complete', () => {
+        const sandbox2 = sinon.sandbox.create();
+
+        let spyOnPostNoti;
+
+        beforeEach(() => {
+            spyOnPostNoti = sandbox2.spy(axios, 'post');
+        });
+
+        // 정상
         it('요청한 유저를 완료 리스트에 추가한다', done => {
             request.post('/beta-tests/1/complete')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
@@ -234,6 +244,33 @@ describe('BetaTests', () => {
                 .catch(err => done(err));
         });
 
+        it('요청한 유저에게 완료 노티를 보낸다', done => {
+            request.post('/beta-tests/1/complete')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .expect(200)
+                .then(() => {
+                    const requestUrl = spyOnPostNoti.getCall(0).args[0];
+                    const body = spyOnPostNoti.getCall(0).args[1];
+                    const header = spyOnPostNoti.getCall(0).args[2].headers;
+
+                    requestUrl.should.be.eql('https://fcm.googleapis.com/fcm/send');
+
+                    body.data.channel.should.be.eql("channel_betatest");
+                    body.data.title.should.be.include("완료");
+                    body.data.subTitle.should.be.include("완료");
+                    should.not.exist(body.data.message);
+                    should.not.exist(body.data.isSummary);
+                    should.not.exist(body.data.summarySubText);
+                    body.to.should.be.include(config.testUser.registrationToken);
+
+                    header.Authorization.should.be.eql('key=' + config.notiApiKey);
+                    header['Content-Type'].should.be.eql('application/json');
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        // 예외
         it('요청한 유저가 이미 완료한 경우에는 완료 리스트에 추가하지 않는다', done => {
             request.post('/beta-tests/5/complete')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
@@ -248,6 +285,21 @@ describe('BetaTests', () => {
                 })
                 .catch(err => done(err));
         });
+
+        it('요청한 유저가 이미 완료한 경우에는 완료 노티를 보내지 않는다', done => {
+            request.post('/beta-tests/5/complete')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .expect(200)
+                .then(() => BetaTests.findOne({id: 5}))
+                .then(() => {
+                    should.not.exist(spyOnPostNoti.getCall(0));
+                    done();
+                }).catch(err => done(err));
+        });
+
+        afterEach(() => {
+            sandbox2.restore();
+        })
     });
 
     afterEach(done => {

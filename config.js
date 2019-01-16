@@ -5,6 +5,7 @@ config.development = {
     dbUrl: process.env.MONGO_URL,
     port: process.env.PORT || 8080,
     googleClientId: process.env.GG_CLIENT_ID,
+    notiApiKey: process.env.NOTI_API_KEY,
 };
 
 config.staging = config.development;
@@ -15,6 +16,9 @@ config.test = {
     dbUrl: process.env.MONGO_URL,
     port: 3000,
     googleClientId: '',
+    notiApiKey: process.env.NOTI_API_KEY,
+
+    // for test only
     testUser: {
         userId: '109974316241227718963',
         email: 'appbee@appbee.com',
