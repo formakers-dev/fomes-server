@@ -8,7 +8,7 @@ const usersRouter = require('./router/users');
 const appsRouter = require('./router/apps');
 const configurationRouter = require('./router/configurations');
 const recommendRouter = require('./router/recommend');
-const requestsRouter = require('./router/requests');
+const betaTestsRouter = require('./router/betaTests');
 const {logError, handleError} = require('./middleware/errorHandler');
 const db = require('./db');
 const port = require('./config').port;
@@ -32,7 +32,7 @@ app.use('/apps', appsRouter);
 app.use('/stats', statsRouter);
 app.use('/config', configurationRouter);
 app.use('/recommend', recommendRouter);
-app.use('/requests', requestsRouter);
+app.use('/beta-tests', betaTestsRouter);
 
 app.use((err, req, res, next) => logError(err, req, res, next));
 app.use((err, req, res, next) => handleError(err, req, res, next));

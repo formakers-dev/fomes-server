@@ -1,9 +1,9 @@
-const Requests = require('../models/requests');
+const BetaTests = require('../models/betaTests');
 
-const findValidRequests = (userId) => {
+const findValidBetaTests = (userId) => {
     const currentTime = new Date();
 
-    return Requests.aggregate([
+    return BetaTests.aggregate([
         {
             $match : {
                 closeDate: { $gte: currentTime },
@@ -33,16 +33,16 @@ const findValidRequests = (userId) => {
     ]);
 };
 
-const updateCompleted = (requestId, userId) => {
-    return Requests.findOneAndUpdate({
+const updateCompleted = (betaTestId, userId) => {
+    return BetaTests.findOneAndUpdate({
         $and: [
-            {id: requestId},
+            {id: betaTestId},
             {completedUserIds: {$nin: [userId]}}
         ]
     }, {$push: {completedUserIds: userId}}, {upsert: true});
 };
 
 module.exports = {
-    findValidRequests,
+    findValidBetaTests,
     updateCompleted
 };

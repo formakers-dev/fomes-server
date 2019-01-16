@@ -5,10 +5,10 @@ const request = require('supertest').agent(server);
 const sinon = require('sinon');
 const should = chai.should();
 
-const Requests = require('../models/requests');
+const BetaTests = require('../models/betaTests');
 const helper = require('./commonTestHelper');
 
-describe('Requests', () => {
+describe('BetaTests', () => {
     const sandbox = sinon.sandbox.create();
 
     const data = [
@@ -76,12 +76,12 @@ describe('Requests', () => {
     });
 
     beforeEach(done => {
-        Requests.create(data)
+        BetaTests.create(data)
             .then(() => done())
             .catch(err => done(err));
     });
 
-    describe('GET /requests', () => {
+    describe('GET /beta-tests', () => {
         let clock;
 
         beforeEach(() => {
@@ -89,7 +89,7 @@ describe('Requests', () => {
         });
 
         it('참여 가능한 피드백 요청 목록을 조회한다', done => {
-            request.get('/requests')
+            request.get('/beta-tests')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
@@ -147,7 +147,7 @@ describe('Requests', () => {
         it('오픈되지 않은 요청 건도 조회한다', done => {
             clock = sandbox.useFakeTimers(new Date("2018-11-01T02:30:00.000Z").getTime());
 
-            request.get('/requests')
+            request.get('/beta-tests')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
@@ -205,7 +205,7 @@ describe('Requests', () => {
         it('마감기간이 지난 요청 건은 조회하지 않는다', done => {
             clock = sandbox.useFakeTimers(new Date("2019-01-30T02:30:00.000Z").getTime());
 
-            request.get('/requests')
+            request.get('/beta-tests')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
@@ -219,12 +219,12 @@ describe('Requests', () => {
         })
     });
 
-    describe('POST /requests/:id/complete', () => {
+    describe('POST /beta-tests/:id/complete', () => {
         it('요청한 유저를 완료 리스트에 추가한다', done => {
-            request.post('/requests/1/complete')
+            request.post('/beta-tests/1/complete')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
-                .then(() => Requests.findOne({id: 1}))
+                .then(() => BetaTests.findOne({id: 1}))
                 .then(res => {
                     res.completedUserIds.length.should.be.eql(1);
                     res.completedUserIds[0].should.be.eql(config.testUser.userId);
@@ -235,10 +235,10 @@ describe('Requests', () => {
         });
 
         it('요청한 유저가 이미 완료한 경우에는 완료 리스트에 추가하지 않는다', done => {
-            request.post('/requests/5/complete')
+            request.post('/beta-tests/5/complete')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
-                .then(() => Requests.findOne({id: 5}))
+                .then(() => BetaTests.findOne({id: 5}))
                 .then(res => {
                     console.log(res);
                     res.completedUserIds.length.should.be.eql(1);
@@ -251,7 +251,7 @@ describe('Requests', () => {
     });
 
     afterEach(done => {
-        Requests.remove({})
+        BetaTests.remove({})
             .then(() => done())
             .catch(err => done(err));
     });

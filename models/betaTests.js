@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const requestSchema = new Schema({
+const betaTestSchema = new Schema({
     id: Number,
     title: String,
     subTitle: String,
@@ -16,4 +16,4 @@ const requestSchema = new Schema({
     completedUserIds: Array,
 });
 
-module.exports = mongoose.model('requests', requestSchema);
+module.exports = mongoose.model('beta-tests', betaTestSchema);
