@@ -17,15 +17,15 @@ const postComplete = (req, res, next) => {
                     const body = {
                         'data' : {
                             'channel' : 'channel_betatest',
-                            'title' : '참여하신 테스트가 완료처리 되었어요!👏',
-                            'subTitle' : '멋져요! 다음 테스트가 도착하면 다시 알려드릴게요.'
+                            'title' : config.notification.completeTitle,
+                            'subTitle' : config.notification.completeSubtitle
                         },
                         'to' : user.registrationToken,
                     };
 
                     return axios.post('https://fcm.googleapis.com/fcm/send', body, {
                         headers: {
-                            'Authorization': 'key=' + config.notiApiKey,
+                            'Authorization': 'key=' + config.notification.apiKey,
                             'Content-Type': 'application/json'
                         }
                     })

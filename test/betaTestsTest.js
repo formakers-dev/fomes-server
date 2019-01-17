@@ -256,7 +256,7 @@ describe('BetaTests', () => {
 
                     const expectHeader = {
                         headers: {
-                            Authorization: 'key=' + config.notiApiKey,
+                            Authorization: 'key=testNotiApiKey',
                             'Content-Type' : 'application/json'
                         }
                     };

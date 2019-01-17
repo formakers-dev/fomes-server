@@ -5,7 +5,11 @@ config.development = {
     dbUrl: process.env.MONGO_URL,
     port: process.env.PORT || 8080,
     googleClientId: process.env.GG_CLIENT_ID,
-    notiApiKey: process.env.NOTI_API_KEY,
+    notification: {
+        apiKey: process.env.NOTI_API_KEY,
+        completeTitle: process.env.NOTI_COMPLETE_TITLE,
+        completeSubtitle: process.env.NOTI_COMPLETE_SUBTITLE
+    }
 };
 
 config.staging = config.development;
@@ -16,7 +20,11 @@ config.test = {
     dbUrl: process.env.MONGO_URL,
     port: 3000,
     googleClientId: '',
-    notiApiKey: process.env.NOTI_API_KEY,
+    notification: {
+        apiKey: 'testNotiApiKey',
+        completeTitle: '참여하신 테스트가 완료처리 되었어요!👏',
+        completeSubtitle: '멋져요! 다음 테스트가 도착하면 다시 알려드릴게요.',
+    },
 
     // for test only
     testUser: {
