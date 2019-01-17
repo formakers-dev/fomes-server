@@ -11,14 +11,14 @@ const getBetaTestList = (req, res, next) => {
 
 const postComplete = (req, res, next) => {
     BetaTestsService.updateCompleted(req.params.id, req.userId)
-        .then(doc => {
-            if (doc) {
+        .then(betaTest => {
+            if (betaTest) {
                 return UserService.getUser(req.userId).then(user => {
                     const body = {
                         'data' : {
                             'channel' : 'channel_betatest',
                             'title' : config.notification.completeTitle,
-                            'subTitle' : config.notification.completeSubtitle
+                            'subTitle' : config.notification.completeSubtitle.replace(":TITLE", betaTest.title)
                         },
                         'to' : user.registrationToken,
                     };

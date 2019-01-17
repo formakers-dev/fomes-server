@@ -248,8 +248,8 @@ describe('BetaTests', () => {
                     const expectBody = {
                         data: {
                             channel: 'channel_betatest',
-                            subTitle: '멋져요! 다음 테스트가 도착하면 다시 알려드릴게요.',
-                            title: '참여하신 테스트가 완료처리 되었어요!👏'
+                            title: '참여하신 테스트가 완료처리 되었어요!👏',
+                            subTitle: '멋져요! [전체 유저 대상 테스트]에 성공적으로 참여하셨습니다.'
                         },
                         to: 'test_user_registration_token'
                     };

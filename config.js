@@ -23,7 +23,7 @@ config.test = {
     notification: {
         apiKey: 'testNotiApiKey',
         completeTitle: '참여하신 테스트가 완료처리 되었어요!👏',
-        completeSubtitle: '멋져요! 다음 테스트가 도착하면 다시 알려드릴게요.',
+        completeSubtitle: '멋져요! [:TITLE]에 성공적으로 참여하셨습니다.',
     },
 
     // for test only
