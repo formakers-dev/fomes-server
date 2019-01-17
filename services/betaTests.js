@@ -14,6 +14,8 @@ const findValidBetaTests = (userId) => {
             }
         }, {
             $project: {
+                id: true,
+                overviewImageUrl: true,
                 title: true,
                 subTitle: true,
                 type: true,
@@ -22,6 +24,7 @@ const findValidBetaTests = (userId) => {
                 closeDate: true,
                 actionType: true,
                 action: true,
+                reward: true,
                 isOpened: {
                     $lte: ["$openDate", currentTime]
                 },

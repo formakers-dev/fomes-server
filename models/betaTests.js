@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const betaTestSchema = new Schema({
     id: Number,
+    overviewImageUrl: String,
     title: String,
     subTitle: String,
     type: String,
@@ -12,6 +13,7 @@ const betaTestSchema = new Schema({
     apps: Array,
     actionType: String,
     action: String,
+    reward: String,
     targetUserIds: false,
     completedUserIds: Array,
 });
