@@ -10,7 +10,7 @@ const BetaTests = require('../models/betaTests');
 const helper = require('./commonTestHelper');
 
 describe('BetaTests', () => {
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     const data = [
         {
@@ -83,13 +83,10 @@ describe('BetaTests', () => {
     });
 
     describe('GET /beta-tests', () => {
-        let clock;
-
-        beforeEach(() => {
-            clock = sandbox.useFakeTimers(new Date("2018-12-28T02:30:00.000Z").getTime());
-        });
 
         it('참여 가능한 피드백 요청 목록을 조회한다', done => {
+            sandbox.useFakeTimers(new Date("2018-12-28T02:30:00.000Z").getTime());
+
             request.get('/beta-tests')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
@@ -146,8 +143,7 @@ describe('BetaTests', () => {
         });
 
         it('오픈되지 않은 요청 건도 조회한다', done => {
-            clock = sandbox.useFakeTimers(new Date("2018-11-01T02:30:00.000Z").getTime());
-
+            sandbox.useFakeTimers(new Date("2018-11-01T02:30:00.000Z").getTime());
             request.get('/beta-tests')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
@@ -204,7 +200,7 @@ describe('BetaTests', () => {
         });
 
         it('마감기간이 지난 요청 건은 조회하지 않는다', done => {
-            clock = sandbox.useFakeTimers(new Date("2019-01-30T02:30:00.000Z").getTime());
+            sandbox.useFakeTimers(new Date("2019-01-30T02:30:00.000Z").getTime());
 
             request.get('/beta-tests')
                 .set('x-access-token', config.appbeeToken.valid)
@@ -216,8 +212,8 @@ describe('BetaTests', () => {
         });
 
         afterEach(() => {
-            clock.restore();
-        })
+            sandbox.restore();
+        });
     });
 
     describe('POST /beta-tests/:id/complete', () => {
@@ -300,7 +296,7 @@ describe('BetaTests', () => {
 
         afterEach(() => {
             stubAxiosPost.restore();
-        })
+        });
     });
 
     afterEach(done => {

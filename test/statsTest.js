@@ -12,7 +12,7 @@ const UncrawledApps = require('../models/uncrawledApps');
 const helper = require('./commonTestHelper');
 
 describe('Stats', () => {
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     before(done => {
         helper.commonBefore()
@@ -145,9 +145,9 @@ describe('Stats', () => {
     });
 
     describe('POST /stats/usages/app', () => {
-        let clock;
-
         beforeEach(done => {
+            sandbox.useFakeTimers(new Date("2018-09-26T15:30:00.000Z").getTime());
+
             AppUsages.create([{
                 userId: 'anotherUserId',
                 gender: 'female',
@@ -215,10 +215,8 @@ describe('Stats', () => {
                     iconUrl: 'iconUrlForNotGame',
                 }]))
                 .then(() => Users.create(config.testUser))
-                .then(() => {
-                    clock = sandbox.useFakeTimers(new Date("2018-09-26T15:30:00.000Z").getTime());
-                    done();
-                }).catch(err => done(err));
+                .then(() => done())
+                .catch(err => done(err));
         });
 
         const data = [{
@@ -346,7 +344,8 @@ describe('Stats', () => {
         });
 
         afterEach(done => {
-            clock.restore();
+            sandbox.restore();
+
             AppUsages.remove({})
                 .then(() => Users.remove({}))
                 .then(() => Apps.remove({}))
@@ -359,207 +358,207 @@ describe('Stats', () => {
     describe('POST /stats/report/category/:categoryId/recent', () => {
         describe('랭킹', () => {
             beforeEach(done => {
-                    Users.create([
-                        config.testUser,
+                Users.create([
+                    config.testUser,
+                    {
+                        userId: 'peopleId1',
+                        birthday: 1943,
+                        job: 1,
+                        gender: 'male',
+                    },
+                    {
+                        userId: 'peopleId2',
+                        birthday: 1989,
+                        job: 1,
+                        gender: 'female',
+                    },
+                    {
+                        userId: 'peopleId3',
+                        birthday: 1990,
+                        job: 2,
+                        gender: 'male',
+                    },
+                    {
+                        userId: 'uninstalledOldPeople',
+                        birthday: 1970,
+                        job: 1,
+                        gender: 'male',
+                    }])
+                    .then(() => AppUsages.create([
+                        ////////// start of me ///////////////
+                        {
+                            userId: config.testUser.userId,
+                            packageName: 'com.nhn.android.nmap',
+                            totalUsedTime: 9999,
+                            appName: '네이버지도',
+                            categoryId: 'TOOL',
+                            categoryName: '도구',
+                            developer: 'NHN Corp.',
+                            iconUrl: 'iconUrl0',
+                            gender: 'male',
+                            birthday: 1992,
+                            job: 1,
+                        }, {
+                            // 특정 앱의 사용 데이터는 있지만 해당 앱 정보가 DB에 없는 경우, 해당 앱은 제외한다.
+                            userId: config.testUser.userId,
+                            packageName: 'com.game.empty',
+                            totalUsedTime: 10000,
+                            gender: 'male',
+                            birthday: 1992,
+                            job: 1,
+                        }, {
+                            userId: config.testUser.userId,
+                            packageName: 'com.game.edu',
+                            totalUsedTime: 90000,
+                            appName: '교육게임명',
+                            categoryId: 'GAME_EDUCATIONAL',
+                            categoryName: '교육',
+                            developer: 'Edu Game Corp.',
+                            iconUrl: 'iconUrl3',
+                            gender: 'male',
+                            birthday: 1992,
+                            job: 1,
+                        }, {
+                            userId: config.testUser.userId,
+                            packageName: 'com.game.rpg',
+                            totalUsedTime: 10000,
+                            appName: '롤플레잉게임명',
+                            categoryId: 'GAME_ROLE_PLAYING',
+                            categoryName: '롤플레잉',
+                            developer: 'GameDuckHu Corp.',
+                            iconUrl: 'iconUrl4',
+                            gender: 'male',
+                            birthday: 1992,
+                            job: 1,
+                        }, {
+                            userId: config.testUser.userId,
+                            packageName: 'com.game.edu2',
+                            totalUsedTime: 5000,
+                            appName: '교육게임명2',
+                            categoryId: 'GAME_EDUCATIONAL',
+                            categoryName: '교육',
+                            developer: 'GameDuckHu Corp.',
+                            iconUrl: 'iconUrl32',
+                            gender: 'male',
+                            birthday: 1992,
+                            job: 1,
+                        },
+                        ////////// end of me ///////////////
                         {
                             userId: 'peopleId1',
+                            packageName: 'com.game.edu2',
+                            totalUsedTime: 7000,
+                            appName: '교육게임명2',
+                            categoryId: 'GAME_EDUCATIONAL',
+                            categoryName: '교육',
+                            developer: 'GameDuckHu Corp.',
+                            iconUrl: 'iconUrl32',
                             birthday: 1943,
                             job: 1,
                             gender: 'male',
-                        },
-                        {
+                        }, {
+                            userId: 'peopleId1',
+                            packageName: 'com.game.rpg',
+                            totalUsedTime: 4000,
+                            appName: '롤플레잉게임명',
+                            categoryId: 'GAME_ROLE_PLAYING',
+                            categoryName: '롤플레잉',
+                            developer: 'GameDuckHu Corp.',
+                            iconUrl: 'iconUrl4',
+                            birthday: 1943,
+                            job: 1,
+                            gender: 'male',
+                        }, {
                             userId: 'peopleId2',
+                            packageName: 'com.game.rpg',
+                            totalUsedTime: 90000,
+                            appName: '롤플레잉게임명',
+                            categoryId: 'GAME_ROLE_PLAYING',
+                            categoryName: '롤플레잉',
+                            developer: 'GameDuckHu Corp.',
+                            iconUrl: 'iconUrl4',
                             birthday: 1989,
                             job: 1,
                             gender: 'female',
-                        },
-                        {
+                        }, {
+                            userId: 'peopleId2',
+                            packageName: 'com.game.puzzle',
+                            totalUsedTime: 10000,
+                            appName: '퍼즐게임명',
+                            categoryId: 'GAME_PUZZLE',
+                            categoryName: '퍼즐',
+                            developer: 'Puzzle Game Corp.',
+                            iconUrl: 'iconUrl6',
+                            birthday: 1989,
+                            job: 1,
+                            gender: 'female',
+                        }, {
                             userId: 'peopleId3',
+                            packageName: 'com.game.edu',
+                            totalUsedTime: 100000,
+                            appName: '교육게임명',
+                            categoryId: 'GAME_EDUCATIONAL',
+                            categoryName: '교육',
+                            developer: 'Edu Game Corp.',
+                            iconUrl: 'iconUrl3',
                             birthday: 1990,
                             job: 2,
                             gender: 'male',
-                        },
-                        {
-                            userId: 'uninstalledOldPeople',
-                            birthday: 1970,
-                            job: 1,
-                            gender: 'male',
-                        }])
-                        .then(() => AppUsages.create([
-                            ////////// start of me ///////////////
-                            {
-                                userId: config.testUser.userId,
-                                packageName: 'com.nhn.android.nmap',
-                                totalUsedTime: 9999,
-                                appName: '네이버지도',
-                                categoryId: 'TOOL',
-                                categoryName: '도구',
-                                developer: 'NHN Corp.',
-                                iconUrl: 'iconUrl0',
-                                gender: 'male',
-                                birthday: 1992,
-                                job: 1,
-                            }, {
-                                // 특정 앱의 사용 데이터는 있지만 해당 앱 정보가 DB에 없는 경우, 해당 앱은 제외한다.
-                                userId: config.testUser.userId,
-                                packageName: 'com.game.empty',
-                                totalUsedTime: 10000,
-                                gender: 'male',
-                                birthday: 1992,
-                                job: 1,
-                            }, {
-                                userId: config.testUser.userId,
-                                packageName: 'com.game.edu',
-                                totalUsedTime: 90000,
-                                appName: '교육게임명',
-                                categoryId: 'GAME_EDUCATIONAL',
-                                categoryName: '교육',
-                                developer: 'Edu Game Corp.',
-                                iconUrl: 'iconUrl3',
-                                gender: 'male',
-                                birthday: 1992,
-                                job: 1,
-                            }, {
-                                userId: config.testUser.userId,
-                                packageName: 'com.game.rpg',
-                                totalUsedTime: 10000,
-                                appName: '롤플레잉게임명',
-                                categoryId: 'GAME_ROLE_PLAYING',
-                                categoryName: '롤플레잉',
-                                developer: 'GameDuckHu Corp.',
-                                iconUrl: 'iconUrl4',
-                                gender: 'male',
-                                birthday: 1992,
-                                job: 1,
-                            }, {
-                                userId: config.testUser.userId,
-                                packageName: 'com.game.edu2',
-                                totalUsedTime: 5000,
-                                appName: '교육게임명2',
-                                categoryId: 'GAME_EDUCATIONAL',
-                                categoryName: '교육',
-                                developer: 'GameDuckHu Corp.',
-                                iconUrl: 'iconUrl32',
-                                gender: 'male',
-                                birthday: 1992,
-                                job: 1,
-                            },
-                            ////////// end of me ///////////////
-                            {
-                                userId: 'peopleId1',
-                                packageName: 'com.game.edu2',
-                                totalUsedTime: 7000,
-                                appName: '교육게임명2',
-                                categoryId: 'GAME_EDUCATIONAL',
-                                categoryName: '교육',
-                                developer: 'GameDuckHu Corp.',
-                                iconUrl: 'iconUrl32',
-                                birthday: 1943,
-                                job: 1,
-                                gender: 'male',
-                            }, {
-                                userId: 'peopleId1',
-                                packageName: 'com.game.rpg',
-                                totalUsedTime: 4000,
-                                appName: '롤플레잉게임명',
-                                categoryId: 'GAME_ROLE_PLAYING',
-                                categoryName: '롤플레잉',
-                                developer: 'GameDuckHu Corp.',
-                                iconUrl: 'iconUrl4',
-                                birthday: 1943,
-                                job: 1,
-                                gender: 'male',
-                            }, {
-                                userId: 'peopleId2',
-                                packageName: 'com.game.rpg',
-                                totalUsedTime: 90000,
-                                appName: '롤플레잉게임명',
-                                categoryId: 'GAME_ROLE_PLAYING',
-                                categoryName: '롤플레잉',
-                                developer: 'GameDuckHu Corp.',
-                                iconUrl: 'iconUrl4',
-                                birthday: 1989,
-                                job: 1,
-                                gender: 'female',
-                            }, {
-                                userId: 'peopleId2',
-                                packageName: 'com.game.puzzle',
-                                totalUsedTime: 10000,
-                                appName: '퍼즐게임명',
-                                categoryId: 'GAME_PUZZLE',
-                                categoryName: '퍼즐',
-                                developer: 'Puzzle Game Corp.',
-                                iconUrl: 'iconUrl6',
-                                birthday: 1989,
-                                job: 1,
-                                gender: 'female',
-                            }, {
-                                userId: 'peopleId3',
-                                packageName: 'com.game.edu',
-                                totalUsedTime: 100000,
-                                appName: '교육게임명',
-                                categoryId: 'GAME_EDUCATIONAL',
-                                categoryName: '교육',
-                                developer: 'Edu Game Corp.',
-                                iconUrl: 'iconUrl3',
-                                birthday: 1990,
-                                job: 2,
-                                gender: 'male',
-                            }, {
-                                userId: 'peopleId3',
-                                packageName: 'com.game.puzzle',
-                                totalUsedTime: 50000,
-                                appName: '퍼즐게임명',
-                                categoryId: 'GAME_PUZZLE',
-                                categoryName: '퍼즐',
-                                developer: 'Puzzle Game Corp.',
-                                iconUrl: 'iconUrl6',
-                                birthday: 1990,
-                                job: 2,
-                                gender: 'male',
-                            }, {
-                                // 특정 앱의 사용 데이터는 있지만 비정규화 이전 버전 앱 사용으로 categoryId가 AppUsages에 없는 경우, 해당 앱은 제외한다.
-                                userId: 'uninstalledOldPeople',
-                                packageName: 'com.game.puzzle',
-                                totalUsedTime: 7777777777
-                            }]))
-                        .then(() => Apps.create([{
-                            packageName: 'com.nhn.android.nmap',
-                            appName: '네이버지도',
-                            categoryId1: 'TOOL',
-                            categoryName1: '도구',
-                            developer: 'NHN Corp.',
-                            iconUrl: 'iconUrl0',
                         }, {
-                            packageName: 'com.game.edu',
-                            appName: '교육게임명',
-                            categoryId1: 'GAME_EDUCATIONAL',
-                            categoryName1: '교육',
-                            developer: 'Edu Game Corp.',
-                            iconUrl: 'iconUrl3',
-                        }, {
-                            packageName: 'com.game.rpg',
-                            appName: '롤플레잉게임명',
-                            categoryId1: 'GAME_ROLE_PLAYING',
-                            categoryName1: '롤플레잉',
-                            developer: 'GameDuckHu Corp.',
-                            iconUrl: 'iconUrl4',
-                        }, {
-                            packageName: 'com.game.edu2',
-                            appName: '교육게임명2',
-                            categoryId1: 'GAME_EDUCATIONAL',
-                            categoryName1: '교육',
-                            developer: 'GameDuckHu Corp.',
-                            iconUrl: 'iconUrl32',
-                        }, {
+                            userId: 'peopleId3',
                             packageName: 'com.game.puzzle',
+                            totalUsedTime: 50000,
                             appName: '퍼즐게임명',
-                            categoryId1: 'GAME_PUZZLE',
-                            categoryName1: '퍼즐',
+                            categoryId: 'GAME_PUZZLE',
+                            categoryName: '퍼즐',
                             developer: 'Puzzle Game Corp.',
                             iconUrl: 'iconUrl6',
+                            birthday: 1990,
+                            job: 2,
+                            gender: 'male',
+                        }, {
+                            // 특정 앱의 사용 데이터는 있지만 비정규화 이전 버전 앱 사용으로 categoryId가 AppUsages에 없는 경우, 해당 앱은 제외한다.
+                            userId: 'uninstalledOldPeople',
+                            packageName: 'com.game.puzzle',
+                            totalUsedTime: 7777777777
                         }]))
-                        .then(() => done());
+                    .then(() => Apps.create([{
+                        packageName: 'com.nhn.android.nmap',
+                        appName: '네이버지도',
+                        categoryId1: 'TOOL',
+                        categoryName1: '도구',
+                        developer: 'NHN Corp.',
+                        iconUrl: 'iconUrl0',
+                    }, {
+                        packageName: 'com.game.edu',
+                        appName: '교육게임명',
+                        categoryId1: 'GAME_EDUCATIONAL',
+                        categoryName1: '교육',
+                        developer: 'Edu Game Corp.',
+                        iconUrl: 'iconUrl3',
+                    }, {
+                        packageName: 'com.game.rpg',
+                        appName: '롤플레잉게임명',
+                        categoryId1: 'GAME_ROLE_PLAYING',
+                        categoryName1: '롤플레잉',
+                        developer: 'GameDuckHu Corp.',
+                        iconUrl: 'iconUrl4',
+                    }, {
+                        packageName: 'com.game.edu2',
+                        appName: '교육게임명2',
+                        categoryId1: 'GAME_EDUCATIONAL',
+                        categoryName1: '교육',
+                        developer: 'GameDuckHu Corp.',
+                        iconUrl: 'iconUrl32',
+                    }, {
+                        packageName: 'com.game.puzzle',
+                        appName: '퍼즐게임명',
+                        categoryId1: 'GAME_PUZZLE',
+                        categoryName1: '퍼즐',
+                        developer: 'Puzzle Game Corp.',
+                        iconUrl: 'iconUrl6',
+                    }]))
+                    .then(() => done());
                 }
             );
 

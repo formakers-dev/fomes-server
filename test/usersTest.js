@@ -13,13 +13,13 @@ const server = require('../server');
 const request = require('supertest').agent(server);
 
 describe('Users', () => {
+    const sandbox = sinon.createSandbox();
+
     before(done => {
         helper.commonBefore()
             .then(() => done())
             .catch(err => done(err));
     });
-
-    const sandbox = sinon.sandbox.create();
 
     describe('POST /user/', () => {
         describe('기존 사용자가 존재할 경우,', () => {
@@ -233,7 +233,6 @@ describe('Users', () => {
     });
 
     describe('POST /user/signup/', () => {
-        let clock;
         const signUpUser = {
             userId: config.testUser.userId,
             name: config.testUser.name,
@@ -243,8 +242,8 @@ describe('Users', () => {
             providerId: config.testUser.providerId
         };
 
-        beforeEach(() => {
-            clock = sandbox.useFakeTimers(new Date("2018-09-06T15:30:00.000Z").getTime());
+        before(() => {
+            sandbox.useFakeTimers(new Date("2018-09-06T15:30:00.000Z").getTime());
         });
 
         it('구글토큰검증 후 유저를 가입시킨다', done => {
@@ -329,20 +328,24 @@ describe('Users', () => {
 
             after(done => {
                 Users.remove({userId: config.testUser.userId}, done);
-            })
+            });
         });
 
-        afterEach((done) => {
-            clock.restore();
+        afterEach(done => {
             Users.remove({userId: config.testUser.userId}, done);
+        });
+
+        after(done => {
+            sandbox.restore();
+            done();
         });
     });
 
     // TODO : service unit test 추가할건지 결정 후 처리하기
     describe.skip('getSimilarUsersWithSameAge 호출 시', () => {
-        let clock;
-
         before(done => {
+            sandbox.useFakeTimers(new Date("2018-09-21T15:30:00.000Z").getTime());
+
             Users.create([
                 config.testUser,
                 {
@@ -363,10 +366,7 @@ describe('Users', () => {
                     birthday: 1989,
                     job: 1
                 }
-            ], () => {
-                clock = sandbox.useFakeTimers(new Date("2018-09-21T15:30:00.000Z").getTime());
-                done();
-            });
+            ], () => done());
         });
 
         it('동일 성별 + 동일 나이대의 유저들 리스트를 반환한다', done => {
@@ -422,7 +422,7 @@ describe('Users', () => {
         });
 
         after(done => {
-            clock.restore();
+            sandbox.restore();
             Users.remove({}, done);
         });
     });
