@@ -221,12 +221,10 @@ describe('BetaTests', () => {
     });
 
     describe('POST /beta-tests/:id/complete', () => {
-        const sandbox2 = sinon.sandbox.create();
-
-        let spyOnPostNoti;
+        let stubAxiosPost;
 
         beforeEach(() => {
-            spyOnPostNoti = sandbox2.spy(axios, 'post');
+            stubAxiosPost = sandbox.stub(axios, 'post').returns(Promise.resolve());
         });
 
         // 정상
@@ -249,22 +247,25 @@ describe('BetaTests', () => {
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
                 .then(() => {
-                    const requestUrl = spyOnPostNoti.getCall(0).args[0];
-                    const body = spyOnPostNoti.getCall(0).args[1];
-                    const header = spyOnPostNoti.getCall(0).args[2].headers;
+                    const expectUrl = 'https://fcm.googleapis.com/fcm/send';
 
-                    requestUrl.should.be.eql('https://fcm.googleapis.com/fcm/send');
+                    const expectBody = {
+                        data: {
+                            channel: 'channel_betatest',
+                            subTitle: '완료되었다는 서브타이틀',
+                            title: '완료되었슴둥'
+                        },
+                        to: 'test_user_registration_token'
+                    };
 
-                    body.data.channel.should.be.eql("channel_betatest");
-                    body.data.title.should.be.include("완료");
-                    body.data.subTitle.should.be.include("완료");
-                    should.not.exist(body.data.message);
-                    should.not.exist(body.data.isSummary);
-                    should.not.exist(body.data.summarySubText);
-                    body.to.should.be.include(config.testUser.registrationToken);
+                    const expectHeader = {
+                        headers: {
+                            Authorization: 'key=' + config.notiApiKey,
+                            'Content-Type' : 'application/json'
+                        }
+                    };
 
-                    header.Authorization.should.be.eql('key=' + config.notiApiKey);
-                    header['Content-Type'].should.be.eql('application/json');
+                    sinon.assert.calledWith(stubAxiosPost, expectUrl, expectBody, expectHeader);
 
                     done();
                 }).catch(err => done(err));
@@ -292,13 +293,13 @@ describe('BetaTests', () => {
                 .expect(200)
                 .then(() => BetaTests.findOne({id: 5}))
                 .then(() => {
-                    should.not.exist(spyOnPostNoti.getCall(0));
+                    sinon.assert.notCalled(stubAxiosPost);
                     done();
                 }).catch(err => done(err));
         });
 
         afterEach(() => {
-            sandbox2.restore();
+            stubAxiosPost.restore();
         })
     });
 
