@@ -17,8 +17,8 @@ const postComplete = (req, res, next) => {
                     const body = {
                         'data' : {
                             'channel' : 'channel_betatest',
-                            'title' : '완료되었슴둥',
-                            'subTitle' : '완료되었다는 서브타이틀'
+                            'title' : '참여하신 테스트가 완료처리 되었어요!👏',
+                            'subTitle' : '멋져요! 다음 테스트가 도착하면 다시 알려드릴게요.'
                         },
                         'to' : user.registrationToken,
                     };
