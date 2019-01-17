@@ -39,7 +39,7 @@ const updateCompleted = (betaTestId, userId) => {
             {id: betaTestId},
             {completedUserIds: {$nin: [userId]}}
         ]
-    }, {$push: {completedUserIds: userId}}, {upsert: true});
+    }, {$push: {completedUserIds: userId}});
 };
 
 module.exports = {
