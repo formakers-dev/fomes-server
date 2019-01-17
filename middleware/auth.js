@@ -123,6 +123,14 @@ const apiKeyVerifier = (req, res, next) => {
             console.log("user", user);
             req.userId = user.userId;
             next();
+        })
+        .catch(err => {
+            console.error('===apiKeyVerifier:onError', 'email=', email, 'err=', err);
+
+            res.status(403).json({
+                success: false,
+                message: err.message
+            });
         });
 };
 

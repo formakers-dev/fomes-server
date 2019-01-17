@@ -294,6 +294,14 @@ describe('BetaTests', () => {
                 }).catch(err => done(err));
         });
 
+        it('요청한 유저정보가 유효한 이메일로 접수되지 않은 경우 403 에러를 반환한다', done => {
+            request.post('/beta-tests/1/complete')
+                .set('x-access-token', 'InvalidAccessToken')
+                .expect(403)
+                .then(() => done())
+                .catch(err => done(err));
+        });
+
         afterEach(() => {
             stubAxiosPost.restore();
         });
