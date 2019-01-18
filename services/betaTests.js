@@ -25,6 +25,8 @@ const findValidBetaTests = (userId) => {
                 actionType: true,
                 action: true,
                 reward: true,
+                requiredTime: true,
+                amount: true,
                 isOpened: {
                     $and: [
                         {$lte: ["$openDate", currentTime]},

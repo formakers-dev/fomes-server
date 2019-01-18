@@ -22,7 +22,11 @@ describe('BetaTests', () => {
             openDate: new Date('2018-12-26'),
             closeDate: new Date('2018-12-31'),
             actionType: 'link',
-            action: 'https://www.google.com'
+            action: 'https://www.google.com',
+            overviewImageUrl: 'testImageUrl1',
+            reward: 'testReward1',
+            requiredTime: 1000,
+            amount: '1가지 시나리오',
         }, {
             id : 2,
             title : "타겟팅 된 테스트",
@@ -33,7 +37,11 @@ describe('BetaTests', () => {
             closeDate: new Date('2018-12-31'),
             actionType: 'link',
             action: 'https://www.google.com',
-            targetUserIds: [config.testUser.userId, "anotherUserId"]
+            targetUserIds: [config.testUser.userId, "anotherUserId"],
+            overviewImageUrl: 'testImageUrl2',
+            reward: 'testReward2',
+            requiredTime: 2000,
+            amount: '2가지 시나리오',
         }, {
             id : 3,
             title : "타겟팅 되지 않은 테스트",
@@ -44,7 +52,11 @@ describe('BetaTests', () => {
             closeDate: new Date('2018-12-31'),
             actionType: 'link',
             action: 'https://www.google.com',
-            targetUserIds: ['anotherUserId']
+            targetUserIds: ['anotherUserId'],
+            overviewImageUrl: 'testImageUrl3',
+            reward: 'testReward3',
+            requiredTime: 3000,
+            amount: '3가지 시나리오',
         }, {
             id : 4,
             title : "아무도 타겟팅 되지 않은 테스트",
@@ -55,7 +67,11 @@ describe('BetaTests', () => {
             closeDate: new Date('2018-12-31'),
             actionType: 'link',
             action: 'https://www.google.com',
-            targetUserIds: []
+            targetUserIds: [],
+            overviewImageUrl: 'testImageUrl4',
+            reward: 'testReward4',
+            requiredTime: 4000,
+            amount: '4가지 시나리오',
         },  {
             id : 5,
             title : "이미 참여한 테스트",
@@ -67,6 +83,10 @@ describe('BetaTests', () => {
             actionType: 'link',
             action: 'https://www.google.com',
             completedUserIds: [config.testUser.userId],
+            overviewImageUrl: 'testImageUrl5',
+            reward: 'testReward5',
+            requiredTime: 5000,
+            amount: '5가지 시나리오',
         }
     ];
 
@@ -105,6 +125,10 @@ describe('BetaTests', () => {
                     res.body[0].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
                     res.body[0].actionType.should.be.eql('link');
                     res.body[0].action.should.be.eql('https://www.google.com');
+                    res.body[0].overviewImageUrl.should.be.eql('testImageUrl5');
+                    res.body[0].reward.should.be.eql('testReward5');
+                    res.body[0].requiredTime.should.be.eql(5000);
+                    res.body[0].amount.should.be.eql('5가지 시나리오');
                     res.body[0].isOpened.should.be.eql(true);
                     res.body[0].isCompleted.should.be.eql(true);
 
@@ -118,6 +142,10 @@ describe('BetaTests', () => {
                     res.body[1].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
                     res.body[1].actionType.should.be.eql('link');
                     res.body[1].action.should.be.eql('https://www.google.com');
+                    res.body[1].overviewImageUrl.should.be.eql('testImageUrl1');
+                    res.body[1].reward.should.be.eql('testReward1');
+                    res.body[1].requiredTime.should.be.eql(1000);
+                    res.body[1].amount.should.be.eql('1가지 시나리오');
                     res.body[1].isOpened.should.be.eql(true);
                     res.body[1].isCompleted.should.be.eql(false);
                     should.not.exist(res.body[1].targetUserIds);
@@ -133,6 +161,10 @@ describe('BetaTests', () => {
                     res.body[2].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
                     res.body[2].actionType.should.be.eql('link');
                     res.body[2].action.should.be.eql('https://www.google.com');
+                    res.body[2].overviewImageUrl.should.be.eql('testImageUrl2');
+                    res.body[2].reward.should.be.eql('testReward2');
+                    res.body[2].requiredTime.should.be.eql(2000);
+                    res.body[2].amount.should.be.eql('2가지 시나리오');
                     res.body[2].isOpened.should.be.eql(true);
                     res.body[2].isCompleted.should.be.eql(false);
                     should.not.exist(res.body[2].targetUserIds);
@@ -163,6 +195,10 @@ describe('BetaTests', () => {
                     res.body[0].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
                     res.body[0].actionType.should.be.eql('link');
                     res.body[0].action.should.be.eql('https://www.google.com');
+                    res.body[0].overviewImageUrl.should.be.eql('testImageUrl5');
+                    res.body[0].reward.should.be.eql('testReward5');
+                    res.body[0].requiredTime.should.be.eql(5000);
+                    res.body[0].amount.should.be.eql('5가지 시나리오');
                     res.body[0].isOpened.should.be.eql(false);
                     res.body[0].isCompleted.should.be.eql(true);
 
@@ -176,6 +212,10 @@ describe('BetaTests', () => {
                     res.body[1].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
                     res.body[1].actionType.should.be.eql('link');
                     res.body[1].action.should.be.eql('https://www.google.com');
+                    res.body[1].overviewImageUrl.should.be.eql('testImageUrl1');
+                    res.body[1].reward.should.be.eql('testReward1');
+                    res.body[1].requiredTime.should.be.eql(1000);
+                    res.body[1].amount.should.be.eql('1가지 시나리오');
                     res.body[1].isOpened.should.be.eql(false);
                     res.body[1].isCompleted.should.be.eql(false);
                     should.not.exist(res.body[1].targetUserIds);
@@ -191,6 +231,10 @@ describe('BetaTests', () => {
                     res.body[2].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
                     res.body[2].actionType.should.be.eql('link');
                     res.body[2].action.should.be.eql('https://www.google.com');
+                    res.body[2].overviewImageUrl.should.be.eql('testImageUrl2');
+                    res.body[2].reward.should.be.eql('testReward2');
+                    res.body[2].requiredTime.should.be.eql(2000);
+                    res.body[2].amount.should.be.eql('2가지 시나리오');
                     res.body[2].isOpened.should.be.eql(false);
                     res.body[2].isCompleted.should.be.eql(false);
                     should.not.exist(res.body[2].targetUserIds);

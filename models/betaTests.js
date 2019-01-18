@@ -16,6 +16,8 @@ const betaTestSchema = new Schema({
     reward: String,
     targetUserIds: false,
     completedUserIds: Array,
+    requiredTime: Number,
+    amount: String,
 });
 
 module.exports = mongoose.model('beta-tests', betaTestSchema);
