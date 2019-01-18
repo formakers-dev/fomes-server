@@ -22,6 +22,7 @@ const findValidBetaTests = (userId) => {
                 typeTags: true,
                 openDate: true,
                 closeDate: true,
+                currentDate: new Date(),
                 actionType: true,
                 action: true,
                 reward: true,

@@ -131,6 +131,7 @@ describe('BetaTests', () => {
                     res.body[0].amount.should.be.eql('5가지 시나리오');
                     res.body[0].isOpened.should.be.eql(true);
                     res.body[0].isCompleted.should.be.eql(true);
+                    res.body[0].currentDate.should.be.eql('2018-12-28T02:30:00.000Z');
 
                     res.body[1].title.should.be.eql('전체 유저 대상 테스트');
                     res.body[1].subTitle.should.be.eql('targetUserIds 가 없어요');
@@ -150,6 +151,7 @@ describe('BetaTests', () => {
                     res.body[1].isCompleted.should.be.eql(false);
                     should.not.exist(res.body[1].targetUserIds);
                     should.not.exist(res.body[1].completedUserIds);
+                    res.body[1].currentDate.should.be.eql('2018-12-28T02:30:00.000Z');
 
                     res.body[2].title.should.be.eql('타겟팅 된 테스트');
                     res.body[2].subTitle.should.be.eql('적합한 테스터는 너야너 너야너');
@@ -169,6 +171,7 @@ describe('BetaTests', () => {
                     res.body[2].isCompleted.should.be.eql(false);
                     should.not.exist(res.body[2].targetUserIds);
                     should.not.exist(res.body[2].completedUserIds);
+                    res.body[2].currentDate.should.be.eql('2018-12-28T02:30:00.000Z');
 
                     done();
                 }).catch(err => done(err));
@@ -201,6 +204,7 @@ describe('BetaTests', () => {
                     res.body[0].amount.should.be.eql('5가지 시나리오');
                     res.body[0].isOpened.should.be.eql(false);
                     res.body[0].isCompleted.should.be.eql(true);
+                    res.body[0].currentDate.should.be.eql('2018-11-01T02:30:00.000Z');
 
                     res.body[1].title.should.be.eql('전체 유저 대상 테스트');
                     res.body[1].subTitle.should.be.eql('targetUserIds 가 없어요');
@@ -220,6 +224,7 @@ describe('BetaTests', () => {
                     res.body[1].isCompleted.should.be.eql(false);
                     should.not.exist(res.body[1].targetUserIds);
                     should.not.exist(res.body[1].completedUserIds);
+                    res.body[1].currentDate.should.be.eql('2018-11-01T02:30:00.000Z');
 
                     res.body[2].title.should.be.eql('타겟팅 된 테스트');
                     res.body[2].subTitle.should.be.eql('적합한 테스터는 너야너 너야너');
@@ -239,6 +244,7 @@ describe('BetaTests', () => {
                     res.body[2].isCompleted.should.be.eql(false);
                     should.not.exist(res.body[2].targetUserIds);
                     should.not.exist(res.body[2].completedUserIds);
+                    res.body[2].currentDate.should.be.eql('2018-11-01T02:30:00.000Z');
 
                     done();
                 }).catch(err => done(err));
