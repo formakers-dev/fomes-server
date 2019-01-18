@@ -6,7 +6,7 @@ const findValidBetaTests = (userId) => {
     return BetaTests.aggregate([
         {
             $match : {
-                closeDate: { $gte: currentTime },
+                openDate: { $lte: currentTime },
                 $or: [
                     { targetUserIds: { $exists: false }},
                     { targetUserIds: { $in: [ userId ] } },
@@ -26,7 +26,10 @@ const findValidBetaTests = (userId) => {
                 action: true,
                 reward: true,
                 isOpened: {
-                    $lte: ["$openDate", currentTime]
+                    $and: [
+                        {$lte: ["$openDate", currentTime]},
+                        {$gte: ["$closeDate", currentTime]}
+                    ]
                 },
                 isCompleted: {
                     $in : [userId, "$completedUserIds"]

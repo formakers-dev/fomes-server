@@ -142,8 +142,9 @@ describe('BetaTests', () => {
                 }).catch(err => done(err));
         });
 
-        it('오픈되지 않은 요청 건도 조회한다', done => {
-            sandbox.useFakeTimers(new Date("2018-11-01T02:30:00.000Z").getTime());
+        it('마감기간이 지난 요청 건도 조회한다', done => {
+            sandbox.useFakeTimers(new Date("2019-01-30T02:30:00.000Z").getTime());
+
             request.get('/beta-tests')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
@@ -199,14 +200,14 @@ describe('BetaTests', () => {
                 }).catch(err => done(err));
         });
 
-        it('마감기간이 지난 요청 건은 조회하지 않는다', done => {
-            sandbox.useFakeTimers(new Date("2019-01-30T02:30:00.000Z").getTime());
-
+        it('오픈되지 않은 요청 건은 조회하지 않는다', done => {
+            sandbox.useFakeTimers(new Date("2018-11-01T02:30:00.000Z").getTime());
             request.get('/beta-tests')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
                     res.body.length.should.be.eql(0);
+
                     done();
                 }).catch(err => done(err));
         });
