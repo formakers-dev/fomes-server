@@ -18,8 +18,7 @@ describe('EventLogs', () => {
     });
 
     const doc = {
-        where: 'NOTI',
-        action: 'tab',
+        code: 'BT_NOTI_TAP',
         ref: '123'
     };
 
@@ -35,8 +34,7 @@ describe('EventLogs', () => {
                 .then(insertedEventLog => {
                     insertedEventLog.userId.should.be.eql(config.testUser.userId);
                     insertedEventLog.when.should.be.eql(new Date('2019-01-01T00:00:00.000Z'));
-                    insertedEventLog.where.should.be.eql('NOTI');
-                    insertedEventLog.action.should.be.eql('tab');
+                    insertedEventLog.code.should.be.eql('BT_NOTI_TAP');
                     insertedEventLog.ref.should.be.eql('123');
 
                     done();

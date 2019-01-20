@@ -4,8 +4,7 @@ const Schema = mongoose.Schema;
 const eventLogsSchema = new Schema({
     userId: String,
     when: Date,
-    where: String,
-    action: String,
+    code: String,
     ref: String
 });
 
