@@ -1,6 +1,6 @@
 {
-  "name": "AppBeeServer",
-  "version": "0.0.0",
+  "name": "FomesServer",
+  "version": "0.2.0",
   "description": "",
   "main": "server.js",
   "scripts": {
