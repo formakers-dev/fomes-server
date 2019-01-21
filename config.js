@@ -5,6 +5,11 @@ config.development = {
     dbUrl: process.env.MONGO_URL,
     port: process.env.PORT || 8080,
     googleClientId: process.env.GG_CLIENT_ID,
+    notification: {
+        apiKey: process.env.NOTI_API_KEY,
+        completeTitle: process.env.NOTI_COMPLETE_TITLE,
+        completeSubtitle: process.env.NOTI_COMPLETE_SUBTITLE
+    }
 };
 
 config.staging = config.development;
@@ -15,6 +20,13 @@ config.test = {
     dbUrl: process.env.MONGO_URL,
     port: 3000,
     googleClientId: '',
+    notification: {
+        apiKey: 'testNotiApiKey',
+        completeTitle: '참여하신 테스트가 완료처리 되었어요!👏',
+        completeSubtitle: '멋져요! [:TITLE]에 성공적으로 참여하셨습니다.',
+    },
+
+    // for test only
     testUser: {
         userId: '109974316241227718963',
         email: 'appbee@appbee.com',

@@ -3,13 +3,14 @@ const server = require('../server');
 const config = require('../config');
 const request = require('supertest').agent(server);
 const sinon = require('sinon');
+const axios = require('axios');
 const should = chai.should();
 
-const Requests = require('../models/requests');
+const BetaTests = require('../models/betaTests');
 const helper = require('./commonTestHelper');
 
-describe('Requests', () => {
-    const sandbox = sinon.sandbox.create();
+describe('BetaTests', () => {
+    const sandbox = sinon.createSandbox();
 
     const data = [
         {
@@ -21,7 +22,11 @@ describe('Requests', () => {
             openDate: new Date('2018-12-26'),
             closeDate: new Date('2018-12-31'),
             actionType: 'link',
-            action: 'https://www.google.com'
+            action: 'https://www.google.com',
+            overviewImageUrl: 'testImageUrl1',
+            reward: 'testReward1',
+            requiredTime: 1000,
+            amount: '1가지 시나리오',
         }, {
             id : 2,
             title : "타겟팅 된 테스트",
@@ -32,7 +37,11 @@ describe('Requests', () => {
             closeDate: new Date('2018-12-31'),
             actionType: 'link',
             action: 'https://www.google.com',
-            targetUserIds: [config.testUser.userId, "anotherUserId"]
+            targetUserIds: [config.testUser.userId, "anotherUserId"],
+            overviewImageUrl: 'testImageUrl2',
+            reward: 'testReward2',
+            requiredTime: 2000,
+            amount: '2가지 시나리오',
         }, {
             id : 3,
             title : "타겟팅 되지 않은 테스트",
@@ -43,7 +52,11 @@ describe('Requests', () => {
             closeDate: new Date('2018-12-31'),
             actionType: 'link',
             action: 'https://www.google.com',
-            targetUserIds: ['anotherUserId']
+            targetUserIds: ['anotherUserId'],
+            overviewImageUrl: 'testImageUrl3',
+            reward: 'testReward3',
+            requiredTime: 3000,
+            amount: '3가지 시나리오',
         }, {
             id : 4,
             title : "아무도 타겟팅 되지 않은 테스트",
@@ -54,7 +67,11 @@ describe('Requests', () => {
             closeDate: new Date('2018-12-31'),
             actionType: 'link',
             action: 'https://www.google.com',
-            targetUserIds: []
+            targetUserIds: [],
+            overviewImageUrl: 'testImageUrl4',
+            reward: 'testReward4',
+            requiredTime: 4000,
+            amount: '4가지 시나리오',
         },  {
             id : 5,
             title : "이미 참여한 테스트",
@@ -65,7 +82,11 @@ describe('Requests', () => {
             closeDate: new Date('2018-12-31'),
             actionType: 'link',
             action: 'https://www.google.com',
-            registeredUserIds: [config.testUser.userId]
+            completedUserIds: [config.testUser.userId],
+            overviewImageUrl: 'testImageUrl5',
+            reward: 'testReward5',
+            requiredTime: 5000,
+            amount: '5가지 시나리오',
         }
     ];
 
@@ -76,20 +97,17 @@ describe('Requests', () => {
     });
 
     beforeEach(done => {
-        Requests.create(data)
+        BetaTests.create(data)
             .then(() => done())
             .catch(err => done(err));
     });
 
-    describe('GET /requests', () => {
-        let clock;
-
-        beforeEach(() => {
-            clock = sandbox.useFakeTimers(new Date("2018-12-28T02:30:00.000Z").getTime());
-        });
+    describe('GET /beta-tests', () => {
 
         it('참여 가능한 피드백 요청 목록을 조회한다', done => {
-            request.get('/requests')
+            sandbox.useFakeTimers(new Date("2018-12-28T02:30:00.000Z").getTime());
+
+            request.get('/beta-tests')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
@@ -107,8 +125,13 @@ describe('Requests', () => {
                     res.body[0].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
                     res.body[0].actionType.should.be.eql('link');
                     res.body[0].action.should.be.eql('https://www.google.com');
+                    res.body[0].overviewImageUrl.should.be.eql('testImageUrl5');
+                    res.body[0].reward.should.be.eql('testReward5');
+                    res.body[0].requiredTime.should.be.eql(5000);
+                    res.body[0].amount.should.be.eql('5가지 시나리오');
                     res.body[0].isOpened.should.be.eql(true);
-                    res.body[0].isRegistered.should.be.eql(true);
+                    res.body[0].isCompleted.should.be.eql(true);
+                    res.body[0].currentDate.should.be.eql('2018-12-28T02:30:00.000Z');
 
                     res.body[1].title.should.be.eql('전체 유저 대상 테스트');
                     res.body[1].subTitle.should.be.eql('targetUserIds 가 없어요');
@@ -120,10 +143,15 @@ describe('Requests', () => {
                     res.body[1].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
                     res.body[1].actionType.should.be.eql('link');
                     res.body[1].action.should.be.eql('https://www.google.com');
+                    res.body[1].overviewImageUrl.should.be.eql('testImageUrl1');
+                    res.body[1].reward.should.be.eql('testReward1');
+                    res.body[1].requiredTime.should.be.eql(1000);
+                    res.body[1].amount.should.be.eql('1가지 시나리오');
                     res.body[1].isOpened.should.be.eql(true);
-                    res.body[1].isRegistered.should.be.eql(false);
+                    res.body[1].isCompleted.should.be.eql(false);
                     should.not.exist(res.body[1].targetUserIds);
-                    should.not.exist(res.body[1].registeredUserIds);
+                    should.not.exist(res.body[1].completedUserIds);
+                    res.body[1].currentDate.should.be.eql('2018-12-28T02:30:00.000Z');
 
                     res.body[2].title.should.be.eql('타겟팅 된 테스트');
                     res.body[2].subTitle.should.be.eql('적합한 테스터는 너야너 너야너');
@@ -135,19 +163,24 @@ describe('Requests', () => {
                     res.body[2].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
                     res.body[2].actionType.should.be.eql('link');
                     res.body[2].action.should.be.eql('https://www.google.com');
+                    res.body[2].overviewImageUrl.should.be.eql('testImageUrl2');
+                    res.body[2].reward.should.be.eql('testReward2');
+                    res.body[2].requiredTime.should.be.eql(2000);
+                    res.body[2].amount.should.be.eql('2가지 시나리오');
                     res.body[2].isOpened.should.be.eql(true);
-                    res.body[2].isRegistered.should.be.eql(false);
+                    res.body[2].isCompleted.should.be.eql(false);
                     should.not.exist(res.body[2].targetUserIds);
-                    should.not.exist(res.body[2].registeredUserIds);
+                    should.not.exist(res.body[2].completedUserIds);
+                    res.body[2].currentDate.should.be.eql('2018-12-28T02:30:00.000Z');
 
                     done();
                 }).catch(err => done(err));
         });
 
-        it('오픈되지 않은 요청 건도 조회한다', done => {
-            clock = sandbox.useFakeTimers(new Date("2018-11-01T02:30:00.000Z").getTime());
+        it('마감기간이 지난 요청 건도 조회한다', done => {
+            sandbox.useFakeTimers(new Date("2019-01-30T02:30:00.000Z").getTime());
 
-            request.get('/requests')
+            request.get('/beta-tests')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
@@ -165,8 +198,13 @@ describe('Requests', () => {
                     res.body[0].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
                     res.body[0].actionType.should.be.eql('link');
                     res.body[0].action.should.be.eql('https://www.google.com');
+                    res.body[0].overviewImageUrl.should.be.eql('testImageUrl5');
+                    res.body[0].reward.should.be.eql('testReward5');
+                    res.body[0].requiredTime.should.be.eql(5000);
+                    res.body[0].amount.should.be.eql('5가지 시나리오');
                     res.body[0].isOpened.should.be.eql(false);
-                    res.body[0].isRegistered.should.be.eql(true);
+                    res.body[0].isCompleted.should.be.eql(true);
+                    res.body[0].currentDate.should.be.eql('2019-01-30T02:30:00.000Z');
 
                     res.body[1].title.should.be.eql('전체 유저 대상 테스트');
                     res.body[1].subTitle.should.be.eql('targetUserIds 가 없어요');
@@ -178,10 +216,15 @@ describe('Requests', () => {
                     res.body[1].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
                     res.body[1].actionType.should.be.eql('link');
                     res.body[1].action.should.be.eql('https://www.google.com');
+                    res.body[1].overviewImageUrl.should.be.eql('testImageUrl1');
+                    res.body[1].reward.should.be.eql('testReward1');
+                    res.body[1].requiredTime.should.be.eql(1000);
+                    res.body[1].amount.should.be.eql('1가지 시나리오');
                     res.body[1].isOpened.should.be.eql(false);
-                    res.body[1].isRegistered.should.be.eql(false);
+                    res.body[1].isCompleted.should.be.eql(false);
                     should.not.exist(res.body[1].targetUserIds);
-                    should.not.exist(res.body[1].registeredUserIds);
+                    should.not.exist(res.body[1].completedUserIds);
+                    res.body[1].currentDate.should.be.eql('2019-01-30T02:30:00.000Z');
 
                     res.body[2].title.should.be.eql('타겟팅 된 테스트');
                     res.body[2].subTitle.should.be.eql('적합한 테스터는 너야너 너야너');
@@ -193,65 +236,130 @@ describe('Requests', () => {
                     res.body[2].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
                     res.body[2].actionType.should.be.eql('link');
                     res.body[2].action.should.be.eql('https://www.google.com');
+                    res.body[2].overviewImageUrl.should.be.eql('testImageUrl2');
+                    res.body[2].reward.should.be.eql('testReward2');
+                    res.body[2].requiredTime.should.be.eql(2000);
+                    res.body[2].amount.should.be.eql('2가지 시나리오');
                     res.body[2].isOpened.should.be.eql(false);
-                    res.body[2].isRegistered.should.be.eql(false);
+                    res.body[2].isCompleted.should.be.eql(false);
                     should.not.exist(res.body[2].targetUserIds);
-                    should.not.exist(res.body[2].registeredUserIds);
+                    should.not.exist(res.body[2].completedUserIds);
+                    res.body[2].currentDate.should.be.eql('2019-01-30T02:30:00.000Z');
 
                     done();
                 }).catch(err => done(err));
         });
 
-        it('마감기간이 지난 요청 건은 조회하지 않는다', done => {
-            clock = sandbox.useFakeTimers(new Date("2019-01-30T02:30:00.000Z").getTime());
-
-            request.get('/requests')
+        it('오픈되지 않은 요청 건은 조회하지 않는다', done => {
+            sandbox.useFakeTimers(new Date("2018-11-01T02:30:00.000Z").getTime());
+            request.get('/beta-tests')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
                     res.body.length.should.be.eql(0);
+
                     done();
                 }).catch(err => done(err));
         });
 
         afterEach(() => {
-            clock.restore();
-        })
+            sandbox.restore();
+        });
     });
 
-    describe('POST /requests/:id/register', () => {
-        it('요청한 유저를 등록(참여) 리스트에 추가한다', done => {
-            request.post('/requests/1/register')
-                .set('x-access-token', config.appbeeToken.valid)
+    describe('POST /beta-tests/:id/complete', () => {
+        let stubAxiosPost;
+
+        beforeEach(() => {
+            stubAxiosPost = sandbox.stub(axios, 'post').returns(Promise.resolve());
+        });
+
+        // 정상
+        it('요청한 유저를 완료 리스트에 추가한다', done => {
+            request.post('/beta-tests/1/complete')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
-                .then(() => Requests.findOne({id: 1}))
+                .then(() => BetaTests.findOne({id: 1}))
                 .then(res => {
-                    res.registeredUserIds.length.should.be.eql(1);
-                    res.registeredUserIds[0].should.be.eql(config.testUser.userId);
+                    res.completedUserIds.length.should.be.eql(1);
+                    res.completedUserIds[0].should.be.eql(config.testUser.userId);
 
                     done();
                 })
                 .catch(err => done(err));
         });
 
-        it('요청한 유저가 이미 등록(참여)된 경우에는 등록 리스트에 추가하지 않는다', done => {
-            request.post('/requests/5/register')
-                .set('x-access-token', config.appbeeToken.valid)
+        it('요청한 유저에게 완료 노티를 보낸다', done => {
+            request.post('/beta-tests/1/complete')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
-                .then(() => Requests.findOne({id: 5}))
+                .then(() => {
+                    const expectUrl = 'https://fcm.googleapis.com/fcm/send';
+
+                    const expectBody = {
+                        data: {
+                            channel: 'channel_betatest',
+                            title: '참여하신 테스트가 완료처리 되었어요!👏',
+                            subTitle: '멋져요! [전체 유저 대상 테스트]에 성공적으로 참여하셨습니다.'
+                        },
+                        to: 'test_user_registration_token'
+                    };
+
+                    const expectHeader = {
+                        headers: {
+                            Authorization: 'key=testNotiApiKey',
+                            'Content-Type' : 'application/json'
+                        }
+                    };
+
+                    sinon.assert.calledWith(stubAxiosPost, expectUrl, expectBody, expectHeader);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        // 예외
+        it('요청한 유저가 이미 완료한 경우에는 완료 리스트에 추가하지 않는다', done => {
+            request.post('/beta-tests/5/complete')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .expect(200)
+                .then(() => BetaTests.findOne({id: 5}))
                 .then(res => {
                     console.log(res);
-                    res.registeredUserIds.length.should.be.eql(1);
-                    res.registeredUserIds[0].should.be.eql(config.testUser.userId);
+                    res.completedUserIds.length.should.be.eql(1);
+                    res.completedUserIds[0].should.be.eql(config.testUser.userId);
 
                     done();
                 })
                 .catch(err => done(err));
+        });
+
+        it('요청한 유저가 이미 완료한 경우에는 완료 노티를 보내지 않는다', done => {
+            request.post('/beta-tests/5/complete')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .expect(200)
+                .then(() => BetaTests.findOne({id: 5}))
+                .then(() => {
+                    sinon.assert.notCalled(stubAxiosPost);
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('요청한 유저정보가 유효한 이메일로 접수되지 않은 경우 403 에러를 반환한다', done => {
+            request.post('/beta-tests/1/complete')
+                .set('x-access-token', 'InvalidAccessToken')
+                .expect(403)
+                .then(() => done())
+                .catch(err => done(err));
+        });
+
+        afterEach(() => {
+            stubAxiosPost.restore();
         });
     });
 
     afterEach(done => {
-        Requests.remove({})
+        BetaTests.remove({})
             .then(() => done())
             .catch(err => done(err));
     });

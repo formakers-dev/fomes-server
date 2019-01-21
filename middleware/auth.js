@@ -113,4 +113,25 @@ const googleTokenVerifier = (req, res, next) => {
         });
 };
 
-module.exports = {appBeeTokenVerifier, googleTokenVerifier};
+const apiKeyVerifier = (req, res, next) => {
+    const buffer = new Buffer(req.headers['x-access-token'], 'base64');
+    const email = buffer.toString('ascii').trim();
+
+    console.log(email);
+    UserService.getUserId(email)
+        .then(user => {
+            console.log("user", user);
+            req.userId = user.userId;
+            next();
+        })
+        .catch(err => {
+            console.error('===apiKeyVerifier:onError', 'email=', email, 'err=', err);
+
+            res.status(403).json({
+                success: false,
+                message: err.message
+            });
+        });
+};
+
+module.exports = {appBeeTokenVerifier, googleTokenVerifier, apiKeyVerifier};

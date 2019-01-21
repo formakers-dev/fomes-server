@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const requestSchema = new Schema({
+const betaTestSchema = new Schema({
     id: Number,
+    overviewImageUrl: String,
     title: String,
     subTitle: String,
     type: String,
@@ -12,8 +13,11 @@ const requestSchema = new Schema({
     apps: Array,
     actionType: String,
     action: String,
+    reward: String,
     targetUserIds: false,
-    registeredUserIds: Array,
+    completedUserIds: Array,
+    requiredTime: Number,
+    amount: String,
 });
 
-module.exports = mongoose.model('requests', requestSchema);
+module.exports = mongoose.model('beta-tests', betaTestSchema);
