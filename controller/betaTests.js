@@ -1,7 +1,8 @@
 const axios = require('axios');
 const config = require('../config');
 const BetaTestsService = require('../services/betaTests');
-const UserService = require('../services/users');
+const UsersService = require('../services/users');
+const ConfigurationsService = require('../services/configurations');
 
 const getBetaTestList = (req, res, next) => {
     BetaTestsService.findValidBetaTests(req.userId)
@@ -13,23 +14,30 @@ const postComplete = (req, res, next) => {
     BetaTestsService.updateCompleted(req.params.id, req.userId)
         .then(betaTest => {
             if (betaTest) {
-                return UserService.getUser(req.userId).then(user => {
-                    const body = {
-                        'data' : {
-                            'channel' : 'channel_betatest',
-                            'title' : config.notification.completeTitle,
-                            'subTitle' : config.notification.completeSubtitle.replace(":TITLE", betaTest.title)
-                        },
-                        'to' : user.registrationToken,
-                    };
+                let betaTestNotificationMessage;
 
-                    return axios.post('https://fcm.googleapis.com/fcm/send', body, {
-                        headers: {
-                            'Authorization': 'key=' + config.notification.apiKey,
-                            'Content-Type': 'application/json'
-                        }
+                return ConfigurationsService.getNotificationMessage()
+                    .then(notificationMessage => {
+                        betaTestNotificationMessage = notificationMessage.betaTest;
+                        return UsersService.getUser(req.userId);
                     })
-                });
+                    .then(user => {
+                        const body = {
+                            'data' : {
+                                'channel' : 'channel_betatest',
+                                'title' : betaTestNotificationMessage.completeTitle,
+                                'subTitle' : betaTestNotificationMessage.completeSubTitle.replace(":TITLE", betaTest.title)
+                            },
+                            'to' : user.registrationToken,
+                        };
+
+                        return axios.post('https://fcm.googleapis.com/fcm/send', body, {
+                            headers: {
+                                'Authorization': 'key=' + config.notificationApiKey,
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                    });
             } else {
                 return Promise.resolve();
             }

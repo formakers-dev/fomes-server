@@ -1,16 +1,14 @@
-const Configurations = require('./../models/configurations');
+const ConfigurationsService = require('./../services/configurations');
 
 const getMinAppVersionCode = (req, res, next) => {
-    Configurations.findOne({})
-        .exec()
-        .then(configuration => res.json(configuration.minAppVersionCode))
+    ConfigurationsService.getMinAppVersionCode()
+        .then(minAppVersionCode => res.json(minAppVersionCode))
         .catch(err => next(err));
 };
 
 const getExcludePackageNames = (req, res, next) => {
-    Configurations.findOne({})
-        .exec()
-        .then(configuration => res.json(configuration.excludeAnalysisPackageNames))
+    ConfigurationsService.getExcludePackageNames()
+        .then(excludePackageNames => res.json(excludePackageNames))
         .catch(err => next(err));
 };
 
