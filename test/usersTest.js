@@ -15,11 +15,16 @@ const request = require('supertest').agent(server);
 describe('Users', () => {
     const sandbox = sinon.createSandbox();
 
-    before(done => {
+    beforeEach(done => {
+        console.log('outer before each');
         helper.commonBefore()
             .then(() => done())
             .catch(err => done(err));
     });
+
+    before(() => {
+        console.log('outer before');
+    })
 
     describe('POST /user/', () => {
         describe('기존 사용자가 존재할 경우,', () => {
@@ -38,6 +43,7 @@ describe('Users', () => {
                     .then(() => Users.findOne({userId: config.testUser.userId}))
                     .then((result) => {
                         result.userId.should.be.eql('109974316241227718963');
+                        result.name.should.be.eql('test_user');
                         result.gender.should.be.eql("male");
                         result.email.should.be.eql("appbee@appbee.com");
                         result.registrationToken.should.be.eql("NEW_CODE");
@@ -102,7 +108,8 @@ describe('Users', () => {
         });
 
         describe('요청한 유저가 존재하지 않는 경우' , () => {
-            before(done => {
+            beforeEach(done => {
+                console.log('inner before each');
                 Users.remove({}, done);
             });
 
@@ -113,14 +120,14 @@ describe('Users', () => {
                     .expect(403, done);
             });
 
-            after(done => {
+            afterEach(done => {
                 Users.create(config.testUser, done);
             });
         });
     });
 
     describe('GET /user/verify/info', () => {
-        before(done => {
+        beforeEach(done => {
             Users.create([
                 {
                     userId: 'testUserId1',
@@ -157,7 +164,7 @@ describe('Users', () => {
                 .expect(422, done);
         });
 
-        after(done => {
+        afterEach(done => {
             // Users.remove({userId : {$ne : config.testUser.userId}}, done);
             Users.remove({}, done);
         });
@@ -242,8 +249,9 @@ describe('Users', () => {
             providerId: config.testUser.providerId
         };
 
-        before(() => {
+        beforeEach(done => {
             sandbox.useFakeTimers(new Date("2018-09-06T15:30:00.000Z").getTime());
+            Users.remove({}, done);
         });
 
         it('구글토큰검증 후 유저를 가입시킨다', done => {
@@ -300,7 +308,7 @@ describe('Users', () => {
                 signUpTime: new Date('2018-09-05T15:30:00.000Z'),
             };
 
-            before(done => {
+            beforeEach(done => {
                 Users.create(oldUser, done);
             });
 
@@ -326,18 +334,14 @@ describe('Users', () => {
                     .catch(err => done(err));
             });
 
-            after(done => {
+            afterEach(done => {
                 Users.remove({userId: config.testUser.userId}, done);
             });
         });
 
         afterEach(done => {
-            Users.remove({userId: config.testUser.userId}, done);
-        });
-
-        after(done => {
             sandbox.restore();
-            done();
+            Users.remove({userId: config.testUser.userId}, done);
         });
     });
 
@@ -440,7 +444,8 @@ describe('Users', () => {
             beforeEach(done => {
                 config.testUser.wishList = ['com.test.one', 'com.test.two'];
 
-                Users.create(config.testUser)
+                Users.remove({})
+                    .then(() => Users.create(config.testUser))
                     .then(() => Apps.create(appInfo))
                     .then(() => done())
                     .catch(err => done(err));
@@ -478,7 +483,8 @@ describe('Users', () => {
             beforeEach(done => {
                 config.testUser.wishList = ['com.test.expected'];
 
-                Users.create(config.testUser)
+                Users.remove({})
+                    .then(() => Users.create(config.testUser))
                     .then(() => Apps.create(appInfo))
                     .then(() => done())
                     .catch(err => done(err));
@@ -527,7 +533,8 @@ describe('Users', () => {
             beforeEach(done => {
                 config.testUser.wishList = ['com.test.one', 'com.test.two'];
 
-                Users.create(config.testUser)
+                Users.remove({})
+                    .then(() => Users.create(config.testUser))
                     .then(() => Apps.create(appInfo))
                     .then(() => done())
                     .catch(err => done(err));
@@ -564,7 +571,8 @@ describe('Users', () => {
         beforeEach(done => {
             config.testUser.wishList = ['com.game.edu', 'com.game.edu2'];
 
-            Users.create(config.testUser)
+            Users.remove({})
+                .then(() => Users.create(config.testUser))
                 .then(() => Apps.create([
                     {
                         packageName: 'com.game.edu',
@@ -650,7 +658,40 @@ describe('Users', () => {
         });
     });
 
-    after(done => {
+    describe('PUT /user/activated/', () => {
+
+        before(() => {
+            sandbox.useFakeTimers(new Date("2018-09-11T15:30:00.000Z").getTime());
+        });
+
+        it('요청한 유저의 활성화시각을 현재시각으로 업데이트한다', done => {
+            request.put('/user/activated')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(() => {
+                    Users.findOne({userId: config.testUser.userId}).then(user => {
+                        console.log(user);
+                        user.userId.should.be.eql(config.testUser.userId);
+                        user.name.should.be.eql('test_user');
+                        user.email.should.be.eql('appbee@appbee.com');
+                        user.gender.should.be.eql('male');
+                        user.birthday.should.be.eql(1992);
+                        user.job.should.be.eql(1);
+                        user.nickName.should.be.eql('test_user_nickname');
+                        user.registrationToken.should.be.eql('test_user_registration_token');
+                        user.activatedDate.should.be.eql(new Date('2018-09-11T15:30:00.000Z'));
+                        done();
+                    }).catch(err => done(err));
+                }).catch(err => done(err));
+        });
+
+        after(done => {
+            sandbox.restore();
+            done();
+        });
+    });
+
+    afterEach(done => {
         helper.commonAfter()
             .then(() => done())
             .catch(err => done(err));

@@ -21,6 +21,7 @@ config.test = {
     // for test only
     testUser: {
         userId: '109974316241227718963',
+        name: 'test_user',
         email: 'appbee@appbee.com',
         registrationToken: 'test_user_registration_token',
         gender: 'male',
