@@ -22,6 +22,7 @@ const usersSchema = new Schema({
     providerId: String,
     lastStatsUpdateTime: Date,
     signUpTime: Date,
+    activatedDate: Date,
     lifeApps: Array,
     wishList: Array,
 });

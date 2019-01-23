@@ -29,6 +29,12 @@ const upsertUser = (req, res, next) => {
         });
 };
 
+const updateActivatedDate = (req, res, next) => {
+    UserService.upsertUser(req.userId, { activatedDate: new Date() })
+        .then(() => res.sendStatus(200))
+        .catch(err => next(err));
+};
+
 const generateToken = (req, res, next) => {
     const tokenData = {
         provider : req.body.provider,
@@ -120,4 +126,5 @@ module.exports = {
     saveAppToWishList,
     removeAppFromWishList,
     getWishList,
+    updateActivatedDate,
 };
