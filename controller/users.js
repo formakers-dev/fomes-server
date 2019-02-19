@@ -35,6 +35,12 @@ const updateActivatedDate = (req, res, next) => {
         .catch(err => next(err));
 };
 
+const updateNotificationToken = (req, res, next) => {
+    UserService.upsertUser(req.userId, { registrationToken: req.body.registrationToken })
+        .then(() => res.sendStatus(200))
+        .catch(err => next(err));
+};
+
 const generateToken = (req, res, next) => {
     const tokenData = {
         provider : req.body.provider,
@@ -127,4 +133,5 @@ module.exports = {
     removeAppFromWishList,
     getWishList,
     updateActivatedDate,
+    updateNotificationToken
 };
