@@ -691,6 +691,36 @@ describe('Users', () => {
         });
     });
 
+    describe('PATCH /user/noti-token/', () => {
+
+        const newNotificationToken = {
+            registrationToken: 'newNotiToken'
+        };
+
+        it('요청한 유저의 노티 토큰을 업데이트 한다', done => {
+            request.patch('/user/noti-token')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send(newNotificationToken)
+                .expect(200)
+                .then(() => {
+                    Users.findOne({userId: config.testUser.userId}).then(user => {
+                        console.log(user);
+                        user.userId.should.be.eql(config.testUser.userId);
+                        user.name.should.be.eql('test_user');
+                        user.email.should.be.eql('appbee@appbee.com');
+                        user.gender.should.be.eql('male');
+                        user.birthday.should.be.eql(1992);
+                        user.job.should.be.eql(1);
+                        user.nickName.should.be.eql('test_user_nickname');
+                        user.registrationToken.should.be.eql('newNotiToken');
+
+                        done();
+                    }).catch(err => done(err));
+                }).catch(err => done(err));
+        });
+    });
+
+
     afterEach(done => {
         helper.commonAfter()
             .then(() => done())
