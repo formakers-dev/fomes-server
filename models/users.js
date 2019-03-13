@@ -25,6 +25,7 @@ const usersSchema = new Schema({
     activatedDate: Date,
     lifeApps: Array,
     wishList: Array,
+    appVersion: String,
 });
 
 const Users = mongoose.model('users', usersSchema);
