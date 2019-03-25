@@ -5,6 +5,7 @@ const request = require('supertest').agent(server);
 const sinon = require('sinon');
 const axios = require('axios');
 const should = chai.should();
+const mongoose = require('mongoose');
 
 const BetaTests = require('../models/betaTests');
 const Configurations = require('../models/configurations');
@@ -12,14 +13,38 @@ const helper = require('./commonTestHelper');
 
 describe('BetaTests', () => {
     const sandbox = sinon.createSandbox();
-
     const data = [
         {
+            "_id" : mongoose.Types.ObjectId("111111111111111111111100"),
+            "title" : "그룹1",
+            "completedUserIds" : [],
+            openDate: new Date('2018-12-26'),
+            closeDate: new Date('2018-12-31'),
+            "tags" : [
+                "설문"
+            ],
+            "apps" : [],
+            "isGroup" : true
+        },
+        {
+            "_id" : mongoose.Types.ObjectId("222222222222222222222200"),
+            "title" : "그룹2",
+            "completedUserIds" : [],
+            openDate: new Date('2018-12-26'),
+            closeDate: new Date('2019-03-25'),
+            "tags" : [
+                "설문"
+            ],
+            "apps" : [],
+            "isGroup" : true
+        },
+        {
+            "_id" : mongoose.Types.ObjectId("111111111111111111111101"),
+            groupId: mongoose.Types.ObjectId("111111111111111111111100"),
             id : 1,
             title : "전체 유저 대상 테스트",
             subTitle: "targetUserIds 가 없어요",
-            type: "ONLINE",
-            typeTags: ['1:1', "인터뷰"],
+            tags: ['1:1', "인터뷰"],
             openDate: new Date('2018-12-26'),
             closeDate: new Date('2018-12-31'),
             actionType: 'link',
@@ -29,11 +54,12 @@ describe('BetaTests', () => {
             requiredTime: 1000,
             amount: '1가지 시나리오',
         }, {
+            "_id" : mongoose.Types.ObjectId("111111111111111111111102"),
+            groupId: mongoose.Types.ObjectId("111111111111111111111100"),
             id : 2,
             title : "타겟팅 된 테스트",
             subTitle: "적합한 테스터는 너야너 너야너",
-            type: "ONLINE",
-            typeTags: ['1:1', "인터뷰"],
+            tags: ['1:1', "인터뷰"],
             openDate: new Date('2018-12-26'),
             closeDate: new Date('2018-12-31'),
             actionType: 'link',
@@ -44,11 +70,12 @@ describe('BetaTests', () => {
             requiredTime: 2000,
             amount: '2가지 시나리오',
         }, {
+            "_id" : mongoose.Types.ObjectId("111111111111111111111103"),
+            groupId: mongoose.Types.ObjectId("111111111111111111111100"),
             id : 3,
             title : "타겟팅 되지 않은 테스트",
             subTitle: "응 탈락",
-            type: "ONLINE",
-            typeTags: ['1:1', "인터뷰"],
+            tags: ['1:1', "인터뷰"],
             openDate: new Date('2018-12-26'),
             closeDate: new Date('2018-12-31'),
             actionType: 'link',
@@ -59,11 +86,12 @@ describe('BetaTests', () => {
             requiredTime: 3000,
             amount: '3가지 시나리오',
         }, {
+            "_id" : mongoose.Types.ObjectId("222222222222222222222201"),
+            groupId: mongoose.Types.ObjectId("222222222222222222222200"),
             id : 4,
             title : "아무도 타겟팅 되지 않은 테스트",
             subTitle: "응 모두 탈락",
-            type: "ONLINE",
-            typeTags: ['1:1', "인터뷰"],
+            tags: ['1:1', "인터뷰"],
             openDate: new Date('2018-12-26'),
             closeDate: new Date('2018-12-31'),
             actionType: 'link',
@@ -74,11 +102,12 @@ describe('BetaTests', () => {
             requiredTime: 4000,
             amount: '4가지 시나리오',
         },  {
+            "_id" : mongoose.Types.ObjectId("222222222222222222222202"),
+            groupId: mongoose.Types.ObjectId("222222222222222222222200"),
             id : 5,
             title : "이미 참여한 테스트",
             subTitle: "참여했다",
-            type: "ONLINE",
-            typeTags: ['1:1', "인터뷰"],
+            tags: ['1:1', "인터뷰"],
             openDate: new Date('2018-12-26'),
             closeDate: new Date('2018-12-31'),
             actionType: 'link',
@@ -126,10 +155,9 @@ describe('BetaTests', () => {
 
                     res.body[0].title.should.be.eql('이미 참여한 테스트');
                     res.body[0].subTitle.should.be.eql('참여했다');
-                    res.body[0].type.should.be.eql('ONLINE');
-                    res.body[0].typeTags.length.should.be.eql(2);
-                    res.body[0].typeTags[0].should.be.eql('1:1');
-                    res.body[0].typeTags[1].should.be.eql('인터뷰');
+                    res.body[0].tags.length.should.be.eql(2);
+                    res.body[0].tags[0].should.be.eql('1:1');
+                    res.body[0].tags[1].should.be.eql('인터뷰');
                     res.body[0].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
                     res.body[0].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
                     res.body[0].actionType.should.be.eql('link');
@@ -144,10 +172,9 @@ describe('BetaTests', () => {
 
                     res.body[1].title.should.be.eql('전체 유저 대상 테스트');
                     res.body[1].subTitle.should.be.eql('targetUserIds 가 없어요');
-                    res.body[1].type.should.be.eql('ONLINE');
-                    res.body[1].typeTags.length.should.be.eql(2);
-                    res.body[1].typeTags[0].should.be.eql('1:1');
-                    res.body[1].typeTags[1].should.be.eql('인터뷰');
+                    res.body[1].tags.length.should.be.eql(2);
+                    res.body[1].tags[0].should.be.eql('1:1');
+                    res.body[1].tags[1].should.be.eql('인터뷰');
                     res.body[1].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
                     res.body[1].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
                     res.body[1].actionType.should.be.eql('link');
@@ -164,10 +191,9 @@ describe('BetaTests', () => {
 
                     res.body[2].title.should.be.eql('타겟팅 된 테스트');
                     res.body[2].subTitle.should.be.eql('적합한 테스터는 너야너 너야너');
-                    res.body[2].type.should.be.eql('ONLINE');
-                    res.body[2].typeTags.length.should.be.eql(2);
-                    res.body[2].typeTags[0].should.be.eql('1:1');
-                    res.body[2].typeTags[1].should.be.eql('인터뷰');
+                    res.body[2].tags.length.should.be.eql(2);
+                    res.body[2].tags[0].should.be.eql('1:1');
+                    res.body[2].tags[1].should.be.eql('인터뷰');
                     res.body[2].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
                     res.body[2].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
                     res.body[2].actionType.should.be.eql('link');
@@ -186,7 +212,8 @@ describe('BetaTests', () => {
                 }).catch(err => done(err));
         });
 
-        it('마감기간이 지난 요청 건도 조회한다', done => {
+        it('마감기간이 지났고 그룹의 마감기간이 지나지 않은 요청 건과' +
+            ' 마감시간이 지난 그룹을 조회한다', done => {
             sandbox.useFakeTimers(new Date("2019-01-30T02:30:00.000Z").getTime());
 
             request.get('/beta-tests')
@@ -195,65 +222,43 @@ describe('BetaTests', () => {
                 .then(res => {
                     res.body.sort((a, b) => a.title > b.title ? 1 : -1);
 
-                    res.body.length.should.be.eql(3);
+                    console.log(res.body);
 
-                    res.body[0].title.should.be.eql('이미 참여한 테스트');
-                    res.body[0].subTitle.should.be.eql('참여했다');
-                    res.body[0].type.should.be.eql('ONLINE');
-                    res.body[0].typeTags.length.should.be.eql(2);
-                    res.body[0].typeTags[0].should.be.eql('1:1');
-                    res.body[0].typeTags[1].should.be.eql('인터뷰');
+                    res.body.length.should.be.eql(2);
+
+                    // 마감시간이 지났고 그룹의 마감시간이 지난 요청 건은 조회하지 않는다
+                    // 그룹1 은 뜨고....
+                    // 그룹1의 아이템들은 안뜨고...........
+                    res.body[0].isGroup.should.be.eql(true);
+                    res.body[0].title.should.be.eql('그룹1');
+                    res.body[0].tags.length.should.be.eql(1);
+                    res.body[0].tags[0].should.be.eql('설문');
                     res.body[0].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
                     res.body[0].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
-                    res.body[0].actionType.should.be.eql('link');
-                    res.body[0].action.should.be.eql('https://www.google.com');
-                    res.body[0].overviewImageUrl.should.be.eql('testImageUrl5');
-                    res.body[0].reward.should.be.eql('testReward5');
-                    res.body[0].requiredTime.should.be.eql(5000);
-                    res.body[0].amount.should.be.eql('5가지 시나리오');
+                    should.not.exist(res.body[0].targetUserIds);
                     res.body[0].isOpened.should.be.eql(false);
-                    res.body[0].isCompleted.should.be.eql(true);
-                    res.body[0].currentDate.should.be.eql('2019-01-30T02:30:00.000Z');
+                    res.body[0].isCompleted.should.be.eql(false);
+                    res.body[0].currentDate.should.be.eql('2019-01-30T02:30:00.000Z');;
 
-                    res.body[1].title.should.be.eql('전체 유저 대상 테스트');
-                    res.body[1].subTitle.should.be.eql('targetUserIds 가 없어요');
-                    res.body[1].type.should.be.eql('ONLINE');
-                    res.body[1].typeTags.length.should.be.eql(2);
-                    res.body[1].typeTags[0].should.be.eql('1:1');
-                    res.body[1].typeTags[1].should.be.eql('인터뷰');
+                    // 아이템들은 마감이됐는데 그룹은 안되었어
+                    // 그룹2 는 안뜨고...........
+                    // 그룹2의 아이템들은 뜬다...............
+                    res.body[1].title.should.be.eql('이미 참여한 테스트');
+                    res.body[1].subTitle.should.be.eql('참여했다');
+                    res.body[1].tags.length.should.be.eql(2);
+                    res.body[1].tags[0].should.be.eql('1:1');
+                    res.body[1].tags[1].should.be.eql('인터뷰');
                     res.body[1].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
                     res.body[1].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
                     res.body[1].actionType.should.be.eql('link');
                     res.body[1].action.should.be.eql('https://www.google.com');
-                    res.body[1].overviewImageUrl.should.be.eql('testImageUrl1');
-                    res.body[1].reward.should.be.eql('testReward1');
-                    res.body[1].requiredTime.should.be.eql(1000);
-                    res.body[1].amount.should.be.eql('1가지 시나리오');
+                    res.body[1].overviewImageUrl.should.be.eql('testImageUrl5');
+                    res.body[1].reward.should.be.eql('testReward5');
+                    res.body[1].requiredTime.should.be.eql(5000);
+                    res.body[1].amount.should.be.eql('5가지 시나리오');
                     res.body[1].isOpened.should.be.eql(false);
-                    res.body[1].isCompleted.should.be.eql(false);
-                    should.not.exist(res.body[1].targetUserIds);
-                    should.not.exist(res.body[1].completedUserIds);
+                    res.body[1].isCompleted.should.be.eql(true);
                     res.body[1].currentDate.should.be.eql('2019-01-30T02:30:00.000Z');
-
-                    res.body[2].title.should.be.eql('타겟팅 된 테스트');
-                    res.body[2].subTitle.should.be.eql('적합한 테스터는 너야너 너야너');
-                    res.body[2].type.should.be.eql('ONLINE');
-                    res.body[2].typeTags.length.should.be.eql(2);
-                    res.body[2].typeTags[0].should.be.eql('1:1');
-                    res.body[2].typeTags[1].should.be.eql('인터뷰');
-                    res.body[2].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
-                    res.body[2].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
-                    res.body[2].actionType.should.be.eql('link');
-                    res.body[2].action.should.be.eql('https://www.google.com');
-                    res.body[2].overviewImageUrl.should.be.eql('testImageUrl2');
-                    res.body[2].reward.should.be.eql('testReward2');
-                    res.body[2].requiredTime.should.be.eql(2000);
-                    res.body[2].amount.should.be.eql('2가지 시나리오');
-                    res.body[2].isOpened.should.be.eql(false);
-                    res.body[2].isCompleted.should.be.eql(false);
-                    should.not.exist(res.body[2].targetUserIds);
-                    should.not.exist(res.body[2].completedUserIds);
-                    res.body[2].currentDate.should.be.eql('2019-01-30T02:30:00.000Z');
 
                     done();
                 }).catch(err => done(err));
