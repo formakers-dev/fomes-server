@@ -24,7 +24,11 @@ describe('BetaTests', () => {
                 "설문"
             ],
             "apps" : [],
-            "isGroup" : true
+            "isGroup" : true,
+            afterService: {
+                epilogue: "epilogueURL",
+                companySays: "짱이에요"
+            }
         },
         {
             "_id" : mongoose.Types.ObjectId("222222222222222222222200"),
@@ -238,7 +242,9 @@ describe('BetaTests', () => {
                     should.not.exist(res.body[0].targetUserIds);
                     res.body[0].isOpened.should.be.eql(false);
                     res.body[0].isCompleted.should.be.eql(false);
-                    res.body[0].currentDate.should.be.eql('2019-01-30T02:30:00.000Z');;
+                    res.body[0].currentDate.should.be.eql('2019-01-30T02:30:00.000Z');
+                    res.body[0].afterService.epilogue.should.be.eql('epilogueURL');
+                    res.body[0].afterService.companySays.should.be.eql('짱이에요');
 
                     // 아이템들은 마감이됐는데 그룹은 안되었어
                     // 그룹2 는 안뜨고...........

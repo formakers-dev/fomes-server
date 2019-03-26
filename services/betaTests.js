@@ -39,7 +39,8 @@ const findValidBetaTests = (userId) => {
                 isCompleted: {
                     $in : [userId, "$completedUserIds"]
                 },
-                isGroup: true
+                isGroup: true,
+                afterService: true,
             }
         }
     ]).then(betaTests => {
