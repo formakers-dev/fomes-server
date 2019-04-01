@@ -14,12 +14,13 @@ const findValidBetaTests = (userId) => {
             }
         }, {
             $project: {
+                _id: true,
+                groupId: true,
                 id: true,
                 overviewImageUrl: true,
                 title: true,
                 subTitle: true,
-                type: true,
-                typeTags: true,
+                tags: true,
                 openDate: true,
                 closeDate: true,
                 currentDate: new Date(),
@@ -37,10 +38,22 @@ const findValidBetaTests = (userId) => {
                 },
                 isCompleted: {
                     $in : [userId, "$completedUserIds"]
-                }
+                },
+                isGroup: true,
+                afterService: true,
             }
         }
-    ]);
+    ]).then(betaTests => {
+        const closedGroups = betaTests
+            .filter(betaTest => betaTest.isGroup && betaTest.closeDate < new Date());
+        const shownItems = betaTests.filter(betaTest => betaTest.groupId)
+            .filter(betaTest => {
+                const closedGroupIds = closedGroups.map(group => group._id.toString());
+                return !closedGroupIds.includes(betaTest.groupId.toString())
+            });
+
+        return Promise.resolve(shownItems.concat(closedGroups));
+    });
 };
 
 const updateCompleted = (betaTestId, userId) => {
