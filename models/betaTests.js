@@ -14,6 +14,7 @@ const betaTestSchema = new Schema({
     title: String,
     subTitle: String,
     tags: Array,
+    typeTags: Array,
     openDate: Date,
     closeDate: Date,
     apps: Array,
