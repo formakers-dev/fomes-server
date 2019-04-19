@@ -16,7 +16,7 @@ const getSimilarUserRecommendApps = (user, excludePackageNames, page, limit) => 
     recommendInfo.criteria.push(user.gender === "male" ? "남성" : "여성");
 
     return AppUsageService.getSimilarUserAppUsages(user, excludePackageNames, page, limit)
-        .then(similarUsersAppUsages => convertToRecommendApps(recommendInfo, similarUsersAppUsages, user))
+        .then(similarUsersAppUsages => Promise.resolve(convertToRecommendApps(recommendInfo, similarUsersAppUsages, user)))
         .catch(err => {
             console.error("getSimilarUserRecommendApps", "userId=", user.userId, "err=", err);
             return Promise.reject(err);

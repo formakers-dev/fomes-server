@@ -3,10 +3,19 @@ const UsagesUtil = require('../utils/usages');
 const PagingUtil = require('../utils/paging');
 const { AppUsages } = require('../models/appUsages');
 
+const ANALYSIS_DURATION = 7 * 24 * 60 * 60 * 1000;
+
 const getTotalUsedTimeOverview = (userId, categoryId) => {
     return new Promise((resolve, reject) => {
+        const currentDate = new Date();
+
         AppUsages.aggregate([
-            {$match: {categoryId: { $regex: new RegExp(categoryId) }}},
+            {
+                $match: {
+                    categoryId: { $regex: new RegExp(categoryId) },
+                    date: {$gte: new Date(currentDate.getTime() - ANALYSIS_DURATION)},
+                }
+            },
             {
                 $group: {
                     _id: '$userId', totalUsedTime: {$sum: '$totalUsedTime'},
@@ -40,15 +49,14 @@ const getTotalUsedTimeOverview = (userId, categoryId) => {
     });
 };
 
-const createQueryConditionForArray = (values) => {
-    return (values instanceof Array) ? {"$in": values} : values;
-};
-
 const aggregateAppUsageByCategory = (userIds, categoryId) => {
     return new Promise((resolve, reject) => {
+        const currentDate = new Date();
+
         const filterQuery = {
-            userId : createQueryConditionForArray(userIds),
-            categoryId : new RegExp(categoryId)
+            userId : { "$in": userIds },
+            categoryId : new RegExp(categoryId),
+            date: {$gt: new Date(currentDate.getTime() - ANALYSIS_DURATION)}
         };
 
         AppUsages.aggregate([
@@ -111,6 +119,7 @@ const getSimilarUserAppUsages = (user, excludePackageNames, page, limit) => {
     const beforeDiff = (currentYear - user.birthday) % 10;
     const afterDiff = 10 - beforeDiff;
     const excludeUserId = user.userId;
+    const currentDate = new Date();
 
     let query = [
         {
@@ -122,6 +131,7 @@ const getSimilarUserAppUsages = (user, excludePackageNames, page, limit) => {
                     $gte: user.birthday - afterDiff + 1,
                     $lte: user.birthday + beforeDiff + 1
                 },
+                date: {$gte: new Date(currentDate.getTime() - ANALYSIS_DURATION)},
             }
         }, {
             $group: {
@@ -149,12 +159,15 @@ const getSimilarUserAppUsages = (user, excludePackageNames, page, limit) => {
 };
 
 const getCategoryAppUsages = (categoryId, excludeUserId, excludePackageNames, page, limit) => {
+    const currentDate = new Date();
+
     let query = [
         {
             $match: {
                 categoryId: categoryId,
                 userId: { $ne : excludeUserId },
-                packageName: {$nin : excludePackageNames}
+                packageName: {$nin : excludePackageNames},
+                date: {$gte: new Date(currentDate.getTime() - ANALYSIS_DURATION)},
             }
         }, {
             $group: {
@@ -182,12 +195,15 @@ const getCategoryAppUsages = (categoryId, excludeUserId, excludePackageNames, pa
 };
 
 const getDeveloperAppUsages = (developer, excludeUserId, excludePackageNames, page, limit) => {
+    const currentDate = new Date();
+
     let query = [
         {
             $match: {
                 developer: developer,
                 userId: {$ne : excludeUserId},
-                packageName: {$nin : excludePackageNames}
+                packageName: {$nin : excludePackageNames},
+                date: {$gte: new Date(currentDate.getTime() - ANALYSIS_DURATION)},
             }
         }, {
             $group: {
@@ -215,6 +231,7 @@ const getDeveloperAppUsages = (developer, excludeUserId, excludePackageNames, pa
 };
 
 const getUsersAppUsages = (userIds, favoritePackageName, excludeUserId, excludePackageNames, page, limit) => {
+    const currentDate = new Date();
     const excludeUserIdIndex = userIds.indexOf(excludeUserId);
     excludePackageNames.push(favoritePackageName);
 
@@ -226,7 +243,8 @@ const getUsersAppUsages = (userIds, favoritePackageName, excludeUserId, excludeP
         {
             $match: {
                 packageName: {$nin : excludePackageNames},
-                userId: {$in : userIds}
+                userId: {$in : userIds},
+                date: {$gte: new Date(currentDate.getTime() - ANALYSIS_DURATION)},
             }
         }, {
             $group: {

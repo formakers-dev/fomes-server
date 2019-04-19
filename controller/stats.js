@@ -69,7 +69,7 @@ const getReport = (req, res, next) => {
         result.totalUserCount = res.totalUserCount;
 
         // 요청한 유저의 앱 사용 데이터
-        return AppUsagesService.aggregateAppUsageByCategory(req.userId, req.params.categoryId);
+        return AppUsagesService.aggregateAppUsageByCategory([req.userId], req.params.categoryId);
     }).then(userUsages => {
         userUsages.groupType = UserConstants.mine;
         result.usages.push(userUsages);

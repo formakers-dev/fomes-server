@@ -17,7 +17,7 @@ const getRecommendApps = (req, res, next) => {
     UserService.getUser(req.userId)
         .then(currentUser => {
             user = currentUser;
-            return AppUsageService.aggregateAppUsageByCategory(user.userId, req.params.categoryId);
+            return AppUsageService.aggregateAppUsageByCategory([user.userId], req.params.categoryId);
         })
         .then(userUsage => {
             const excludePackageNames = userUsage.appUsages.map(userAppUsage => userAppUsage.appInfos[0].packageName);
