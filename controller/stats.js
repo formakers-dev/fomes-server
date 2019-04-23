@@ -5,6 +5,7 @@ const AppUsagesService = require('../services/appUsages');
 const AppService = require('../services/apps');
 const UserService = require('../services/users');
 const UncrawledAppsService = require('../services/uncrawledApps');
+const UsagesUtil = require('../utils/usages');
 const Boom = require('boom');
 
 const postShortTermStats = (req, res, next) => {
@@ -43,14 +44,14 @@ const postAppUsages = (req, res, next) => {
         const appUsages = req.body;
         AppService.getGameAppInfoForAnalysis(appUsages.map(appUsage => appUsage.packageName))
             .lean()
-            .then(appInfos => {
-                const packageNames = appInfos.map(appInfo => appInfo.packageName);
-                const identifiedAppUsages = appUsages.filter(appUsage => packageNames.includes(appUsage.packageName));
-                const unidentifiedAppUsages = appUsages.filter(appUsage => !(packageNames.includes(appUsage.packageName)));
+            .then(gameAppInfos => {
+                const gamePackageNames = gameAppInfos.map(appInfo => appInfo.packageName);
+                const gameAppUsages = appUsages.filter(appUsage => gamePackageNames.includes(appUsage.packageName));
+                const otherAppUsages = appUsages.filter(appUsage => !(gamePackageNames.includes(appUsage.packageName)));
 
                 return Promise.all([
-                    AppUsagesService.refreshAppUsages(req.user, appInfos, identifiedAppUsages),
-                    UncrawledAppsService.saveApps(unidentifiedAppUsages.map(i => i.packageName))
+                    AppUsagesService.upsertAppUsages(req.user, UsagesUtil.concatWithAppInfos(gameAppUsages, gameAppInfos)),
+                    UncrawledAppsService.saveApps(otherAppUsages.map(i => i.packageName))
                 ]);
             })
             .then(() => res.sendStatus(200))

@@ -59,18 +59,12 @@ const summary = (usages) => {
     }, {}));
 };
 
-const concatAppInfoFields = (appUsages, appInfos) => {
-    return Object.values(appUsages.concat(appInfos)
-        .reduce((map, appUsage) => {
-            const key = appUsage.packageName;
-            if (!map[key]) {
-                map[key] = appUsage;
-            } else {
-                map[key] = Object.assign(map[key], appUsage);
-            }
-
-            return map;
-        }, {}));
+const concatWithAppInfos = (appUsages, appInfos) => {
+    const appInfoMap = appInfos.reduce((map, appInfo) => {
+        map[appInfo.packageName] = appInfo;
+        return map;
+    }, {});
+    return appUsages.map(appUsage => Object.assign(appUsage, appInfoMap[appUsage.packageName]));
 };
 
-module.exports = { convertToUsages, summary, concatAppInfoFields };
+module.exports = { convertToUsages, summary, concatWithAppInfos };

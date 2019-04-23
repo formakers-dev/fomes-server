@@ -317,7 +317,7 @@ const findAppUsageByCategory = (userId, categoryId, options) => {
 
 /** end of using by populate **/
 
-const refreshAppUsages = (user, appInfos, appUsages) => {
+const upsertAppUsages = (user, appUsages) => {
     const bulkOps = [];
 
     bulkOps.push({
@@ -326,12 +326,11 @@ const refreshAppUsages = (user, appInfos, appUsages) => {
         }
     });
 
-    const appUsagesWithAppInfo = UsagesUtil.concatAppInfoFields(appUsages, appInfos);
-
-    appUsagesWithAppInfo.forEach(appUsage => {
+    appUsages.forEach(appUsage => {
         bulkOps.push({
             'insertOne': {
                 'document': {
+                    'date': appUsage.date,
                     'userId': user.userId,
                     'birthday': user.birthday,
                     'job': user.job,
@@ -365,7 +364,7 @@ module.exports = {
     getTotalUsedTimeOverview,
     aggregateAppUsageByCategory,
     findAppUsageByCategory,
-    refreshAppUsages,
+    upsertAppUsages,
     getSimilarUserAppUsages,
     getCategoryAppUsages,
     getDeveloperAppUsages,
