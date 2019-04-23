@@ -149,6 +149,7 @@ describe('Stats', () => {
             sandbox.useFakeTimers(new Date("2018-09-26T15:30:00.000Z").getTime());
 
             AppUsages.create([{
+                date: new Date("2018-09-24T15:00:00.000Z"),
                 userId: 'anotherUserId',
                 gender: 'female',
                 birthday: 1952,
@@ -161,6 +162,7 @@ describe('Stats', () => {
                 developer: '도구개발사',
                 totalUsedTime: 9999
             }, {
+                date: new Date("2018-09-23T15:00:00.000Z"),
                 userId: config.testUser.userId,
                 gender: 'male',
                 birthday: 1992,
@@ -173,6 +175,7 @@ describe('Stats', () => {
                 developer: '카카오톡개발사',
                 totalUsedTime: 40000
             }, {
+                date: new Date("2018-09-22T15:00:00.000Z"),
                 userId: config.testUser.userId,
                 gender: 'male',
                 birthday: 1992,
@@ -220,18 +223,27 @@ describe('Stats', () => {
         });
 
         const data = [{
+            date: new Date("2018-09-24T15:00:00.000Z"),
+            packageName: 'com.kakao.talk',
+            totalUsedTime: 20000,
+        }, {
+            date: new Date("2018-09-25T15:00:00.000Z"),
             packageName: 'com.kakao.talk',
             totalUsedTime: 10000,
         }, {
+            date: new Date("2018-09-24T15:00:00.000Z"),
             packageName: 'com.naver.talk',
             totalUsedTime: 20000,
         }, {
+            date: new Date("2018-09-24T15:00:00.000Z"),
             packageName: 'com.android.com',
             totalUsedTime: 30000,
         }, {
+            date: new Date("2018-09-24T15:00:00.000Z"),
             packageName: 'com.notgame.com',
             totalUsedTime: 30000,
         }, {
+            date: new Date("2018-09-24T15:00:00.000Z"),
             packageName: 'com.unknown.game',
             totalUsedTime: 12000,
         }];
@@ -243,14 +255,15 @@ describe('Stats', () => {
                 .expect(200)
                 .then(() => AppUsages.find({userId: config.testUser.userId}).exec())
                 .then(docs => {
-                    docs.length.should.be.eql(3);
-
+                    docs.length.should.be.eql(4);
                     docs = docs.sort((a,b) => (a.packageName > b.packageName) ? 1 : -1);
 
+                    docs[0].date.should.be.eql(new Date('2018-09-24T15:00:00.000Z'));
                     docs[0].userId.should.be.eql(config.testUser.userId);
                     docs[0].gender.should.be.eql('male');
                     docs[0].birthday.should.be.eql(1992);
                     docs[0].job.should.be.eql(1);
+                    docs[0].appVersion.should.be.eql('9.9.99');
                     docs[0].packageName.should.be.eql('com.android.com');
                     docs[0].appName.should.be.eql('안드로이드앱');
                     docs[0].categoryId.should.be.eql('GAME_TOOLS');
@@ -260,23 +273,120 @@ describe('Stats', () => {
                     docs[0].totalUsedTime.should.be.eql(30000);
                     docs[0].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
 
+                    docs[1].date.should.be.eql(new Date('2018-09-24T15:00:00.000Z'));
                     docs[1].userId.should.be.eql(config.testUser.userId);
                     docs[1].gender.should.be.eql('male');
                     docs[1].birthday.should.be.eql(1992);
                     docs[1].job.should.be.eql(1);
+                    docs[1].appVersion.should.be.eql('9.9.99');
                     docs[1].packageName.should.be.eql('com.kakao.talk');
                     docs[1].appName.should.be.eql('카카오톡앱');
                     docs[1].categoryId.should.be.eql('GAME_COMMUNICATION');
                     docs[1].categoryName.should.be.eql('게임커뮤니케이션');
                     docs[1].iconUrl.should.be.eql('iconUrlForKakao');
                     docs[1].developer.should.be.eql('카카오톡개발사');
-                    docs[1].totalUsedTime.should.be.eql(10000);
+                    docs[1].totalUsedTime.should.be.eql(20000);
                     docs[1].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
 
+                    docs[2].date.should.be.eql(new Date('2018-09-25T15:00:00.000Z'));
                     docs[2].userId.should.be.eql(config.testUser.userId);
                     docs[2].gender.should.be.eql('male');
                     docs[2].birthday.should.be.eql(1992);
                     docs[2].job.should.be.eql(1);
+                    docs[2].appVersion.should.be.eql('9.9.99');
+                    docs[2].packageName.should.be.eql('com.kakao.talk');
+                    docs[2].appName.should.be.eql('카카오톡앱');
+                    docs[2].categoryId.should.be.eql('GAME_COMMUNICATION');
+                    docs[2].categoryName.should.be.eql('게임커뮤니케이션');
+                    docs[2].iconUrl.should.be.eql('iconUrlForKakao');
+                    docs[2].developer.should.be.eql('카카오톡개발사');
+                    docs[2].totalUsedTime.should.be.eql(10000);
+                    docs[2].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+
+                    docs[3].date.should.be.eql(new Date('2018-09-24T15:00:00.000Z'));
+                    docs[3].userId.should.be.eql(config.testUser.userId);
+                    docs[3].gender.should.be.eql('male');
+                    docs[3].birthday.should.be.eql(1992);
+                    docs[3].job.should.be.eql(1);
+                    docs[3].appVersion.should.be.eql('9.9.99');
+                    docs[3].packageName.should.be.eql('com.naver.talk');
+                    docs[3].appName.should.be.eql('라인앱');
+                    docs[3].categoryId.should.be.eql('GAME_COMMUNICATION');
+                    docs[3].categoryName.should.be.eql('게임커뮤니케이션');
+                    docs[3].iconUrl.should.be.eql('iconUrlForNaver');
+                    docs[3].developer.should.be.eql('라인개발사');
+                    docs[3].totalUsedTime.should.be.eql(20000);
+                    docs[3].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        it('날짜가 없는 데이터는 현재 날짜로 채워넣는다', () => {
+            const undatedData = [{
+                packageName: 'com.kakao.talk',
+                totalUsedTime: 20000,
+            }, {
+                packageName: 'com.naver.talk',
+                totalUsedTime: 20000,
+            }, {
+                packageName: 'com.android.com',
+                totalUsedTime: 30000,
+            }, {
+                packageName: 'com.notgame.com',
+                totalUsedTime: 30000,
+            }, {
+                packageName: 'com.unknown.game',
+                totalUsedTime: 12000,
+            }];
+
+            request.post('/stats/usages/app')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send(undatedData)
+                .expect(200)
+                .then(() => AppUsages.find({userId: config.testUser.userId}).exec())
+                .then(docs => {
+                    docs.length.should.be.eql(3);
+                    docs = docs.sort((a,b) => (a.packageName > b.packageName) ? 1 : -1);
+
+                    docs[0].date.should.be.eql(new Date('2018-09-26T15:00:00.000Z'));
+                    docs[0].userId.should.be.eql(config.testUser.userId);
+                    docs[0].gender.should.be.eql('male');
+                    docs[0].birthday.should.be.eql(1992);
+                    docs[0].job.should.be.eql(1);
+                    docs[0].appVersion.should.be.eql('9.9.99');
+                    docs[0].packageName.should.be.eql('com.android.com');
+                    docs[0].appName.should.be.eql('안드로이드앱');
+                    docs[0].categoryId.should.be.eql('GAME_TOOLS');
+                    docs[0].categoryName.should.be.eql('게임도구');
+                    docs[0].iconUrl.should.be.eql('iconUrlForAndroid');
+                    docs[0].developer.should.be.eql('구글개발사');
+                    docs[0].totalUsedTime.should.be.eql(30000);
+                    docs[0].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+
+
+                    docs[1].date.should.be.eql(new Date('2018-09-26T15:00:00.000Z'));
+                    docs[1].userId.should.be.eql(config.testUser.userId);
+                    docs[1].gender.should.be.eql('male');
+                    docs[1].birthday.should.be.eql(1992);
+                    docs[1].job.should.be.eql(1);
+                    docs[1].appVersion.should.be.eql('9.9.99');
+                    docs[1].packageName.should.be.eql('com.kakao.talk');
+                    docs[1].appName.should.be.eql('카카오톡앱');
+                    docs[1].categoryId.should.be.eql('GAME_COMMUNICATION');
+                    docs[1].categoryName.should.be.eql('게임커뮤니케이션');
+                    docs[1].iconUrl.should.be.eql('iconUrlForKakao');
+                    docs[1].developer.should.be.eql('카카오톡개발사');
+                    docs[1].totalUsedTime.should.be.eql(20000);
+                    docs[1].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+
+                    docs[2].date.should.be.eql(new Date('2018-09-26T15:00:00.000Z'));
+                    docs[2].userId.should.be.eql(config.testUser.userId);
+                    docs[2].gender.should.be.eql('male');
+                    docs[2].birthday.should.be.eql(1992);
+                    docs[2].job.should.be.eql(1);
+                    docs[2].appVersion.should.be.eql('9.9.99');
                     docs[2].packageName.should.be.eql('com.naver.talk');
                     docs[2].appName.should.be.eql('라인앱');
                     docs[2].categoryId.should.be.eql('GAME_COMMUNICATION');

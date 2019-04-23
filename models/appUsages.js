@@ -31,7 +31,8 @@ const appUsagesSchema = new mongoose.Schema({
     categoryName: String,
     iconUrl: String,
     totalUsedTime: Number,
-    updateTime: Date
+    updateTime: Date,
+    appVersion: String,
 });
 
 // TODO: 버추얼 스키마 제거

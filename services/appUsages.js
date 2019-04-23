@@ -326,11 +326,13 @@ const upsertAppUsages = (user, appUsages) => {
         }
     });
 
+    const currentDate = new Date();
+
     appUsages.forEach(appUsage => {
         bulkOps.push({
             'insertOne': {
                 'document': {
-                    'date': appUsage.date,
+                    'date': appUsage.date ? appUsage.date : moment(currentDate).startOf('day').toDate(),
                     'userId': user.userId,
                     'birthday': user.birthday,
                     'job': user.job,
@@ -342,7 +344,8 @@ const upsertAppUsages = (user, appUsages) => {
                     'categoryName': appUsage.categoryName1,
                     'iconUrl': appUsage.iconUrl,
                     "totalUsedTime": appUsage.totalUsedTime,
-                    "updateTime": new Date()
+                    "updateTime": currentDate,
+                    'appVersion': user.appVersion,
                 }
             }
         });
