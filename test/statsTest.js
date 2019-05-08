@@ -149,6 +149,7 @@ describe('Stats', () => {
             sandbox.useFakeTimers(new Date("2018-09-26T15:30:00.000Z").getTime());
 
             AppUsages.create([{
+                date: new Date("2018-09-24T15:00:00.000Z"),
                 userId: 'anotherUserId',
                 gender: 'female',
                 birthday: 1952,
@@ -161,6 +162,7 @@ describe('Stats', () => {
                 developer: '도구개발사',
                 totalUsedTime: 9999
             }, {
+                date: new Date("2018-09-23T15:00:00.000Z"),
                 userId: config.testUser.userId,
                 gender: 'male',
                 birthday: 1992,
@@ -173,6 +175,7 @@ describe('Stats', () => {
                 developer: '카카오톡개발사',
                 totalUsedTime: 40000
             }, {
+                date: new Date("2018-09-22T15:00:00.000Z"),
                 userId: config.testUser.userId,
                 gender: 'male',
                 birthday: 1992,
@@ -220,18 +223,27 @@ describe('Stats', () => {
         });
 
         const data = [{
+            date: new Date("2018-09-24T15:00:00.000Z"),
+            packageName: 'com.kakao.talk',
+            totalUsedTime: 20000,
+        }, {
+            date: new Date("2018-09-25T15:00:00.000Z"),
             packageName: 'com.kakao.talk',
             totalUsedTime: 10000,
         }, {
+            date: new Date("2018-09-24T15:00:00.000Z"),
             packageName: 'com.naver.talk',
             totalUsedTime: 20000,
         }, {
+            date: new Date("2018-09-24T15:00:00.000Z"),
             packageName: 'com.android.com',
             totalUsedTime: 30000,
         }, {
+            date: new Date("2018-09-24T15:00:00.000Z"),
             packageName: 'com.notgame.com',
             totalUsedTime: 30000,
         }, {
+            date: new Date("2018-09-24T15:00:00.000Z"),
             packageName: 'com.unknown.game',
             totalUsedTime: 12000,
         }];
@@ -243,14 +255,15 @@ describe('Stats', () => {
                 .expect(200)
                 .then(() => AppUsages.find({userId: config.testUser.userId}).exec())
                 .then(docs => {
-                    docs.length.should.be.eql(3);
-
+                    docs.length.should.be.eql(4);
                     docs = docs.sort((a,b) => (a.packageName > b.packageName) ? 1 : -1);
 
+                    docs[0].date.should.be.eql(new Date('2018-09-24T15:00:00.000Z'));
                     docs[0].userId.should.be.eql(config.testUser.userId);
                     docs[0].gender.should.be.eql('male');
                     docs[0].birthday.should.be.eql(1992);
                     docs[0].job.should.be.eql(1);
+                    docs[0].appVersion.should.be.eql('9.9.99');
                     docs[0].packageName.should.be.eql('com.android.com');
                     docs[0].appName.should.be.eql('안드로이드앱');
                     docs[0].categoryId.should.be.eql('GAME_TOOLS');
@@ -260,23 +273,120 @@ describe('Stats', () => {
                     docs[0].totalUsedTime.should.be.eql(30000);
                     docs[0].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
 
+                    docs[1].date.should.be.eql(new Date('2018-09-24T15:00:00.000Z'));
                     docs[1].userId.should.be.eql(config.testUser.userId);
                     docs[1].gender.should.be.eql('male');
                     docs[1].birthday.should.be.eql(1992);
                     docs[1].job.should.be.eql(1);
+                    docs[1].appVersion.should.be.eql('9.9.99');
                     docs[1].packageName.should.be.eql('com.kakao.talk');
                     docs[1].appName.should.be.eql('카카오톡앱');
                     docs[1].categoryId.should.be.eql('GAME_COMMUNICATION');
                     docs[1].categoryName.should.be.eql('게임커뮤니케이션');
                     docs[1].iconUrl.should.be.eql('iconUrlForKakao');
                     docs[1].developer.should.be.eql('카카오톡개발사');
-                    docs[1].totalUsedTime.should.be.eql(10000);
+                    docs[1].totalUsedTime.should.be.eql(20000);
                     docs[1].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
 
+                    docs[2].date.should.be.eql(new Date('2018-09-25T15:00:00.000Z'));
                     docs[2].userId.should.be.eql(config.testUser.userId);
                     docs[2].gender.should.be.eql('male');
                     docs[2].birthday.should.be.eql(1992);
                     docs[2].job.should.be.eql(1);
+                    docs[2].appVersion.should.be.eql('9.9.99');
+                    docs[2].packageName.should.be.eql('com.kakao.talk');
+                    docs[2].appName.should.be.eql('카카오톡앱');
+                    docs[2].categoryId.should.be.eql('GAME_COMMUNICATION');
+                    docs[2].categoryName.should.be.eql('게임커뮤니케이션');
+                    docs[2].iconUrl.should.be.eql('iconUrlForKakao');
+                    docs[2].developer.should.be.eql('카카오톡개발사');
+                    docs[2].totalUsedTime.should.be.eql(10000);
+                    docs[2].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+
+                    docs[3].date.should.be.eql(new Date('2018-09-24T15:00:00.000Z'));
+                    docs[3].userId.should.be.eql(config.testUser.userId);
+                    docs[3].gender.should.be.eql('male');
+                    docs[3].birthday.should.be.eql(1992);
+                    docs[3].job.should.be.eql(1);
+                    docs[3].appVersion.should.be.eql('9.9.99');
+                    docs[3].packageName.should.be.eql('com.naver.talk');
+                    docs[3].appName.should.be.eql('라인앱');
+                    docs[3].categoryId.should.be.eql('GAME_COMMUNICATION');
+                    docs[3].categoryName.should.be.eql('게임커뮤니케이션');
+                    docs[3].iconUrl.should.be.eql('iconUrlForNaver');
+                    docs[3].developer.should.be.eql('라인개발사');
+                    docs[3].totalUsedTime.should.be.eql(20000);
+                    docs[3].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        it('날짜가 없는 데이터는 현재 날짜로 채워넣는다', () => {
+            const undatedData = [{
+                packageName: 'com.kakao.talk',
+                totalUsedTime: 20000,
+            }, {
+                packageName: 'com.naver.talk',
+                totalUsedTime: 20000,
+            }, {
+                packageName: 'com.android.com',
+                totalUsedTime: 30000,
+            }, {
+                packageName: 'com.notgame.com',
+                totalUsedTime: 30000,
+            }, {
+                packageName: 'com.unknown.game',
+                totalUsedTime: 12000,
+            }];
+
+            request.post('/stats/usages/app')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send(undatedData)
+                .expect(200)
+                .then(() => AppUsages.find({userId: config.testUser.userId}).exec())
+                .then(docs => {
+                    docs.length.should.be.eql(3);
+                    docs = docs.sort((a,b) => (a.packageName > b.packageName) ? 1 : -1);
+
+                    docs[0].date.should.be.eql(new Date('2018-09-26T15:00:00.000Z'));
+                    docs[0].userId.should.be.eql(config.testUser.userId);
+                    docs[0].gender.should.be.eql('male');
+                    docs[0].birthday.should.be.eql(1992);
+                    docs[0].job.should.be.eql(1);
+                    docs[0].appVersion.should.be.eql('9.9.99');
+                    docs[0].packageName.should.be.eql('com.android.com');
+                    docs[0].appName.should.be.eql('안드로이드앱');
+                    docs[0].categoryId.should.be.eql('GAME_TOOLS');
+                    docs[0].categoryName.should.be.eql('게임도구');
+                    docs[0].iconUrl.should.be.eql('iconUrlForAndroid');
+                    docs[0].developer.should.be.eql('구글개발사');
+                    docs[0].totalUsedTime.should.be.eql(30000);
+                    docs[0].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+
+
+                    docs[1].date.should.be.eql(new Date('2018-09-26T15:00:00.000Z'));
+                    docs[1].userId.should.be.eql(config.testUser.userId);
+                    docs[1].gender.should.be.eql('male');
+                    docs[1].birthday.should.be.eql(1992);
+                    docs[1].job.should.be.eql(1);
+                    docs[1].appVersion.should.be.eql('9.9.99');
+                    docs[1].packageName.should.be.eql('com.kakao.talk');
+                    docs[1].appName.should.be.eql('카카오톡앱');
+                    docs[1].categoryId.should.be.eql('GAME_COMMUNICATION');
+                    docs[1].categoryName.should.be.eql('게임커뮤니케이션');
+                    docs[1].iconUrl.should.be.eql('iconUrlForKakao');
+                    docs[1].developer.should.be.eql('카카오톡개발사');
+                    docs[1].totalUsedTime.should.be.eql(20000);
+                    docs[1].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+
+                    docs[2].date.should.be.eql(new Date('2018-09-26T15:00:00.000Z'));
+                    docs[2].userId.should.be.eql(config.testUser.userId);
+                    docs[2].gender.should.be.eql('male');
+                    docs[2].birthday.should.be.eql(1992);
+                    docs[2].job.should.be.eql(1);
+                    docs[2].appVersion.should.be.eql('9.9.99');
                     docs[2].packageName.should.be.eql('com.naver.talk');
                     docs[2].appName.should.be.eql('라인앱');
                     docs[2].categoryId.should.be.eql('GAME_COMMUNICATION');
@@ -355,210 +465,18 @@ describe('Stats', () => {
         });
     });
 
+    // 분석화면
     describe('POST /stats/report/category/:categoryId/recent', () => {
+        const dummy = require('./dummy').stats;
+
         describe('랭킹', () => {
             beforeEach(done => {
-                Users.create([
-                    config.testUser,
-                    {
-                        userId: 'peopleId1',
-                        birthday: 1943,
-                        job: 1,
-                        gender: 'male',
-                    },
-                    {
-                        userId: 'peopleId2',
-                        birthday: 1989,
-                        job: 1,
-                        gender: 'female',
-                    },
-                    {
-                        userId: 'peopleId3',
-                        birthday: 1990,
-                        job: 2,
-                        gender: 'male',
-                    },
-                    {
-                        userId: 'uninstalledOldPeople',
-                        birthday: 1970,
-                        job: 1,
-                        gender: 'male',
-                    }])
-                    .then(() => AppUsages.create([
-                        ////////// start of me ///////////////
-                        {
-                            userId: config.testUser.userId,
-                            packageName: 'com.nhn.android.nmap',
-                            totalUsedTime: 9999,
-                            appName: '네이버지도',
-                            categoryId: 'TOOL',
-                            categoryName: '도구',
-                            developer: 'NHN Corp.',
-                            iconUrl: 'iconUrl0',
-                            gender: 'male',
-                            birthday: 1992,
-                            job: 1,
-                        }, {
-                            // 특정 앱의 사용 데이터는 있지만 해당 앱 정보가 DB에 없는 경우, 해당 앱은 제외한다.
-                            userId: config.testUser.userId,
-                            packageName: 'com.game.empty',
-                            totalUsedTime: 10000,
-                            gender: 'male',
-                            birthday: 1992,
-                            job: 1,
-                        }, {
-                            userId: config.testUser.userId,
-                            packageName: 'com.game.edu',
-                            totalUsedTime: 90000,
-                            appName: '교육게임명',
-                            categoryId: 'GAME_EDUCATIONAL',
-                            categoryName: '교육',
-                            developer: 'Edu Game Corp.',
-                            iconUrl: 'iconUrl3',
-                            gender: 'male',
-                            birthday: 1992,
-                            job: 1,
-                        }, {
-                            userId: config.testUser.userId,
-                            packageName: 'com.game.rpg',
-                            totalUsedTime: 10000,
-                            appName: '롤플레잉게임명',
-                            categoryId: 'GAME_ROLE_PLAYING',
-                            categoryName: '롤플레잉',
-                            developer: 'GameDuckHu Corp.',
-                            iconUrl: 'iconUrl4',
-                            gender: 'male',
-                            birthday: 1992,
-                            job: 1,
-                        }, {
-                            userId: config.testUser.userId,
-                            packageName: 'com.game.edu2',
-                            totalUsedTime: 5000,
-                            appName: '교육게임명2',
-                            categoryId: 'GAME_EDUCATIONAL',
-                            categoryName: '교육',
-                            developer: 'GameDuckHu Corp.',
-                            iconUrl: 'iconUrl32',
-                            gender: 'male',
-                            birthday: 1992,
-                            job: 1,
-                        },
-                        ////////// end of me ///////////////
-                        {
-                            userId: 'peopleId1',
-                            packageName: 'com.game.edu2',
-                            totalUsedTime: 7000,
-                            appName: '교육게임명2',
-                            categoryId: 'GAME_EDUCATIONAL',
-                            categoryName: '교육',
-                            developer: 'GameDuckHu Corp.',
-                            iconUrl: 'iconUrl32',
-                            birthday: 1943,
-                            job: 1,
-                            gender: 'male',
-                        }, {
-                            userId: 'peopleId1',
-                            packageName: 'com.game.rpg',
-                            totalUsedTime: 4000,
-                            appName: '롤플레잉게임명',
-                            categoryId: 'GAME_ROLE_PLAYING',
-                            categoryName: '롤플레잉',
-                            developer: 'GameDuckHu Corp.',
-                            iconUrl: 'iconUrl4',
-                            birthday: 1943,
-                            job: 1,
-                            gender: 'male',
-                        }, {
-                            userId: 'peopleId2',
-                            packageName: 'com.game.rpg',
-                            totalUsedTime: 90000,
-                            appName: '롤플레잉게임명',
-                            categoryId: 'GAME_ROLE_PLAYING',
-                            categoryName: '롤플레잉',
-                            developer: 'GameDuckHu Corp.',
-                            iconUrl: 'iconUrl4',
-                            birthday: 1989,
-                            job: 1,
-                            gender: 'female',
-                        }, {
-                            userId: 'peopleId2',
-                            packageName: 'com.game.puzzle',
-                            totalUsedTime: 10000,
-                            appName: '퍼즐게임명',
-                            categoryId: 'GAME_PUZZLE',
-                            categoryName: '퍼즐',
-                            developer: 'Puzzle Game Corp.',
-                            iconUrl: 'iconUrl6',
-                            birthday: 1989,
-                            job: 1,
-                            gender: 'female',
-                        }, {
-                            userId: 'peopleId3',
-                            packageName: 'com.game.edu',
-                            totalUsedTime: 100000,
-                            appName: '교육게임명',
-                            categoryId: 'GAME_EDUCATIONAL',
-                            categoryName: '교육',
-                            developer: 'Edu Game Corp.',
-                            iconUrl: 'iconUrl3',
-                            birthday: 1990,
-                            job: 2,
-                            gender: 'male',
-                        }, {
-                            userId: 'peopleId3',
-                            packageName: 'com.game.puzzle',
-                            totalUsedTime: 50000,
-                            appName: '퍼즐게임명',
-                            categoryId: 'GAME_PUZZLE',
-                            categoryName: '퍼즐',
-                            developer: 'Puzzle Game Corp.',
-                            iconUrl: 'iconUrl6',
-                            birthday: 1990,
-                            job: 2,
-                            gender: 'male',
-                        }, {
-                            // 특정 앱의 사용 데이터는 있지만 비정규화 이전 버전 앱 사용으로 categoryId가 AppUsages에 없는 경우, 해당 앱은 제외한다.
-                            userId: 'uninstalledOldPeople',
-                            packageName: 'com.game.puzzle',
-                            totalUsedTime: 7777777777
-                        }]))
-                    .then(() => Apps.create([{
-                        packageName: 'com.nhn.android.nmap',
-                        appName: '네이버지도',
-                        categoryId1: 'TOOL',
-                        categoryName1: '도구',
-                        developer: 'NHN Corp.',
-                        iconUrl: 'iconUrl0',
-                    }, {
-                        packageName: 'com.game.edu',
-                        appName: '교육게임명',
-                        categoryId1: 'GAME_EDUCATIONAL',
-                        categoryName1: '교육',
-                        developer: 'Edu Game Corp.',
-                        iconUrl: 'iconUrl3',
-                    }, {
-                        packageName: 'com.game.rpg',
-                        appName: '롤플레잉게임명',
-                        categoryId1: 'GAME_ROLE_PLAYING',
-                        categoryName1: '롤플레잉',
-                        developer: 'GameDuckHu Corp.',
-                        iconUrl: 'iconUrl4',
-                    }, {
-                        packageName: 'com.game.edu2',
-                        appName: '교육게임명2',
-                        categoryId1: 'GAME_EDUCATIONAL',
-                        categoryName1: '교육',
-                        developer: 'GameDuckHu Corp.',
-                        iconUrl: 'iconUrl32',
-                    }, {
-                        packageName: 'com.game.puzzle',
-                        appName: '퍼즐게임명',
-                        categoryId1: 'GAME_PUZZLE',
-                        categoryName1: '퍼즐',
-                        developer: 'Puzzle Game Corp.',
-                        iconUrl: 'iconUrl6',
-                    }]))
-                    .then(() => done());
+                sandbox.useFakeTimers(new Date("2019-04-19T00:00:00.000Z").getTime());
+                Users.create(dummy.users)
+                    .then(() => AppUsages.create(dummy.appUsages))
+                    .then(() => Apps.create(dummy.apps))
+                    .then(() => done())
+                    .catch(err => done(err));
                 }
             );
 
@@ -575,13 +493,15 @@ describe('Stats', () => {
 
                             res.body.totalUsedTimeRank[0].userId.should.be.eql("peopleId3");
                             res.body.totalUsedTimeRank[0].rank.should.be.eql(1);
-                            res.body.totalUsedTimeRank[0].content.should.be.eql(150000);
+                            res.body.totalUsedTimeRank[0].content.should.be.eql(50000);
+
                             res.body.totalUsedTimeRank[1].userId.should.be.eql(config.testUser.userId);
                             res.body.totalUsedTimeRank[1].rank.should.be.eql(2);
-                            res.body.totalUsedTimeRank[1].content.should.be.eql(105000);
+                            res.body.totalUsedTimeRank[1].content.should.be.eql(19000);
+
                             res.body.totalUsedTimeRank[2].userId.should.be.eql("peopleId1");
                             res.body.totalUsedTimeRank[2].rank.should.be.eql(4);
-                            res.body.totalUsedTimeRank[2].content.should.be.eql(11000);
+                            res.body.totalUsedTimeRank[2].content.should.be.eql(4000);
 
                             res.body.totalUserCount.should.be.eql(4);
 
@@ -605,10 +525,10 @@ describe('Stats', () => {
 
                             res.body.totalUsedTimeRank[0].userId.should.be.eql("peopleId3");
                             res.body.totalUsedTimeRank[0].rank.should.be.eql(1);
-                            res.body.totalUsedTimeRank[0].content.should.be.eql(150000);
+                            res.body.totalUsedTimeRank[0].content.should.be.eql(50000);
                             res.body.totalUsedTimeRank[1].userId.should.be.eql("peopleId1");
                             res.body.totalUsedTimeRank[1].rank.should.be.eql(3);
-                            res.body.totalUsedTimeRank[1].content.should.be.eql(11000);
+                            res.body.totalUsedTimeRank[1].content.should.be.eql(4000);
 
                             res.body.totalUserCount.should.be.eql(3);
 
@@ -618,6 +538,7 @@ describe('Stats', () => {
             });
 
             afterEach(done => {
+                sandbox.restore();
                 Users.remove({}, () => {
                     AppUsages.remove({}, () => {
                         Apps.remove({}, done);
@@ -628,161 +549,11 @@ describe('Stats', () => {
 
         describe('특정 카테고리의 앱 사용 누적시간 데이터가 반환된다', () => {
             before(done => {
-                Users.create([
-                    config.testUser,
-                    {
-                        userId: 'peopleId1',
-                        birthday: 1943,
-                        job: 1,
-                        gender: 'male',
-                    },
-                    {
-                        userId: 'peopleId2',
-                        birthday: 1989,
-                        job: 1,
-                        gender: 'female',
-                    },
-                    {
-                        userId: 'peopleId3',
-                        birthday: 1990,
-                        job: 2,
-                        gender: 'male',
-                    },
-                ], () => AppUsages.create([
-                    ////////// start of me ///////////////
-                    {
-                        userId: config.testUser.userId,
-                        gender: 'male',
-                        birthday: 1992,
-                        job: 1,
-                        packageName: 'com.nhn.android.nmap',
-                        totalUsedTime: 9999,
-                        appName: '네이버지도',
-                        categoryId: 'TOOL',
-                        categoryName: '도구',
-                        developer: 'NHN Corp.',
-                        iconUrl: 'iconUrl0',
-                    }, {
-                        // 특정 앱의 사용 데이터는 있지만 해당 앱 정보가 DB에 없는 경우, 해당 앱은 제외한다.
-                        userId: config.testUser.userId,
-                        gender: 'male',
-                        birthday: 1992,
-                        job: 1,
-                        packageName: 'com.game.empty',
-                        totalUsedTime: 10000
-                    }, {
-                        userId: config.testUser.userId,
-                        gender: 'male',
-                        birthday: 1992,
-                        job: 1,
-                        packageName: 'com.game.edu',
-                        totalUsedTime: 90000,
-                        appName: '교육게임명',
-                        categoryId: 'GAME_EDUCATIONAL',
-                        categoryName: '교육',
-                        developer: 'Edu Game Corp.',
-                        iconUrl: 'iconUrl3',
-                    }, {
-                        userId: config.testUser.userId,
-                        gender: 'male',
-                        birthday: 1992,
-                        job: 1,
-                        packageName: 'com.game.rpg',
-                        totalUsedTime: 10000,
-                        appName: '롤플레잉게임명',
-                        categoryId: 'GAME_ROLE_PLAYING',
-                        categoryName: '롤플레잉',
-                        developer: 'GameDuckHu Corp.',
-                        iconUrl: 'iconUrl4',
-                    }, {
-                        userId: config.testUser.userId,
-                        gender: 'male',
-                        birthday: 1992,
-                        job: 1,
-                        packageName: 'com.game.edu2',
-                        totalUsedTime: 5000,
-                        appName: '교육게임명2',
-                        categoryId: 'GAME_EDUCATIONAL',
-                        categoryName: '교육',
-                        developer: 'GameDuckHu Corp.',
-                        iconUrl: 'iconUrl32',
-                    },
-                    ////////// end of me ///////////////
-                    {
-                        userId: 'peopleId1',
-                        birthday: 1943,
-                        job: 1,
-                        gender: 'male',
-                        packageName: 'com.game.edu2',
-                        totalUsedTime: 7000,
-                        appName: '교육게임명2',
-                        categoryId: 'GAME_EDUCATIONAL',
-                        categoryName: '교육',
-                        developer: 'GameDuckHu Corp.',
-                        iconUrl: 'iconUrl32',
-                    }, {
-                        userId: 'peopleId1',
-                        birthday: 1943,
-                        job: 1,
-                        gender: 'male',
-                        packageName: 'com.game.rpg',
-                        totalUsedTime: 4000,
-                        appName: '롤플레잉게임명',
-                        categoryId: 'GAME_ROLE_PLAYING',
-                        categoryName: '롤플레잉',
-                        developer: 'GameDuckHu Corp.',
-                        iconUrl: 'iconUrl4',
-                    }, {
-                        userId: 'peopleId2',
-                        birthday: 1989,
-                        job: 1,
-                        gender: 'female',
-                        packageName: 'com.game.rpg',
-                        totalUsedTime: 90000,
-                        appName: '롤플레잉게임명',
-                        categoryId: 'GAME_ROLE_PLAYING',
-                        categoryName: '롤플레잉',
-                        developer: 'GameDuckHu Corp.',
-                        iconUrl: 'iconUrl4',
-                    }, {
-                        userId: 'peopleId2',
-                        birthday: 1989,
-                        job: 1,
-                        gender: 'female',
-                        packageName: 'com.game.puzzle',
-                        totalUsedTime: 10000,
-                        appName: '퍼즐게임명',
-                        categoryId: 'GAME_PUZZLE',
-                        categoryName: '퍼즐',
-                        developer: 'Puzzle Game Corp.',
-                        iconUrl: 'iconUrl6',
-                    }, {
-                        userId: 'peopleId3',
-                        birthday: 1990,
-                        job: 2,
-                        gender: 'male',
-                        packageName: 'com.game.edu',
-                        totalUsedTime: 100000,
-                        appName: '교육게임명',
-                        categoryId: 'GAME_EDUCATIONAL',
-                        categoryName: '교육',
-                        developer: 'Edu Game Corp.',
-                        iconUrl: 'iconUrl3',
-                    }, {
-                        userId: 'peopleId3',
-                        birthday: 1990,
-                        job: 2,
-                        gender: 'male',
-                        packageName: 'com.game.puzzle',
-                        totalUsedTime: 50000,
-                        appName: '퍼즐게임명',
-                        categoryId: 'GAME_PUZZLE',
-                        categoryName: '퍼즐',
-                        developer: 'Puzzle Game Corp.',
-                        iconUrl: 'iconUrl6',
-                    }], function () {
-                        done();
-                }));
+                sandbox.useFakeTimers(new Date("2019-04-19T00:00:00.000Z").getTime());
+                Users.create(dummy.users)
+                    .then(() => AppUsages.create(dummy.appUsages))
+                    .then(() => done())
+                    .catch(err => done(err));
             });
 
             it('3 가지 그룹의 데이터가 반환된다', done => {
@@ -814,40 +585,29 @@ describe('Stats', () => {
                             const userAppUsage = res.body.usages[0].appUsages;
 
                             userAppUsage.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
-                            userAppUsage.length.should.be.eql(3);
+                            userAppUsage.length.should.be.eql(2);
 
-                            userAppUsage[0].id.should.be.eql('com.game.edu');
-                            userAppUsage[0].name.should.be.eql('교육게임명');
-                            userAppUsage[0].totalUsedTime.should.be.eql(90000);
+                            userAppUsage[0].id.should.be.eql('com.game.rpg');
+                            userAppUsage[0].name.should.be.eql('롤플레잉게임명');
+                            userAppUsage[0].totalUsedTime.should.be.eql(10000);
                             userAppUsage[0].appInfos.length.should.be.eql(1);
-                            userAppUsage[0].appInfos[0].packageName.should.be.eql('com.game.edu');
-                            userAppUsage[0].appInfos[0].appName.should.be.eql('교육게임명');
-                            userAppUsage[0].appInfos[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
-                            userAppUsage[0].appInfos[0].categoryName.should.be.eql('교육');
-                            userAppUsage[0].appInfos[0].developer.should.be.eql('Edu Game Corp.');
-                            userAppUsage[0].appInfos[0].iconUrl.should.be.eql('iconUrl3');
+                            userAppUsage[0].appInfos[0].packageName.should.be.eql('com.game.rpg');
+                            userAppUsage[0].appInfos[0].appName.should.be.eql('롤플레잉게임명');
+                            userAppUsage[0].appInfos[0].categoryId.should.be.eql('GAME_ROLE_PLAYING');
+                            userAppUsage[0].appInfos[0].categoryName.should.be.eql('롤플레잉');
+                            userAppUsage[0].appInfos[0].developer.should.be.eql('GameDuckHu Corp.');
+                            userAppUsage[0].appInfos[0].iconUrl.should.be.eql('iconUrl4');
 
-                            userAppUsage[1].id.should.be.eql('com.game.rpg');
-                            userAppUsage[1].name.should.be.eql('롤플레잉게임명');
-                            userAppUsage[1].totalUsedTime.should.be.eql(10000);
+                            userAppUsage[1].id.should.be.eql('com.game.edu2');
+                            userAppUsage[1].name.should.be.eql('교육게임명2');
+                            userAppUsage[1].totalUsedTime.should.be.eql(9000);
                             userAppUsage[1].appInfos.length.should.be.eql(1);
-                            userAppUsage[1].appInfos[0].packageName.should.be.eql('com.game.rpg');
-                            userAppUsage[1].appInfos[0].appName.should.be.eql('롤플레잉게임명');
-                            userAppUsage[1].appInfos[0].categoryId.should.be.eql('GAME_ROLE_PLAYING');
-                            userAppUsage[1].appInfos[0].categoryName.should.be.eql('롤플레잉');
+                            userAppUsage[1].appInfos[0].packageName.should.be.eql('com.game.edu2');
+                            userAppUsage[1].appInfos[0].appName.should.be.eql('교육게임명2');
+                            userAppUsage[1].appInfos[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
+                            userAppUsage[1].appInfos[0].categoryName.should.be.eql('교육');
                             userAppUsage[1].appInfos[0].developer.should.be.eql('GameDuckHu Corp.');
-                            userAppUsage[1].appInfos[0].iconUrl.should.be.eql('iconUrl4');
-
-                            userAppUsage[2].id.should.be.eql('com.game.edu2');
-                            userAppUsage[2].name.should.be.eql('교육게임명2');
-                            userAppUsage[2].totalUsedTime.should.be.eql(5000);
-                            userAppUsage[2].appInfos.length.should.be.eql(1);
-                            userAppUsage[2].appInfos[0].packageName.should.be.eql('com.game.edu2');
-                            userAppUsage[2].appInfos[0].appName.should.be.eql('교육게임명2');
-                            userAppUsage[2].appInfos[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
-                            userAppUsage[2].appInfos[0].categoryName.should.be.eql('교육');
-                            userAppUsage[2].appInfos[0].developer.should.be.eql('GameDuckHu Corp.');
-                            userAppUsage[2].appInfos[0].iconUrl.should.be.eql('iconUrl32');
+                            userAppUsage[1].appInfos[0].iconUrl.should.be.eql('iconUrl32');
 
                             done();
                         }).catch(err => done(err));
@@ -866,15 +626,15 @@ describe('Stats', () => {
 
                             userCategoryUsages.length.should.be.eql(2);
 
-                            userCategoryUsages[0].id.should.be.eql('GAME_EDUCATIONAL');
-                            userCategoryUsages[0].name.should.be.eql('교육');
-                            userCategoryUsages[0].totalUsedTime.should.be.eql(95000);
-                            should.not.exist(userCategoryUsages[0].appInfos);
-
-                            userCategoryUsages[1].id.should.be.eql('GAME_ROLE_PLAYING');
-                            userCategoryUsages[1].name.should.be.eql('롤플레잉');
-                            userCategoryUsages[1].totalUsedTime.should.be.eql(10000);
+                            userCategoryUsages[0].id.should.be.eql('GAME_ROLE_PLAYING');
+                            userCategoryUsages[0].name.should.be.eql('롤플레잉');
+                            userCategoryUsages[0].totalUsedTime.should.be.eql(10000);
                             should.not.exist(userCategoryUsages[1].appInfos);
+
+                            userCategoryUsages[1].id.should.be.eql('GAME_EDUCATIONAL');
+                            userCategoryUsages[1].name.should.be.eql('교육');
+                            userCategoryUsages[1].totalUsedTime.should.be.eql(9000);
+                            should.not.exist(userCategoryUsages[0].appInfos);
 
                             done();
                         }).catch(err => done(err));
@@ -894,43 +654,29 @@ describe('Stats', () => {
                                 usages.appInfos.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
                             });
 
-                            userDeveloperUsages.length.should.be.eql(2);
+                            userDeveloperUsages.length.should.be.eql(1);
 
-                            userDeveloperUsages[0].id.should.be.eql('Edu Game Corp.');
-                            userDeveloperUsages[0].name.should.be.eql('Edu Game Corp.');
-                            userDeveloperUsages[0].totalUsedTime.should.be.eql(90000);
+                            userDeveloperUsages[0].id.should.be.eql('GameDuckHu Corp.');
+                            userDeveloperUsages[0].name.should.be.eql('GameDuckHu Corp.');
+                            userDeveloperUsages[0].totalUsedTime.should.be.eql(19000);
 
-                            userDeveloperUsages[0].appInfos.length.should.be.eql(1);
+                            userDeveloperUsages[0].appInfos.length.should.be.eql(2);
 
-                            userDeveloperUsages[0].appInfos[0].packageName.should.be.eql('com.game.edu');
-                            userDeveloperUsages[0].appInfos[0].totalUsedTime.should.be.eql(90000);
-                            userDeveloperUsages[0].appInfos[0].appName.should.be.eql('교육게임명');
-                            userDeveloperUsages[0].appInfos[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
-                            userDeveloperUsages[0].appInfos[0].categoryName.should.be.eql('교육');
-                            userDeveloperUsages[0].appInfos[0].developer.should.be.eql('Edu Game Corp.');
-                            userDeveloperUsages[0].appInfos[0].iconUrl.should.be.eql('iconUrl3');
+                            userDeveloperUsages[0].appInfos[0].packageName.should.be.eql('com.game.rpg');
+                            userDeveloperUsages[0].appInfos[0].totalUsedTime.should.be.eql(10000);
+                            userDeveloperUsages[0].appInfos[0].appName.should.be.eql('롤플레잉게임명');
+                            userDeveloperUsages[0].appInfos[0].categoryId.should.be.eql('GAME_ROLE_PLAYING');
+                            userDeveloperUsages[0].appInfos[0].categoryName.should.be.eql('롤플레잉');
+                            userDeveloperUsages[0].appInfos[0].developer.should.be.eql('GameDuckHu Corp.');
+                            userDeveloperUsages[0].appInfos[0].iconUrl.should.be.eql('iconUrl4');
 
-                            userDeveloperUsages[1].id.should.be.eql('GameDuckHu Corp.');
-                            userDeveloperUsages[1].name.should.be.eql('GameDuckHu Corp.');
-                            userDeveloperUsages[1].totalUsedTime.should.be.eql(15000);
-
-                            userDeveloperUsages[1].appInfos.length.should.be.eql(2);
-
-                            userDeveloperUsages[1].appInfos[0].packageName.should.be.eql('com.game.rpg');
-                            userDeveloperUsages[1].appInfos[0].totalUsedTime.should.be.eql(10000);
-                            userDeveloperUsages[1].appInfos[0].appName.should.be.eql('롤플레잉게임명');
-                            userDeveloperUsages[1].appInfos[0].categoryId.should.be.eql('GAME_ROLE_PLAYING');
-                            userDeveloperUsages[1].appInfos[0].categoryName.should.be.eql('롤플레잉');
-                            userDeveloperUsages[1].appInfos[0].developer.should.be.eql('GameDuckHu Corp.');
-                            userDeveloperUsages[1].appInfos[0].iconUrl.should.be.eql('iconUrl4');
-
-                            userDeveloperUsages[1].appInfos[1].packageName.should.be.eql('com.game.edu2');
-                            userDeveloperUsages[1].appInfos[1].totalUsedTime.should.be.eql(5000);
-                            userDeveloperUsages[1].appInfos[1].appName.should.be.eql('교육게임명2');
-                            userDeveloperUsages[1].appInfos[1].categoryId.should.be.eql('GAME_EDUCATIONAL');
-                            userDeveloperUsages[1].appInfos[1].categoryName.should.be.eql('교육');
-                            userDeveloperUsages[1].appInfos[1].developer.should.be.eql('GameDuckHu Corp.');
-                            userDeveloperUsages[1].appInfos[1].iconUrl.should.be.eql('iconUrl32');
+                            userDeveloperUsages[0].appInfos[1].packageName.should.be.eql('com.game.edu2');
+                            userDeveloperUsages[0].appInfos[1].totalUsedTime.should.be.eql(9000);
+                            userDeveloperUsages[0].appInfos[1].appName.should.be.eql('교육게임명2');
+                            userDeveloperUsages[0].appInfos[1].categoryId.should.be.eql('GAME_EDUCATIONAL');
+                            userDeveloperUsages[0].appInfos[1].categoryName.should.be.eql('교육');
+                            userDeveloperUsages[0].appInfos[1].developer.should.be.eql('GameDuckHu Corp.');
+                            userDeveloperUsages[0].appInfos[1].iconUrl.should.be.eql('iconUrl32');
 
                             done();
                         }).catch(err => done(err));
@@ -952,51 +698,40 @@ describe('Stats', () => {
 
                             // gender + age
                             // people 3
-                            genderAgeAppUsages.length.should.be.eql(4);
+                            genderAgeAppUsages.length.should.be.eql(3);
 
-                            genderAgeAppUsages[0].id.should.be.eql('com.game.edu');
-                            genderAgeAppUsages[0].name.should.be.eql('교육게임명');
-                            genderAgeAppUsages[0].totalUsedTime.should.be.eql(190000);
+                            genderAgeAppUsages[0].id.should.be.eql('com.game.puzzle');
+                            genderAgeAppUsages[0].name.should.be.eql('퍼즐게임명');
+                            genderAgeAppUsages[0].totalUsedTime.should.be.eql(50000);
                             genderAgeAppUsages[0].appInfos.length.should.be.eql(1);
-                            genderAgeAppUsages[0].appInfos[0].packageName.should.be.eql('com.game.edu');
-                            genderAgeAppUsages[0].appInfos[0].appName.should.be.eql('교육게임명');
-                            genderAgeAppUsages[0].appInfos[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
-                            genderAgeAppUsages[0].appInfos[0].categoryName.should.be.eql('교육');
-                            genderAgeAppUsages[0].appInfos[0].developer.should.be.eql('Edu Game Corp.');
-                            genderAgeAppUsages[0].appInfos[0].iconUrl.should.be.eql('iconUrl3');
+                            genderAgeAppUsages[0].appInfos[0].packageName.should.be.eql('com.game.puzzle');
+                            genderAgeAppUsages[0].appInfos[0].appName.should.be.eql('퍼즐게임명');
+                            genderAgeAppUsages[0].appInfos[0].categoryId.should.be.eql('GAME_PUZZLE');
+                            genderAgeAppUsages[0].appInfos[0].categoryName.should.be.eql('퍼즐');
+                            genderAgeAppUsages[0].appInfos[0].developer.should.be.eql('Puzzle Game Corp.');
+                            genderAgeAppUsages[0].appInfos[0].iconUrl.should.be.eql('iconUrl6');
 
-                            genderAgeAppUsages[1].id.should.be.eql('com.game.puzzle');
-                            genderAgeAppUsages[1].name.should.be.eql('퍼즐게임명');
-                            genderAgeAppUsages[1].totalUsedTime.should.be.eql(50000);
+                            genderAgeAppUsages[1].id.should.be.eql('com.game.rpg');
+                            genderAgeAppUsages[1].name.should.be.eql('롤플레잉게임명');
+                            genderAgeAppUsages[1].totalUsedTime.should.be.eql(10000);
                             genderAgeAppUsages[1].appInfos.length.should.be.eql(1);
-                            genderAgeAppUsages[1].appInfos[0].packageName.should.be.eql('com.game.puzzle');
-                            genderAgeAppUsages[1].appInfos[0].appName.should.be.eql('퍼즐게임명');
-                            genderAgeAppUsages[1].appInfos[0].categoryId.should.be.eql('GAME_PUZZLE');
-                            genderAgeAppUsages[1].appInfos[0].categoryName.should.be.eql('퍼즐');
-                            genderAgeAppUsages[1].appInfos[0].developer.should.be.eql('Puzzle Game Corp.');
-                            genderAgeAppUsages[1].appInfos[0].iconUrl.should.be.eql('iconUrl6');
+                            genderAgeAppUsages[1].appInfos[0].packageName.should.be.eql('com.game.rpg');
+                            genderAgeAppUsages[1].appInfos[0].appName.should.be.eql('롤플레잉게임명');
+                            genderAgeAppUsages[1].appInfos[0].categoryId.should.be.eql('GAME_ROLE_PLAYING');
+                            genderAgeAppUsages[1].appInfos[0].categoryName.should.be.eql('롤플레잉');
+                            genderAgeAppUsages[1].appInfos[0].developer.should.be.eql('GameDuckHu Corp.');
+                            genderAgeAppUsages[1].appInfos[0].iconUrl.should.be.eql('iconUrl4');
 
-                            genderAgeAppUsages[2].id.should.be.eql('com.game.rpg');
-                            genderAgeAppUsages[2].name.should.be.eql('롤플레잉게임명');
-                            genderAgeAppUsages[2].totalUsedTime.should.be.eql(10000);
+                            genderAgeAppUsages[2].id.should.be.eql('com.game.edu2');
+                            genderAgeAppUsages[2].name.should.be.eql('교육게임명2');
+                            genderAgeAppUsages[2].totalUsedTime.should.be.eql(9000);
                             genderAgeAppUsages[2].appInfos.length.should.be.eql(1);
-                            genderAgeAppUsages[2].appInfos[0].packageName.should.be.eql('com.game.rpg');
-                            genderAgeAppUsages[2].appInfos[0].appName.should.be.eql('롤플레잉게임명');
-                            genderAgeAppUsages[2].appInfos[0].categoryId.should.be.eql('GAME_ROLE_PLAYING');
-                            genderAgeAppUsages[2].appInfos[0].categoryName.should.be.eql('롤플레잉');
+                            genderAgeAppUsages[2].appInfos[0].packageName.should.be.eql('com.game.edu2');
+                            genderAgeAppUsages[2].appInfos[0].appName.should.be.eql('교육게임명2');
+                            genderAgeAppUsages[2].appInfos[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
+                            genderAgeAppUsages[2].appInfos[0].categoryName.should.be.eql('교육');
                             genderAgeAppUsages[2].appInfos[0].developer.should.be.eql('GameDuckHu Corp.');
-                            genderAgeAppUsages[2].appInfos[0].iconUrl.should.be.eql('iconUrl4');
-
-                            genderAgeAppUsages[3].id.should.be.eql('com.game.edu2');
-                            genderAgeAppUsages[3].name.should.be.eql('교육게임명2');
-                            genderAgeAppUsages[3].totalUsedTime.should.be.eql(5000);
-                            genderAgeAppUsages[3].appInfos.length.should.be.eql(1);
-                            genderAgeAppUsages[3].appInfos[0].packageName.should.be.eql('com.game.edu2');
-                            genderAgeAppUsages[3].appInfos[0].appName.should.be.eql('교육게임명2');
-                            genderAgeAppUsages[3].appInfos[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
-                            genderAgeAppUsages[3].appInfos[0].categoryName.should.be.eql('교육');
-                            genderAgeAppUsages[3].appInfos[0].developer.should.be.eql('GameDuckHu Corp.');
-                            genderAgeAppUsages[3].appInfos[0].iconUrl.should.be.eql('iconUrl32');
+                            genderAgeAppUsages[2].appInfos[0].iconUrl.should.be.eql('iconUrl32');
 
                             done();
 
@@ -1019,19 +754,19 @@ describe('Stats', () => {
                             // people 3
                             genderAgeCategoryUsages.length.should.be.eql(3);
 
-                            genderAgeCategoryUsages[0].id.should.be.eql('GAME_EDUCATIONAL');
-                            genderAgeCategoryUsages[0].name.should.be.eql('교육');
-                            genderAgeCategoryUsages[0].totalUsedTime.should.be.eql(195000);
+                            genderAgeCategoryUsages[0].id.should.be.eql('GAME_PUZZLE');
+                            genderAgeCategoryUsages[0].name.should.be.eql('퍼즐');
+                            genderAgeCategoryUsages[0].totalUsedTime.should.be.eql(50000);
                             should.not.exist(genderAgeCategoryUsages[0].appInfos);
 
-                            genderAgeCategoryUsages[1].id.should.be.eql('GAME_PUZZLE');
-                            genderAgeCategoryUsages[1].name.should.be.eql('퍼즐');
-                            genderAgeCategoryUsages[1].totalUsedTime.should.be.eql(50000);
+                            genderAgeCategoryUsages[1].id.should.be.eql('GAME_ROLE_PLAYING');
+                            genderAgeCategoryUsages[1].name.should.be.eql('롤플레잉');
+                            genderAgeCategoryUsages[1].totalUsedTime.should.be.eql(10000);
                             should.not.exist(genderAgeCategoryUsages[1].appInfos);
 
-                            genderAgeCategoryUsages[2].id.should.be.eql('GAME_ROLE_PLAYING');
-                            genderAgeCategoryUsages[2].name.should.be.eql('롤플레잉');
-                            genderAgeCategoryUsages[2].totalUsedTime.should.be.eql(10000);
+                            genderAgeCategoryUsages[2].id.should.be.eql('GAME_EDUCATIONAL');
+                            genderAgeCategoryUsages[2].name.should.be.eql('교육');
+                            genderAgeCategoryUsages[2].totalUsedTime.should.be.eql(9000);
                             should.not.exist(genderAgeCategoryUsages[2].appInfos);
 
                             done();
@@ -1053,29 +788,23 @@ describe('Stats', () => {
                                 usages.appInfos.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
                             });
 
-                            genderAgeDeveloperUsages.length.should.be.eql(3);
-                            genderAgeDeveloperUsages[0].id.should.be.eql('Edu Game Corp.');
-                            genderAgeDeveloperUsages[0].name.should.be.eql('Edu Game Corp.');
-                            genderAgeDeveloperUsages[0].totalUsedTime.should.be.eql(190000);
+                            genderAgeDeveloperUsages.length.should.be.eql(2);
+
+                            genderAgeDeveloperUsages[0].id.should.be.eql('Puzzle Game Corp.');
+                            genderAgeDeveloperUsages[0].name.should.be.eql('Puzzle Game Corp.');
+                            genderAgeDeveloperUsages[0].totalUsedTime.should.be.eql(50000);
                             genderAgeDeveloperUsages[0].appInfos.length.should.be.eql(1);
-                            genderAgeDeveloperUsages[0].appInfos[0].packageName.should.be.eql('com.game.edu');
-                            genderAgeDeveloperUsages[0].appInfos[0].totalUsedTime.should.be.eql(190000);
+                            genderAgeDeveloperUsages[0].appInfos[0].packageName.should.be.eql('com.game.puzzle');
+                            genderAgeDeveloperUsages[0].appInfos[0].totalUsedTime.should.be.eql(50000);
 
-                            genderAgeDeveloperUsages[1].id.should.be.eql('Puzzle Game Corp.');
-                            genderAgeDeveloperUsages[1].name.should.be.eql('Puzzle Game Corp.');
-                            genderAgeDeveloperUsages[1].totalUsedTime.should.be.eql(50000);
-                            genderAgeDeveloperUsages[1].appInfos.length.should.be.eql(1);
-                            genderAgeDeveloperUsages[1].appInfos[0].packageName.should.be.eql('com.game.puzzle');
-                            genderAgeDeveloperUsages[1].appInfos[0].totalUsedTime.should.be.eql(50000);
-
-                            genderAgeDeveloperUsages[2].id.should.be.eql('GameDuckHu Corp.');
-                            genderAgeDeveloperUsages[2].name.should.be.eql('GameDuckHu Corp.');
-                            genderAgeDeveloperUsages[2].totalUsedTime.should.be.eql(15000);
-                            genderAgeDeveloperUsages[2].appInfos.length.should.be.eql(2);
-                            genderAgeDeveloperUsages[2].appInfos[0].packageName.should.be.eql('com.game.rpg');
-                            genderAgeDeveloperUsages[2].appInfos[0].totalUsedTime.should.be.eql(10000);
-                            genderAgeDeveloperUsages[2].appInfos[1].packageName.should.be.eql('com.game.edu2');
-                            genderAgeDeveloperUsages[2].appInfos[1].totalUsedTime.should.be.eql(5000);
+                            genderAgeDeveloperUsages[1].id.should.be.eql('GameDuckHu Corp.');
+                            genderAgeDeveloperUsages[1].name.should.be.eql('GameDuckHu Corp.');
+                            genderAgeDeveloperUsages[1].totalUsedTime.should.be.eql(19000);
+                            genderAgeDeveloperUsages[1].appInfos.length.should.be.eql(2);
+                            genderAgeDeveloperUsages[1].appInfos[0].packageName.should.be.eql('com.game.rpg');
+                            genderAgeDeveloperUsages[1].appInfos[0].totalUsedTime.should.be.eql(10000);
+                            genderAgeDeveloperUsages[1].appInfos[1].packageName.should.be.eql('com.game.edu2');
+                            genderAgeDeveloperUsages[1].appInfos[1].totalUsedTime.should.be.eql(9000);
 
                             done();
                         }).catch(err => done(err));
@@ -1098,10 +827,11 @@ describe('Stats', () => {
 
                             // job
                             // people 1, 2
-                            jobAppUsages.length.should.be.eql(4);
+                            jobAppUsages.length.should.be.eql(3);
+
                             jobAppUsages[0].id.should.be.eql('com.game.rpg');
                             jobAppUsages[0].name.should.be.eql('롤플레잉게임명');
-                            jobAppUsages[0].totalUsedTime.should.be.eql(104000);
+                            jobAppUsages[0].totalUsedTime.should.be.eql(14000);
                             jobAppUsages[0].appInfos.length.should.be.eql(1);
                             jobAppUsages[0].appInfos[0].packageName.should.be.eql('com.game.rpg');
                             jobAppUsages[0].appInfos[0].appName.should.be.eql('롤플레잉게임명');
@@ -1110,21 +840,20 @@ describe('Stats', () => {
                             jobAppUsages[0].appInfos[0].developer.should.be.eql('GameDuckHu Corp.');
                             jobAppUsages[0].appInfos[0].iconUrl.should.be.eql('iconUrl4');
 
-
-                            jobAppUsages[1].id.should.be.eql('com.game.edu');
-                            jobAppUsages[1].name.should.be.eql('교육게임명');
-                            jobAppUsages[1].totalUsedTime.should.be.eql(90000);
+                            jobAppUsages[1].id.should.be.eql('com.game.puzzle');
+                            jobAppUsages[1].name.should.be.eql('퍼즐게임명');
+                            jobAppUsages[1].totalUsedTime.should.be.eql(10000);
                             jobAppUsages[1].appInfos.length.should.be.eql(1);
-                            jobAppUsages[1].appInfos[0].packageName.should.be.eql('com.game.edu');
-                            jobAppUsages[1].appInfos[0].appName.should.be.eql('교육게임명');
-                            jobAppUsages[1].appInfos[0].categoryId.should.be.eql('GAME_EDUCATIONAL');
-                            jobAppUsages[1].appInfos[0].categoryName.should.be.eql('교육');
-                            jobAppUsages[1].appInfos[0].developer.should.be.eql('Edu Game Corp.');
-                            jobAppUsages[1].appInfos[0].iconUrl.should.be.eql('iconUrl3');
+                            jobAppUsages[1].appInfos[0].packageName.should.be.eql('com.game.puzzle');
+                            jobAppUsages[1].appInfos[0].appName.should.be.eql('퍼즐게임명');
+                            jobAppUsages[1].appInfos[0].categoryId.should.be.eql('GAME_PUZZLE');
+                            jobAppUsages[1].appInfos[0].categoryName.should.be.eql('퍼즐');
+                            jobAppUsages[1].appInfos[0].developer.should.be.eql('Puzzle Game Corp.');
+                            jobAppUsages[1].appInfos[0].iconUrl.should.be.eql('iconUrl6');
 
                             jobAppUsages[2].id.should.be.eql('com.game.edu2');
                             jobAppUsages[2].name.should.be.eql('교육게임명2');
-                            jobAppUsages[2].totalUsedTime.should.be.eql(12000);
+                            jobAppUsages[2].totalUsedTime.should.be.eql(9000);
                             jobAppUsages[2].appInfos.length.should.be.eql(1);
                             jobAppUsages[2].appInfos[0].packageName.should.be.eql('com.game.edu2');
                             jobAppUsages[2].appInfos[0].appName.should.be.eql('교육게임명2');
@@ -1132,17 +861,6 @@ describe('Stats', () => {
                             jobAppUsages[2].appInfos[0].categoryName.should.be.eql('교육');
                             jobAppUsages[2].appInfos[0].developer.should.be.eql('GameDuckHu Corp.');
                             jobAppUsages[2].appInfos[0].iconUrl.should.be.eql('iconUrl32');
-
-                            jobAppUsages[3].id.should.be.eql('com.game.puzzle');
-                            jobAppUsages[3].name.should.be.eql('퍼즐게임명');
-                            jobAppUsages[3].totalUsedTime.should.be.eql(10000);
-                            jobAppUsages[3].appInfos.length.should.be.eql(1);
-                            jobAppUsages[3].appInfos[0].packageName.should.be.eql('com.game.puzzle');
-                            jobAppUsages[3].appInfos[0].appName.should.be.eql('퍼즐게임명');
-                            jobAppUsages[3].appInfos[0].categoryId.should.be.eql('GAME_PUZZLE');
-                            jobAppUsages[3].appInfos[0].categoryName.should.be.eql('퍼즐');
-                            jobAppUsages[3].appInfos[0].developer.should.be.eql('Puzzle Game Corp.');
-                            jobAppUsages[3].appInfos[0].iconUrl.should.be.eql('iconUrl6');
 
                             done();
 
@@ -1167,18 +885,18 @@ describe('Stats', () => {
 
                             jobCategoryUsages[0].id.should.be.eql('GAME_ROLE_PLAYING');
                             jobCategoryUsages[0].name.should.be.eql('롤플레잉');
-                            jobCategoryUsages[0].totalUsedTime.should.be.eql(104000);
+                            jobCategoryUsages[0].totalUsedTime.should.be.eql(14000);
                             should.not.exist(jobCategoryUsages[0].appInfos);
 
-                            jobCategoryUsages[1].id.should.be.eql('GAME_EDUCATIONAL');
-                            jobCategoryUsages[1].name.should.be.eql('교육');
-                            jobCategoryUsages[1].totalUsedTime.should.be.eql(102000);
-                            should.not.exist(jobCategoryUsages[1].appInfos);
-
-                            jobCategoryUsages[2].id.should.be.eql('GAME_PUZZLE');
-                            jobCategoryUsages[2].name.should.be.eql('퍼즐');
-                            jobCategoryUsages[2].totalUsedTime.should.be.eql(10000);
+                            jobCategoryUsages[1].id.should.be.eql('GAME_PUZZLE');
+                            jobCategoryUsages[1].name.should.be.eql('퍼즐');
+                            jobCategoryUsages[1].totalUsedTime.should.be.eql(10000);
                             should.not.exist(jobCategoryUsages[2].appInfos);
+
+                            jobCategoryUsages[2].id.should.be.eql('GAME_EDUCATIONAL');
+                            jobCategoryUsages[2].name.should.be.eql('교육');
+                            jobCategoryUsages[2].totalUsedTime.should.be.eql(9000);
+                            should.not.exist(jobCategoryUsages[1].appInfos);
 
                             done();
 
@@ -1199,29 +917,23 @@ describe('Stats', () => {
                                 usages.appInfos.sort((a, b) => a.totalUsedTime > b.totalUsedTime ? -1 : 1);
                             });
 
-                            jobDeveloperUsages.length.should.be.eql(3);
+                            jobDeveloperUsages.length.should.be.eql(2);
+
                             jobDeveloperUsages[0].id.should.be.eql('GameDuckHu Corp.');
                             jobDeveloperUsages[0].name.should.be.eql('GameDuckHu Corp.');
-                            jobDeveloperUsages[0].totalUsedTime.should.be.eql(116000);
+                            jobDeveloperUsages[0].totalUsedTime.should.be.eql(23000);
                             jobDeveloperUsages[0].appInfos.length.should.be.eql(2);
                             jobDeveloperUsages[0].appInfos[0].packageName.should.be.eql('com.game.rpg');
-                            jobDeveloperUsages[0].appInfos[0].totalUsedTime.should.be.eql(104000);
+                            jobDeveloperUsages[0].appInfos[0].totalUsedTime.should.be.eql(14000);
                             jobDeveloperUsages[0].appInfos[1].packageName.should.be.eql('com.game.edu2');
-                            jobDeveloperUsages[0].appInfos[1].totalUsedTime.should.be.eql(12000);
+                            jobDeveloperUsages[0].appInfos[1].totalUsedTime.should.be.eql(9000);
 
-                            jobDeveloperUsages[1].id.should.be.eql('Edu Game Corp.');
-                            jobDeveloperUsages[1].name.should.be.eql('Edu Game Corp.');
-                            jobDeveloperUsages[1].totalUsedTime.should.be.eql(90000);
+                            jobDeveloperUsages[1].id.should.be.eql('Puzzle Game Corp.');
+                            jobDeveloperUsages[1].name.should.be.eql('Puzzle Game Corp.');
+                            jobDeveloperUsages[1].totalUsedTime.should.be.eql(10000);
                             jobDeveloperUsages[1].appInfos.length.should.be.eql(1);
-                            jobDeveloperUsages[1].appInfos[0].packageName.should.be.eql('com.game.edu');
-                            jobDeveloperUsages[1].appInfos[0].totalUsedTime.should.be.eql(90000);
-
-                            jobDeveloperUsages[2].id.should.be.eql('Puzzle Game Corp.');
-                            jobDeveloperUsages[2].name.should.be.eql('Puzzle Game Corp.');
-                            jobDeveloperUsages[2].totalUsedTime.should.be.eql(10000);
-                            jobDeveloperUsages[2].appInfos.length.should.be.eql(1);
-                            jobDeveloperUsages[2].appInfos[0].packageName.should.be.eql('com.game.puzzle');
-                            jobDeveloperUsages[2].appInfos[0].totalUsedTime.should.be.eql(10000);
+                            jobDeveloperUsages[1].appInfos[0].packageName.should.be.eql('com.game.puzzle');
+                            jobDeveloperUsages[1].appInfos[0].totalUsedTime.should.be.eql(10000);
 
                             done();
                         }).catch(err => done(err));
@@ -1229,6 +941,7 @@ describe('Stats', () => {
             });
 
             after(done => {
+                sandbox.restore();
                 Users.remove({}, () => {
                     AppUsages.remove({}, () => {
                         Apps.remove({}, done);
