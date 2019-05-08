@@ -318,6 +318,8 @@ const findAppUsageByCategory = (userId, categoryId, options) => {
 /** end of using by populate **/
 
 const upsertAppUsages = (user, appUsages) => {
+    console.log('count of upserting app usages =', appUsages.length);
+
     const bulkOps = [];
 
     bulkOps.push({
