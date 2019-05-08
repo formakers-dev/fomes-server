@@ -38,13 +38,19 @@ const postShortTermStats = (req, res, next) => {
 const postAppUsages = (req, res, next) => {
     if (!Array.isArray(req.body)) {
         next(Boom.preconditionFailed('Empty AppUsages'));
-    } else if (req.body.length < 1) {
+        return;
+    }
+
+    console.log('postAppUsages) body length =', req.body.length);
+
+    if (req.body.length < 1) {
         res.sendStatus(200);
     } else {
         const appUsages = req.body;
         AppService.getGameAppInfoForAnalysis(appUsages.map(appUsage => appUsage.packageName))
             .lean()
             .then(gameAppInfos => {
+                console.log('count of games in requested app-usages = ', gameAppInfos.length);
                 const gamePackageNames = gameAppInfos.map(appInfo => appInfo.packageName);
                 const gameAppUsages = appUsages.filter(appUsage => gamePackageNames.includes(appUsage.packageName));
                 const otherAppUsages = appUsages.filter(appUsage => !(gamePackageNames.includes(appUsage.packageName)));
