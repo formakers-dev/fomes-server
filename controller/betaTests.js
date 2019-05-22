@@ -46,7 +46,42 @@ const postComplete = (req, res, next) => {
         .catch(err => next(err));
 };
 
+const postTargetUser = (req, res, next) => {
+    const betaTestIds = req.body.betaTestIds;
+    BetaTestsService.addTargetUserId(betaTestIds, req.userId)
+        .then(result => {
+            if (result.matchedCount !== betaTestIds.length) {
+                res.sendStatus(207);
+            }
+        })
+        .then(() => {
+            const notificationData = req.body.notificationData;
+
+            if (!notificationData) {
+                return;
+            }
+
+            return UsersService.getUser(req.userId)
+                .then(user => {
+                    const body = {
+                        'data' : req.body.notificationData,
+                        'to' : user.registrationToken,
+                    };
+
+                    return axios.post('https://fcm.googleapis.com/fcm/send', body, {
+                        headers: {
+                            'Authorization': 'key=' + config.notificationApiKey,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                });
+        })
+        .then(() => res.sendStatus(200))
+        .catch(err => next(err));
+};
+
 module.exports = {
     getBetaTestList,
-    postComplete
+    postComplete,
+    postTargetUser
 };

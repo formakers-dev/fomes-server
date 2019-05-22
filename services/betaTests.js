@@ -66,7 +66,26 @@ const updateCompleted = (betaTestId, userId) => {
     }, {$push: {completedUserIds: userId}});
 };
 
+const addTargetUserId = (betaTestIds, userId) => {
+    const bulkOps = [];
+
+    betaTestIds.forEach(betaTestId => {
+        bulkOps.push({
+            'updateOne': {
+                filter: {
+                    id: betaTestId,
+                    targetUserIds: {$nin: [userId]}
+                },
+                update: {$push: {targetUserIds: userId}}
+            }
+        });
+    });
+
+    return BetaTests.bulkWrite(bulkOps);
+};
+
 module.exports = {
     findValidBetaTests,
-    updateCompleted
+    updateCompleted,
+    addTargetUserId,
 };

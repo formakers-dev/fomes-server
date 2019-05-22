@@ -378,6 +378,124 @@ describe('BetaTests', () => {
         });
     });
 
+    describe('POST /beta-tests/target-user', () => {
+        let stubAxiosPost;
+
+        beforeEach(() => {
+            stubAxiosPost = sandbox.stub(axios, 'post').returns(Promise.resolve());
+        });
+
+        // 정상
+        it('요청한 유저를 해당 베타테스트의 타겟 유저 리스트에 추가한다', done => {
+            request.post('/beta-tests/target-user')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .send({betaTestIds: [1, 4]})
+                .expect(200)
+                .then(() => BetaTests.find({id: {$in: [1, 4]}}).sort({id: 1}))
+                .then(betaTests => {
+                    betaTests.length.should.be.eql(2);
+                    betaTests[0].targetUserIds.length.should.be.eql(1);
+                    betaTests[0].targetUserIds[0].should.be.eql(config.testUser.userId);
+                    betaTests[1].targetUserIds.length.should.be.eql(1);
+                    betaTests[1].targetUserIds[0].should.be.eql(config.testUser.userId);
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        it('요청한 유저에게 전달받은 알림을 보낸다', done => {
+            request.post('/beta-tests/target-user')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .send({
+                    betaTestIds: [1, 4],
+                    notificationData: {
+                        channel: 'channel_betatest',
+                        title: '참여하신 테스트가 완료처리 되었어요!👏',
+                        subTitle: '멋져요! [전체 유저 대상 테스트]에 성공적으로 참여하셨습니다.'
+                    }
+                })
+                .expect(200)
+                .then(() => {
+                    const expectedUrl = 'https://fcm.googleapis.com/fcm/send';
+
+                    const expectedBody = {
+                        data: {
+                            channel: 'channel_betatest',
+                            title: '참여하신 테스트가 완료처리 되었어요!👏',
+                            subTitle: '멋져요! [전체 유저 대상 테스트]에 성공적으로 참여하셨습니다.'
+                        },
+                        to: 'test_user_registration_token'
+                    };
+
+                    const expectedHeader = {
+                        headers: {
+                            Authorization: 'key=testNotiApiKey',
+                            'Content-Type' : 'application/json'
+                        }
+                    };
+
+                    sinon.assert.calledWith(stubAxiosPost, expectedUrl, expectedBody, expectedHeader);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('요청한 유저에게 notificationData가 전달되지 않은 경우, 알림을 보내지 않는다', done => {
+            request.post('/beta-tests/target-user')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .send({betaTestIds: [1, 4]})
+                .expect(200)
+                .then(() => {
+                    stubAxiosPost.called.should.be.eql(false);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        // 예외
+        it('요청한 유저가 이미 타겟 유저 리스트에 추가되어있는 경우, 추가하지 않는다.', done => {
+            request.post('/beta-tests/target-user')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .send({betaTestIds: [1, 4]})
+                .expect(200)
+                .then(() => BetaTests.find({id: {$in: [1, 4]}}).sort({id: 1}))
+                .then(betaTests => {
+                    betaTests.length.should.be.eql(2);
+                    betaTests[0].targetUserIds.length.should.be.eql(1);
+                    betaTests[0].targetUserIds[0].should.be.eql(config.testUser.userId);
+                    betaTests[1].targetUserIds.length.should.be.eql(1);
+                    betaTests[1].targetUserIds[0].should.be.eql(config.testUser.userId);
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        it('요청한 유저정보가 유효한 이메일로 접수되지 않은 경우, 403 에러를 반환한다', done => {
+            request.post('/beta-tests/target-user')
+                .set('x-access-token', 'InvalidAccessToken')
+                .send({betaTestIds: [1, 4]})
+                .expect(403)
+                .then(() => done())
+                .catch(err => done(err));
+        });
+
+        // TODO: 일부 실패 케이스에 대한 논의 필요
+        it('요청한 베타테스트 ID 중 하나라도 유효하지 않은 경우, 207 에러를 반환한다', done => {
+            request.post('/beta-tests/target-user')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .send({betaTestIds: [1, 9999]})
+                .expect(207)
+                .then(() => done())
+                .catch(err => done(err));
+        });
+
+       afterEach(() => {
+            stubAxiosPost.restore();
+        });
+    });
+
     afterEach(done => {
         BetaTests.remove({})
             .then(() => done())
