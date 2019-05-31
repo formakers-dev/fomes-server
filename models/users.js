@@ -9,6 +9,12 @@ const Constants = {
     job: 0x00000008,
 };
 
+const Device = {
+    manufacturer : String,
+    model : String,
+    osVersion : Number,
+};
+
 const usersSchema = new Schema({
     userId : String,
     name: String,
@@ -26,6 +32,7 @@ const usersSchema = new Schema({
     lifeApps: Array,
     wishList: Array,
     appVersion: String,
+    device: Device,
 });
 
 const Users = mongoose.model('users', usersSchema);
