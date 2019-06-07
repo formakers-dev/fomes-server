@@ -347,7 +347,7 @@ const upsertAppUsages = (user, appUsages) => {
                     'iconUrl': appUsage.iconUrl,
                     "totalUsedTime": appUsage.totalUsedTime,
                     "updateTime": currentDate,
-                    'appVersion': user.appVersion,
+                    'appVersion': appUsage.appVersion,
                 }
             }
         });
