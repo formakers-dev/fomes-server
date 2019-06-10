@@ -134,4 +134,13 @@ const apiKeyVerifier = (req, res, next) => {
         });
 };
 
-module.exports = {appBeeTokenVerifier, googleTokenVerifier, apiKeyVerifier};
+const appBeeTokenDecoder = (req, res, next) => {
+    try {
+        req.userId = jwt.decode(req.headers['x-access-token']).userId;
+        next();
+    } catch (err) {
+        console.error('appBeeTokenDecoder: ', err);
+    }
+};
+
+module.exports = {appBeeTokenVerifier, googleTokenVerifier, apiKeyVerifier, appBeeTokenDecoder};
