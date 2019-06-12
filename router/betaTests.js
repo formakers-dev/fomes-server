@@ -3,9 +3,9 @@ const router = express.Router();
 const BetaTestController = require('../controller/betaTests');
 const Auth = require('../middleware/auth');
 
-router.get('/', Auth.appBeeTokenVerifier, BetaTestController.getBetaTestList);
+router.get('/', Auth.verifyAppBeeToken, BetaTestController.getBetaTestList);
 
-router.post('/:id/complete', Auth.apiKeyVerifier, BetaTestController.postComplete);
-router.post('/target-user', Auth.apiKeyVerifier, BetaTestController.postTargetUser);
+router.post('/:id/complete', Auth.verifyAPIKey, BetaTestController.postComplete);
+router.post('/target-user', Auth.verifyAPIKey, BetaTestController.postTargetUser);
 
 module.exports = router;
