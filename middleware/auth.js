@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../config');
 const UserService = require('../services/users');
 
-const appBeeTokenVerifier = (req, res, next) => {
+const verifyAppBeeToken = (req, res, next) => {
     const createErrorResponse = (userId, errCode, errMessage) => {
         return {
             userId: userId,
@@ -12,40 +12,38 @@ const appBeeTokenVerifier = (req, res, next) => {
         };
     };
 
-    const check = (token) => {
+    const verify = (token) => {
         if (!token) {
             return new Promise((resolve, reject) => {
                 reject(createErrorResponse(undefined, 403, "Has no token"));
             });
-        } else {
-            return new Promise(
-                (resolve, reject) => {
-                    jwt.verify(token, config.secret, (err, decoded) => {
-                        if (!err) {
-                            UserService.getUser(decoded.userId)
-                                .then(user => {
-                                    if (user) {
-                                        resolve(decoded);
-                                    } else {
-                                        reject(createErrorResponse(decoded.userId, 403, 'The user does NOT exist'));
-                                    }
-                                }).catch(err => {
-                                    console.error(err);
-                                    reject(createErrorResponse(decoded.userId, 500, 'Internal Server Error'));
-                                });
-                        } else if (err instanceof jwt.TokenExpiredError) {
-                            reject(createErrorResponse(undefined, 401, err.message));
-                        } else {
-                            reject(createErrorResponse(undefined, 403, err.message));
-                        }
-                    })
-                }
-            );
         }
+
+        return new Promise((resolve, reject) => {
+            jwt.verify(token, config.secret, (err, decoded) => {
+                if (!err) {
+                    UserService.getUser(decoded.userId)
+                        .then(user => {
+                            if (user) {
+                                resolve(decoded);
+                            } else {
+                                reject(createErrorResponse(decoded.userId, 403, 'The user does NOT exist'));
+                            }
+                        }).catch(err => {
+                            console.error(err);
+                            reject(createErrorResponse(decoded.userId, 500, 'Internal Server Error'));
+                        });
+                } else if (err instanceof jwt.TokenExpiredError) {
+                    reject(createErrorResponse(undefined, 401, err.message));
+                } else {
+                    reject(createErrorResponse(undefined, 403, err.message));
+                }
+            })
+        });
     };
 
     const onError = (reason) => {
-        console.error('===appBeeTokenVerifier:onError', 'userId=', reason.userId, 'err=', reason.errCode, ':', reason.errMessage);
+        console.error('===verifyAppBeeToken:onError', 'userId=', reason.userId, 'err=', reason.errCode, ':', reason.errMessage);
         res.status(reason.errCode).json({
             success: false,
             message: reason.errMessage
@@ -56,45 +54,43 @@ const appBeeTokenVerifier = (req, res, next) => {
         next();
     };
 
-    check(req.headers['x-access-token'])
+    verify(req.headers['x-access-token'])
         .then(onSuccess)
         .catch((reason) => onError(reason));
 
 };
 
 
-const googleTokenVerifier = (req, res, next) => {
-    const verifyGoogleToken = (googleIdToken) => {
-        return new Promise(
-            (resolve, reject) => {
-                const auth = new GoogleAuth;
-                const client = new auth.OAuth2();
+const verifyGoogleToken = (req, res, next) => {
+    const verify = (googleIdToken) => {
+        return new Promise((resolve, reject) => {
+            const auth = new GoogleAuth;
+            const client = new auth.OAuth2();
 
-                client.verifyIdToken(
-                    googleIdToken,
-                    config.googleClientId,
-                    function(err, login) {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            const payload = login.getPayload();
+            client.verifyIdToken(
+                googleIdToken,
+                config.googleClientId,
+                function(err, login) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        const payload = login.getPayload();
 
-                            const user = {};
-                            user.provider = 'google';
-                            user.providerId = payload['sub'];
-                            user.userId = user.provider + user.providerId;
-                            user.email = payload['email'];
-                            user.name = payload['name'];
+                        const user = {};
+                        user.provider = 'google';
+                        user.providerId = payload['sub'];
+                        user.userId = user.provider + user.providerId;
+                        user.email = payload['email'];
+                        user.name = payload['name'];
 
-                            resolve(user);
-                        }
+                        resolve(user);
                     }
-                );
-            }
-        );
+                }
+            );
+        });
     };
 
-    verifyGoogleToken(req.headers['x-id-token'])
+    verify(req.headers['x-id-token'])
         .then((user) => {
             req.body.provider = user.provider;
             req.body.providerId = user.providerId;
@@ -113,7 +109,7 @@ const googleTokenVerifier = (req, res, next) => {
         });
 };
 
-const apiKeyVerifier = (req, res, next) => {
+const verifyAPIKey = (req, res, next) => {
     const buffer = new Buffer(req.headers['x-access-token'], 'base64');
     const email = buffer.toString('ascii').trim();
 
@@ -125,7 +121,7 @@ const apiKeyVerifier = (req, res, next) => {
             next();
         })
         .catch(err => {
-            console.error('===apiKeyVerifier:onError', 'email=', email, 'err=', err);
+            console.error('===verifyAPIKey:onError', 'email=', email, 'err=', err);
 
             res.status(403).json({
                 success: false,
@@ -134,4 +130,13 @@ const apiKeyVerifier = (req, res, next) => {
         });
 };
 
-module.exports = {appBeeTokenVerifier, googleTokenVerifier, apiKeyVerifier};
+const decodeAppBeeTokenWithoutVerify = (req, res, next) => {
+    try {
+        req.userId = jwt.decode(req.headers['x-access-token']).userId;
+        next();
+    } catch (err) {
+        console.error('===decodeAppBeeTokenWithoutVerify:onError', err);
+    }
+};
+
+module.exports = {verifyAppBeeToken, verifyGoogleToken, verifyAPIKey, decodeAppBeeTokenWithoutVerify};

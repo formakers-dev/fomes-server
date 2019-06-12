@@ -5,7 +5,7 @@ const Users = require('../models/users').Users;
 
 const setupSinon = () => {
     try {
-        sinon.stub(Auth, 'googleTokenVerifier').callsFake((req, res, next) => {
+        sinon.stub(Auth, 'verifyGoogleToken').callsFake((req, res, next) => {
             req.body.provider = 'google';
             req.body.providerId = '109974316241227718963';
             req.body.userId = config.testUser.userId;
