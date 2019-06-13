@@ -4,7 +4,8 @@ const shortTermStatsSchema = new mongoose.Schema({
     packageName: String,
     startTimeStamp: Number,
     endTimeStamp: Number,
-    totalUsedTime: Number
+    totalUsedTime: Number,
+    versionName: String,
 });
 const shortTermStatsList = mongoose.model('short-term-stats', shortTermStatsSchema);
 module.exports = shortTermStatsList;
