@@ -53,7 +53,8 @@ const findValidBetaTests = (userId) => {
                 return !closedGroupIds.includes(betaTest.groupId.toString())
             });
 
-        return Promise.resolve(shownItems.concat(closedGroups));
+        return Promise.resolve(shownItems.concat(closedGroups)
+            .filter(betaTest => !betaTest.isGroup));
     });
 };
 
