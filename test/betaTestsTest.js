@@ -121,6 +121,23 @@ describe('BetaTests', () => {
             reward: 'testReward5',
             requiredTime: 5000,
             amount: '5가지 시나리오',
+        },  {
+            "_id" : mongoose.Types.ObjectId("333333333333333333333301"),
+            groupId: mongoose.Types.ObjectId("333333333333333333333300"),
+            id : 6,
+            title : "종료된 테스트",
+            subTitle: "참여했다",
+            tags: ['1:1', "인터뷰"],
+            openDate: new Date('2018-12-26'),
+            closeDate: new Date('2018-12-27'),
+            actionType: 'link',
+            action: 'https://www.google.com',
+            completedUserIds: [config.testUser.userId],
+            overviewImageUrl: 'testImageUrl6',
+            reward: 'testReward6',
+            requiredTime: 6000,
+            amount: '6가지 시나리오',
+            isGroup : true,
         }
     ];
 
@@ -493,6 +510,60 @@ describe('BetaTests', () => {
 
        afterEach(() => {
             stubAxiosPost.restore();
+        });
+    });
+
+    describe('GET /beta-tests/finished', () => {
+
+        it('종료된 피드백 요청 목록을 조회한다', done => {
+            sandbox.useFakeTimers(new Date("2018-12-28T02:30:00.000Z").getTime());
+
+            request.get('/beta-tests/finished')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.sort((a, b) => a.title > b.title ? 1 : -1);
+
+                    console.log(new Date());
+                    console.log(res.body);
+
+                    res.body.length.should.be.eql(1);
+
+                    res.body[0].title.should.be.eql('종료된 테스트');
+                    res.body[0].subTitle.should.be.eql('참여했다');
+                    res.body[0].tags.length.should.be.eql(2);
+                    res.body[0].tags[0].should.be.eql('1:1');
+                    res.body[0].tags[1].should.be.eql('인터뷰');
+                    res.body[0].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
+                    res.body[0].closeDate.should.be.eql('2018-12-27T00:00:00.000Z');
+                    res.body[0].actionType.should.be.eql('link');
+                    res.body[0].action.should.be.eql('https://www.google.com');
+                    res.body[0].overviewImageUrl.should.be.eql('testImageUrl6');
+                    res.body[0].reward.should.be.eql('testReward6');
+                    res.body[0].requiredTime.should.be.eql(6000);
+                    res.body[0].amount.should.be.eql('6가지 시나리오');
+                    res.body[0].isOpened.should.be.eql(false);
+                    res.body[0].isCompleted.should.be.eql(true);
+                    res.body[0].currentDate.should.be.eql('2018-12-28T02:30:00.000Z');
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('오픈되지 않은 요청 건은 조회하지 않는다', done => {
+            sandbox.useFakeTimers(new Date("2018-11-01T02:30:00.000Z").getTime());
+            request.get('/beta-tests')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.length.should.be.eql(0);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        afterEach(() => {
+            sandbox.restore();
         });
     });
 

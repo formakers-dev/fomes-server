@@ -57,6 +57,54 @@ const findValidBetaTests = (userId) => {
     });
 };
 
+const findFinishedBetaTests = (userId) => {
+    const currentTime = new Date();
+
+    return BetaTests.aggregate([
+        {
+            $match : {
+                closeDate: { $lte: currentTime },
+                $or: [
+                    { targetUserIds: { $exists: false }},
+                    { targetUserIds: { $in: [ userId ] } },
+                ],
+                isGroup: true,
+            }
+        }, {
+            $project: {
+                _id: true,
+                groupId: true,
+                id: true,
+                overviewImageUrl: true,
+                title: true,
+                subTitle: true,
+                tags: true,
+                typeTags: true,
+                openDate: true,
+                closeDate: true,
+                currentDate: new Date(),
+                actionType: true,
+                action: true,
+                reward: true,
+                requiredTime: true,
+                amount: true,
+                apps: true,
+                isOpened: {
+                    $and: [
+                        {$lte: ["$openDate", currentTime]},
+                        {$gte: ["$closeDate", currentTime]}
+                    ]
+                },
+                isCompleted: {
+                    $in : [userId, "$completedUserIds"]
+                },
+                isGroup: true,
+                afterService: true,
+            }
+        }
+    ]);
+};
+
 const updateCompleted = (betaTestId, userId) => {
     return BetaTests.findOneAndUpdate({
         $and: [
@@ -86,6 +134,7 @@ const addTargetUserId = (betaTestIds, userId) => {
 
 module.exports = {
     findValidBetaTests,
+    findFinishedBetaTests,
     updateCompleted,
     addTargetUserId,
 };
