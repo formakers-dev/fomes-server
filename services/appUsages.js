@@ -346,8 +346,9 @@ const upsertAppUsages = (user, appUsages) => {
                     'categoryName': appUsage.categoryName1,
                     'iconUrl': appUsage.iconUrl,
                     "totalUsedTime": appUsage.totalUsedTime,
-                    "updateTime": currentDate,
-                    'appVersion': user.appVersion,
+                    "metaData.updateTime": currentDate,
+                    'metaData.appVersion': appUsage.appVersion,
+                    'metaData.fomesAppVersion': user.appVersion,
                 }
             }
         });

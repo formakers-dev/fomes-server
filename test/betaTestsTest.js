@@ -121,6 +121,22 @@ describe('BetaTests', () => {
             reward: 'testReward5',
             requiredTime: 5000,
             amount: '5가지 시나리오',
+        },  {
+            "_id" : mongoose.Types.ObjectId("333333333333333333333300"),
+            id : 6,
+            title : "종료된 테스트",
+            subTitle: "참여했다",
+            tags: ['1:1', "인터뷰"],
+            openDate: new Date('2018-12-26'),
+            closeDate: new Date('2018-12-27'),
+            actionType: 'link',
+            action: 'https://www.google.com',
+            completedUserIds: [config.testUser.userId],
+            overviewImageUrl: 'testImageUrl6',
+            reward: 'testReward6',
+            requiredTime: 6000,
+            amount: '6가지 시나리오',
+            isGroup : true,
         }
     ];
 
@@ -216,55 +232,32 @@ describe('BetaTests', () => {
                 }).catch(err => done(err));
         });
 
-        it('마감기간이 지났고 그룹의 마감기간이 지나지 않은 요청 건과' +
-            ' 마감시간이 지난 그룹을 조회한다', done => {
+        it('마감이 지난 그룹의 아이템은 조회되지 않는다. (마감이 지나지 않은 그룹의 아이템은 조회된다)', done => {
             sandbox.useFakeTimers(new Date("2019-01-30T02:30:00.000Z").getTime());
 
             request.get('/beta-tests')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
-                    res.body.sort((a, b) => a.title > b.title ? 1 : -1);
-
                     console.log(res.body);
+                    res.body.length.should.be.eql(1);
 
-                    res.body.length.should.be.eql(2);
-
-                    // 마감시간이 지났고 그룹의 마감시간이 지난 요청 건은 조회하지 않는다
-                    // 그룹1 은 뜨고....
-                    // 그룹1의 아이템들은 안뜨고...........
-                    res.body[0].isGroup.should.be.eql(true);
-                    res.body[0].title.should.be.eql('그룹1');
-                    res.body[0].tags.length.should.be.eql(1);
-                    res.body[0].tags[0].should.be.eql('설문');
+                    res.body[0].title.should.be.eql('이미 참여한 테스트');
+                    res.body[0].subTitle.should.be.eql('참여했다');
+                    res.body[0].tags.length.should.be.eql(2);
+                    res.body[0].tags[0].should.be.eql('1:1');
+                    res.body[0].tags[1].should.be.eql('인터뷰');
                     res.body[0].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
                     res.body[0].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
-                    should.not.exist(res.body[0].targetUserIds);
+                    res.body[0].actionType.should.be.eql('link');
+                    res.body[0].action.should.be.eql('https://www.google.com');
+                    res.body[0].overviewImageUrl.should.be.eql('testImageUrl5');
+                    res.body[0].reward.should.be.eql('testReward5');
+                    res.body[0].requiredTime.should.be.eql(5000);
+                    res.body[0].amount.should.be.eql('5가지 시나리오');
                     res.body[0].isOpened.should.be.eql(false);
-                    res.body[0].isCompleted.should.be.eql(false);
+                    res.body[0].isCompleted.should.be.eql(true);
                     res.body[0].currentDate.should.be.eql('2019-01-30T02:30:00.000Z');
-                    res.body[0].afterService.epilogue.should.be.eql('epilogueURL');
-                    res.body[0].afterService.companySays.should.be.eql('짱이에요');
-
-                    // 아이템들은 마감이됐는데 그룹은 안되었어
-                    // 그룹2 는 안뜨고...........
-                    // 그룹2의 아이템들은 뜬다...............
-                    res.body[1].title.should.be.eql('이미 참여한 테스트');
-                    res.body[1].subTitle.should.be.eql('참여했다');
-                    res.body[1].tags.length.should.be.eql(2);
-                    res.body[1].tags[0].should.be.eql('1:1');
-                    res.body[1].tags[1].should.be.eql('인터뷰');
-                    res.body[1].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
-                    res.body[1].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
-                    res.body[1].actionType.should.be.eql('link');
-                    res.body[1].action.should.be.eql('https://www.google.com');
-                    res.body[1].overviewImageUrl.should.be.eql('testImageUrl5');
-                    res.body[1].reward.should.be.eql('testReward5');
-                    res.body[1].requiredTime.should.be.eql(5000);
-                    res.body[1].amount.should.be.eql('5가지 시나리오');
-                    res.body[1].isOpened.should.be.eql(false);
-                    res.body[1].isCompleted.should.be.eql(true);
-                    res.body[1].currentDate.should.be.eql('2019-01-30T02:30:00.000Z');
 
                     done();
                 }).catch(err => done(err));
@@ -493,6 +486,60 @@ describe('BetaTests', () => {
 
        afterEach(() => {
             stubAxiosPost.restore();
+        });
+    });
+
+    describe('GET /beta-tests/finished', () => {
+
+        it('종료된 피드백 요청 목록을 조회한다', done => {
+            sandbox.useFakeTimers(new Date("2018-12-28T02:30:00.000Z").getTime());
+
+            request.get('/beta-tests/finished')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.sort((a, b) => a.title > b.title ? 1 : -1);
+
+                    console.log(new Date());
+                    console.log(res.body);
+
+                    res.body.length.should.be.eql(1);
+
+                    res.body[0].title.should.be.eql('종료된 테스트');
+                    res.body[0].subTitle.should.be.eql('참여했다');
+                    res.body[0].tags.length.should.be.eql(2);
+                    res.body[0].tags[0].should.be.eql('1:1');
+                    res.body[0].tags[1].should.be.eql('인터뷰');
+                    res.body[0].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
+                    res.body[0].closeDate.should.be.eql('2018-12-27T00:00:00.000Z');
+                    res.body[0].actionType.should.be.eql('link');
+                    res.body[0].action.should.be.eql('https://www.google.com');
+                    res.body[0].overviewImageUrl.should.be.eql('testImageUrl6');
+                    res.body[0].reward.should.be.eql('testReward6');
+                    res.body[0].requiredTime.should.be.eql(6000);
+                    res.body[0].amount.should.be.eql('6가지 시나리오');
+                    res.body[0].isOpened.should.be.eql(false);
+                    res.body[0].isCompleted.should.be.eql(true);
+                    res.body[0].currentDate.should.be.eql('2018-12-28T02:30:00.000Z');
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('오픈되지 않은 요청 건은 조회하지 않는다', done => {
+            sandbox.useFakeTimers(new Date("2018-11-01T02:30:00.000Z").getTime());
+            request.get('/beta-tests')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.length.should.be.eql(0);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        afterEach(() => {
+            sandbox.restore();
         });
     });
 

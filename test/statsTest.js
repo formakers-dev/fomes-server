@@ -160,7 +160,7 @@ describe('Stats', () => {
                 appName: '설치된앱',
                 iconUrl: 'iconUrlForInstalled',
                 developer: '도구개발사',
-                totalUsedTime: 9999
+                totalUsedTime: 9999,
             }, {
                 date: new Date("2018-09-23T15:00:00.000Z"),
                 userId: config.testUser.userId,
@@ -173,7 +173,7 @@ describe('Stats', () => {
                 appName: '카카오앱',
                 iconUrl: 'iconUrlForKakao',
                 developer: '카카오톡개발사',
-                totalUsedTime: 40000
+                totalUsedTime: 40000,
             }, {
                 date: new Date("2018-09-22T15:00:00.000Z"),
                 userId: config.testUser.userId,
@@ -186,7 +186,7 @@ describe('Stats', () => {
                 appName: '더미앱',
                 iconUrl: 'iconUrlForDummy',
                 developer: '도구개발사',
-                totalUsedTime: 10000
+                totalUsedTime: 10000,
             }])
                 .then(() => Apps.create([{
                     packageName: 'com.android.com',
@@ -226,26 +226,32 @@ describe('Stats', () => {
             date: new Date("2018-09-24T15:00:00.000Z"),
             packageName: 'com.kakao.talk',
             totalUsedTime: 20000,
+            appVersion: '0.0.1',
         }, {
             date: new Date("2018-09-25T15:00:00.000Z"),
             packageName: 'com.kakao.talk',
             totalUsedTime: 10000,
+            appVersion: '0.0.1',
         }, {
             date: new Date("2018-09-24T15:00:00.000Z"),
             packageName: 'com.naver.talk',
             totalUsedTime: 20000,
+            appVersion: '0.0.2',
         }, {
             date: new Date("2018-09-24T15:00:00.000Z"),
             packageName: 'com.android.com',
             totalUsedTime: 30000,
+            appVersion: '0.0.3',
         }, {
             date: new Date("2018-09-24T15:00:00.000Z"),
             packageName: 'com.notgame.com',
             totalUsedTime: 30000,
+            appVersion: '0.0.4',
         }, {
             date: new Date("2018-09-24T15:00:00.000Z"),
             packageName: 'com.unknown.game',
             totalUsedTime: 12000,
+            appVersion: '0.0.5',
         }];
 
         it('앱 사용 기록을 갱신한다', done => {
@@ -258,12 +264,12 @@ describe('Stats', () => {
                     docs.length.should.be.eql(4);
                     docs = docs.sort((a,b) => (a.packageName > b.packageName) ? 1 : -1);
 
+                    console.log(docs);
                     docs[0].date.should.be.eql(new Date('2018-09-24T15:00:00.000Z'));
                     docs[0].userId.should.be.eql(config.testUser.userId);
                     docs[0].gender.should.be.eql('male');
                     docs[0].birthday.should.be.eql(1992);
                     docs[0].job.should.be.eql(1);
-                    docs[0].appVersion.should.be.eql('9.9.99');
                     docs[0].packageName.should.be.eql('com.android.com');
                     docs[0].appName.should.be.eql('안드로이드앱');
                     docs[0].categoryId.should.be.eql('GAME_TOOLS');
@@ -271,14 +277,15 @@ describe('Stats', () => {
                     docs[0].iconUrl.should.be.eql('iconUrlForAndroid');
                     docs[0].developer.should.be.eql('구글개발사');
                     docs[0].totalUsedTime.should.be.eql(30000);
-                    docs[0].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+                    docs[0].metaData.updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+                    docs[0].metaData.appVersion.should.be.eql('0.0.3');
+                    docs[0].metaData.fomesAppVersion.should.be.eql('9.9.99');
 
                     docs[1].date.should.be.eql(new Date('2018-09-24T15:00:00.000Z'));
                     docs[1].userId.should.be.eql(config.testUser.userId);
                     docs[1].gender.should.be.eql('male');
                     docs[1].birthday.should.be.eql(1992);
                     docs[1].job.should.be.eql(1);
-                    docs[1].appVersion.should.be.eql('9.9.99');
                     docs[1].packageName.should.be.eql('com.kakao.talk');
                     docs[1].appName.should.be.eql('카카오톡앱');
                     docs[1].categoryId.should.be.eql('GAME_COMMUNICATION');
@@ -286,14 +293,15 @@ describe('Stats', () => {
                     docs[1].iconUrl.should.be.eql('iconUrlForKakao');
                     docs[1].developer.should.be.eql('카카오톡개발사');
                     docs[1].totalUsedTime.should.be.eql(20000);
-                    docs[1].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+                    docs[1].metaData.updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+                    docs[1].metaData.appVersion.should.be.eql('0.0.1');
+                    docs[1].metaData.fomesAppVersion.should.be.eql('9.9.99');
 
                     docs[2].date.should.be.eql(new Date('2018-09-25T15:00:00.000Z'));
                     docs[2].userId.should.be.eql(config.testUser.userId);
                     docs[2].gender.should.be.eql('male');
                     docs[2].birthday.should.be.eql(1992);
                     docs[2].job.should.be.eql(1);
-                    docs[2].appVersion.should.be.eql('9.9.99');
                     docs[2].packageName.should.be.eql('com.kakao.talk');
                     docs[2].appName.should.be.eql('카카오톡앱');
                     docs[2].categoryId.should.be.eql('GAME_COMMUNICATION');
@@ -301,14 +309,15 @@ describe('Stats', () => {
                     docs[2].iconUrl.should.be.eql('iconUrlForKakao');
                     docs[2].developer.should.be.eql('카카오톡개발사');
                     docs[2].totalUsedTime.should.be.eql(10000);
-                    docs[2].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+                    docs[2].metaData.updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+                    docs[2].metaData.appVersion.should.be.eql('0.0.1');
+                    docs[2].metaData.fomesAppVersion.should.be.eql('9.9.99');
 
                     docs[3].date.should.be.eql(new Date('2018-09-24T15:00:00.000Z'));
                     docs[3].userId.should.be.eql(config.testUser.userId);
                     docs[3].gender.should.be.eql('male');
                     docs[3].birthday.should.be.eql(1992);
                     docs[3].job.should.be.eql(1);
-                    docs[3].appVersion.should.be.eql('9.9.99');
                     docs[3].packageName.should.be.eql('com.naver.talk');
                     docs[3].appName.should.be.eql('라인앱');
                     docs[3].categoryId.should.be.eql('GAME_COMMUNICATION');
@@ -316,7 +325,9 @@ describe('Stats', () => {
                     docs[3].iconUrl.should.be.eql('iconUrlForNaver');
                     docs[3].developer.should.be.eql('라인개발사');
                     docs[3].totalUsedTime.should.be.eql(20000);
-                    docs[3].updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+                    docs[3].metaData.updateTime.should.be.eql(new Date('2018-09-26T15:30:00.000Z'));
+                    docs[3].metaData.appVersion.should.be.eql('0.0.2');
+                    docs[3].metaData.fomesAppVersion.should.be.eql('9.9.99');
 
                     done();
                 })
