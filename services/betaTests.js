@@ -77,6 +77,7 @@ const findFinishedBetaTests = (userId) => {
                 groupId: true,
                 id: true,
                 overviewImageUrl: true,
+                iconImageUrl: true,
                 title: true,
                 subTitle: true,
                 tags: true,

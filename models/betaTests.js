@@ -11,6 +11,7 @@ const betaTestSchema = new Schema({
     groupId: mongoose.Schema.Types.ObjectId,
     id: Number,
     overviewImageUrl: String,
+    iconImageUrl: String,
     title: String,
     subTitle: String,
     tags: Array,

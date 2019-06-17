@@ -17,6 +17,7 @@ describe('BetaTests', () => {
         {
             "_id" : mongoose.Types.ObjectId("111111111111111111111100"),
             "title" : "그룹1",
+            iconImageUrl: 'testIconImageUrl1',
             "completedUserIds" : [],
             openDate: new Date('2018-12-26'),
             closeDate: new Date('2018-12-31'),
@@ -33,6 +34,7 @@ describe('BetaTests', () => {
         {
             "_id" : mongoose.Types.ObjectId("222222222222222222222200"),
             "title" : "그룹2",
+            iconImageUrl: 'testIconImageUrl2',
             "completedUserIds" : [],
             openDate: new Date('2018-12-26'),
             closeDate: new Date('2019-03-25'),
@@ -133,6 +135,7 @@ describe('BetaTests', () => {
             action: 'https://www.google.com',
             completedUserIds: [config.testUser.userId],
             overviewImageUrl: 'testImageUrl6',
+            iconImageUrl: 'testIconImageUrl6',
             reward: 'testReward6',
             requiredTime: 6000,
             amount: '6가지 시나리오',
@@ -515,6 +518,7 @@ describe('BetaTests', () => {
                     res.body[0].actionType.should.be.eql('link');
                     res.body[0].action.should.be.eql('https://www.google.com');
                     res.body[0].overviewImageUrl.should.be.eql('testImageUrl6');
+                    res.body[0].iconImageUrl.should.be.eql('testIconImageUrl6');
                     res.body[0].reward.should.be.eql('testReward6');
                     res.body[0].requiredTime.should.be.eql(6000);
                     res.body[0].amount.should.be.eql('6가지 시나리오');
