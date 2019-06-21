@@ -2,31 +2,42 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const afterServiceSchema = new Schema({
+    awards: String,
     epilogue: String,
     companySays: String,
 });
 
+const Rewards = {
+    minimumDelay: Number,
+    list: Array,
+};
+
 const betaTestSchema = new Schema({
-    _id: mongoose.Schema.Types.ObjectId,
     groupId: mongoose.Schema.Types.ObjectId,
     id: Number,
-    overviewImageUrl: String,
-    title: String,
     subTitle: String,
-    tags: Array,
-    typeTags: Array,
-    openDate: Date,
-    closeDate: Date,
     apps: Array,
     actionType: String,
     action: String,
     reward: String,
-    targetUserIds: false,
-    completedUserIds: Array,
     requiredTime: Number,
+    completedUserIds: Array,
     amount: String,
     isGroup: false,
+
+    // for group
+    _id: mongoose.Schema.Types.ObjectId,
+    title: String,
+    description: String,
+    tags: Array,
+    overviewImageUrl: String,
+    iconImageUrl: String,
+    openDate: Date,
+    closeDate: Date,
+    rewards: Rewards,
+    missions: Array,
     afterService: afterServiceSchema,
+    targetUserIds: false,
 });
 
 module.exports = mongoose.model('beta-tests', betaTestSchema);

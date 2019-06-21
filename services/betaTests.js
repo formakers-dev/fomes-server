@@ -10,7 +10,8 @@ const findValidBetaTests = (userId) => {
                 $or: [
                     { targetUserIds: { $exists: false }},
                     { targetUserIds: { $in: [ userId ] } },
-                ]
+                ],
+                isGroup: {$exists: false},
             }
         }, {
             $project: {
@@ -21,7 +22,6 @@ const findValidBetaTests = (userId) => {
                 title: true,
                 subTitle: true,
                 tags: true,
-                typeTags: true,
                 openDate: true,
                 closeDate: true,
                 currentDate: new Date(),
@@ -77,10 +77,10 @@ const findFinishedBetaTests = (userId) => {
                 groupId: true,
                 id: true,
                 overviewImageUrl: true,
+                iconImageUrl: true,
                 title: true,
                 subTitle: true,
                 tags: true,
-                typeTags: true,
                 openDate: true,
                 closeDate: true,
                 currentDate: new Date(),
@@ -96,15 +96,40 @@ const findFinishedBetaTests = (userId) => {
                         {$gte: ["$closeDate", currentTime]}
                     ]
                 },
-                isCompleted: {
-                    $in : [userId, "$completedUserIds"]
-                },
+                // isCompleted: {
+                //     $in : [userId, "$mission.$.$items.$.$completedUserIds"]
+                // },
                 isGroup: true,
                 afterService: true,
+                missions: true,
             }
         }
-    ]);
+    ]).then(finishedBetaTests => {
+        console.log(finishedBetaTests);
+        return finishedBetaTests.map(betaTest => {
+           const items = betaTest.missions.flatMap(mission => mission.items);
+           const completedItems = items.filter(item => item.completedUserIds && item.completedUserIds.includes(userId));
+
+           if (items.length === completedItems.length) {
+               betaTest.isCompleted = true;
+           } else {
+               betaTest.isCompleted = false;
+           }
+
+           return betaTest;
+        });
+    });
 };
+
+const concat = (x,y) =>
+    x.concat(y)
+
+const flatMap = (f,xs) =>
+    xs.map(f).reduce(concat, [])
+
+Array.prototype.flatMap = function(f) {
+    return flatMap(f,this)
+}
 
 const updateCompleted = (betaTestId, userId) => {
     return BetaTests.findOneAndUpdate({
