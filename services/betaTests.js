@@ -45,16 +45,16 @@ const findValidBetaTests = (userId) => {
             }
         }
     ]).then(betaTests => {
-        const closedGroups = betaTests
-            .filter(betaTest => betaTest.isGroup && betaTest.closeDate < new Date());
-        const shownItems = betaTests.filter(betaTest => betaTest.groupId)
-            .filter(betaTest => {
-                const closedGroupIds = closedGroups.map(group => group._id.toString());
-                return !closedGroupIds.includes(betaTest.groupId.toString())
-            });
-
-        return Promise.resolve(shownItems.concat(closedGroups)
-            .filter(betaTest => !betaTest.isGroup));
+        // TODO : 임시 코드!!!
+        return findFinishedBetaTests(userId).then(closedGroups => {
+            const shownItems = betaTests.filter(betaTest => betaTest.groupId)
+                .filter(betaTest => {
+                    const closedGroupIds = closedGroups.map(group => group._id.toString());
+                    return !closedGroupIds.includes(betaTest.groupId.toString())
+                });
+            return Promise.resolve(shownItems.concat(closedGroups)
+                .filter(betaTest => !betaTest.isGroup));
+        })
     });
 };
 
