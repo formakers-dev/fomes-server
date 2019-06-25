@@ -34,6 +34,7 @@ const betaTestSchema = new Schema({
     iconImageUrl: String,
     openDate: Date,
     closeDate: Date,
+    bugReport: Object,
     rewards: Rewards,
     missions: Array,
     afterService: afterServiceSchema,

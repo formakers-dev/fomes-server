@@ -3,58 +3,37 @@ const BetaTests = require('../models/betaTests');
 const findValidBetaTests = (userId) => {
     const currentTime = new Date();
 
+    console.log('findValidBetaTests userId=', userId);
     return BetaTests.aggregate([
         {
             $match : {
                 openDate: { $lte: currentTime },
+                closeDate: { $gte: currentTime },
                 $or: [
                     { targetUserIds: { $exists: false }},
                     { targetUserIds: { $in: [ userId ] } },
-                ],
-                isGroup: {$exists: false},
+                ]
             }
         }, {
             $project: {
                 _id: true,
-                groupId: true,
-                id: true,
                 overviewImageUrl: true,
                 title: true,
-                subTitle: true,
+                description: true,
                 tags: true,
                 openDate: true,
                 closeDate: true,
+                bugReport: true,
                 currentDate: new Date(),
-                actionType: true,
-                action: true,
-                reward: true,
-                requiredTime: true,
-                amount: true,
-                apps: true,
-                isOpened: {
-                    $and: [
-                        {$lte: ["$openDate", currentTime]},
-                        {$gte: ["$closeDate", currentTime]}
-                    ]
-                },
-                isCompleted: {
-                    $in : [userId, "$completedUserIds"]
-                },
-                isGroup: true,
-                afterService: true,
+                missions: true,     /// 프로그래스 확인용???
             }
         }
     ]).then(betaTests => {
-        // TODO : 임시 코드!!!
-        return findFinishedBetaTests(userId).then(closedGroups => {
-            const shownItems = betaTests.filter(betaTest => betaTest.groupId)
-                .filter(betaTest => {
-                    const closedGroupIds = closedGroups.map(group => group._id.toString());
-                    return !closedGroupIds.includes(betaTest.groupId.toString())
-                });
-            return Promise.resolve(shownItems.concat(closedGroups)
-                .filter(betaTest => !betaTest.isGroup));
-        })
+        console.log(betaTests);
+        return betaTests.map(betaTest => {
+            betaTest.progressRate = getProgressRate(userId, betaTest);
+            return betaTest;
+        });
     });
 };
 
@@ -69,37 +48,17 @@ const findFinishedBetaTests = (userId) => {
                     { targetUserIds: { $exists: false }},
                     { targetUserIds: { $in: [ userId ] } },
                 ],
-                isGroup: true,
             }
         }, {
             $project: {
                 _id: true,
-                groupId: true,
-                id: true,
-                overviewImageUrl: true,
                 iconImageUrl: true,
                 title: true,
-                subTitle: true,
+                description: true,
                 tags: true,
                 openDate: true,
                 closeDate: true,
                 currentDate: new Date(),
-                actionType: true,
-                action: true,
-                reward: true,
-                requiredTime: true,
-                amount: true,
-                apps: true,
-                isOpened: {
-                    $and: [
-                        {$lte: ["$openDate", currentTime]},
-                        {$gte: ["$closeDate", currentTime]}
-                    ]
-                },
-                // isCompleted: {
-                //     $in : [userId, "$mission.$.$items.$.$completedUserIds"]
-                // },
-                isGroup: true,
                 afterService: true,
                 missions: true,
             }
@@ -107,18 +66,17 @@ const findFinishedBetaTests = (userId) => {
     ]).then(finishedBetaTests => {
         console.log(finishedBetaTests);
         return finishedBetaTests.map(betaTest => {
-           const items = betaTest.missions.flatMap(mission => mission.items);
-           const completedItems = items.filter(item => item.completedUserIds && item.completedUserIds.includes(userId));
-
-           if (items.length === completedItems.length) {
-               betaTest.isCompleted = true;
-           } else {
-               betaTest.isCompleted = false;
-           }
-
+           betaTest.progressRate = getProgressRate(userId, betaTest);
            return betaTest;
         });
     });
+};
+
+const getProgressRate = (userId, betaTest) => {
+    const items = betaTest.missions.flatMap(mission => mission.items);
+    const completedItems = items.filter(item => item.completedUserIds && item.completedUserIds.includes(userId));
+
+    return completedItems.length / items.length * 100;
 };
 
 const concat = (x,y) =>
