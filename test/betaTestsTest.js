@@ -58,7 +58,8 @@ describe('BetaTests', () => {
                     res.body[0].openDate.should.be.eql("2018-12-28T00:00:00.000Z");
                     res.body[0].closeDate.should.be.eql("2119-12-31T00:00:00.000Z");
                     should.not.exist(res.body[0].bugReport);
-                    res.body[0].progressRate.should.be.eql(0);
+                    res.body[0].completedItemCount.should.be.eql(0);
+                    res.body[0].totalItemCount.should.be.eql(1);
 
                     res.body[1]._id.should.be.eql("5c7345f718500feddc24ca34");
                     res.body[1].overviewImageUrl.should.be.eql("https://i.imgur.com/5z0esWH.png");
@@ -69,7 +70,8 @@ describe('BetaTests', () => {
                     res.body[1].openDate.should.be.eql("2019-02-25T00:00:00.000Z");
                     res.body[1].closeDate.should.be.eql("2119-03-03T14:59:00.000Z");
                     res.body[1].bugReport.url.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSeApAn8oPp8mW6UT8RD1uMbKk_UvAiWBh5jwlxlyUUI4D2N1g/viewform?usp=pp_url&entry.455936817=");
-                    res.body[1].progressRate.should.be.eql(100);
+                    res.body[1].completedItemCount.should.be.eql(1);
+                    res.body[1].totalItemCount.should.be.eql(1);
 
                     res.body[2]._id.should.be.eql("5ce51a069cb162da02b9f94d");
                     res.body[2].overviewImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
@@ -81,7 +83,8 @@ describe('BetaTests', () => {
                     res.body[2].tags[2].should.be.eql("꿀잼");
                     res.body[2].openDate.should.be.eql("2019-03-11T00:00:00.000Z");
                     res.body[2].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");
-                    res.body[2].progressRate.should.be.eql(2/3*100);
+                    res.body[2].completedItemCount.should.be.eql(2);
+                    res.body[2].totalItemCount.should.be.eql(3);
 
                     res.body[3]._id.should.be.eql("5c25c77798d78f078d8ef3ba");
                     res.body[3].overviewImageUrl.should.be.eql("https://images.pexels.com/photos/669609/pexels-photo-669609.jpeg?auto=compress&cs=tinysrgb&dpr=2&fit=crop&h=500&w=500");
@@ -92,7 +95,8 @@ describe('BetaTests', () => {
                     res.body[3].openDate.should.be.eql("2018-12-28T00:00:00.000Z");
                     res.body[3].closeDate.should.be.eql("2119-12-31T00:00:00.000Z");
                     should.not.exist(res.body[3].bugReport);
-                    res.body[3].progressRate.should.be.eql(0);
+                    res.body[3].completedItemCount.should.be.eql(0);
+                    res.body[3].totalItemCount.should.be.eql(2);
 
                     res.body[4]._id.should.be.eql("5c861f3f2917e70db5d2d536");
                     res.body[4].overviewImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
@@ -101,7 +105,8 @@ describe('BetaTests', () => {
                     res.body[4].tags.length.should.be.eql(0);
                     res.body[4].openDate.should.be.eql("2019-03-11T00:00:00.000Z");
                     res.body[4].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");
-                    res.body[4].progressRate.should.be.eql(0);
+                    res.body[4].completedItemCount.should.be.eql(0);
+                    res.body[4].totalItemCount.should.be.eql(1);
 
                     done();
                 }).catch(err => done(err));
@@ -344,7 +349,7 @@ describe('BetaTests', () => {
                 .then(res => {
                     res.body.sort((a, b) => a.title > b.title ? 1 : -1);
 
-                    require('./data/dummy').getValidationStatement();
+                    console.error(res.body);
 
                     res.body.length.should.be.eql(5);
 
@@ -357,7 +362,8 @@ describe('BetaTests', () => {
                     res.body[0].openDate.should.be.eql("2019-06-13T00:00:00.000Z");
                     res.body[0].closeDate.should.be.eql("2019-06-19T14:59:59.999Z");
                     should.not.exist(res.body[0].afterService);
-                    res.body[0].progressRate.should.be.eql(100);
+                    res.body[0].completedItemCount.should.be.eql(2);
+                    res.body[0].totalItemCount.should.be.eql(2);
 
                     res.body[1]._id.should.be.eql("5c986adee1a6f20813ec464d");
                     res.body[1].iconImageUrl.should.be.eql("https://i.imgur.com/4A0jfFe.jpg");
@@ -369,7 +375,8 @@ describe('BetaTests', () => {
                     res.body[1].afterService.awards.should.be.eql("테스트 영웅 : 드래군핥짝 님\n테스트 요정 : 이브 외 9명");
                     res.body[1].afterService.epilogue.should.be.eql("http://www.naver.com");
                     res.body[1].afterService.companySays.should.be.eql("포메스 짱! 완전 짱! 대박! 완전! 완전! 두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄");
-                    res.body[1].progressRate.should.be.eql(0);
+                    res.body[1].completedItemCount.should.be.eql(0);
+                    res.body[1].totalItemCount.should.be.eql(1);
 
                     res.body[2]._id.should.be.eql("5c99d14fd122450cf08431ab");
                     res.body[2].iconImageUrl.should.be.eql("https://i.imgur.com/4oaQHWe.jpg");
@@ -379,7 +386,8 @@ describe('BetaTests', () => {
                     res.body[2].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
                     res.body[2].closeDate.should.be.eql("2019-03-25T00:00:00.000Z");
                     should.not.exist(res.body[2].afterService);
-                    res.body[2].progressRate.should.be.eql(0);
+                    res.body[2].completedItemCount.should.be.eql(0);
+                    res.body[2].totalItemCount.should.be.eql(1);
 
                     res.body[3]._id.should.be.eql("5c989f0a2917e70db5d4fc2e");
                     res.body[3].iconImageUrl.should.be.eql("https://i.imgur.com/uSaMpey.jpg");
@@ -391,7 +399,8 @@ describe('BetaTests', () => {
                     res.body[3].afterService.awards.should.be.eql("포메스 팀 : 참가자 여러분 모두 저희의 챔피언❤️");
                     res.body[3].afterService.epilogue.should.be.eql("http://www.google.co.kr");
                     res.body[3].afterService.companySays.should.be.eql("게임사 가라사대, 너희가 나를 살찌웠노라.... 고맙노라.....");
-                    res.body[3].progressRate.should.be.eql(100);
+                    res.body[3].completedItemCount.should.be.eql(1);
+                    res.body[3].totalItemCount.should.be.eql(1);
 
                     res.body[4]._id.should.be.eql("5c99d101d122450cf08431aa");
                     res.body[4].iconImageUrl.should.be.eql("https://i.imgur.com/7886ojX.png");
@@ -401,7 +410,8 @@ describe('BetaTests', () => {
                     res.body[4].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
                     res.body[4].closeDate.should.be.eql("2019-03-24T00:00:00.000Z");
                     should.not.exist(res.body[4].afterService);
-                    res.body[4].progressRate.should.be.eql(100);
+                    res.body[4].completedItemCount.should.be.eql(1);
+                    res.body[4].totalItemCount.should.be.eql(1);
 
                     done();
                 }).catch(err => done(err));

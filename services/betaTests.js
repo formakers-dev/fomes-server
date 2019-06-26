@@ -7,34 +7,37 @@ const findValidBetaTests = (userId) => {
     return BetaTests.aggregate([
         {
             $match : {
-                openDate: { $lte: currentTime },
-                closeDate: { $gte: currentTime },
+                openDate: {$lte: currentTime},
+                closeDate: {$gte: currentTime},
                 $or: [
-                    { targetUserIds: { $exists: false }},
-                    { targetUserIds: { $in: [ userId ] } },
+                    {targetUserIds: {$exists: false}},
+                    {targetUserIds: {$in: [userId]}},
                 ]
             }
-        }, {
-            $project: {
-                _id: true,
-                overviewImageUrl: true,
-                title: true,
-                description: true,
-                tags: true,
-                openDate: true,
-                closeDate: true,
-                bugReport: true,
-                currentDate: new Date(),
-                missions: true,     /// 프로그래스 확인용???
+        },
+        { $unwind: "$missions" },
+        { $unwind: "$missions.items" },
+        {
+            $group: {
+                _id: "$_id",
+                overviewImageUrl: { $first: "$overviewImageUrl" },
+                title: { $first: "$title" },
+                description: { $first: "$description" },
+                tags: { $first: "$tags" },
+                openDate: { $first: "$openDate" },
+                closeDate: { $first: "$closeDate" },
+                bugReport: { $first: "$bugReport" },
+                completedItemCount: { $sum: {
+                        $cond: [
+                            { $setIsSubset:
+                                    [ [userId], "$missions.items.completedUserIds"]
+                            }, 1, 0 ]
+                    }
+                },
+                totalItemCount: {$sum: 1}
             }
         }
-    ]).then(betaTests => {
-        console.log(betaTests);
-        return betaTests.map(betaTest => {
-            betaTest.progressRate = getProgressRate(userId, betaTest);
-            return betaTest;
-        });
-    });
+    ]);
 };
 
 const findFinishedBetaTests = (userId) => {
@@ -49,45 +52,41 @@ const findFinishedBetaTests = (userId) => {
                     { targetUserIds: { $in: [ userId ] } },
                 ],
             }
-        }, {
-            $project: {
-                _id: true,
-                iconImageUrl: true,
-                title: true,
-                description: true,
-                tags: true,
-                openDate: true,
-                closeDate: true,
-                currentDate: new Date(),
-                afterService: true,
-                missions: true,
+        },
+        { $unwind: "$missions" },
+        { $unwind: "$missions.items" },
+        {
+            $group: {
+                _id: "$_id",
+                iconImageUrl: { $first: "$iconImageUrl" },
+                title: { $first: "$title" },
+                description: { $first: "$description" },
+                tags: { $first: "$tags" },
+                openDate: { $first: "$openDate" },
+                closeDate: { $first: "$closeDate" },
+                afterService: { $first: "$afterService" },
+                completedItemCount: { $sum: {
+                        $cond: [
+                            { $setIsSubset:
+                                    [ [userId], "$missions.items.completedUserIds"]
+                            }, 1, 0 ]
+                    }
+                },
+                totalItemCount: {$sum: 1}
             }
         }
-    ]).then(finishedBetaTests => {
-        console.log(finishedBetaTests);
-        return finishedBetaTests.map(betaTest => {
-           betaTest.progressRate = getProgressRate(userId, betaTest);
-           return betaTest;
-        });
-    });
-};
-
-const getProgressRate = (userId, betaTest) => {
-    const items = betaTest.missions.flatMap(mission => mission.items);
-    const completedItems = items.filter(item => item.completedUserIds && item.completedUserIds.includes(userId));
-
-    return completedItems.length / items.length * 100;
+    ]);
 };
 
 const concat = (x,y) =>
-    x.concat(y)
+    x.concat(y);
 
 const flatMap = (f,xs) =>
-    xs.map(f).reduce(concat, [])
+    xs.map(f).reduce(concat, []);
 
 Array.prototype.flatMap = function(f) {
     return flatMap(f,this)
-}
+};
 
 const updateCompleted = (betaTestId, userId) => {
     return BetaTests.findOneAndUpdate({
