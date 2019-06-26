@@ -107,39 +107,6 @@ describe('BetaTests', () => {
                 }).catch(err => done(err));
         });
 
-        // TODO : 아래 경우의 수가 포함되지 않는 임시 릴리즈라서 주석처리 한거다....
-        // TODO : V2.5 릴리즈때 이 경우의 수도 고려해야해....!!!!!!!!!!!
-        // it('마감이 지난 그룹의 아이템은 조회되지 않는다. (마감이 지나지 않은 그룹의 아이템은 조회된다)', done => {
-        //     sandbox.useFakeTimers(new Date("2019-01-30T02:30:00.000Z").getTime());
-        //
-        //     request.get('/beta-tests')
-        //         .set('x-access-token', config.appbeeToken.valid)
-        //         .expect(200)
-        //         .then(res => {
-        //             console.log(res.body);
-        //             res.body.length.should.be.eql(1);
-        //
-        //             res.body[0].title.should.be.eql('이미 참여한 테스트');
-        //             res.body[0].subTitle.should.be.eql('참여했다');
-        //             res.body[0].tags.length.should.be.eql(2);
-        //             res.body[0].tags[0].should.be.eql('1:1');
-        //             res.body[0].tags[1].should.be.eql('인터뷰');
-        //             res.body[0].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
-        //             res.body[0].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
-        //             res.body[0].actionType.should.be.eql('link');
-        //             res.body[0].action.should.be.eql('https://www.google.com');
-        //             res.body[0].overviewImageUrl.should.be.eql('testImageUrl5');
-        //             res.body[0].reward.should.be.eql('testReward5');
-        //             res.body[0].requiredTime.should.be.eql(5000);
-        //             res.body[0].amount.should.be.eql('5가지 시나리오');
-        //             res.body[0].isOpened.should.be.eql(false);
-        //             res.body[0].isCompleted.should.be.eql(true);
-        //             res.body[0].currentDate.should.be.eql('2019-01-30T02:30:00.000Z');
-        //
-        //             done();
-        //         }).catch(err => done(err));
-        // });
-
         it('오픈되지 않은 요청 건은 조회하지 않는다', done => {
             sandbox.useFakeTimers(new Date("2018-11-01T02:30:00.000Z").getTime());
             request.get('/beta-tests')
@@ -377,39 +344,64 @@ describe('BetaTests', () => {
                 .then(res => {
                     res.body.sort((a, b) => a.title > b.title ? 1 : -1);
 
-                    console.log(new Date());
-                    console.log(res.body);
+                    require('./data/dummy').getValidationStatement();
 
-                    res.body.length.should.be.eql(3);
+                    res.body.length.should.be.eql(5);
 
-                    res.body[0].title.should.be.eql('1.전체 유저 대상이고 내가 완료하지 않은 테스트 그룹');
-                    res.body[0].iconImageUrl.should.be.eql('testIconImageUrl1');
-                    res.body[0].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
+                    res.body[0]._id.should.be.eql("5d01b1f6db7d04bc2d04345c");
+                    res.body[0].iconImageUrl.should.be.eql("https://i.imgur.com/oXFepuQ.jpg");
+                    res.body[0].title.should.be.eql("[매드러너] 게임 테스트");
+                    res.body[0].description.should.be.eql("");
                     res.body[0].tags.length.should.be.eql(1);
-                    res.body[0].tags[0].should.be.eql('설문');
-                    res.body[0].isOpened.should.be.eql(false);
-                    res.body[0].isCompleted.should.be.eql(false);
-                    res.body[0].afterService.awards.should.be.eql('awards1');
-                    res.body[0].afterService.epilogue.should.be.eql('epilogueURL1');
-                    res.body[0].afterService.companySays.should.be.eql('짱이에요');
+                    res.body[0].tags[0].should.be.eql("설문");
+                    res.body[0].openDate.should.be.eql("2019-06-13T00:00:00.000Z");
+                    res.body[0].closeDate.should.be.eql("2019-06-19T14:59:59.999Z");
+                    should.not.exist(res.body[0].afterService);
+                    res.body[0].progressRate.should.be.eql(100);
 
-                    res.body[1].title.should.be.eql('2.타게팅 되었고 내가 완로한 테스트 그룹');
-                    res.body[1].iconImageUrl.should.be.eql('testIconImageUrl2');
-                    res.body[1].closeDate.should.be.eql('2019-03-25T00:00:00.000Z');
+                    res.body[1]._id.should.be.eql("5c986adee1a6f20813ec464d");
+                    res.body[1].iconImageUrl.should.be.eql("https://i.imgur.com/4A0jfFe.jpg");
+                    res.body[1].title.should.be.eql("[메이헴의 유산] 게임 테스트 + 에필로그");
                     res.body[1].tags.length.should.be.eql(1);
-                    res.body[1].tags[0].should.be.eql('설문');
-                    res.body[1].isOpened.should.be.eql(false);
-                    res.body[1].isCompleted.should.be.eql(true);
-                    should.not.exist(res.body[1].afterService);
+                    res.body[1].tags[0].should.be.eql("설문");
+                    res.body[1].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
+                    res.body[1].closeDate.should.be.eql("2019-03-23T00:00:00.000Z");
+                    res.body[1].afterService.awards.should.be.eql("테스트 영웅 : 드래군핥짝 님\n테스트 요정 : 이브 외 9명");
+                    res.body[1].afterService.epilogue.should.be.eql("http://www.naver.com");
+                    res.body[1].afterService.companySays.should.be.eql("포메스 짱! 완전 짱! 대박! 완전! 완전! 두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄");
+                    res.body[1].progressRate.should.be.eql(0);
 
-                    res.body[2].title.should.be.eql('3.타게팅 되었고 내가 완로하지 않은 테스트 그룹');
-                    res.body[2].iconImageUrl.should.be.eql('testIconImageUrl3');
-                    res.body[2].closeDate.should.be.eql('2019-03-25T00:00:00.000Z');
+                    res.body[2]._id.should.be.eql("5c99d14fd122450cf08431ab");
+                    res.body[2].iconImageUrl.should.be.eql("https://i.imgur.com/4oaQHWe.jpg");
+                    res.body[2].title.should.be.eql("appbee0627이 참여하지 않은 그룹! 에필로그도 없음!");
                     res.body[2].tags.length.should.be.eql(1);
-                    res.body[2].tags[0].should.be.eql('설문');
-                    res.body[2].isOpened.should.be.eql(false);
-                    res.body[2].isCompleted.should.be.eql(false);
+                    res.body[2].tags[0].should.be.eql("설문");
+                    res.body[2].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
+                    res.body[2].closeDate.should.be.eql("2019-03-25T00:00:00.000Z");
                     should.not.exist(res.body[2].afterService);
+                    res.body[2].progressRate.should.be.eql(0);
+
+                    res.body[3]._id.should.be.eql("5c989f0a2917e70db5d4fc2e");
+                    res.body[3].iconImageUrl.should.be.eql("https://i.imgur.com/uSaMpey.jpg");
+                    res.body[3].title.should.be.eql("appbee0627이 참여한 그룹! + 에필로그  길게길게길게길게길게길게길게길게길게길게길게길게길게길게길게");
+                    res.body[3].tags.length.should.be.eql(1);
+                    res.body[3].tags[0].should.be.eql("설문");
+                    res.body[3].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
+                    res.body[3].closeDate.should.be.eql("2019-03-26T00:00:00.000Z");
+                    res.body[3].afterService.awards.should.be.eql("포메스 팀 : 참가자 여러분 모두 저희의 챔피언❤️");
+                    res.body[3].afterService.epilogue.should.be.eql("http://www.google.co.kr");
+                    res.body[3].afterService.companySays.should.be.eql("게임사 가라사대, 너희가 나를 살찌웠노라.... 고맙노라.....");
+                    res.body[3].progressRate.should.be.eql(100);
+
+                    res.body[4]._id.should.be.eql("5c99d101d122450cf08431aa");
+                    res.body[4].iconImageUrl.should.be.eql("https://i.imgur.com/7886ojX.png");
+                    res.body[4].title.should.be.eql("appbee0627이 참여한 그룹! 근데 에필로그가 아직 등록안됨!!!!");
+                    res.body[4].tags.length.should.be.eql(1);
+                    res.body[4].tags[0].should.be.eql("설문");
+                    res.body[4].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
+                    res.body[4].closeDate.should.be.eql("2019-03-24T00:00:00.000Z");
+                    should.not.exist(res.body[4].afterService);
+                    res.body[4].progressRate.should.be.eql(100);
 
                     done();
                 }).catch(err => done(err));
