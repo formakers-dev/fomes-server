@@ -5,6 +5,7 @@ const Auth = require('../middleware/auth');
 
 router.get('/', Auth.verifyAppBeeToken, BetaTestController.getBetaTestList);
 router.get('/finished', Auth.verifyAppBeeToken, BetaTestController.getFinishedBetaTestList);
+router.get('/detail/:id/', Auth.verifyAppBeeToken, BetaTestController.getDetailBetaTest);
 
 router.post('/:id/complete', Auth.verifyAPIKey, BetaTestController.postComplete);
 router.post('/target-user', Auth.verifyAPIKey, BetaTestController.postTargetUser);

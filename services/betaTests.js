@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const BetaTests = require('../models/betaTests');
 
 const findValidBetaTests = (userId) => {
@@ -78,6 +79,43 @@ const findFinishedBetaTests = (userId) => {
     ]);
 };
 
+const findBetaTest = (betaTestId, userId) => {
+    return BetaTests.aggregate([
+        {
+            $match: { _id: mongoose.Types.ObjectId(betaTestId) }
+        },
+        {
+            $project : {
+                _id: true,
+                title: true,
+                description: true,
+                tags: true,
+                overviewImageUrl: true,
+                iconImageUrl: true,
+                openDate: true,
+                closeDate: true,
+                rewards: true,
+                missions: true,
+            }
+        }
+        ])
+        .then(betaTests => {
+            console.log(betaTests);
+            const betaTest = betaTests[0];
+
+            betaTest.missions = betaTest.missions.map(mission => {
+                mission.items =  mission.items.map(item => {
+                    item.isCompleted = item.completedUserIds.includes(userId);
+                    delete item.completedUserIds;
+                    return item;
+                });
+                return mission;
+            });
+
+            return betaTest;
+        });
+};
+
 const concat = (x,y) =>
     x.concat(y);
 
@@ -118,6 +156,7 @@ const addTargetUserId = (betaTestIds, userId) => {
 module.exports = {
     findValidBetaTests,
     findFinishedBetaTests,
+    findBetaTest,
     updateCompleted,
     addTargetUserId,
 };

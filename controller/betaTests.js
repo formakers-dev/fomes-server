@@ -16,6 +16,12 @@ const getFinishedBetaTestList = (req, res, next) => {
         .catch(err => next(err))
 };
 
+const getDetailBetaTest = (req, res, next) => {
+    BetaTestsService.findBetaTest(req.params.id, req.userId)
+        .then(betaTest => res.json(betaTest))
+        .catch(err => next(err))
+};
+
 const postComplete = (req, res, next) => {
     BetaTestsService.updateCompleted(req.params.id, req.userId)
         .then(betaTest => {
@@ -89,6 +95,7 @@ const postTargetUser = (req, res, next) => {
 module.exports = {
     getBetaTestList,
     getFinishedBetaTestList,
+    getDetailBetaTest,
     postComplete,
     postTargetUser
 };
