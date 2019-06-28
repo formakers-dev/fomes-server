@@ -12,20 +12,25 @@ const Rewards = {
     list: Array,
 };
 
-const betaTestSchema = new Schema({
-    groupId: mongoose.Schema.Types.ObjectId,
-    id: Number,
-    subTitle: String,
-    apps: Array,
-    actionType: String,
-    action: String,
-    reward: String,
-    requiredTime: Number,
-    completedUserIds: Array,
-    amount: String,
-    isGroup: false,
+const MissionItemSchema = new Schema({
+    title : String,
+    actionType : String,
+    action : String,
+    postCondition : Object,
+    completedUserIds : Array,
+});
 
-    // for group
+const MissionSchema = new Schema({
+    order : Number,
+    title : String,
+    description : String,
+    descriptionImageUrl : String,
+    iconImageUrl : String,
+    items : [MissionItemSchema],
+    guide : String,
+});
+
+const betaTestSchema = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
     title: String,
     description: String,
@@ -35,9 +40,10 @@ const betaTestSchema = new Schema({
     openDate: Date,
     closeDate: Date,
     bugReport: Object,
-    rewards: Rewards,
-    missions: Array,
     afterService: afterServiceSchema,
+    rewards: Rewards,
+    missions: [MissionSchema],
+    apps: Array,
     targetUserIds: false,
 });
 
