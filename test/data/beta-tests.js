@@ -634,7 +634,7 @@ const data = [
                         "title" : "게임 플레이",
                         "action" : "https://play.google.com/store/apps/details?id=com.frozax.tentsandtrees",
                         "postCondition" : {
-                            "pcakgeName" : "com.frozax.tentsandtrees",
+                            "packageName" : "com.frozax.tentsandtrees",
                             "playTime" : 600000
                         },
                         "completedUserIds" : [

@@ -475,7 +475,7 @@ describe('BetaTests', () => {
                     res.body.missions[1].items[0].title.should.be.eql("게임 플레이");
                     res.body.missions[1].items[0].action.should.be.eql("https://play.google.com/store/apps/details?id=com.frozax.tentsandtrees");
                     res.body.missions[1].items[0].postCondition.playTime.should.be.eql(600000);
-                    res.body.missions[1].items[0].postCondition.pcakgeName.should.be.eql("com.frozax.tentsandtrees");
+                    res.body.missions[1].items[0].postCondition.packageName.should.be.eql("com.frozax.tentsandtrees");
                     res.body.missions[1].items[0].isCompleted.should.be.eql(true);
                     res.body.missions[2].order.should.be.eql(3);
                     res.body.missions[2].title.should.be.eql("두번째 미션!!!");
