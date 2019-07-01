@@ -23,6 +23,8 @@ const getDetailBetaTest = (req, res, next) => {
 };
 
 const postComplete = (req, res, next) => {
+    console.log("[", req.userId, "] postComplete ", req.params.id);
+
     BetaTestsService.updateCompleted(req.params.id, req.userId)
         .then(betaTest => {
             if (betaTest) {

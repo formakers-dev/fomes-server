@@ -62,7 +62,8 @@ const data = [
                         "completedUserIds" : [
                             "google115909938647516500511",
                             "google110241405528009969953"
-                        ]
+                        ],
+                        "_id" : ObjectId("5d1998bb839927107f4bb93e")
                     }
                 ],
                 "guide" : "* 위 버튼을 누르면, 테스트 대상 게임 무단배포 금지에 동의로 간주합니다."
@@ -81,7 +82,8 @@ const data = [
                         "completedUserIds" : [
                             "google115909938647516500511",
                             "google110241405528009969953"
-                        ]
+                        ],
+                        "_id" : ObjectId("5d199913839927107f4bb93f")
                     }
                 ],
                 "guide" : "* 위 버튼을 누르면, 테스트 대상 게임 무단배포 금지에 동의로 간주합니다."
@@ -130,6 +132,7 @@ const data = [
                 "items" : [
                     {
                         "title" : "의견 작성",
+                        "_id" : ObjectId("5d199927839927107f4bb940"),
                         "actionType" : "link",
                         "action" : "https://www.naver.com",
                         "completedUserIds" : []
@@ -166,6 +169,7 @@ const data = [
                 "items" : [
                     {
                         "title" : "의견 작성",
+                        "_id" : ObjectId("5d19996f839927107f4bb941"),
                         "actionType" : "link",
                         "action" : "https://www.naver.com",
                         "completedUserIds" : []
@@ -205,8 +209,18 @@ const data = [
                 "items" : [
                     {
                         "title" : "의견 작성",
+                        "_id" : ObjectId("5d199a0b839927107f4bb942"),
                         "actionType" : "link",
                         "action" : "https://docs.google.com/forms/d/e/1FAIpQLSeApAn8oPp8mW6UT8RD1uMbKk_UvAiWBh5jwlxlyUUI4D2N1g/viewform?usp=pp_url&entry.455936817=",
+                        "completedUserIds" : [
+                            config.testUser.userId
+                        ]
+                    },
+                    {
+                        "title" : "로그인이 필요한 설문",
+                        "_id" : ObjectId("5d199a13839927107f4bb943"),
+                        "actionType" : "link",
+                        "action" : "https://docs.google.com/forms/d/e/1FAIpQLScX_8AfhRa9Fc17p2DZdVbMHCA98DY_TlShowgfoNqbx25q9g/viewform?internal_web=true&usp=pp_url&entry.1223559684=",
                         "completedUserIds" : [
                             config.testUser.userId
                         ]
@@ -250,7 +264,8 @@ const data = [
                     {
                         "title" : "편지 보내기",
                         "action" : "http://www.naver.com",
-                        "completedUserIds" : []
+                        "completedUserIds" : [],
+                        "_id" : ObjectId("5d199a2c839927107f4bb944")
                     }
                 ],
                 "guide" : "* 정성가득~~~~~~~~~~~ 아름다운 세상~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -301,12 +316,14 @@ const data = [
                 "items" : [
                     {
                         "title" : "테스트 아이템 1",
+                        "_id" : ObjectId("5d199a3b839927107f4bb945"),
                         "actionType" : "link",
                         "action" : "https://www.google.com",
                         "postCondition" : {
                             "packageName" : "packageName1",
                             "playTime" : 1000
-                        }
+                        },
+                        "completedUserIds" : []
                     }
                 ],
                 "guide" : "guide1"
@@ -367,7 +384,9 @@ const data = [
                         "postCondition" : {
                             "packageName" : "packageName1",
                             "playTime" : 1000
-                        }
+                        },
+                        "completedUserIds" : [],
+                        "_id" : ObjectId("5d199a4b839927107f4bb946")
                     }
                 ],
                 "guide" : "guide1"
@@ -412,7 +431,7 @@ const data = [
             {
                 "order" : 1,
                 "title" : "미션1",
-                "description" : "targetUserIds 가 없어요",
+                "description" : "미션1ㅇ입니다",
                 "descriptionImageUrl" : "descriptionImageUrl1",
                 "iconImageUrl" : "iconImageUrl1",
                 "tags" : [
@@ -430,7 +449,8 @@ const data = [
                         },
                         "completedUserIds" : [
                             config.testUser.userId
-                        ]
+                        ],
+                        "_id" : ObjectId("5d199a58839927107f4bb947")
                     }
                 ],
                 "guide" : "guide1"
@@ -493,7 +513,8 @@ const data = [
                         },
                         "completedUserIds" : [
                             config.testUser.userId
-                        ]
+                        ],
+                        "_id" : ObjectId("5d199a84839927107f4bb949")
                     }
                 ],
                 "guide" : "guide1"
@@ -548,7 +569,9 @@ const data = [
                         "postCondition" : {
                             "packageName" : "packageName1",
                             "playTime" : 1000
-                        }
+                        },
+                        "completedUserIds" : [],
+                        "_id" : ObjectId("5d199a78839927107f4bb948")
                     }
                 ],
                 "guide" : "guide1"
@@ -619,7 +642,8 @@ const data = [
                         "action" : "https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&entry.1042588232=",
                         "completedUserIds" : [
                             config.testUser.userId
-                        ]
+                        ],
+                        "_id" : ObjectId("5d199a97839927107f4bb94a")
                     }
                 ]
             },
@@ -639,7 +663,8 @@ const data = [
                         },
                         "completedUserIds" : [
                             config.testUser.userId
-                        ]
+                        ],
+                        "_id" : ObjectId("5d199aa0839927107f4bb94b")
                     }
                 ],
                 "guide" : "* 위 버튼을 누르면, 테스트 대상 게임 무단배포 금지에 동의로 간주합니다."
@@ -654,7 +679,14 @@ const data = [
                     {
                         "title" : "의견 작성",
                         "action" : "https://www.naver.com",
-                        "completedUserIds" : []
+                        "completedUserIds" : [],
+                        "_id" : ObjectId("5d199aaa839927107f4bb94c")
+                    },
+                    {
+                        "title" : "의견 작성2",
+                        "action" : "https://www.naver.com",
+                        "completedUserIds" : [],
+                        "_id" : ObjectId("5d199ab3839927107f4bb94d")
                     }
                 ],
                 "guide" : "* 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다!\n* 불성실한 응답은 보상지급 대상자에서 제외될 수 있습니다."
@@ -701,6 +733,7 @@ const data = [
                 "items" : [
                     {
                         "title" : "게임 플레이",
+                        "_id" : ObjectId("5d199ac3839927107f4bb94e"),
                         "actionType" : "link",
                         "action" : "https://play.google.com/store/apps/details?id=com.Obliqueline.MadRunnerKo&email=",
                         "postCondition" : {
@@ -753,7 +786,8 @@ const data = [
                             "google105202439953340394900",
                             "google117625570877850551868",
                             config.testUser.userId
-                        ]
+                        ],
+                        "_id" : ObjectId("5d199acb839927107f4bb94f")
                     }
                 ],
                 "guide" : "* 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다!\n* 불성실한 응답은 보상지급 대상자에서 제외될 수 있습니다."

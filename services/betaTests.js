@@ -127,12 +127,17 @@ Array.prototype.flatMap = function(f) {
 };
 
 const updateCompleted = (betaTestId, userId) => {
-    return BetaTests.findOneAndUpdate({
-        $and: [
-            {id: betaTestId},
-            {completedUserIds: {$nin: [userId]}}
-        ]
-    }, {$push: {completedUserIds: userId}});
+    return BetaTests.findOneAndUpdate(
+        {
+            "missions.items._id": mongoose.Types.ObjectId(betaTestId),
+            "missions.items.completedUserIds": {$nin: [userId]}
+        },
+        { $push: {"missions.$.items.$[item].completedUserIds": userId}},
+        {
+            arrayFilters: [
+                {"item._id": {$eq: mongoose.Types.ObjectId(betaTestId)}}
+            ]
+        });
 };
 
 const addTargetUserId = (betaTestIds, userId) => {

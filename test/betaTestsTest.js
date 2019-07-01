@@ -6,6 +6,7 @@ const sinon = require('sinon');
 const axios = require('axios');
 const should = chai.should();
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 const BetaTests = require('../models/betaTests');
 const Configurations = require('../models/configurations');
@@ -70,8 +71,8 @@ describe('BetaTests', () => {
                     res.body[1].openDate.should.be.eql("2019-02-25T00:00:00.000Z");
                     res.body[1].closeDate.should.be.eql("2119-03-03T14:59:00.000Z");
                     res.body[1].bugReport.url.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSeApAn8oPp8mW6UT8RD1uMbKk_UvAiWBh5jwlxlyUUI4D2N1g/viewform?usp=pp_url&entry.455936817=");
-                    res.body[1].completedItemCount.should.be.eql(1);
-                    res.body[1].totalItemCount.should.be.eql(1);
+                    res.body[1].completedItemCount.should.be.eql(2);
+                    res.body[1].totalItemCount.should.be.eql(2);
 
                     res.body[2]._id.should.be.eql("5ce51a069cb162da02b9f94d");
                     res.body[2].overviewImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
@@ -84,7 +85,7 @@ describe('BetaTests', () => {
                     res.body[2].openDate.should.be.eql("2019-03-11T00:00:00.000Z");
                     res.body[2].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");
                     res.body[2].completedItemCount.should.be.eql(2);
-                    res.body[2].totalItemCount.should.be.eql(3);
+                    res.body[2].totalItemCount.should.be.eql(4);
 
                     res.body[3]._id.should.be.eql("5c25c77798d78f078d8ef3ba");
                     res.body[3].overviewImageUrl.should.be.eql("https://images.pexels.com/photos/669609/pexels-photo-669609.jpeg?auto=compress&cs=tinysrgb&dpr=2&fit=crop&h=500&w=500");
@@ -138,13 +139,13 @@ describe('BetaTests', () => {
 
         // 정상
         it('요청한 유저를 완료 리스트에 추가한다', done => {
-            request.post('/beta-tests/1/complete')
+            request.post('/beta-tests/5d19996f839927107f4bb941/complete')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
-                .then(() => BetaTests.findOne({id: 1}))
+                .then(() => BetaTests.findOne({"missions.items._id": ObjectId("5d19996f839927107f4bb941")}))
                 .then(res => {
-                    res.completedUserIds.length.should.be.eql(1);
-                    res.completedUserIds[0].should.be.eql(config.testUser.userId);
+                    res.missions[0].items[0].completedUserIds.length.should.be.eql(1);
+                    res.missions[0].items[0].completedUserIds[0].should.be.eql(config.testUser.userId);
 
                     done();
                 })
@@ -152,7 +153,7 @@ describe('BetaTests', () => {
         });
 
         it('요청한 유저에게 완료 노티를 보낸다', done => {
-            request.post('/beta-tests/1/complete')
+            request.post('/beta-tests/5d19996f839927107f4bb941/complete')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
                 .then(() => {
@@ -162,7 +163,7 @@ describe('BetaTests', () => {
                         data: {
                             channel: 'channel_betatest',
                             title: '참여하신 테스트가 완료처리 되었어요!👏',
-                            subTitle: '멋져요! [전체 유저 대상 테스트]에 성공적으로 참여하셨습니다.'
+                            subTitle: '멋져요! [아직 오픈일이 되지 않은 테스트]에 성공적으로 참여하셨습니다.'
                         },
                         to: 'test_user_registration_token'
                     };
@@ -182,25 +183,24 @@ describe('BetaTests', () => {
 
         // 예외
         it('요청한 유저가 이미 완료한 경우에는 완료 리스트에 추가하지 않는다', done => {
-            request.post('/beta-tests/5/complete')
+            request.post('/beta-tests/5d199a0b839927107f4bb942/complete')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
-                .then(() => BetaTests.findOne({id: 5}))
+                .then(() => BetaTests.findOne({"missions.items._id": ObjectId("5d199a0b839927107f4bb942")}))
                 .then(res => {
-                    console.log(res);
-                    res.completedUserIds.length.should.be.eql(1);
-                    res.completedUserIds[0].should.be.eql(config.testUser.userId);
-
+                    console.log(res.missions[0].items[0]);
+                    res.missions[0].items[0].completedUserIds.length.should.be.eql(1);
+                    res.missions[0].items[0].completedUserIds[0].should.be.eql(config.testUser.userId);
                     done();
                 })
                 .catch(err => done(err));
         });
 
         it('요청한 유저가 이미 완료한 경우에는 완료 노티를 보내지 않는다', done => {
-            request.post('/beta-tests/5/complete')
+            request.post('/beta-tests/5d199a0b839927107f4bb942/complete')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
-                .then(() => BetaTests.findOne({id: 5}))
+                .then(() => BetaTests.findOne({"missions.items._id": ObjectId("5d199a0b839927107f4bb942")}))
                 .then(() => {
                     sinon.assert.notCalled(stubAxiosPost);
                     done();
@@ -483,10 +483,13 @@ describe('BetaTests', () => {
                     res.body.missions[2].descriptionImageUrl.should.be.eql('');
                     res.body.missions[2].iconImageUrl.should.be.eql('https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png');
                     res.body.missions[2].guide.should.be.eql('* 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다!\n* 불성실한 응답은 보상지급 대상자에서 제외될 수 있습니다.');
-                    res.body.missions[2].items.length.should.be.eql(1);
+                    res.body.missions[2].items.length.should.be.eql(2);
                     res.body.missions[2].items[0].title.should.be.eql("의견 작성");
                     res.body.missions[2].items[0].action.should.be.eql("https://www.naver.com");
                     res.body.missions[2].items[0].isCompleted.should.be.eql(false);
+                    res.body.missions[2].items[1].title.should.be.eql("의견 작성2");
+                    res.body.missions[2].items[1].action.should.be.eql("https://www.naver.com");
+                    res.body.missions[2].items[1].isCompleted.should.be.eql(false);
                     res.body.rewards.minimumDelay.should.be.eql(100);
                     res.body.rewards.list.length.should.be.eql(3);
                     res.body.tags.length.should.be.eql(3);
