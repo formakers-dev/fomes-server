@@ -220,7 +220,7 @@ describe('BetaTests', () => {
         });
     });
 
-    describe('POST /beta-tests/target-user', () => {
+    describe.skip('POST /beta-tests/target-user', () => {
         let stubAxiosPost;
 
         beforeEach(() => {
