@@ -434,6 +434,75 @@ describe('BetaTests', () => {
         });
     });
 
+    describe('GET /beta-tests/detail/:id', () => {
+
+        it('종료된 피드백 요청 목록을 조회한다', done => {
+            sandbox.useFakeTimers(new Date("2019-06-30T02:30:00.000Z").getTime());
+
+            request.get('/beta-tests/detail/5ce51a069cb162da02b9f94d')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    console.error(res.body);
+
+                    res.body._id.should.be.eql("5ce51a069cb162da02b9f94d");
+                    res.body.title.should.be.eql("테스트 추가 신청하기 (버그제보 있음)");
+                    res.body.description.should.be.eql("테스트 하고싶은 게임 추가신청을 할 수 있어여");
+                    res.body.overviewImageUrl.should.be.eql('https://i.imgur.com/n2MaXzg.png');
+                    res.body.iconImageUrl.should.be.eql('https://i.imgur.com/n2MaXzg.png');
+                    res.body.openDate.should.be.eql('2019-03-11T00:00:00.000Z');
+                    res.body.closeDate.should.be.eql('2119-12-31T14:59:50.000Z');
+                    res.body.missions.length.should.be.eql(3);
+                    res.body.missions[0].order.should.be.eql(1);
+                    res.body.missions[0].title.should.be.eql("베타테스트 추가 신청하기");
+                    res.body.missions[0].description.should.be.eql("테스트를 신청하라!!!!\n테스트 하고 싶은 게임 골라라아아아아ㅏ아");
+                    res.body.missions[0].descriptionImageUrl.should.be.eql('https://i.imgur.com/n2MaXzg.png');
+                    res.body.missions[0].iconImageUrl.should.be.eql('https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png');
+                    res.body.missions[0].items.length.should.be.eql(1);
+                    console.log(res.body.missions[0].items);
+                    console.log(res.body.missions[1].items);
+                    console.log(res.body.missions[2].items);
+                    res.body.missions[0].items[0].title.should.be.eql("신청하기");
+                    res.body.missions[0].items[0].action.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&entry.1042588232=");
+                    res.body.missions[0].items[0].isCompleted.should.be.eql(true);
+                    res.body.missions[1].order.should.be.eql(2);
+                    res.body.missions[1].title.should.be.eql("첫번째 미션!!!");
+                    res.body.missions[1].description.should.be.eql("게임을 10분 이상 플레이하라!!!!!!!");
+                    res.body.missions[1].descriptionImageUrl.should.be.eql('');
+                    res.body.missions[1].iconImageUrl.should.be.eql('https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png');
+                    res.body.missions[1].guide.should.be.eql('* 위 버튼을 누르면, 테스트 대상 게임 무단배포 금지에 동의로 간주합니다.');
+                    res.body.missions[1].items.length.should.be.eql(1);
+                    res.body.missions[1].items[0].title.should.be.eql("게임 플레이");
+                    res.body.missions[1].items[0].action.should.be.eql("https://play.google.com/store/apps/details?id=com.frozax.tentsandtrees");
+                    res.body.missions[1].items[0].postCondition.playTime.should.be.eql(600000);
+                    res.body.missions[1].items[0].postCondition.packageName.should.be.eql("com.frozax.tentsandtrees");
+                    res.body.missions[1].items[0].isCompleted.should.be.eql(true);
+                    res.body.missions[2].order.should.be.eql(3);
+                    res.body.missions[2].title.should.be.eql("두번째 미션!!!");
+                    res.body.missions[2].description.should.be.eql("설문을 하라!!!!!!!!!!!");
+                    res.body.missions[2].descriptionImageUrl.should.be.eql('');
+                    res.body.missions[2].iconImageUrl.should.be.eql('https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png');
+                    res.body.missions[2].guide.should.be.eql('* 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다!\n* 불성실한 응답은 보상지급 대상자에서 제외될 수 있습니다.');
+                    res.body.missions[2].items.length.should.be.eql(1);
+                    res.body.missions[2].items[0].title.should.be.eql("의견 작성");
+                    res.body.missions[2].items[0].action.should.be.eql("https://www.naver.com");
+                    res.body.missions[2].items[0].isCompleted.should.be.eql(false);
+                    res.body.rewards.minimumDelay.should.be.eql(100);
+                    res.body.rewards.list.length.should.be.eql(3);
+                    res.body.tags.length.should.be.eql(3);
+                    res.body.tags[0].should.be.eql("설문fsagsgasdadddddj 아아아아 ㄴ나나나ㅏ");
+                    res.body.tags[1].should.be.eql("태그다");
+                    res.body.tags[2].should.be.eql("꿀잼");
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+    });
+
     afterEach(done => {
         BetaTests.remove({})
             .then(() => done())
