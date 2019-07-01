@@ -24,6 +24,7 @@ const findValidBetaTests = (userId) => {
                 overviewImageUrl: { $first: "$overviewImageUrl" },
                 title: { $first: "$title" },
                 description: { $first: "$description" },
+                progressText: { $first: "$progressText" },
                 tags: { $first: "$tags" },
                 openDate: { $first: "$openDate" },
                 closeDate: { $first: "$closeDate" },
