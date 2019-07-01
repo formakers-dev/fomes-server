@@ -39,7 +39,13 @@ const findValidBetaTests = (userId) => {
                 totalItemCount: {$sum: 1}
             }
         }
-    ]);
+    ]).then(betaTests => {
+        const currentDate = new Date();
+        return betaTests.map(betaTest => {
+            betaTest.currentDate = currentDate;
+            return betaTest;
+        })
+    });
 };
 
 const findFinishedBetaTests = (userId) => {
@@ -77,7 +83,13 @@ const findFinishedBetaTests = (userId) => {
                 totalItemCount: {$sum: 1}
             }
         }
-    ]);
+    ]).then(betaTests => {
+        const currentDate = new Date();
+        return betaTests.map(betaTest => {
+            betaTest.currentDate = currentDate;
+            return betaTest;
+        })
+    });
 };
 
 const findBetaTest = (betaTestId, userId) => {
@@ -112,6 +124,8 @@ const findBetaTest = (betaTestId, userId) => {
                 });
                 return mission;
             });
+
+            betaTest.currentDate = new Date();
 
             return betaTest;
         });
