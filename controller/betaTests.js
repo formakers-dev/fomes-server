@@ -28,20 +28,16 @@ const postComplete = (req, res, next) => {
     BetaTestsService.updateCompleted(req.params.id, req.userId)
         .then(betaTest => {
             if (betaTest) {
-                let betaTestNotificationMessage;
+                const notificationData = req.body.notificationData;
 
-                return ConfigurationsService.getNotificationMessage()
-                    .then(notificationMessage => {
-                        betaTestNotificationMessage = notificationMessage.betaTest;
-                        return UsersService.getUser(req.userId);
-                    })
+                if (!notificationData) {
+                    return;
+                }
+
+                return UsersService.getUser(req.userId)
                     .then(user => {
                         const body = {
-                            'data' : {
-                                'channel' : 'channel_betatest',
-                                'title' : betaTestNotificationMessage.completeTitle,
-                                'subTitle' : betaTestNotificationMessage.completeSubTitle.replace(":TITLE", betaTest.title)
-                            },
+                            'data' : req.body.notificationData,
                             'to' : user.registrationToken,
                         };
 
@@ -52,6 +48,7 @@ const postComplete = (req, res, next) => {
                             }
                         })
                     });
+
             } else {
                 return Promise.resolve();
             }

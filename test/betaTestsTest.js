@@ -154,7 +154,7 @@ describe('BetaTests', () => {
 
         // 정상
         it('요청한 유저를 완료 리스트에 추가한다', done => {
-            request.post('/beta-tests/5d19996f839927107f4bb941/complete')
+            request.post('/beta-tests/5d19996f839927107f4bb941/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
                 .then(() => BetaTests.findOne({"missions.items._id": ObjectId("5d19996f839927107f4bb941")}))
@@ -167,30 +167,39 @@ describe('BetaTests', () => {
                 .catch(err => done(err));
         });
 
-        it('요청한 유저에게 완료 노티를 보낸다', done => {
-            request.post('/beta-tests/5d19996f839927107f4bb941/complete')
+
+        it('요청한 유저에게 전달받은 알림을 보낸다', done => {
+            request.post('/beta-tests/5d19996f839927107f4bb941/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .send({
+                    betaTestIds: [1, 4],
+                    notificationData: {
+                        channel: 'channel_betatest',
+                        title: '참여하신 테스트가 완료처리 되었어요!👏',
+                        subTitle: '멋져요! [전체 유저 대상 테스트]에 성공적으로 참여하셨습니다.'
+                    }
+                })
                 .expect(200)
                 .then(() => {
-                    const expectUrl = 'https://fcm.googleapis.com/fcm/send';
+                    const expectedUrl = 'https://fcm.googleapis.com/fcm/send';
 
-                    const expectBody = {
+                    const expectedBody = {
                         data: {
                             channel: 'channel_betatest',
                             title: '참여하신 테스트가 완료처리 되었어요!👏',
-                            subTitle: '멋져요! [아직 오픈일이 되지 않은 테스트]에 성공적으로 참여하셨습니다.'
+                            subTitle: '멋져요! [전체 유저 대상 테스트]에 성공적으로 참여하셨습니다.'
                         },
                         to: 'test_user_registration_token'
                     };
 
-                    const expectHeader = {
+                    const expectedHeader = {
                         headers: {
                             Authorization: 'key=testNotiApiKey',
                             'Content-Type' : 'application/json'
                         }
                     };
 
-                    sinon.assert.calledWith(stubAxiosPost, expectUrl, expectBody, expectHeader);
+                    sinon.assert.calledWith(stubAxiosPost, expectedUrl, expectedBody, expectedHeader);
 
                     done();
                 }).catch(err => done(err));
@@ -198,7 +207,7 @@ describe('BetaTests', () => {
 
         // 예외
         it('요청한 유저가 이미 완료한 경우에는 완료 리스트에 추가하지 않는다', done => {
-            request.post('/beta-tests/5d199a0b839927107f4bb942/complete')
+            request.post('/beta-tests/5d199a0b839927107f4bb942/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
                 .then(() => BetaTests.findOne({"missions.items._id": ObjectId("5d199a0b839927107f4bb942")}))
@@ -212,7 +221,7 @@ describe('BetaTests', () => {
         });
 
         it('요청한 유저가 이미 완료한 경우에는 완료 노티를 보내지 않는다', done => {
-            request.post('/beta-tests/5d199a0b839927107f4bb942/complete')
+            request.post('/beta-tests/5d199a0b839927107f4bb942/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
                 .then(() => BetaTests.findOne({"missions.items._id": ObjectId("5d199a0b839927107f4bb942")}))
@@ -223,7 +232,7 @@ describe('BetaTests', () => {
         });
 
         it('요청한 유저정보가 유효한 이메일로 접수되지 않은 경우 403 에러를 반환한다', done => {
-            request.post('/beta-tests/1/complete')
+            request.post('/beta-tests/1/complete?from=external_script')
                 .set('x-access-token', 'InvalidAccessToken')
                 .expect(403)
                 .then(() => done())

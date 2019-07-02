@@ -139,4 +139,12 @@ const decodeAppBeeTokenWithoutVerify = (req, res, next) => {
     }
 };
 
-module.exports = {verifyAppBeeToken, verifyGoogleToken, verifyAPIKey, decodeAppBeeTokenWithoutVerify};
+const verify = (req, res, next) => {
+    if (req.query.from === "external_script") {
+        verifyAPIKey(req, res, next);
+    } else {
+        verifyAppBeeToken(req, res, next);
+    }
+};
+
+module.exports = {verifyAppBeeToken, verifyGoogleToken, verifyAPIKey, decodeAppBeeTokenWithoutVerify, verify};
