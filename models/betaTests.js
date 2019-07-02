@@ -15,6 +15,7 @@ const Rewards = {
 const MissionItemSchema = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
     type: String,
+    order: Number,
     title : String,
     actionType : String,
     action : String,
