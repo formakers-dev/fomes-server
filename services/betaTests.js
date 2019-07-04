@@ -1,59 +1,49 @@
+const mongoose = require('mongoose');
 const BetaTests = require('../models/betaTests');
 
 const findValidBetaTests = (userId) => {
     const currentTime = new Date();
 
+    console.log('findValidBetaTests userId=', userId);
     return BetaTests.aggregate([
         {
             $match : {
-                openDate: { $lte: currentTime },
+                openDate: {$lte: currentTime},
+                closeDate: {$gte: currentTime},
                 $or: [
-                    { targetUserIds: { $exists: false }},
-                    { targetUserIds: { $in: [ userId ] } },
-                ],
-                isGroup: {$exists: false},
+                    {targetUserIds: {$exists: false}},
+                    {targetUserIds: {$in: [userId]}},
+                ]
             }
-        }, {
-            $project: {
-                _id: true,
-                groupId: true,
-                id: true,
-                overviewImageUrl: true,
-                title: true,
-                subTitle: true,
-                tags: true,
-                openDate: true,
-                closeDate: true,
-                currentDate: new Date(),
-                actionType: true,
-                action: true,
-                reward: true,
-                requiredTime: true,
-                amount: true,
-                apps: true,
-                isOpened: {
-                    $and: [
-                        {$lte: ["$openDate", currentTime]},
-                        {$gte: ["$closeDate", currentTime]}
-                    ]
+        },
+        { $unwind: "$missions" },
+        { $unwind: "$missions.items" },
+        {
+            $group: {
+                _id: "$_id",
+                overviewImageUrl: { $first: "$overviewImageUrl" },
+                title: { $first: "$title" },
+                description: { $first: "$description" },
+                progressText: { $first: "$progressText" },
+                tags: { $first: "$tags" },
+                openDate: { $first: "$openDate" },
+                closeDate: { $first: "$closeDate" },
+                bugReport: { $first: "$bugReport" },
+                completedItemCount: { $sum: {
+                        $cond: [
+                            { $setIsSubset:
+                                    [ [userId], "$missions.items.completedUserIds"]
+                            }, 1, 0 ]
+                    }
                 },
-                isCompleted: {
-                    $in : [userId, "$completedUserIds"]
-                },
-                isGroup: true,
-                afterService: true,
+                totalItemCount: {$sum: 1}
             }
         }
     ]).then(betaTests => {
-        // TODO : 임시 코드!!!
-        return findFinishedBetaTests(userId).then(closedGroups => {
-            const shownItems = betaTests.filter(betaTest => betaTest.groupId)
-                .filter(betaTest => {
-                    const closedGroupIds = closedGroups.map(group => group._id.toString());
-                    return !closedGroupIds.includes(betaTest.groupId.toString())
-                });
-            return Promise.resolve(shownItems.concat(closedGroups)
-                .filter(betaTest => !betaTest.isGroup));
+        const currentDate = new Date();
+        return betaTests.map(betaTest => {
+            betaTest.currentDate = currentDate;
+            return betaTest;
         })
     });
 };
@@ -69,75 +59,151 @@ const findFinishedBetaTests = (userId) => {
                     { targetUserIds: { $exists: false }},
                     { targetUserIds: { $in: [ userId ] } },
                 ],
-                isGroup: true,
             }
-        }, {
-            $project: {
-                _id: true,
-                groupId: true,
-                id: true,
-                overviewImageUrl: true,
-                iconImageUrl: true,
-                title: true,
-                subTitle: true,
-                tags: true,
-                openDate: true,
-                closeDate: true,
-                currentDate: new Date(),
-                actionType: true,
-                action: true,
-                reward: true,
-                requiredTime: true,
-                amount: true,
-                apps: true,
-                isOpened: {
-                    $and: [
-                        {$lte: ["$openDate", currentTime]},
-                        {$gte: ["$closeDate", currentTime]}
-                    ]
+        },
+        { $unwind: "$missions" },
+        { $unwind: "$missions.items" },
+        {
+            $group: {
+                _id: "$_id",
+                iconImageUrl: { $first: "$iconImageUrl" },
+                title: { $first: "$title" },
+                description: { $first: "$description" },
+                tags: { $first: "$tags" },
+                openDate: { $first: "$openDate" },
+                closeDate: { $first: "$closeDate" },
+                afterService: { $first: "$afterService" },
+                completedItemCount: { $sum: {
+                        $cond: [
+                            { $setIsSubset:
+                                    [ [userId], "$missions.items.completedUserIds"]
+                            }, 1, 0 ]
+                    }
                 },
-                // isCompleted: {
-                //     $in : [userId, "$mission.$.$items.$.$completedUserIds"]
-                // },
-                isGroup: true,
-                afterService: true,
-                missions: true,
+                totalItemCount: {$sum: 1}
             }
         }
-    ]).then(finishedBetaTests => {
-        console.log(finishedBetaTests);
-        return finishedBetaTests.map(betaTest => {
-           const items = betaTest.missions.flatMap(mission => mission.items);
-           const completedItems = items.filter(item => item.completedUserIds && item.completedUserIds.includes(userId));
-
-           if (items.length === completedItems.length) {
-               betaTest.isCompleted = true;
-           } else {
-               betaTest.isCompleted = false;
-           }
-
-           return betaTest;
-        });
+    ]).then(betaTests => {
+        const currentDate = new Date();
+        return betaTests.map(betaTest => {
+            betaTest.currentDate = currentDate;
+            return betaTest;
+        })
     });
 };
 
+const findBetaTest = (betaTestId, userId) => {
+    return BetaTests.aggregate([
+        {
+            $match: { _id: mongoose.Types.ObjectId(betaTestId) }
+        },
+        {
+            $project : {
+                _id: true,
+                title: true,
+                description: true,
+                tags: true,
+                overviewImageUrl: true,
+                iconImageUrl: true,
+                openDate: true,
+                closeDate: true,
+                rewards: true,
+                missions: true,
+            }
+        }
+        ])
+        .then(betaTests => {
+            console.log(betaTests);
+            const betaTest = betaTests[0];
+
+            betaTest.missions = betaTest.missions.map(mission => {
+                mission.items =  mission.items.map(item => {
+                    item.isCompleted = item.completedUserIds.includes(userId);
+                    delete item.completedUserIds;
+                    return item;
+                });
+                return mission;
+            });
+
+            betaTest.currentDate = new Date();
+
+            return betaTest;
+        });
+};
+
+const findBetaTestProgress = (betaTestId, userId) => {
+    return BetaTests.aggregate([
+        {
+            $match : {
+                _id: mongoose.Types.ObjectId(betaTestId),
+                $or: [
+                    {targetUserIds: {$exists: false}},
+                    {targetUserIds: {$in: [userId]}},
+                ]
+            }
+        },
+        { $unwind: "$missions" },
+        { $unwind: "$missions.items" },
+        {
+            $group: {
+                _id: "$_id",
+                completedItemCount: { $sum: {
+                        $cond: [
+                            { $setIsSubset:
+                                    [ [userId], "$missions.items.completedUserIds"]
+                            }, 1, 0 ]
+                    }
+                },
+                totalItemCount: {$sum: 1}
+            }
+        }
+    ])
+}
+
+const findMissionItemsProgress = (missionId, userId) => {
+    return BetaTests.aggregate([
+        {
+            $unwind: "$missions"
+        }, {
+            $match: { "missions._id": mongoose.Types.ObjectId(missionId) }
+        }, {
+            $project: {
+                _id: "$missions._id",
+                items: "$missions.items"
+            }
+        }, {
+            $unwind: "$items"
+        }, {
+            $project: {
+                _id: "$items._id",
+                isCompleted: { $in : [userId, "$items.completedUserIds"] },
+            }
+        }
+    ]);
+};
+
 const concat = (x,y) =>
-    x.concat(y)
+    x.concat(y);
 
 const flatMap = (f,xs) =>
-    xs.map(f).reduce(concat, [])
+    xs.map(f).reduce(concat, []);
 
 Array.prototype.flatMap = function(f) {
     return flatMap(f,this)
-}
+};
 
 const updateCompleted = (betaTestId, userId) => {
-    return BetaTests.findOneAndUpdate({
-        $and: [
-            {id: betaTestId},
-            {completedUserIds: {$nin: [userId]}}
-        ]
-    }, {$push: {completedUserIds: userId}});
+    return BetaTests.findOneAndUpdate(
+        {
+            "missions.items._id": mongoose.Types.ObjectId(betaTestId),
+            "missions.items.completedUserIds": {$nin: [userId]}
+        },
+        { $push: {"missions.$.items.$[item].completedUserIds": userId}},
+        {
+            arrayFilters: [
+                {"item._id": {$eq: mongoose.Types.ObjectId(betaTestId)}}
+            ]
+        });
 };
 
 const addTargetUserId = (betaTestIds, userId) => {
@@ -161,6 +227,9 @@ const addTargetUserId = (betaTestIds, userId) => {
 module.exports = {
     findValidBetaTests,
     findFinishedBetaTests,
+    findBetaTestProgress,
+    findBetaTest,
+    findMissionItemsProgress,
     updateCompleted,
     addTargetUserId,
 };

@@ -6,407 +6,15 @@ const sinon = require('sinon');
 const axios = require('axios');
 const should = chai.should();
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 const BetaTests = require('../models/betaTests');
 const Configurations = require('../models/configurations');
 const helper = require('./commonTestHelper');
+const data = require('./data/beta-tests');
 
 describe('BetaTests', () => {
     const sandbox = sinon.createSandbox();
-    const data = [
-        {
-            "_id" : mongoose.Types.ObjectId("111111111111111111111100"),
-            "title" : "1.전체 유저 대상이고 내가 완료하지 않은 테스트 그룹",
-            "description" : "description1",
-            "tags" : [
-                "설문"
-            ],
-            overviewImageUrl: 'overviewImageUrl1',
-            iconImageUrl: 'testIconImageUrl1',
-            openDate: new Date('2018-12-26'),
-            closeDate: new Date('2018-12-31'),
-            rewards : {
-                "list" : [
-                    {
-                        "order" : 1,
-                        "title" : "1테스트 요정 (전체지급)",
-                        "content" : "문화상품권 1000원",
-                        "userIds" : []
-                    },
-                    {
-                        "order" : 2,
-                        "title" : "1테스트 영웅 (1명)",
-                        "content" : "문화상품권 5000원",
-                        "userIds" : []
-                    }
-                ]
-            },
-            missions : [
-                {
-                    order : 1,
-                    title : "미션1",
-                    description: "targetUserIds 가 없어요",
-                    descriptionImageUrl: "descriptionImageUrl1",
-                    iconImageUrl: "iconImageUrl1",
-                    tags: ['1:1', "인터뷰"],
-                    items: [
-                        {
-                            title: "테스트 아이템 1",
-                            actionType: 'link',
-                            action: 'https://www.google.com',
-                            postCondition : {
-                                "packageName" : "packageName1",
-                                "playTime" : 1000
-                            },
-                        }
-                    ],
-                    "guide" : "guide1"
-                }, {
-                    order : 2,
-                    title : "미션2",
-                    description: "적합한 테스터는 너야너 너야너",
-                    descriptionImageUrl: "descriptionImageUrl2",
-                    iconImageUrl: "iconImageUrl2",
-                    tags: ['1:1', "인터뷰"],
-                    items: [ {
-                        title: "테스트 아이템 2-1",
-                        actionType: 'link',
-                        action: 'https://www.google.com',
-                        postCondition : {
-                            "packageName" : "packageName2",
-                            "playTime" : 2000
-                        },
-                    }, {
-                        title: "테스트 아이템 2-2",
-                        actionType: 'link',
-                        action: 'https://www.google.com',
-                    } ],
-                    "guide" : "guide2"
-                }
-            ],
-            "apps" : [],
-            "isGroup" : true,
-            afterService: {
-                awards: "awards1",
-                epilogue: "epilogueURL1",
-                companySays: "짱이에요"
-            }
-        },
-        {
-            "_id" : mongoose.Types.ObjectId("222222222222222222222200"),
-            "title" : "2.타게팅 되었고 내가 완로한 테스트 그룹",
-            "description" : "description1",
-            "tags" : [
-                "설문"
-            ],
-            overviewImageUrl: 'overviewImageUrl2',
-            iconImageUrl: 'testIconImageUrl2',
-            openDate: new Date('2018-12-26'),
-            closeDate: new Date('2019-03-25'),
-            targetUserIds: [config.testUser.userId],
-            rewards : {
-                "list" : [
-                    {
-                        "order" : 1,
-                        "title" : "2테스트 요정 (전체지급)",
-                        "content" : "문화상품권 1000원",
-                        "userIds" : []
-                    },
-                    {
-                        "order" : 2,
-                        "title" : "2테스트 영웅 (1명)",
-                        "content" : "문화상품권 5000원",
-                        "userIds" : []
-                    }
-                ]
-            },
-            missions : [
-                {
-                    order : 1,
-                    title : "미션1",
-                    description: "targetUserIds 가 없어요",
-                    descriptionImageUrl: "descriptionImageUrl1",
-                    iconImageUrl: "iconImageUrl1",
-                    tags: ['1:1', "인터뷰"],
-                    items: [
-                        {
-                            title: "테스트 아이템 1-1",
-                            actionType: 'link',
-                            action: 'https://www.google.com',
-                            postCondition : {
-                                "packageName" : "packageName1",
-                                "playTime" : 1000
-                            },
-                            completedUserIds: [config.testUser.userId]
-                        }
-                    ],
-                    "guide" : "guide1"
-                }, {
-                    order : 2,
-                    title : "미션2",
-                    description: "적합한 테스터는 너야너 너야너",
-                    descriptionImageUrl: "descriptionImageUrl2",
-                    iconImageUrl: "iconImageUrl2",
-                    tags: ['1:1', "인터뷰"],
-                    items: [ {
-                        title: "테스트 아이템 2-1",
-                        actionType: 'link',
-                        action: 'https://www.google.com',
-                        postCondition : {
-                            "packageName" : "packageName2",
-                            "playTime" : 2000
-                        },
-                        completedUserIds: [config.testUser.userId]
-                    }, {
-                        title: "테스트 아이템 2-2",
-                        actionType: 'link',
-                        action: 'https://www.google.com',
-                        completedUserIds: [config.testUser.userId]
-                    } ],
-                    "guide" : "guide2"
-                }
-            ],
-            "apps" : [],
-            "isGroup" : true,
-        },
-        {
-            "_id" : mongoose.Types.ObjectId("333333333333333333333300"),
-            "title" : "3.타게팅 되었고 내가 완로하지 않은 테스트 그룹",
-            "description" : "description3",
-            "tags" : [
-                "설문"
-            ],
-            overviewImageUrl: 'overviewImageUrl3',
-            iconImageUrl: 'testIconImageUrl3',
-            openDate: new Date('2018-12-26'),
-            closeDate: new Date('2019-03-25'),
-            targetUserIds: [config.testUser.userId, 'anotherUserId'],
-            rewards : {
-                "list" : [
-                    {
-                        "order" : 1,
-                        "title" : "2테스트 요정 (전체지급)",
-                        "content" : "문화상품권 1000원",
-                        "userIds" : []
-                    },
-                    {
-                        "order" : 2,
-                        "title" : "2테스트 영웅 (1명)",
-                        "content" : "문화상품권 5000원",
-                        "userIds" : []
-                    }
-                ]
-            },
-            missions : [
-                {
-                    order : 1,
-                    title : "미션1",
-                    description: "targetUserIds 가 없어요",
-                    descriptionImageUrl: "descriptionImageUrl1",
-                    iconImageUrl: "iconImageUrl1",
-                    tags: ['1:1', "인터뷰"],
-                    items: [
-                        {
-                            title: "테스트 아이템 1-1",
-                            actionType: 'link',
-                            action: 'https://www.google.com',
-                            postCondition : {
-                                "packageName" : "packageName1",
-                                "playTime" : 1000
-                            },
-                            completedUserIds: ['anotherUserId']
-                        }
-                    ],
-                    "guide" : "guide1"
-                }, {
-                    order : 2,
-                    title : "미션2",
-                    description: "적합한 테스터는 너야너 너야너",
-                    descriptionImageUrl: "descriptionImageUrl2",
-                    iconImageUrl: "iconImageUrl2",
-                    tags: ['1:1', "인터뷰"],
-                    items: [ {
-                        title: "테스트 아이템 2-1",
-                        actionType: 'link',
-                        action: 'https://www.google.com',
-                        postCondition : {
-                            "packageName" : "packageName2",
-                            "playTime" : 2000
-                        },
-                        completedUserIds: ['anotherUserId']
-                    }, {
-                        title: "테스트 아이템 2-2",
-                        actionType: 'link',
-                        action: 'https://www.google.com',
-                        completedUserIds: ['anotherUserId']
-                    } ],
-                    "guide" : "guide2"
-                }
-            ],
-            "apps" : [],
-            "isGroup" : true,
-        },
-        {
-            "_id" : mongoose.Types.ObjectId("444444444444444444444400"),
-            "title" : "4.내가 타게팅이 되지 않은 테스트 그룹",
-            "description" : "description4",
-            "tags" : [
-                "설문"
-            ],
-            overviewImageUrl: 'overviewImageUrl4',
-            iconImageUrl: 'testIconImageUrl4',
-            openDate: new Date('2018-12-26'),
-            closeDate: new Date('2018-12-31'),
-            targetUserIds: ['anotherUserId'],
-            rewards : {
-                "list" : [
-                    {
-                        "order" : 1,
-                        "title" : "1테스트 요정 (전체지급)",
-                        "content" : "문화상품권 1000원",
-                        "userIds" : []
-                    },
-                    {
-                        "order" : 2,
-                        "title" : "1테스트 영웅 (1명)",
-                        "content" : "문화상품권 5000원",
-                        "userIds" : []
-                    }
-                ]
-            },
-            missions : [
-                {
-                    order : 1,
-                    title : "미션1",
-                    description: "targetUserIds 가 없어요",
-                    descriptionImageUrl: "descriptionImageUrl1",
-                    iconImageUrl: "iconImageUrl1",
-                    tags: ['1:1', "인터뷰"],
-                    items: [
-                        {
-                            title: "테스트 아이템 1",
-                            actionType: 'link',
-                            action: 'https://www.google.com',
-                            postCondition : {
-                                "packageName" : "packageName1",
-                                "playTime" : 1000
-                            },
-                        }
-                    ],
-                    "guide" : "guide1"
-                }, {
-                    order : 2,
-                    title : "미션2",
-                    description: "적합한 테스터는 너야너 너야너",
-                    descriptionImageUrl: "descriptionImageUrl2",
-                    iconImageUrl: "iconImageUrl2",
-                    tags: ['1:1', "인터뷰"],
-                    items: [ {
-                        title: "테스트 아이템 2-1",
-                        actionType: 'link',
-                        action: 'https://www.google.com',
-                        postCondition : {
-                            "packageName" : "packageName2",
-                            "playTime" : 2000
-                        },
-                    }, {
-                        title: "테스트 아이템 2-2",
-                        actionType: 'link',
-                        action: 'https://www.google.com',
-                    } ],
-                    "guide" : "guide2"
-                }
-            ],
-            "apps" : [],
-            "isGroup" : true,
-            afterService: {
-                awards: "awards1",
-                epilogue: "epilogueURL1",
-                companySays: "짱이에요"
-            }
-        },
-        ///////////////////// end of 그룹
-        {
-            "_id" : mongoose.Types.ObjectId("111111111111111111111101"),
-            groupId: mongoose.Types.ObjectId("111111111111111111111100"),
-            id : 1,
-            title : "전체 유저 대상 테스트",
-            subTitle: "targetUserIds 가 없어요",
-            tags: ['1:1', "인터뷰"],
-            openDate: new Date('2018-12-26'),
-            closeDate: new Date('2018-12-31'),
-            actionType: 'link',
-            action: 'https://www.google.com',
-            overviewImageUrl: 'testImageUrl1',
-            reward: 'testReward1',
-            requiredTime: 1000,
-            amount: '1가지 시나리오',
-        }, {
-            "_id" : mongoose.Types.ObjectId("111111111111111111111102"),
-            groupId: mongoose.Types.ObjectId("111111111111111111111100"),
-            id : 2,
-            title : "타겟팅 된 테스트",
-            subTitle: "적합한 테스터는 너야너 너야너",
-            tags: ['1:1', "인터뷰"],
-            openDate: new Date('2018-12-26'),
-            closeDate: new Date('2018-12-31'),
-            actionType: 'link',
-            action: 'https://www.google.com',
-            targetUserIds: [config.testUser.userId, "anotherUserId"],
-            overviewImageUrl: 'testImageUrl2',
-            reward: 'testReward2',
-            requiredTime: 2000,
-            amount: '2가지 시나리오',
-        }, {
-            "_id" : mongoose.Types.ObjectId("111111111111111111111103"),
-            groupId: mongoose.Types.ObjectId("111111111111111111111100"),
-            id : 3,
-            title : "타겟팅 되지 않은 테스트",
-            subTitle: "응 탈락",
-            tags: ['1:1', "인터뷰"],
-            openDate: new Date('2018-12-26'),
-            closeDate: new Date('2018-12-31'),
-            actionType: 'link',
-            action: 'https://www.google.com',
-            targetUserIds: ['anotherUserId'],
-            overviewImageUrl: 'testImageUrl3',
-            reward: 'testReward3',
-            requiredTime: 3000,
-            amount: '3가지 시나리오',
-        }, {
-            "_id" : mongoose.Types.ObjectId("222222222222222222222201"),
-            groupId: mongoose.Types.ObjectId("222222222222222222222200"),
-            id : 4,
-            title : "아무도 타겟팅 되지 않은 테스트",
-            subTitle: "응 모두 탈락",
-            tags: ['1:1', "인터뷰"],
-            openDate: new Date('2018-12-26'),
-            closeDate: new Date('2018-12-31'),
-            actionType: 'link',
-            action: 'https://www.google.com',
-            targetUserIds: [],
-            overviewImageUrl: 'testImageUrl4',
-            reward: 'testReward4',
-            requiredTime: 4000,
-            amount: '4가지 시나리오',
-        },  {
-            "_id" : mongoose.Types.ObjectId("222222222222222222222202"),
-            groupId: mongoose.Types.ObjectId("222222222222222222222200"),
-            id : 5,
-            title : "이미 참여한 테스트",
-            subTitle: "참여했다",
-            tags: ['1:1', "인터뷰"],
-            openDate: new Date('2018-12-26'),
-            closeDate: new Date('2018-12-31'),
-            actionType: 'link',
-            action: 'https://www.google.com',
-            completedUserIds: [config.testUser.userId],
-            overviewImageUrl: 'testImageUrl5',
-            reward: 'testReward5',
-            requiredTime: 5000,
-            amount: '5가지 시나리오',
-        }
-    ];
 
     before(done => {
         helper.commonBefore()
@@ -430,108 +38,95 @@ describe('BetaTests', () => {
 
     describe('GET /beta-tests', () => {
 
-        it('참여 가능한 피드백 요청 목록을 조회한다', done => {
-            sandbox.useFakeTimers(new Date("2018-12-28T02:30:00.000Z").getTime());
+        it('오픈된 피드백 요청 목록을 조회한다', done => {
+            sandbox.useFakeTimers(new Date("2019-06-25T02:30:00.000Z").getTime());
 
             request.get('/beta-tests')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
                     res.body.sort((a, b) => a.title > b.title ? 1 : -1);
+                    console.error(res.body);
 
-                    res.body.length.should.be.eql(3);
+                    res.body.length.should.be.eql(5);
 
-                    res.body[0].title.should.be.eql('이미 참여한 테스트');
-                    res.body[0].subTitle.should.be.eql('참여했다');
-                    res.body[0].tags.length.should.be.eql(2);
-                    res.body[0].tags[0].should.be.eql('1:1');
-                    res.body[0].tags[1].should.be.eql('인터뷰');
-                    res.body[0].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
-                    res.body[0].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
-                    res.body[0].actionType.should.be.eql('link');
-                    res.body[0].action.should.be.eql('https://www.google.com');
-                    res.body[0].overviewImageUrl.should.be.eql('testImageUrl5');
-                    res.body[0].reward.should.be.eql('testReward5');
-                    res.body[0].requiredTime.should.be.eql(5000);
-                    res.body[0].amount.should.be.eql('5가지 시나리오');
-                    res.body[0].isOpened.should.be.eql(true);
-                    res.body[0].isCompleted.should.be.eql(true);
-                    res.body[0].currentDate.should.be.eql('2018-12-28T02:30:00.000Z');
+                    res.body[0]._id.should.be.eql("5c25e1e824196d19231fbed3");
+                    res.body[0].overviewImageUrl.should.be.eql("https://images.pexels.com/photos/669610/pexels-photo-669610.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940");
+                    res.body[0].title.should.be.eql("appbee0627 한테만 보이는 활성화된 테스트");
+                    res.body[0].description.should.be.eql("targetUserIds에 추가해보았다");
+                    res.body[0].progressText.ready.should.be.eql("망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.");
+                    res.body[0].progressText.doing.should.be.eql("아직 참여 진행중인데 끝내고 싶지 않니??? 얼른 끝내버리자아아앙 두줄두줄 두줄두줄");
+                    res.body[0].progressText.done.should.be.eql("굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요.");
+                    res.body[0].tags.length.should.be.eql(1);
+                    res.body[0].tags[0].should.be.eql("설문");
+                    res.body[0].openDate.should.be.eql("2018-12-28T00:00:00.000Z");
+                    res.body[0].closeDate.should.be.eql("2119-12-31T00:00:00.000Z");
+                    should.not.exist(res.body[0].bugReport);
+                    res.body[0].completedItemCount.should.be.eql(0);
+                    res.body[0].totalItemCount.should.be.eql(1);
 
-                    res.body[1].title.should.be.eql('전체 유저 대상 테스트');
-                    res.body[1].subTitle.should.be.eql('targetUserIds 가 없어요');
-                    res.body[1].tags.length.should.be.eql(2);
-                    res.body[1].tags[0].should.be.eql('1:1');
-                    res.body[1].tags[1].should.be.eql('인터뷰');
-                    res.body[1].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
-                    res.body[1].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
-                    res.body[1].actionType.should.be.eql('link');
-                    res.body[1].action.should.be.eql('https://www.google.com');
-                    res.body[1].overviewImageUrl.should.be.eql('testImageUrl1');
-                    res.body[1].reward.should.be.eql('testReward1');
-                    res.body[1].requiredTime.should.be.eql(1000);
-                    res.body[1].amount.should.be.eql('1가지 시나리오');
-                    res.body[1].isOpened.should.be.eql(true);
-                    res.body[1].isCompleted.should.be.eql(false);
-                    should.not.exist(res.body[1].targetUserIds);
-                    should.not.exist(res.body[1].completedUserIds);
-                    res.body[1].currentDate.should.be.eql('2018-12-28T02:30:00.000Z');
+                    res.body[1]._id.should.be.eql("5c7345f718500feddc24ca34");
+                    res.body[1].overviewImageUrl.should.be.eql("https://i.imgur.com/5z0esWH.png");
+                    res.body[1].title.should.be.eql("버그제보 & 리워드 없음");
+                    res.body[1].description.should.be.eql("* 제보 기간 : 2/25(월) ~ 3/3(일)\n* 제보 방법 : 게임 플레이 시 발견되는 버그가 있을 때마다 이 카드를 통해 제보\n* 중요 버그 제보를 할 수록 테스트 영웅 수상의 가능성이 높아집니다!");
+                    res.body[1].progressText.ready.should.be.eql("아직도 안해본 사람이 있다고요???");
+                    res.body[1].progressText.doing.should.be.eql("당신을 기다리고 있었어요! 이어서 참여해볼까요??????????????????????????????????????????????");
+                    res.body[1].progressText.done.should.be.eql("짝짝짝! 멋져요! 마감 후 테스터 시상식이 열릴거에요.");
+                    res.body[1].tags.length.should.be.eql(1);
+                    res.body[1].tags[0].should.be.eql("버그제보");
+                    res.body[1].openDate.should.be.eql("2019-02-25T00:00:00.000Z");
+                    res.body[1].closeDate.should.be.eql("2119-03-03T14:59:00.000Z");
+                    res.body[1].bugReport.url.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSeApAn8oPp8mW6UT8RD1uMbKk_UvAiWBh5jwlxlyUUI4D2N1g/viewform?usp=pp_url&entry.455936817=");
+                    res.body[1].completedItemCount.should.be.eql(2);
+                    res.body[1].totalItemCount.should.be.eql(2);
 
-                    res.body[2].title.should.be.eql('타겟팅 된 테스트');
-                    res.body[2].subTitle.should.be.eql('적합한 테스터는 너야너 너야너');
-                    res.body[2].tags.length.should.be.eql(2);
-                    res.body[2].tags[0].should.be.eql('1:1');
-                    res.body[2].tags[1].should.be.eql('인터뷰');
-                    res.body[2].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
-                    res.body[2].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
-                    res.body[2].actionType.should.be.eql('link');
-                    res.body[2].action.should.be.eql('https://www.google.com');
-                    res.body[2].overviewImageUrl.should.be.eql('testImageUrl2');
-                    res.body[2].reward.should.be.eql('testReward2');
-                    res.body[2].requiredTime.should.be.eql(2000);
-                    res.body[2].amount.should.be.eql('2가지 시나리오');
-                    res.body[2].isOpened.should.be.eql(true);
-                    res.body[2].isCompleted.should.be.eql(false);
-                    should.not.exist(res.body[2].targetUserIds);
-                    should.not.exist(res.body[2].completedUserIds);
-                    res.body[2].currentDate.should.be.eql('2018-12-28T02:30:00.000Z');
+                    res.body[2]._id.should.be.eql("5ce51a069cb162da02b9f94d");
+                    res.body[2].overviewImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
+                    res.body[2].title.should.be.eql("테스트 추가 신청하기 (버그제보 있음)");
+                    res.body[2].description.should.be.eql("테스트 하고싶은 게임 추가신청을 할 수 있어여");
+                    res.body[2].progressText.ready.should.be.eql("망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.");
+                    res.body[2].progressText.doing.should.be.eql("당신을 기다리고 있었어요! 이어서 참여해볼까요?");
+                    res.body[2].progressText.done.should.be.eql("굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요.");
+                    res.body[2].tags.length.should.be.eql(3);
+                    res.body[2].tags[0].should.be.eql("설문fsagsgasdadddddj 아아아아 ㄴ나나나ㅏ");
+                    res.body[2].tags[1].should.be.eql("태그다");
+                    res.body[2].tags[2].should.be.eql("꿀잼");
+                    res.body[2].openDate.should.be.eql("2019-03-11T00:00:00.000Z");
+                    res.body[2].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");
+                    res.body[2].completedItemCount.should.be.eql(2);
+                    res.body[2].totalItemCount.should.be.eql(4);
+
+                    res.body[3]._id.should.be.eql("5c25c77798d78f078d8ef3ba");
+                    res.body[3].overviewImageUrl.should.be.eql("https://images.pexels.com/photos/669609/pexels-photo-669609.jpeg?auto=compress&cs=tinysrgb&dpr=2&fit=crop&h=500&w=500");
+                    res.body[3].title.should.be.eql("포메스 설문조사 입니다! 제목이 좀 길어요 깁니다요 길어요오 제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오");
+                    res.body[3].description.should.be.eql("갑자기 분위기 설문조사! 포메스 앱에 대한 설문조사입니다 :-D");
+                    res.body[3].progressText.ready.should.be.eql("밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.");
+                    res.body[3].progressText.doing.should.be.eql("당신을 기다리고 있었어요! 이어서 참여해볼까요?");
+                    res.body[3].progressText.done.should.be.eql("짝짝짝! 멋져요! 마감 후 테스터 시상식이 열릴거에요.");
+                    res.body[3].tags.length.should.be.eql(1);
+                    res.body[3].tags[0].should.be.eql("플레이");
+                    res.body[3].openDate.should.be.eql("2018-12-28T00:00:00.000Z");
+                    res.body[3].closeDate.should.be.eql("2119-12-31T00:00:00.000Z");
+                    should.not.exist(res.body[3].bugReport);
+                    res.body[3].completedItemCount.should.be.eql(3);
+                    res.body[3].totalItemCount.should.be.eql(5);
+
+                    res.body[4]._id.should.be.eql("5c861f3f2917e70db5d2d536");
+                    res.body[4].overviewImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
+                    res.body[4].title.should.be.eql("포메스 우체통");
+                    res.body[4].description.should.be.eql("우체통임다");
+                    res.body[4].progressText.ready.should.be.eql("망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.");
+                    res.body[4].progressText.doing.should.be.eql("조금만 더 힘내봐요 진행중중중");
+                    res.body[4].progressText.done.should.be.eql("굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요.");
+                    res.body[4].tags.length.should.be.eql(0);
+                    res.body[4].openDate.should.be.eql("2019-03-11T00:00:00.000Z");
+                    res.body[4].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");
+                    res.body[4].completedItemCount.should.be.eql(0);
+                    res.body[4].totalItemCount.should.be.eql(1);
 
                     done();
                 }).catch(err => done(err));
         });
-
-        // TODO : 아래 경우의 수가 포함되지 않는 임시 릴리즈라서 주석처리 한거다....
-        // TODO : V2.5 릴리즈때 이 경우의 수도 고려해야해....!!!!!!!!!!!
-        // it('마감이 지난 그룹의 아이템은 조회되지 않는다. (마감이 지나지 않은 그룹의 아이템은 조회된다)', done => {
-        //     sandbox.useFakeTimers(new Date("2019-01-30T02:30:00.000Z").getTime());
-        //
-        //     request.get('/beta-tests')
-        //         .set('x-access-token', config.appbeeToken.valid)
-        //         .expect(200)
-        //         .then(res => {
-        //             console.log(res.body);
-        //             res.body.length.should.be.eql(1);
-        //
-        //             res.body[0].title.should.be.eql('이미 참여한 테스트');
-        //             res.body[0].subTitle.should.be.eql('참여했다');
-        //             res.body[0].tags.length.should.be.eql(2);
-        //             res.body[0].tags[0].should.be.eql('1:1');
-        //             res.body[0].tags[1].should.be.eql('인터뷰');
-        //             res.body[0].openDate.should.be.eql('2018-12-26T00:00:00.000Z');
-        //             res.body[0].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
-        //             res.body[0].actionType.should.be.eql('link');
-        //             res.body[0].action.should.be.eql('https://www.google.com');
-        //             res.body[0].overviewImageUrl.should.be.eql('testImageUrl5');
-        //             res.body[0].reward.should.be.eql('testReward5');
-        //             res.body[0].requiredTime.should.be.eql(5000);
-        //             res.body[0].amount.should.be.eql('5가지 시나리오');
-        //             res.body[0].isOpened.should.be.eql(false);
-        //             res.body[0].isCompleted.should.be.eql(true);
-        //             res.body[0].currentDate.should.be.eql('2019-01-30T02:30:00.000Z');
-        //
-        //             done();
-        //         }).catch(err => done(err));
-        // });
 
         it('오픈되지 않은 요청 건은 조회하지 않는다', done => {
             sandbox.useFakeTimers(new Date("2018-11-01T02:30:00.000Z").getTime());
@@ -540,6 +135,30 @@ describe('BetaTests', () => {
                 .expect(200)
                 .then(res => {
                     res.body.length.should.be.eql(0);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+    });
+
+    describe('GET /beta-tests/:id/progress', () => {
+
+        it('테스트존 리스트에 나타날 특정 테스트의 진행 상태를 요청한다', done => {
+            sandbox.useFakeTimers(new Date("2019-06-25T02:30:00.000Z").getTime());
+
+            request.get('/beta-tests/5c25e1e824196d19231fbed3/progress')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    console.error(res.body);
+
+                    res.body._id.should.be.eql("5c25e1e824196d19231fbed3");
+                    res.body.completedItemCount.should.be.eql(0);
+                    res.body.totalItemCount.should.be.eql(1);
 
                     done();
                 }).catch(err => done(err));
@@ -559,27 +178,36 @@ describe('BetaTests', () => {
 
         // 정상
         it('요청한 유저를 완료 리스트에 추가한다', done => {
-            request.post('/beta-tests/1/complete')
+            request.post('/beta-tests/5d19996f839927107f4bb941/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
-                .then(() => BetaTests.findOne({id: 1}))
+                .then(() => BetaTests.findOne({"missions.items._id": ObjectId("5d19996f839927107f4bb941")}))
                 .then(res => {
-                    res.completedUserIds.length.should.be.eql(1);
-                    res.completedUserIds[0].should.be.eql(config.testUser.userId);
+                    res.missions[0].items[0].completedUserIds.length.should.be.eql(1);
+                    res.missions[0].items[0].completedUserIds[0].should.be.eql(config.testUser.userId);
 
                     done();
                 })
                 .catch(err => done(err));
         });
 
-        it('요청한 유저에게 완료 노티를 보낸다', done => {
-            request.post('/beta-tests/1/complete')
+
+        it('요청한 유저에게 전달받은 알림을 보낸다', done => {
+            request.post('/beta-tests/5d19996f839927107f4bb941/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .send({
+                    betaTestIds: [1, 4],
+                    notificationData: {
+                        channel: 'channel_betatest',
+                        title: '참여하신 테스트가 완료처리 되었어요!👏',
+                        subTitle: '멋져요! [전체 유저 대상 테스트]에 성공적으로 참여하셨습니다.'
+                    }
+                })
                 .expect(200)
                 .then(() => {
-                    const expectUrl = 'https://fcm.googleapis.com/fcm/send';
+                    const expectedUrl = 'https://fcm.googleapis.com/fcm/send';
 
-                    const expectBody = {
+                    const expectedBody = {
                         data: {
                             channel: 'channel_betatest',
                             title: '참여하신 테스트가 완료처리 되었어요!👏',
@@ -588,14 +216,14 @@ describe('BetaTests', () => {
                         to: 'test_user_registration_token'
                     };
 
-                    const expectHeader = {
+                    const expectedHeader = {
                         headers: {
                             Authorization: 'key=testNotiApiKey',
                             'Content-Type' : 'application/json'
                         }
                     };
 
-                    sinon.assert.calledWith(stubAxiosPost, expectUrl, expectBody, expectHeader);
+                    sinon.assert.calledWith(stubAxiosPost, expectedUrl, expectedBody, expectedHeader);
 
                     done();
                 }).catch(err => done(err));
@@ -603,25 +231,24 @@ describe('BetaTests', () => {
 
         // 예외
         it('요청한 유저가 이미 완료한 경우에는 완료 리스트에 추가하지 않는다', done => {
-            request.post('/beta-tests/5/complete')
+            request.post('/beta-tests/5d199a0b839927107f4bb942/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
-                .then(() => BetaTests.findOne({id: 5}))
+                .then(() => BetaTests.findOne({"missions.items._id": ObjectId("5d199a0b839927107f4bb942")}))
                 .then(res => {
-                    console.log(res);
-                    res.completedUserIds.length.should.be.eql(1);
-                    res.completedUserIds[0].should.be.eql(config.testUser.userId);
-
+                    console.log(res.missions[0].items[0]);
+                    res.missions[0].items[0].completedUserIds.length.should.be.eql(1);
+                    res.missions[0].items[0].completedUserIds[0].should.be.eql(config.testUser.userId);
                     done();
                 })
                 .catch(err => done(err));
         });
 
         it('요청한 유저가 이미 완료한 경우에는 완료 노티를 보내지 않는다', done => {
-            request.post('/beta-tests/5/complete')
+            request.post('/beta-tests/5d199a0b839927107f4bb942/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
-                .then(() => BetaTests.findOne({id: 5}))
+                .then(() => BetaTests.findOne({"missions.items._id": ObjectId("5d199a0b839927107f4bb942")}))
                 .then(() => {
                     sinon.assert.notCalled(stubAxiosPost);
                     done();
@@ -629,7 +256,7 @@ describe('BetaTests', () => {
         });
 
         it('요청한 유저정보가 유효한 이메일로 접수되지 않은 경우 403 에러를 반환한다', done => {
-            request.post('/beta-tests/1/complete')
+            request.post('/beta-tests/1/complete?from=external_script')
                 .set('x-access-token', 'InvalidAccessToken')
                 .expect(403)
                 .then(() => done())
@@ -641,7 +268,7 @@ describe('BetaTests', () => {
         });
     });
 
-    describe('POST /beta-tests/target-user', () => {
+    describe.skip('POST /beta-tests/target-user', () => {
         let stubAxiosPost;
 
         beforeEach(() => {
@@ -770,39 +397,69 @@ describe('BetaTests', () => {
                 .then(res => {
                     res.body.sort((a, b) => a.title > b.title ? 1 : -1);
 
-                    console.log(new Date());
-                    console.log(res.body);
+                    console.error(res.body);
 
-                    res.body.length.should.be.eql(3);
+                    res.body.length.should.be.eql(5);
 
-                    res.body[0].title.should.be.eql('1.전체 유저 대상이고 내가 완료하지 않은 테스트 그룹');
-                    res.body[0].iconImageUrl.should.be.eql('testIconImageUrl1');
-                    res.body[0].closeDate.should.be.eql('2018-12-31T00:00:00.000Z');
+                    res.body[0]._id.should.be.eql("5d01b1f6db7d04bc2d04345c");
+                    res.body[0].iconImageUrl.should.be.eql("https://i.imgur.com/oXFepuQ.jpg");
+                    res.body[0].title.should.be.eql("[매드러너] 게임 테스트");
+                    res.body[0].description.should.be.eql("");
                     res.body[0].tags.length.should.be.eql(1);
-                    res.body[0].tags[0].should.be.eql('설문');
-                    res.body[0].isOpened.should.be.eql(false);
-                    res.body[0].isCompleted.should.be.eql(false);
-                    res.body[0].afterService.awards.should.be.eql('awards1');
-                    res.body[0].afterService.epilogue.should.be.eql('epilogueURL1');
-                    res.body[0].afterService.companySays.should.be.eql('짱이에요');
+                    res.body[0].tags[0].should.be.eql("설문");
+                    res.body[0].openDate.should.be.eql("2019-06-13T00:00:00.000Z");
+                    res.body[0].closeDate.should.be.eql("2019-06-19T14:59:59.999Z");
+                    should.not.exist(res.body[0].afterService);
+                    res.body[0].completedItemCount.should.be.eql(2);
+                    res.body[0].totalItemCount.should.be.eql(2);
 
-                    res.body[1].title.should.be.eql('2.타게팅 되었고 내가 완로한 테스트 그룹');
-                    res.body[1].iconImageUrl.should.be.eql('testIconImageUrl2');
-                    res.body[1].closeDate.should.be.eql('2019-03-25T00:00:00.000Z');
+                    res.body[1]._id.should.be.eql("5c986adee1a6f20813ec464d");
+                    res.body[1].iconImageUrl.should.be.eql("https://i.imgur.com/4A0jfFe.jpg");
+                    res.body[1].title.should.be.eql("[메이헴의 유산] 게임 테스트 + 에필로그");
                     res.body[1].tags.length.should.be.eql(1);
-                    res.body[1].tags[0].should.be.eql('설문');
-                    res.body[1].isOpened.should.be.eql(false);
-                    res.body[1].isCompleted.should.be.eql(true);
-                    should.not.exist(res.body[1].afterService);
+                    res.body[1].tags[0].should.be.eql("설문");
+                    res.body[1].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
+                    res.body[1].closeDate.should.be.eql("2019-03-23T00:00:00.000Z");
+                    res.body[1].afterService.awards.should.be.eql("테스트 영웅 : 드래군핥짝 님\n테스트 요정 : 이브 외 9명");
+                    res.body[1].afterService.epilogue.should.be.eql("http://www.naver.com");
+                    res.body[1].afterService.companySays.should.be.eql("포메스 짱! 완전 짱! 대박! 완전! 완전! 두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄");
+                    res.body[1].completedItemCount.should.be.eql(0);
+                    res.body[1].totalItemCount.should.be.eql(1);
 
-                    res.body[2].title.should.be.eql('3.타게팅 되었고 내가 완로하지 않은 테스트 그룹');
-                    res.body[2].iconImageUrl.should.be.eql('testIconImageUrl3');
-                    res.body[2].closeDate.should.be.eql('2019-03-25T00:00:00.000Z');
+                    res.body[2]._id.should.be.eql("5c99d14fd122450cf08431ab");
+                    res.body[2].iconImageUrl.should.be.eql("https://i.imgur.com/4oaQHWe.jpg");
+                    res.body[2].title.should.be.eql("appbee0627이 참여하지 않은 그룹! 에필로그도 없음!");
                     res.body[2].tags.length.should.be.eql(1);
-                    res.body[2].tags[0].should.be.eql('설문');
-                    res.body[2].isOpened.should.be.eql(false);
-                    res.body[2].isCompleted.should.be.eql(false);
+                    res.body[2].tags[0].should.be.eql("설문");
+                    res.body[2].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
+                    res.body[2].closeDate.should.be.eql("2019-03-25T00:00:00.000Z");
                     should.not.exist(res.body[2].afterService);
+                    res.body[2].completedItemCount.should.be.eql(0);
+                    res.body[2].totalItemCount.should.be.eql(1);
+
+                    res.body[3]._id.should.be.eql("5c989f0a2917e70db5d4fc2e");
+                    res.body[3].iconImageUrl.should.be.eql("https://i.imgur.com/uSaMpey.jpg");
+                    res.body[3].title.should.be.eql("appbee0627이 참여한 그룹! + 에필로그  길게길게길게길게길게길게길게길게길게길게길게길게길게길게길게");
+                    res.body[3].tags.length.should.be.eql(1);
+                    res.body[3].tags[0].should.be.eql("설문");
+                    res.body[3].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
+                    res.body[3].closeDate.should.be.eql("2019-03-26T00:00:00.000Z");
+                    res.body[3].afterService.awards.should.be.eql("포메스 팀 : 참가자 여러분 모두 저희의 챔피언❤️");
+                    res.body[3].afterService.epilogue.should.be.eql("http://www.google.co.kr");
+                    res.body[3].afterService.companySays.should.be.eql("게임사 가라사대, 너희가 나를 살찌웠노라.... 고맙노라.....");
+                    res.body[3].completedItemCount.should.be.eql(1);
+                    res.body[3].totalItemCount.should.be.eql(1);
+
+                    res.body[4]._id.should.be.eql("5c99d101d122450cf08431aa");
+                    res.body[4].iconImageUrl.should.be.eql("https://i.imgur.com/7886ojX.png");
+                    res.body[4].title.should.be.eql("appbee0627이 참여한 그룹! 근데 에필로그가 아직 등록안됨!!!!");
+                    res.body[4].tags.length.should.be.eql(1);
+                    res.body[4].tags[0].should.be.eql("설문");
+                    res.body[4].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
+                    res.body[4].closeDate.should.be.eql("2019-03-24T00:00:00.000Z");
+                    should.not.exist(res.body[4].afterService);
+                    res.body[4].completedItemCount.should.be.eql(1);
+                    res.body[4].totalItemCount.should.be.eql(1);
 
                     done();
                 }).catch(err => done(err));
@@ -815,6 +472,105 @@ describe('BetaTests', () => {
                 .expect(200)
                 .then(res => {
                     res.body.length.should.be.eql(0);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+    });
+
+    describe('GET /beta-tests/detail/:id', () => {
+
+        it('종료된 피드백 요청 목록을 조회한다', done => {
+            sandbox.useFakeTimers(new Date("2019-06-30T02:30:00.000Z").getTime());
+
+            request.get('/beta-tests/detail/5ce51a069cb162da02b9f94d')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    console.error(res.body);
+
+                    res.body._id.should.be.eql("5ce51a069cb162da02b9f94d");
+                    res.body.title.should.be.eql("테스트 추가 신청하기 (버그제보 있음)");
+                    res.body.description.should.be.eql("테스트 하고싶은 게임 추가신청을 할 수 있어여");
+                    res.body.overviewImageUrl.should.be.eql('https://i.imgur.com/n2MaXzg.png');
+                    res.body.iconImageUrl.should.be.eql('https://i.imgur.com/n2MaXzg.png');
+                    res.body.openDate.should.be.eql('2019-03-11T00:00:00.000Z');
+                    res.body.closeDate.should.be.eql('2119-12-31T14:59:50.000Z');
+                    res.body.missions.length.should.be.eql(3);
+                    res.body.missions[0].order.should.be.eql(1);
+                    res.body.missions[0].title.should.be.eql("베타테스트 추가 신청하기");
+                    res.body.missions[0].description.should.be.eql("테스트를 신청하라!!!!\n테스트 하고 싶은 게임 골라라아아아아ㅏ아");
+                    res.body.missions[0].descriptionImageUrl.should.be.eql('https://i.imgur.com/n2MaXzg.png');
+                    res.body.missions[0].iconImageUrl.should.be.eql('https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png');
+                    res.body.missions[0].items.length.should.be.eql(1);
+                    console.log(res.body.missions[0].items);
+                    console.log(res.body.missions[1].items);
+                    console.log(res.body.missions[2].items);
+                    res.body.missions[0].items[0].title.should.be.eql("신청하기");
+                    res.body.missions[0].items[0].action.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&entry.1042588232=");
+                    res.body.missions[0].items[0].isCompleted.should.be.eql(true);
+                    res.body.missions[1].order.should.be.eql(2);
+                    res.body.missions[1].title.should.be.eql("첫번째 미션!!!");
+                    res.body.missions[1].description.should.be.eql("게임을 10분 이상 플레이하라!!!!!!!");
+                    res.body.missions[1].descriptionImageUrl.should.be.eql('');
+                    res.body.missions[1].iconImageUrl.should.be.eql('https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png');
+                    res.body.missions[1].guide.should.be.eql('* 위 버튼을 누르면, 테스트 대상 게임 무단배포 금지에 동의로 간주합니다.');
+                    res.body.missions[1].items.length.should.be.eql(1);
+                    res.body.missions[1].items[0].title.should.be.eql("게임 플레이");
+                    res.body.missions[1].items[0].action.should.be.eql("https://play.google.com/store/apps/details?id=com.frozax.tentsandtrees");
+                    res.body.missions[1].items[0].postCondition.playTime.should.be.eql(600000);
+                    res.body.missions[1].items[0].postCondition.packageName.should.be.eql("com.frozax.tentsandtrees");
+                    res.body.missions[1].items[0].isCompleted.should.be.eql(true);
+                    res.body.missions[2].order.should.be.eql(3);
+                    res.body.missions[2].title.should.be.eql("두번째 미션!!!");
+                    res.body.missions[2].description.should.be.eql("설문을 하라!!!!!!!!!!!");
+                    res.body.missions[2].descriptionImageUrl.should.be.eql('');
+                    res.body.missions[2].iconImageUrl.should.be.eql('https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png');
+                    res.body.missions[2].guide.should.be.eql('* 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다!\n* 불성실한 응답은 보상지급 대상자에서 제외될 수 있습니다.');
+                    res.body.missions[2].items.length.should.be.eql(2);
+                    res.body.missions[2].items[0].title.should.be.eql("의견 작성");
+                    res.body.missions[2].items[0].action.should.be.eql("https://www.naver.com");
+                    res.body.missions[2].items[0].isCompleted.should.be.eql(false);
+                    res.body.missions[2].items[1].title.should.be.eql("의견 작성2");
+                    res.body.missions[2].items[1].action.should.be.eql("https://www.naver.com");
+                    res.body.missions[2].items[1].isCompleted.should.be.eql(false);
+                    res.body.rewards.minimumDelay.should.be.eql(100);
+                    res.body.rewards.list.length.should.be.eql(3);
+                    res.body.tags.length.should.be.eql(3);
+                    res.body.tags[0].should.be.eql("설문fsagsgasdadddddj 아아아아 ㄴ나나나ㅏ");
+                    res.body.tags[1].should.be.eql("태그다");
+                    res.body.tags[2].should.be.eql("꿀잼");
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+    });
+
+    describe('GET /beta-tests/mission/:id/progress', () => {
+
+        it('특정 미션의 요청한 유저의 진행 상태를 반환한다', done => {
+            sandbox.useFakeTimers(new Date("2019-06-30T02:30:00.000Z").getTime());
+
+            request.get('/beta-tests/mission/5d1d6be5d638af0bb86b0f6d/progress')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    console.error(res.body);
+
+                    res.body[0]._id.should.be.eql("5d199913839927107f4bb93f");
+                    res.body[0].isCompleted.should.be.eql(true);
+                    res.body[1]._id.should.be.eql("5d1d74d1d638af0bb86b0f6f");
+                    res.body[1].isCompleted.should.be.eql(false);
+                    res.body[2]._id.should.be.eql("5d1d74d6d638af0bb86b0f70");
+                    res.body[2].isCompleted.should.be.eql(true);
 
                     done();
                 }).catch(err => done(err));

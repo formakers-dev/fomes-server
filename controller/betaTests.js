@@ -16,24 +16,40 @@ const getFinishedBetaTestList = (req, res, next) => {
         .catch(err => next(err))
 };
 
+const getDetailBetaTest = (req, res, next) => {
+    BetaTestsService.findBetaTest(req.params.id, req.userId)
+        .then(betaTest => res.json(betaTest))
+        .catch(err => next(err))
+};
+
+const getProgress = (req, res, next) => {
+  BetaTestsService.findBetaTestProgress(req.params.id, req.userId)
+      .then(betaTests => res.json(betaTests[0]))
+      .catch(err => next(err))
+};
+
+const getMissionProgress = (req, res, next) => {
+    BetaTestsService.findMissionItemsProgress(req.params.id, req.userId)
+        .then(missionItems => res.json(missionItems))
+        .catch(err => next(err))
+}
+
 const postComplete = (req, res, next) => {
+    console.log("[", req.userId, "] postComplete ", req.params.id);
+
     BetaTestsService.updateCompleted(req.params.id, req.userId)
         .then(betaTest => {
             if (betaTest) {
-                let betaTestNotificationMessage;
+                const notificationData = req.body.notificationData;
 
-                return ConfigurationsService.getNotificationMessage()
-                    .then(notificationMessage => {
-                        betaTestNotificationMessage = notificationMessage.betaTest;
-                        return UsersService.getUser(req.userId);
-                    })
+                if (!notificationData) {
+                    return;
+                }
+
+                return UsersService.getUser(req.userId)
                     .then(user => {
                         const body = {
-                            'data' : {
-                                'channel' : 'channel_betatest',
-                                'title' : betaTestNotificationMessage.completeTitle,
-                                'subTitle' : betaTestNotificationMessage.completeSubTitle.replace(":TITLE", betaTest.title)
-                            },
+                            'data' : req.body.notificationData,
                             'to' : user.registrationToken,
                         };
 
@@ -44,6 +60,7 @@ const postComplete = (req, res, next) => {
                             }
                         })
                     });
+
             } else {
                 return Promise.resolve();
             }
@@ -89,6 +106,9 @@ const postTargetUser = (req, res, next) => {
 module.exports = {
     getBetaTestList,
     getFinishedBetaTestList,
+    getDetailBetaTest,
+    getProgress,
+    getMissionProgress,
     postComplete,
     postTargetUser
 };
