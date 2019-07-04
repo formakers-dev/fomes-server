@@ -22,6 +22,12 @@ const getDetailBetaTest = (req, res, next) => {
         .catch(err => next(err))
 };
 
+const getProgress = (req, res, next) => {
+  BetaTestsService.findBetaTestProgress(req.params.id, req.userId)
+      .then(betaTests => res.json(betaTests[0]))
+      .catch(err => next(err))
+};
+
 const getMissionProgress = (req, res, next) => {
     BetaTestsService.findMissionItemsProgress(req.params.id, req.userId)
         .then(missionItems => res.json(missionItems))
@@ -101,6 +107,7 @@ module.exports = {
     getBetaTestList,
     getFinishedBetaTestList,
     getDetailBetaTest,
+    getProgress,
     getMissionProgress,
     postComplete,
     postTargetUser

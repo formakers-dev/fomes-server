@@ -145,6 +145,30 @@ describe('BetaTests', () => {
         });
     });
 
+    describe('GET /beta-tests/:id/progress', () => {
+
+        it('테스트존 리스트에 나타날 특정 테스트의 진행 상태를 요청한다', done => {
+            sandbox.useFakeTimers(new Date("2019-06-25T02:30:00.000Z").getTime());
+
+            request.get('/beta-tests/5c25e1e824196d19231fbed3/progress')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    console.error(res.body);
+
+                    res.body._id.should.be.eql("5c25e1e824196d19231fbed3");
+                    res.body.completedItemCount.should.be.eql(0);
+                    res.body.totalItemCount.should.be.eql(1);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+    });
+
     describe('POST /beta-tests/:id/complete', () => {
         let stubAxiosPost;
 

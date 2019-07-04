@@ -4,6 +4,7 @@ const BetaTestController = require('../controller/betaTests');
 const Auth = require('../middleware/auth');
 
 router.get('/', Auth.verifyAppBeeToken, BetaTestController.getBetaTestList);
+router.get('/:id/progress', Auth.verifyAppBeeToken, BetaTestController.getProgress);
 router.get('/finished', Auth.verifyAppBeeToken, BetaTestController.getFinishedBetaTestList);
 router.get('/detail/:id/', Auth.verifyAppBeeToken, BetaTestController.getDetailBetaTest);
 router.get('/mission/:id/progress', Auth.verifyAppBeeToken, BetaTestController.getMissionProgress);
