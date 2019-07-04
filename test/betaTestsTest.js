@@ -100,7 +100,7 @@ describe('BetaTests', () => {
                     res.body[3].overviewImageUrl.should.be.eql("https://images.pexels.com/photos/669609/pexels-photo-669609.jpeg?auto=compress&cs=tinysrgb&dpr=2&fit=crop&h=500&w=500");
                     res.body[3].title.should.be.eql("포메스 설문조사 입니다! 제목이 좀 길어요 깁니다요 길어요오 제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오");
                     res.body[3].description.should.be.eql("갑자기 분위기 설문조사! 포메스 앱에 대한 설문조사입니다 :-D");
-                    res.body[3].progressText.ready.should.be.eql("밑져야 본전! 재미있어 보인다면 참여해 보세요.");
+                    res.body[3].progressText.ready.should.be.eql("밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.");
                     res.body[3].progressText.doing.should.be.eql("당신을 기다리고 있었어요! 이어서 참여해볼까요?");
                     res.body[3].progressText.done.should.be.eql("짝짝짝! 멋져요! 마감 후 테스터 시상식이 열릴거에요.");
                     res.body[3].tags.length.should.be.eql(1);
@@ -108,8 +108,8 @@ describe('BetaTests', () => {
                     res.body[3].openDate.should.be.eql("2018-12-28T00:00:00.000Z");
                     res.body[3].closeDate.should.be.eql("2119-12-31T00:00:00.000Z");
                     should.not.exist(res.body[3].bugReport);
-                    res.body[3].completedItemCount.should.be.eql(0);
-                    res.body[3].totalItemCount.should.be.eql(2);
+                    res.body[3].completedItemCount.should.be.eql(3);
+                    res.body[3].totalItemCount.should.be.eql(5);
 
                     res.body[4]._id.should.be.eql("5c861f3f2917e70db5d2d536");
                     res.body[4].overviewImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
@@ -520,6 +520,33 @@ describe('BetaTests', () => {
                     res.body.tags[0].should.be.eql("설문fsagsgasdadddddj 아아아아 ㄴ나나나ㅏ");
                     res.body.tags[1].should.be.eql("태그다");
                     res.body.tags[2].should.be.eql("꿀잼");
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+    });
+
+    describe('GET /beta-tests/mission/:id/progress', () => {
+
+        it('특정 미션의 요청한 유저의 진행 상태를 반환한다', done => {
+            sandbox.useFakeTimers(new Date("2019-06-30T02:30:00.000Z").getTime());
+
+            request.get('/beta-tests/mission/5d1d6be5d638af0bb86b0f6d/progress')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    console.error(res.body);
+
+                    res.body[0]._id.should.be.eql("5d199913839927107f4bb93f");
+                    res.body[0].isCompleted.should.be.eql(true);
+                    res.body[1]._id.should.be.eql("5d1d74d1d638af0bb86b0f6f");
+                    res.body[1].isCompleted.should.be.eql(false);
+                    res.body[2]._id.should.be.eql("5d1d74d6d638af0bb86b0f70");
+                    res.body[2].isCompleted.should.be.eql(true);
 
                     done();
                 }).catch(err => done(err));

@@ -12,7 +12,7 @@ const data = [
         "title" : "포메스 설문조사 입니다! 제목이 좀 길어요 깁니다요 길어요오 제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오",
         "description" : "갑자기 분위기 설문조사! 포메스 앱에 대한 설문조사입니다 :-D",
         "progressText" : {
-            "ready" : "밑져야 본전! 재미있어 보인다면 참여해 보세요.",
+            "ready" : "밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.",
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
             "done" : "짝짝짝! 멋져요! 마감 후 테스터 시상식이 열릴거에요."
         },
@@ -50,48 +50,85 @@ const data = [
         },
         "missions" : [
             {
-                "order" : 1,
-                "title" : "게임 플레이",
-                "description" : "포메스를 자유롭게 이용해주세요!",
-                "descriptionImageUrl" : "",
+                "order" : 2,
+                "title" : "설문 참여",
+                "description" : "포메스에 대한 솔직한 의견 부탁드립니다.",
+                "descriptionImageUrl" : "https://i.imgur.com/jkLkNSj.jpg",
                 "iconImageUrl" : "https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png",
                 "items" : [
                     {
-                        "title" : "게임 플레이",
+                        "order" : 1,
+                        "title" : "의견 작성",
                         "actionType" : "link",
                         "action" : "https://docs.google.com/forms/d/e/1FAIpQLSe17_zvBmDWR1T-HvMPtUYg50XIL8bhdTFCLnT23lfS4QtvXg/viewform?usp=pp_url&entry.1575991284=",
+                        "completedUserIds" : [
+                            "google115909938647516500511",
+                            config.testUser.userId
+                        ],
+                        "_id" : ObjectId("5d199913839927107f4bb93f")
+                    },
+                    {
+                        "order" : 3,
+                        "title" : "의견 작성(앱내 웹뷰: actionType-internal_web)",
+                        "actionType" : "internal_web",
+                        "action" : "https://docs.google.com/forms/d/e/1FAIpQLSe17_zvBmDWR1T-HvMPtUYg50XIL8bhdTFCLnT23lfS4QtvXg/viewform?usp=pp_url&entry.1575991284=",
+                        "completedUserIds" : [
+                            "google115909938647516500511"
+                        ],
+                        "_id" : ObjectId("5d1d74d1d638af0bb86b0f6f")
+                    },
+                    {
+                        "order" : 2,
+                        "title" : "의견 작성(앱내 웹뷰: actionType-link)",
+                        "actionType" : "link",
+                        "action" : "https://docs.google.com/forms/d/e/1FAIpQLSe17_zvBmDWR1T-HvMPtUYg50XIL8bhdTFCLnT23lfS4QtvXg/viewform?internal_web=true&usp=pp_url&entry.1575991284=",
+                        "completedUserIds" : [
+                            "google115909938647516500511",
+                            config.testUser.userId
+                        ],
+                        "_id" : ObjectId("5d1d74d6d638af0bb86b0f70")
+                    }
+                ],
+                "guide" : "* 위 버튼을 누르면, 테스트 대상 게임 무단배포 금지에 동의로 간주합니다.",
+                "_id" : ObjectId("5d1d6be5d638af0bb86b0f6d")
+            },
+            {
+                "order" : 1,
+                "title" : "게임 플레이",
+                "description" : "포메스를 자유롭게 이용해주세요!",
+                "descriptionImageUrl" : "https://i.imgur.com/qYZtGrq.jpg",
+                "iconImageUrl" : "https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png",
+                "items" : [
+                    {
+                        "order" : 2,
+                        "type" : "play",
+                        "title" : "게임 플레이",
+                        "actionType" : "link",
+                        "action" : "",
                         "postCondition" : {
                             "packageName" : "com.formakers.fomes",
                             "playTime" : 1800000
                         },
                         "completedUserIds" : [
                             "google115909938647516500511",
-                            "google110241405528009969953"
+                            "google115838807161306170827",
+                            config.testUser.userId
                         ],
                         "_id" : ObjectId("5d1998bb839927107f4bb93e")
-                    }
-                ],
-                "guide" : "* 위 버튼을 누르면, 테스트 대상 게임 무단배포 금지에 동의로 간주합니다."
-            },
-            {
-                "order" : 2,
-                "title" : "설문 참여",
-                "description" : "포메스에 대한 솔직한 의견 부탁드립니다.",
-                "descriptionImageUrl" : "",
-                "iconImageUrl" : "https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png",
-                "items" : [
+                    },
                     {
-                        "title" : "게임 플레이",
+                        "order" : 1,
+                        "title" : "게임 다운로드 하기",
                         "actionType" : "link",
                         "action" : "https://docs.google.com/forms/d/e/1FAIpQLSe17_zvBmDWR1T-HvMPtUYg50XIL8bhdTFCLnT23lfS4QtvXg/viewform?usp=pp_url&entry.1575991284=",
                         "completedUserIds" : [
-                            "google115909938647516500511",
-                            "google110241405528009969953"
+                            "google115909938647516500511"
                         ],
-                        "_id" : ObjectId("5d199913839927107f4bb93f")
+                        "_id" : ObjectId("5d1998bb839927107f4bb931")
                     }
                 ],
-                "guide" : "* 위 버튼을 누르면, 테스트 대상 게임 무단배포 금지에 동의로 간주합니다."
+                "guide" : "* 위 버튼을 누르면, 테스트 대상 게임 무단배포 금지에 동의로 간주합니다.",
+                "_id" : ObjectId("5d1d6bf2d638af0bb86b0f6e")
             }
         ],
         "apps" : []

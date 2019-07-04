@@ -131,6 +131,39 @@ const findBetaTest = (betaTestId, userId) => {
         });
 };
 
+const findMissionItemsProgress = (missionId, userId) => {
+    return BetaTests.aggregate([
+        {
+            $unwind: "$missions"
+        }, {
+            $match: { "missions._id": mongoose.Types.ObjectId(missionId) }
+        }, {
+            $project: {
+                _id: "$missions._id",
+                items: "$missions.items"
+            }
+        }, {
+            $unwind: "$items"
+        }, {
+            $project: {
+                _id: "$items._id",
+                isCompleted: { $in : [userId, "$items.completedUserIds"] },
+            }
+        }
+        // , {
+        //     $group: {
+        //         _id: "$_id",
+        //         "items": {
+        //             $push : {
+        //                 _id: "$items._id",
+        //                 isCompleted:  { $in : [userId, "$items.completedUserIds"] }
+        //             }
+        //         }
+        //     }
+        // }
+    ]);
+};
+
 const concat = (x,y) =>
     x.concat(y);
 
@@ -177,6 +210,7 @@ module.exports = {
     findValidBetaTests,
     findFinishedBetaTests,
     findBetaTest,
+    findMissionItemsProgress,
     updateCompleted,
     addTargetUserId,
 };

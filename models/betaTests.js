@@ -24,6 +24,7 @@ const MissionItemSchema = new Schema({
 });
 
 const MissionSchema = new Schema({
+    _id: mongoose.Schema.Types.ObjectId,
     order : Number,
     title : String,
     description : String,
