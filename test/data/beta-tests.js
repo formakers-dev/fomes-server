@@ -84,7 +84,6 @@ const data = [
                         "action" : "https://docs.google.com/forms/d/e/1FAIpQLSe17_zvBmDWR1T-HvMPtUYg50XIL8bhdTFCLnT23lfS4QtvXg/viewform?internal_web=true&usp=pp_url&entry.1575991284=",
                         "completedUserIds" : [
                             "google115909938647516500511",
-                            config.testUser.userId
                         ],
                         "_id" : ObjectId("5d1d74d6d638af0bb86b0f70")
                     }
