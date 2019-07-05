@@ -108,7 +108,7 @@ describe('BetaTests', () => {
                     res.body[3].openDate.should.be.eql("2018-12-28T00:00:00.000Z");
                     res.body[3].closeDate.should.be.eql("2119-12-31T00:00:00.000Z");
                     should.not.exist(res.body[3].bugReport);
-                    res.body[3].completedItemCount.should.be.eql(3);
+                    res.body[3].completedItemCount.should.be.eql(2);
                     res.body[3].totalItemCount.should.be.eql(5);
 
                     res.body[4]._id.should.be.eql("5c861f3f2917e70db5d2d536");
@@ -177,14 +177,34 @@ describe('BetaTests', () => {
         });
 
         // 정상
-        it('요청한 유저를 완료 리스트에 추가한다', done => {
-            request.post('/beta-tests/5d19996f839927107f4bb941/complete?from=external_script')
+        it('요청한 유저를 전달받은 ID에 해당하는 미션아이템의 완료 리스트에 추가한다', done => {
+            request.post('/beta-tests/5d1d74d6d638af0bb86b0f70/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
-                .then(() => BetaTests.findOne({"missions.items._id": ObjectId("5d19996f839927107f4bb941")}))
+                .then(() => BetaTests.findOne({"missions.items._id": ObjectId("5d1d74d6d638af0bb86b0f70")}))
                 .then(res => {
+                    res.missions.sort((o1, o2) => o1.order - o2.order);
+                    res.missions.forEach(mission => {
+                        mission.items.sort((o1, o2) => o1.order - o2.order);
+                    });
+
                     res.missions[0].items[0].completedUserIds.length.should.be.eql(1);
-                    res.missions[0].items[0].completedUserIds[0].should.be.eql(config.testUser.userId);
+                    res.missions[0].items[0].completedUserIds.should.be.include("google115909938647516500511");
+
+                    res.missions[0].items[1].completedUserIds.length.should.be.eql(3);
+                    res.missions[0].items[1].completedUserIds.should.be.include("google115909938647516500511");
+                    res.missions[0].items[1].completedUserIds.should.be.include("google115838807161306170827");
+                    res.missions[0].items[1].completedUserIds.should.be.include(config.testUser.userId);
+
+                    res.missions[1].items[0].completedUserIds.length.should.be.eql(2);
+                    res.missions[1].items[0].completedUserIds.should.be.include("google115909938647516500511");
+                    res.missions[1].items[0].completedUserIds.should.be.include(config.testUser.userId);
+
+                    res.missions[1].items[2].completedUserIds.length.should.be.eql(1);
+                    res.missions[1].items[2].completedUserIds.should.be.include("google115909938647516500511");
+
+                    res.missions[1].items[1].completedUserIds.length.should.be.eql(2);
+                    res.missions[1].items[1].completedUserIds.should.be.include(config.testUser.userId);
 
                     done();
                 })
@@ -231,14 +251,19 @@ describe('BetaTests', () => {
 
         // 예외
         it('요청한 유저가 이미 완료한 경우에는 완료 리스트에 추가하지 않는다', done => {
-            request.post('/beta-tests/5d199a0b839927107f4bb942/complete?from=external_script')
+            request.post('/beta-tests/5d199913839927107f4bb93f/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
-                .then(() => BetaTests.findOne({"missions.items._id": ObjectId("5d199a0b839927107f4bb942")}))
+                .then(() => BetaTests.findOne({"missions.items._id": ObjectId("5d199913839927107f4bb93f")}))
                 .then(res => {
-                    console.log(res.missions[0].items[0]);
-                    res.missions[0].items[0].completedUserIds.length.should.be.eql(1);
-                    res.missions[0].items[0].completedUserIds[0].should.be.eql(config.testUser.userId);
+                    res.missions.sort((o1, o2) => o1.order - o2.order);
+                    res.missions.forEach(mission => {
+                        mission.items.sort((o1, o2) => o1.order - o2.order);
+                    });
+
+                    console.log(res.missions[1].items[0]);
+                    res.missions[1].items[0].completedUserIds.length.should.be.eql(2);
+                    res.missions[1].items[0].completedUserIds.should.be.include(config.testUser.userId);
                     done();
                 })
                 .catch(err => done(err));
@@ -570,7 +595,7 @@ describe('BetaTests', () => {
                     res.body[1]._id.should.be.eql("5d1d74d1d638af0bb86b0f6f");
                     res.body[1].isCompleted.should.be.eql(false);
                     res.body[2]._id.should.be.eql("5d1d74d6d638af0bb86b0f70");
-                    res.body[2].isCompleted.should.be.eql(true);
+                    res.body[2].isCompleted.should.be.eql(false);
 
                     done();
                 }).catch(err => done(err));

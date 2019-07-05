@@ -158,7 +158,7 @@ const findBetaTestProgress = (betaTestId, userId) => {
             }
         }
     ])
-}
+};
 
 const findMissionItemsProgress = (missionId, userId) => {
     return BetaTests.aggregate([
@@ -195,8 +195,7 @@ Array.prototype.flatMap = function(f) {
 const updateCompleted = (betaTestId, userId) => {
     return BetaTests.findOneAndUpdate(
         {
-            "missions.items._id": mongoose.Types.ObjectId(betaTestId),
-            "missions.items.completedUserIds": {$nin: [userId]}
+            "missions.items": {$elemMatch: {_id: mongoose.Types.ObjectId(betaTestId), completedUserIds: {$nin: [userId]}}}
         },
         { $push: {"missions.$.items.$[item].completedUserIds": userId}},
         {
