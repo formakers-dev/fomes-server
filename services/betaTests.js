@@ -203,6 +203,9 @@ const updateCompleted = (betaTestId, userId) => {
             arrayFilters: [
                 {"item._id": {$eq: mongoose.Types.ObjectId(betaTestId)}}
             ]
+        }).then(betaTest => {
+            console.log("[", userId, "] updateCompleted", betaTest);
+            return betaTest;
         });
 };
 

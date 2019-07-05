@@ -35,12 +35,13 @@ const getMissionProgress = (req, res, next) => {
 }
 
 const postComplete = (req, res, next) => {
-    console.log("[", req.userId, "] postComplete ", req.params.id);
+    console.log("[", req.userId, "] postComplete", req.params.id);
 
     BetaTestsService.updateCompleted(req.params.id, req.userId)
         .then(betaTest => {
             if (betaTest) {
                 const notificationData = req.body.notificationData;
+                console.log("[", req.userId, "] updateCompleted - notificationData", notificationData);
 
                 if (!notificationData) {
                     return;
