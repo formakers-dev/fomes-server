@@ -118,7 +118,8 @@ describe('BetaTests', () => {
                     res.body[4].progressText.ready.should.be.eql("망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.");
                     res.body[4].progressText.doing.should.be.eql("조금만 더 힘내봐요 진행중중중");
                     res.body[4].progressText.done.should.be.eql("굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요.");
-                    res.body[4].tags.length.should.be.eql(0);
+                    // TODO: 진행중 테스트 조회 임시코드 제거시 주석 제거
+                    // res.body[4].tags.length.should.be.eql(0);
                     res.body[4].openDate.should.be.eql("2019-03-11T00:00:00.000Z");
                     res.body[4].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");
                     res.body[4].completedItemCount.should.be.eql(0);
