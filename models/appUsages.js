@@ -38,14 +38,6 @@ const appUsagesSchema = new mongoose.Schema({
     },
 });
 
-// TODO: 버추얼 스키마 제거
-appUsagesSchema.virtual('appInfo', {
-    ref: 'apps',
-    localField: 'packageName',
-    foreignField: 'packageName',
-    justOne: true,
-});
-
 const AppUsages = mongoose.model('app-usages', appUsagesSchema);
 const Apps = mongoose.model('apps', appSchema);
 

@@ -24,7 +24,7 @@ describe('Users', () => {
 
     before(() => {
         console.log('outer before');
-    })
+    });
 
     describe('POST /user/', () => {
         describe('기존 사용자가 존재할 경우,', () => {
@@ -345,7 +345,6 @@ describe('Users', () => {
         });
     });
 
-    // TODO : service unit test 추가할건지 결정 후 처리하기
     describe.skip('getSimilarUsersWithSameAge 호출 시', () => {
         before(done => {
             sandbox.useFakeTimers(new Date("2018-09-21T15:30:00.000Z").getTime());

@@ -222,7 +222,7 @@ describe('Recommend', () => {
         });
 
         describe('잘못된 페이징 정보 입력 시', function () {
-            // TODO : 고쳐야한다......
+            // TODO : sandbox.restore() 짝을 맞춰야한다
             beforeEach(() => {
                 sandbox.restore();
             });
