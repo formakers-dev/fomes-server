@@ -25,13 +25,23 @@ describe('Stats', () => {
             "packageName": "com.whatever.package1",
             "startTimeStamp": 1499914700000,
             "endTimeStamp": 1499914800000,
-            "totalUsedTime": 100000
+            "totalUsedTime": 100000,
+            "device": {
+                "manufacturer": "제조사",
+                "model": "모델명",
+                "osVersion": 21
+            }
         },
             {
                 "packageName": "com.whatever.package2",
                 "startTimeStamp": 1499914700001,
                 "endTimeStamp": 1499914900001,
-                "totalUsedTime": 200000
+                "totalUsedTime": 200000,
+                "device": {
+                    "manufacturer": "제조사2",
+                    "model": "모델명2",
+                    "osVersion": 22
+                }
             }];
 
         beforeEach(done => {
@@ -56,7 +66,13 @@ describe('Stats', () => {
                     .then(shortTermStats => {
                         shortTermStats.length.should.be.eql(2);
                         verifyShortTermStatData(shortTermStats[0], 'com.whatever.package1', 1499914700000, 1499914800000, 100000);
+                        shortTermStats[0].device.manufacturer.should.be.eql("제조사");
+                        shortTermStats[0].device.model.should.be.eql("모델명");
+                        shortTermStats[0].device.osVersion.should.be.eql(21);
                         verifyShortTermStatData(shortTermStats[1], 'com.whatever.package2', 1499914700001, 1499914900001, 200000);
+                        shortTermStats[1].device.manufacturer.should.be.eql("제조사2");
+                        shortTermStats[1].device.model.should.be.eql("모델명2");
+                        shortTermStats[1].device.osVersion.should.be.eql(22);
                         done();
                     }).catch((err) => done(err));
             });
