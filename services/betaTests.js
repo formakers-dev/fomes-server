@@ -126,6 +126,7 @@ const findBetaTest = (betaTestId, userId) => {
                 _id: true,
                 title: true,
                 description: true,
+                purpose: true,
                 tags: true,
                 overviewImageUrl: true,
                 iconImageUrl: true,

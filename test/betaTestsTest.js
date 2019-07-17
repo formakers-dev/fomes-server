@@ -522,6 +522,7 @@ describe('BetaTests', () => {
                     res.body._id.should.be.eql("5ce51a069cb162da02b9f94d");
                     res.body.title.should.be.eql("테스트 추가 신청하기 (버그제보 있음)");
                     res.body.description.should.be.eql("테스트 하고싶은 게임 추가신청을 할 수 있어여");
+                    res.body.purpose.should.be.eql("테스트 목적이무니다");
                     res.body.overviewImageUrl.should.be.eql('https://i.imgur.com/n2MaXzg.png');
                     res.body.iconImageUrl.should.be.eql('https://i.imgur.com/n2MaXzg.png');
                     res.body.openDate.should.be.eql('2019-03-11T00:00:00.000Z');
