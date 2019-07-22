@@ -29,7 +29,7 @@ app.get('/', (req, res) => {
     res.send('Hello AppBee Mobile Server (' + process.env.NODE_ENV + ' v' +  packagejson.version +')');
 });
 
-app.get('/download', (req, res) => {
+app.get('/landing', (req, res) => {
     // res.send('<meta http-equiv="refresh" content="0;url=https://play.google.com/store/apps/details?id=com.formakers.fomes">');
     res.send('<a style="width:100px" href="https://play.google.com/store/apps/details?id=com.formakers.fomes&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1"><img alt="다운로드하기 Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/ko_badge_web_generic.png"/></a>');
 });
