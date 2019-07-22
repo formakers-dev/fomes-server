@@ -29,6 +29,10 @@ app.get('/', (req, res) => {
     res.send('Hello AppBee Mobile Server (' + process.env.NODE_ENV + ' v' +  packagejson.version +')');
 });
 
+app.get('/download', (req, res) => {
+    res.send('<meta http-equiv="refresh" content="0;url=https://play.google.com/store/apps/details?id=com.formakers.fomes">');
+});
+
 app.use('/user', usersRouter);
 app.use('/apps', appsRouter);
 app.use('/stats', statsRouter);
