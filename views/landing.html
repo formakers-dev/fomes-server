@@ -28,6 +28,7 @@
         <img src="https://lh3.googleusercontent.com/BSvGI0abwDf2fE5caSkfpETfL50MLi236kbk02l0Z5Na07ZCfwYfeHJV_3yw0Le5VzI=w1280-h946-rw"/>
         <img src="https://lh3.googleusercontent.com/MSQ9kWhAZv3O5aV5srWxmbkXcHxglX4lS65j13eSPW8DDZhzudUpFXGR3xLLPTSEF3s=w1280-h946-rw"/>
         <img src="https://lh3.googleusercontent.com/wQ8wv4pPNBQIVTp3JHmagC00tiJ9vvXtt8W2vjbZJwy6n6qoBGL7akBp3w68kQAqy_sc=w1280-h946-rw"/>
+        <img class="landscape-only" src="https://lh3.googleusercontent.com/chfyQQd7KgsGsrKLGCEDX6Bf4nZcnJIKFZZ_J5yzFgTWXp2oUZ2DzBUuftYDTunC3J8=w1280-h946-rw"/>
     </div>
     <div class="tail">
         <div class="closing-ment">꿀이득앱 포메스,</br>
@@ -88,6 +89,7 @@
 
     .screenshots {
         background-color: #00BFBA;
+        display: table;
      }
 
     .tail {
@@ -104,6 +106,17 @@
 
     .tail .download-button-img {
         width: 50%;
+    }
+
+    /* Landscape mode */
+    @media only screen and (orientation: portrait) {
+        .landscape-only { display: none; }
+    }
+
+    /* Landscape mode */
+    @media only screen and (orientation: landscape) {
+        .screenshots img { width: 50%; float:left;}
+        .landscape-only { display: inline; }
     }
 
 </style>
