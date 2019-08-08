@@ -510,7 +510,7 @@ describe('BetaTests', () => {
 
     describe('GET /beta-tests/detail/:id', () => {
 
-        it('종료된 피드백 요청 목록을 조회한다', done => {
+        it('요청된 테스트의 상세정보를 조회한다', done => {
             sandbox.useFakeTimers(new Date("2019-06-30T02:30:00.000Z").getTime());
 
             request.get('/beta-tests/detail/5ce51a069cb162da02b9f94d')
@@ -540,6 +540,7 @@ describe('BetaTests', () => {
                     res.body.missions[0].items[0].title.should.be.eql("신청하기");
                     res.body.missions[0].items[0].action.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&entry.1042588232=");
                     res.body.missions[0].items[0].isCompleted.should.be.eql(true);
+                    res.body.missions[0].items[0].isRepeatable.should.be.eql(true);
                     res.body.missions[1].order.should.be.eql(2);
                     res.body.missions[1].title.should.be.eql("첫번째 미션!!!");
                     res.body.missions[1].description.should.be.eql("게임을 10분 이상 플레이하라!!!!!!!");

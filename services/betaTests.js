@@ -145,6 +145,12 @@ const findBetaTest = (betaTestId, userId) => {
                 mission.items =  mission.items.map(item => {
                     item.isCompleted = item.completedUserIds.includes(userId);
                     delete item.completedUserIds;
+
+                    if (item.options) {
+                        item.isRepeatable = item.options.includes('repeatable');
+                        delete item.options;
+                    }
+
                     return item;
                 });
                 return mission;
