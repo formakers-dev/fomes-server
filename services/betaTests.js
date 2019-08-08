@@ -148,6 +148,7 @@ const findBetaTest = (betaTestId, userId) => {
 
                     if (item.options) {
                         item.isRepeatable = item.options.includes('repeatable');
+                        item.isMandatory = item.options.includes('mandatory');
                         delete item.options;
                     }
 

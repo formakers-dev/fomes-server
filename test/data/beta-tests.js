@@ -736,7 +736,7 @@ const data = [
                             config.testUser.userId
                         ],
                         "_id" : ObjectId("5d199a97839927107f4bb94a"),
-                        "options" : ['repeatable']
+                        "options" : ['repeatable', 'mandatory']
                     }
                 ]
             },
