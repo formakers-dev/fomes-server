@@ -16,4 +16,6 @@ usersRouter.post('/wishlist', Auth.verifyAppBeeToken, Users.saveAppToWishList);
 usersRouter.get('/wishlist', Auth.verifyAppBeeToken, Users.getWishList);
 usersRouter.delete('/wishlist/:packageName', Auth.verifyAppBeeToken, Users.removeAppFromWishList);
 
+usersRouter.post('/noti', Auth.verify, Users.sendNoti);
+
 module.exports = usersRouter;

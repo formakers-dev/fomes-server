@@ -21,6 +21,7 @@ const MissionItemSchema = new Schema({
     action : String,
     postCondition : Object,
     completedUserIds : Array,
+    options : Array,
 });
 
 const MissionSchema = new Schema({

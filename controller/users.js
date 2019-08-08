@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../config');
 const UserService = require('../services/users');
 const AppService = require('../services/apps');
+const NotiService = require('../services/noti');
 const Boom = require('boom');
 
 const signUpUser = (req, res, next) => {
@@ -123,6 +124,13 @@ const getWishList = (req, res, next) => {
         .catch(err => next(err));
 };
 
+const sendNoti = (req, res, next) => {
+    UserService.getUser(req.userId)
+        .then(user => NotiService.send(req.body.notificationData, user.registrationToken))
+        .then(() => res.sendStatus(200))
+        .catch(err => next(err));
+};
+
 module.exports = {
     signUpUser,
     upsertUser,
@@ -133,5 +141,6 @@ module.exports = {
     removeAppFromWishList,
     getWishList,
     updateActivatedDate,
-    updateNotificationToken
+    updateNotificationToken,
+    sendNoti
 };
