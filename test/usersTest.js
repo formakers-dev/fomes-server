@@ -1,3 +1,4 @@
+const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const sinon = require('sinon');
 const config = require('../config');
@@ -719,6 +720,66 @@ describe('Users', () => {
         });
     });
 
+    describe('POST /user/noti/', () => {
+        let stubAxiosPost;
+
+        beforeEach(() => {
+            stubAxiosPost = sandbox.stub(axios, 'post').returns(Promise.resolve());
+        });
+
+        // 정상
+        it('요청한 유저에게 전달받은 알림을 보낸다', done => {
+            request.post('/user/noti?from=external_script')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .send({
+                    notificationData: {
+                        channel: 'channel_betatest',
+                        title: '참여하신 테스트에 신청 처리 되었어요!👏',
+                        subTitle: '멋져요! [전체 유저 대상 테스트]의 사전 신청을 완료하셨습니다.'
+                    }
+                })
+                .expect(200)
+                .then(() => {
+                    const expectedUrl = 'https://fcm.googleapis.com/fcm/send';
+
+                    const expectedBody = {
+                        data: {
+                            channel: 'channel_betatest',
+                            title: '참여하신 테스트에 신청 처리 되었어요!👏',
+                            subTitle: '멋져요! [전체 유저 대상 테스트]의 사전 신청을 완료하셨습니다.'
+                        },
+                        to: 'test_user_registration_token'
+                    };
+
+                    const expectedHeader = {
+                        headers: {
+                            Authorization: 'key=testNotiApiKey',
+                            'Content-Type' : 'application/json'
+                        }
+                    };
+
+                    sinon.assert.calledWith(stubAxiosPost, expectedUrl, expectedBody, expectedHeader);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        // 예외
+        it('전달받은 알림 데이터가 없으면, 아무것도 하지 않는다', done => {
+            request.post('/user/noti?from=external_script')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .send({})
+                .expect(500)
+                .then(() => {
+                    sinon.assert.notCalled(stubAxiosPost);
+                    done();
+                }).catch(err => done(err));
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        })
+    });
 
     afterEach(done => {
         helper.commonAfter()
