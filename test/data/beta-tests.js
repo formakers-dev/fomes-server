@@ -730,6 +730,7 @@ const data = [
                 "iconImageUrl" : "https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png",
                 "items" : [
                     {
+                        "order": 1,
                         "title" : "신청하기",
                         "action" : "https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&entry.1042588232=",
                         "completedUserIds" : [
@@ -748,6 +749,7 @@ const data = [
                 "iconImageUrl" : "https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png",
                 "items" : [
                     {
+                        "order" : 1,
                         "title" : "게임 플레이",
                         "action" : "https://play.google.com/store/apps/details?id=com.frozax.tentsandtrees",
                         "postCondition" : {
@@ -770,12 +772,14 @@ const data = [
                 "iconImageUrl" : "https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png",
                 "items" : [
                     {
+                        "order": 2,
                         "title" : "의견 작성",
                         "action" : "https://www.naver.com",
                         "completedUserIds" : [],
                         "_id" : ObjectId("5d199aaa839927107f4bb94c")
                     },
                     {
+                        "order": 1,
                         "title" : "의견 작성2",
                         "action" : "https://www.naver.com",
                         "completedUserIds" : [],
