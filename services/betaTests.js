@@ -121,19 +121,21 @@ const findBetaTest = (betaTestId, userId) => {
         {
             $match: { _id: mongoose.Types.ObjectId(betaTestId) }
         },
+        { $unwind: "$missions" },
+        { $unwind: "$missions.items" },
         {
-            $project : {
-                _id: true,
-                title: true,
-                description: true,
-                purpose: true,
-                tags: true,
-                overviewImageUrl: true,
-                iconImageUrl: true,
-                openDate: true,
-                closeDate: true,
-                rewards: true,
-                missions: true,
+            $group:  {
+                _id: "$_id",
+                title: { $first: "$title" },
+                description: { $first: "$description" },
+                purpose: { $first: "$purpose" },
+                tags: { $first: "$tags" },
+                overviewImageUrl: { $first: "$overviewImageUrl" },
+                iconImageUrl: { $first: "$iconImageUrl" },
+                openDate: { $first: "$openDate" },
+                closeDate: { $first: "$closeDate" },
+                rewards: { $first: "$rewards" },
+                missions: { $push: "$missions" },
             }
         }
         ])
@@ -142,18 +144,18 @@ const findBetaTest = (betaTestId, userId) => {
             const betaTest = betaTests[0];
 
             betaTest.missions = betaTest.missions.map(mission => {
-                mission.items =  mission.items.map(item => {
-                    item.isCompleted = item.completedUserIds.includes(userId);
-                    delete item.completedUserIds;
+                mission.item =  mission.items;
+                delete mission.items;
 
-                    if (item.options) {
-                        item.isRepeatable = item.options.includes('repeatable');
-                        item.isMandatory = item.options.includes('mandatory');
-                        delete item.options;
-                    }
+                mission.item.isCompleted = mission.item.completedUserIds.includes(userId);
+                delete mission.item.completedUserIds;
 
-                    return item;
-                });
+                if (mission.item.options) {
+                    mission.item.isRepeatable = mission.item.options.includes('repeatable');
+                    mission.item.isMandatory = mission.item.options.includes('mandatory');
+                    delete mission.item.options;
+                }
+
                 return mission;
             });
 
