@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 const BetaTests = require('../models/betaTests');
 
+const getAllBetaTestsCount = () => {
+    return BetaTests.count({});
+};
+
 const findValidBetaTests = (userId) => {
     const currentTime = new Date();
 
@@ -261,6 +265,7 @@ const addTargetUserId = (betaTestIds, userId) => {
 };
 
 module.exports = {
+    getAllBetaTestsCount,
     findValidBetaTests,
     findFinishedBetaTests,
     findBetaTestProgress,

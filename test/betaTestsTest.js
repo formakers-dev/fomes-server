@@ -619,6 +619,19 @@ describe('BetaTests', () => {
         });
     });
 
+    describe('GET /beta-tests/all/count', () => {
+        it('모든 베타테스트의 개수를 조회힌다', done => {
+            request.get('/beta-tests/all/count')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.text.should.be.eql("12");
+
+                    done();
+                }).catch(err => done(err));
+        });
+    });
+
     afterEach(done => {
         BetaTests.remove({})
             .then(() => done())

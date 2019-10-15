@@ -31,8 +31,15 @@ const getProgress = (req, res, next) => {
 const getMissionProgress = (req, res, next) => {
     BetaTestsService.findMissionItemsProgress(req.params.id, req.userId)
         .then(missionItems => res.json(missionItems))
-        .catch(err => next(err))
-}
+        .catch(err => next(err));
+};
+
+const getAllBetaTestsCount = (req, res, next) => {
+    BetaTestsService.getAllBetaTestsCount()
+        .then(allBetaTestsCount => {
+            res.send(allBetaTestsCount.toString());
+        }).catch(err => next(err));
+};
 
 const postComplete = (req, res, next) => {
     console.log("[", req.userId, "] postComplete", req.params.id);
@@ -110,6 +117,7 @@ module.exports = {
     getDetailBetaTest,
     getProgress,
     getMissionProgress,
+    getAllBetaTestsCount,
     postComplete,
     postTargetUser
 };
