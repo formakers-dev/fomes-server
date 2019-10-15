@@ -5,6 +5,21 @@ const getAllBetaTestsCount = () => {
     return BetaTests.count({});
 };
 
+const getAllRewards = () => {
+    return BetaTests.aggregate([
+        { $project: { "rewards" : 1 } },
+        { $unwind: "$rewards.list" },
+        { $replaceRoot: { newRoot : "$rewards.list" } },
+        { $match: { content : { $regex: '([0-9]+)원'} } },
+        {
+            $project: {
+                "content" : 1,
+                "userCount" : { $size : "$userIds" }
+            }
+        }
+    ]);
+};
+
 const findValidBetaTests = (userId) => {
     const currentTime = new Date();
 
@@ -266,6 +281,7 @@ const addTargetUserId = (betaTestIds, userId) => {
 
 module.exports = {
     getAllBetaTestsCount,
+    getAllRewards,
     findValidBetaTests,
     findFinishedBetaTests,
     findBetaTestProgress,

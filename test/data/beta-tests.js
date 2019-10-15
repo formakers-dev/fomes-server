@@ -30,7 +30,7 @@ const data = [
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "참여보상(10명 추첨)",
                     "content" : "문화상품권 3000원",
-                    "userIds" : []
+                    "userIds" : [ 'user1', 'user2']
                 },
                 {
                     "order" : 2,
@@ -44,7 +44,7 @@ const data = [
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "테스트 영웅(1명 선정)",
                     "content" : "문화상품권 10000원",
-                    "userIds" : []
+                    "userIds" : ['user3']
                 }
             ]
         },
@@ -157,7 +157,7 @@ const data = [
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "참여보상(10명 추첨)",
                     "content" : "문화상품권 3000원",
-                    "userIds" : []
+                    "userIds" : ['user1']
                 },
                 {
                     "order" : 2,
@@ -364,7 +364,7 @@ const data = [
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
-                    "userIds" : []
+                    "userIds" : ['user10']
                 }
             ]
         },

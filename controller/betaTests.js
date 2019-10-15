@@ -41,6 +41,24 @@ const getAllBetaTestsCount = (req, res, next) => {
         }).catch(err => next(err));
 };
 
+const getTotalRewards = (req, res, next) => {
+    BetaTestsService.getAllRewards()
+        .then(rewards => {
+            const allRewardsSummary = rewards.map(reward => {
+                reward.content = reward.content.match(new RegExp(/([0-9]+)원/))[1];
+                return reward;
+            }).reduce((sum, reward) => {
+                sum += reward.content * reward.userCount;
+                return sum
+            }, 0);
+
+            // console.log(rewards);
+            // console.log(allRewardsSummary);
+            res.send(allRewardsSummary.toString());
+        }).catch(err => next(err));
+};
+
+
 const postComplete = (req, res, next) => {
     console.log("[", req.userId, "] postComplete", req.params.id);
 
@@ -118,6 +136,7 @@ module.exports = {
     getProgress,
     getMissionProgress,
     getAllBetaTestsCount,
+    getTotalRewards,
     postComplete,
     postTargetUser
 };
