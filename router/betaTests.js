@@ -13,6 +13,7 @@ router.get('/detail/:id/', Auth.verifyAppBeeToken, BetaTestController.getDetailB
 router.get('/mission/:id/progress', Auth.verifyAppBeeToken, BetaTestController.getMissionProgress);
 router.get('/all/count', Auth.verifyAppBeeToken, BetaTestController.getAllBetaTestsCount);
 router.get('/all/rewards/total', Auth.verifyAppBeeToken, BetaTestController.getTotalRewards);
+router.get('/all/completed-users/count', Auth.verifyAppBeeToken, BetaTestController.getAccumulatedCompletedUsersCount);
 
 // from=external_script
 router.post('/:id/complete', Auth.verify, BetaTestController.postComplete);

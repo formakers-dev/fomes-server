@@ -58,6 +58,17 @@ const getTotalRewards = (req, res, next) => {
         }).catch(err => next(err));
 };
 
+const getAccumulatedCompletedUsersCount = (req, res, next) => {
+    BetaTestsService.getCompletedUsersCountFromAllMissionItem()
+        .then(completedUsersCountList => {
+            const Accumulated = completedUsersCountList.reduce((sum, item) => {
+                sum += item.completedUsersCount;
+                return sum;
+            }, 0);
+
+            res.send(Accumulated.toString());
+        }).catch(err => next(err));
+};
 
 const postComplete = (req, res, next) => {
     console.log("[", req.userId, "] postComplete", req.params.id);
@@ -137,6 +148,7 @@ module.exports = {
     getMissionProgress,
     getAllBetaTestsCount,
     getTotalRewards,
+    getAccumulatedCompletedUsersCount,
     postComplete,
     postTargetUser
 };

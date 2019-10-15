@@ -20,6 +20,16 @@ const getAllRewards = () => {
     ]);
 };
 
+const getCompletedUsersCountFromAllMissionItem = () => {
+    return BetaTests.aggregate([
+        { $project : { missions: 1 } },
+        { $unwind: "$missions" },
+        { $unwind: "$missions.items" },
+        { $replaceRoot: { newRoot : "$missions.items" } },
+        { $project: { _id: 0, "completedUsersCount" : { $size : "$completedUserIds" } } }
+    ]);
+};
+
 const findValidBetaTests = (userId) => {
     const currentTime = new Date();
 
@@ -282,6 +292,7 @@ const addTargetUserId = (betaTestIds, userId) => {
 module.exports = {
     getAllBetaTestsCount,
     getAllRewards,
+    getCompletedUsersCountFromAllMissionItem,
     findValidBetaTests,
     findFinishedBetaTests,
     findBetaTestProgress,
