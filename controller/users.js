@@ -42,6 +42,20 @@ const updateNotificationToken = (req, res, next) => {
         .catch(err => next(err));
 };
 
+const updateUserInfo = (req, res, next) => {
+    const userInfo = {
+        birthday: req.body.birthday,
+        gender: req.body.gender,
+        job: req.body.job,
+        lifeApps: req.body.lifeApps,
+        nickName: req.body.nickName,
+    };
+
+    UserService.upsertUser(req.userId, userInfo)
+        .then(() => res.sendStatus(200))
+        .catch(err => next(err));
+};
+
 const generateToken = (req, res, next) => {
     const tokenData = {
         provider : req.body.provider,
@@ -142,5 +156,6 @@ module.exports = {
     getWishList,
     updateActivatedDate,
     updateNotificationToken,
+    updateUserInfo,
     sendNoti
 };
