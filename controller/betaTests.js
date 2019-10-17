@@ -44,16 +44,11 @@ const getAllBetaTestsCount = (req, res, next) => {
 const getTotalRewards = (req, res, next) => {
     BetaTestsService.getAllRewards()
         .then(rewards => {
-            const allRewardsSummary = rewards.map(reward => {
-                reward.content = reward.content.match(new RegExp(/([0-9]+)원/))[1];
-                return reward;
-            }).reduce((sum, reward) => {
-                sum += reward.content * reward.userCount;
+            const allRewardsSummary = rewards.reduce((sum, reward) => {
+                sum += reward.price * reward.userCount;
                 return sum
             }, 0);
 
-            // console.log(rewards);
-            // console.log(allRewardsSummary);
             res.send(allRewardsSummary.toString());
         }).catch(err => next(err));
 };

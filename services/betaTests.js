@@ -10,10 +10,10 @@ const getAllRewards = () => {
         { $project: { "rewards" : 1 } },
         { $unwind: "$rewards.list" },
         { $replaceRoot: { newRoot : "$rewards.list" } },
-        { $match: { content : { $regex: '([0-9]+)원'} } },
+        { $match: { price : { $exists: true } } },
         {
             $project: {
-                "content" : 1,
+                "price" : 1,
                 "userCount" : { $size : "$userIds" }
             }
         }

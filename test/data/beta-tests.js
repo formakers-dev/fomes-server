@@ -30,6 +30,7 @@ const data = [
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "참여보상(10명 추첨)",
                     "content" : "문화상품권 3000원",
+                    "price": "3000",
                     "userIds" : [ 'user1', 'user2']
                 },
                 {
@@ -37,6 +38,7 @@ const data = [
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "테스트 용사(3명 선정)",
                     "content" : "문화상품권 5000원",
+                    "price": "5000",
                     "userIds" : []
                 },
                 {
@@ -44,6 +46,7 @@ const data = [
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "테스트 영웅(1명 선정)",
                     "content" : "문화상품권 10000원",
+                    "price": "10000",
                     "userIds" : ['user3']
                 }
             ]
@@ -157,6 +160,7 @@ const data = [
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "참여보상(10명 추첨)",
                     "content" : "문화상품권 3000원",
+                    "price": "3000",
                     "userIds" : ['user1']
                 },
                 {
@@ -358,12 +362,14 @@ const data = [
                     "order" : 1,
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
+                    "price": "1000",
                     "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
+                    "price": "5000",
                     "userIds" : ['user10']
                 }
             ]
@@ -426,12 +432,14 @@ const data = [
                     "order" : 1,
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
+                    "price": "1000",
                     "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
+                    "price": "5000",
                     "userIds" : []
                 }
             ]
@@ -493,12 +501,14 @@ const data = [
                     "order" : 1,
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
+                    "price": "1000",
                     "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
+                    "price": "5000",
                     "userIds" : []
                 }
             ]
@@ -562,12 +572,14 @@ const data = [
                     "order" : 1,
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
+                    "price": "1000",
                     "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
+                    "price": "5000",
                     "userIds" : []
                 }
             ]
@@ -626,12 +638,14 @@ const data = [
                     "order" : 1,
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
+                    "price": "1000",
                     "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
+                    "price": "5000",
                     "userIds" : []
                 }
             ]
@@ -703,6 +717,7 @@ const data = [
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "참여보상 (10명 추첨)",
                     "content" : "문화상품권 1000원",
+                    "price": "1000",
                     "userIds" : []
                 },
                 {
@@ -710,6 +725,7 @@ const data = [
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "테스트 용사 (3명 선정)",
                     "content" : "문화상품권 3000원",
+                    "price": "3000",
                     "userIds" : []
                 },
                 {
@@ -717,6 +733,7 @@ const data = [
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "테스트 영웅 (1명 선정)",
                     "content" : "문화상품권 5000원",
+                    "price": "5000",
                     "userIds" : []
                 }
             ]
@@ -815,12 +832,14 @@ const data = [
                     "order" : 1,
                     "title" : "테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
+                    "price": "1000",
                     "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
+                    "price": "5000",
                     "userIds" : []
                 }
             ]
