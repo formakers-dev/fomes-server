@@ -6,6 +6,7 @@ const Auth = require('../middleware/auth');
 usersRouter.post('/', Auth.verifyAppBeeToken, Users.upsertUser, (req, res) => res.sendStatus(200));
 usersRouter.put('/activated', Auth.verifyAppBeeToken, Users.updateActivatedDate);
 usersRouter.patch('/noti-token', Auth.verifyAppBeeToken, Users.updateNotificationToken);
+usersRouter.patch('/info', Auth.verifyAppBeeToken, Users.updateUserInfo);
 
 usersRouter.post('/signin', Auth.verifyGoogleToken, Users.upsertUser, Users.generateToken);
 usersRouter.post('/signup', Auth.verifyGoogleToken, Users.signUpUser, Users.generateToken);

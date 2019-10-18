@@ -720,6 +720,40 @@ describe('Users', () => {
         });
     });
 
+    describe('PATCH /user/info/', () => {
+
+        const newUserInfo = {
+            birthday : 1990,
+            gender : "female",
+            job : 2001,
+            lifeApps : [
+                "에오엠"
+            ],
+            nickName : "테스트닉네임",
+        };
+
+        it('요청한 유저의 신상정보를 업데이트 한다', done => {
+            request.patch('/user/info')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send(newUserInfo)
+                .expect(200)
+                .then(() => Users.findOne({userId: config.testUser.userId}))
+                .then(user => {
+                    user.userId.should.be.eql(config.testUser.userId);
+                    user.name.should.be.eql('test_user');
+                    user.email.should.be.eql('appbee@appbee.com');
+                    user.gender.should.be.eql('female');
+                    user.birthday.should.be.eql(1990);
+                    user.job.should.be.eql(2001);
+                    user.nickName.should.be.eql('테스트닉네임');
+                    user.registrationToken.should.be.eql('test_user_registration_token');
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
+    });
+
     describe('POST /user/noti/', () => {
         let stubAxiosPost;
 
