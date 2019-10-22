@@ -619,6 +619,42 @@ describe('BetaTests', () => {
         });
     });
 
+    describe('GET /beta-tests/all/count', () => {
+        it('모든 베타테스트의 개수를 조회힌다', done => {
+            request.get('/beta-tests/all/count')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.text.should.be.eql("12");
+                    done();
+                }).catch(err => done(err));
+        });
+    });
+
+    describe('GET /beta-tests/all/rewards/total', () => {
+        it('모든 베타테스트의 상금 총 액을 조회한다', done => {
+            request.get('/beta-tests/all/rewards/total')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.text.should.be.eql("24000");
+                    done();
+                }).catch(err => done(err));
+        });
+    });
+
+    describe('GET /beta-tests//all/completed-users/count', () => {
+        it('각 베타테스트의 완료한 유저들의 총 합을 조회한다', done => {
+            request.get('/beta-tests/all/completed-users/count')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.text.should.be.eql("42");
+                    done();
+                }).catch(err => done(err));
+        });
+    });
+
     afterEach(done => {
         BetaTests.remove({})
             .then(() => done())

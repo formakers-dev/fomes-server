@@ -31,8 +31,39 @@ const getProgress = (req, res, next) => {
 const getMissionProgress = (req, res, next) => {
     BetaTestsService.findMissionItemsProgress(req.params.id, req.userId)
         .then(missionItems => res.json(missionItems))
-        .catch(err => next(err))
-}
+        .catch(err => next(err));
+};
+
+const getAllBetaTestsCount = (req, res, next) => {
+    BetaTestsService.getAllBetaTestsCount()
+        .then(allBetaTestsCount => {
+            res.send(allBetaTestsCount.toString());
+        }).catch(err => next(err));
+};
+
+const getTotalRewards = (req, res, next) => {
+    BetaTestsService.getAllRewards()
+        .then(rewards => {
+            const allRewardsSummary = rewards.reduce((sum, reward) => {
+                sum += reward.price * reward.userCount;
+                return sum
+            }, 0);
+
+            res.send(allRewardsSummary.toString());
+        }).catch(err => next(err));
+};
+
+const getAccumulatedCompletedUsersCount = (req, res, next) => {
+    BetaTestsService.getCompletedUsersCountFromAllMissionItem()
+        .then(completedUsersCountList => {
+            const Accumulated = completedUsersCountList.reduce((sum, item) => {
+                sum += item.completedUsersCount;
+                return sum;
+            }, 0);
+
+            res.send(Accumulated.toString());
+        }).catch(err => next(err));
+};
 
 const postComplete = (req, res, next) => {
     console.log("[", req.userId, "] postComplete", req.params.id);
@@ -110,6 +141,9 @@ module.exports = {
     getDetailBetaTest,
     getProgress,
     getMissionProgress,
+    getAllBetaTestsCount,
+    getTotalRewards,
+    getAccumulatedCompletedUsersCount,
     postComplete,
     postTargetUser
 };
