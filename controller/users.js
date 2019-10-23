@@ -43,13 +43,13 @@ const updateNotificationToken = (req, res, next) => {
 };
 
 const updateUserInfo = (req, res, next) => {
-    const userInfo = {
-        birthday: req.body.birthday,
-        gender: req.body.gender,
-        job: req.body.job,
-        lifeApps: req.body.lifeApps,
-        nickName: req.body.nickName,
-    };
+    const userInfo = { };
+
+    if (req.body.birthday) userInfo.birthday = req.body.birthday;
+    if (req.body.gender) userInfo.gender = req.body.gender;
+    if (req.body.job) userInfo.job = req.body.job;
+    if (req.body.lifeApps) userInfo.lifeApps = req.body.lifeApps;
+    if (req.body.nickName) userInfo.nickName = req.body.nickName;
 
     UserService.upsertUser(req.userId, userInfo)
         .then(() => res.sendStatus(200))
