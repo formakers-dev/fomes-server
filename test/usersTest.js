@@ -174,14 +174,10 @@ describe('Users', () => {
     describe('POST /user/signin/', () => {
         const signInUser = {
             userId: 'shouldIgnoreThisId',
-            name: null,
-            email: null,
             birthday: 1980,
             gender: 'female',
             job: 3,
             registrationToken: 'new_registration_token',
-            provider: null,
-            providerId: null
         };
 
         before(done => {
@@ -195,6 +191,7 @@ describe('Users', () => {
                 .expect(200)
                 .then((res) => {
                     res.body.should.be.not.null;
+
                     Users.findOne({userId: config.testUser.userId}, (err, user) => {
                         user.userId.should.be.eql(config.testUser.userId);
                         user.name.should.be.eql('testName');
@@ -211,13 +208,23 @@ describe('Users', () => {
                 .catch(err => done(err));
         });
 
-        it('구글토큰검증 후 AppBeeToken을 발급하여 리턴한다', done => {
+        it('구글토큰검증 후 AppBeeToken을 발급하여 유저정보와 함께 리턴한다', done => {
             request.post('/user/signin')
                 .set('x-id-token', config.testUser.googleIdToken)
                 .send(signInUser)
                 .expect(200)
                 .then((res) => {
-                    const appBeeToken = res.body;
+                    const appBeeToken = res.body.accessToken;
+
+                    res.body.userId.should.be.eql(config.testUser.userId);
+                    res.body.name.should.be.eql('testName');
+                    res.body.email.should.be.eql('test@email.com');
+                    res.body.birthday.should.be.eql(1980);
+                    res.body.job.should.be.eql(3);
+                    res.body.gender.should.be.eql('female');
+                    res.body.provider.should.be.eql('google');
+                    res.body.providerId.should.be.eql("109974316241227718963");
+                    res.body.registrationToken.should.be.eql('new_registration_token');
 
                     jwt.verify(appBeeToken, config.secret, (err, decoded) => {
                         if (!err) {
@@ -260,7 +267,9 @@ describe('Users', () => {
                 .set('x-id-token', config.testUser.googleIdToken)
                 .send(signUpUser)
                 .expect(200)
-                .then(() => {
+                .then(res => {
+                    res.body.should.be.not.null;
+
                     Users.findOne({userId: config.testUser.userId}).then(user => {
                         user.userId.should.be.eql(config.testUser.userId);
                         user.name.should.be.eql('testName');
@@ -274,13 +283,20 @@ describe('Users', () => {
                 }).catch(err => done(err));
         });
 
-        it('구글토큰검증 후 AppBeeToken을 발급하여 리턴한다', done => {
+        it('구글토큰검증 후 AppBeeToken을 발급하여 유저정보와 함께 리턴한다', done => {
             request.post('/user/signup')
                 .set('x-id-token', config.testUser.googleIdToken)
                 .send(signUpUser)
                 .expect(200)
                 .then((res) => {
-                    const appBeeToken = res.body;
+                    const appBeeToken = res.body.accessToken;
+
+                    res.body.userId.should.be.eql(config.testUser.userId);
+                    res.body.name.should.be.eql('testName');
+                    res.body.email.should.be.eql('test@email.com');
+                    res.body.provider.should.be.eql('google');
+                    res.body.providerId.should.be.eql("109974316241227718963");
+                    res.body.registrationToken.should.be.eql('test_user_registration_token');
 
                     jwt.verify(appBeeToken, config.secret, (err, decoded) => {
                         if (!err) {
@@ -313,26 +329,11 @@ describe('Users', () => {
                 Users.create(oldUser, done);
             });
 
-            it('signUpTime을 제외한 나머지 정보들을 업데이트 한다', done => {
+            it('409 에러코드를 리턴한다', done => {
                 request.post('/user/signup')
                     .set('x-id-token', config.testUser.googleIdToken)
                     .send(signUpUser)
-                    .expect(200)
-                    .then(() => {
-                        Users.findOne({userId: config.testUser.userId}, (err, user) => {
-                            if (err) done(err);
-
-                            user.userId.should.be.eql(config.testUser.userId);
-                            user.name.should.be.eql('testName');
-                            user.email.should.be.eql('test@email.com');
-                            user.provider.should.be.eql('google');
-                            user.providerId.should.be.eql("109974316241227718963");
-                            user.registrationToken.should.be.eql('test_user_registration_token');
-                            user.signUpTime.should.be.eql(new Date('2018-09-05T15:30:00.000Z'));
-                            done();
-                        });
-                    })
-                    .catch(err => done(err));
+                    .expect(409, done);
             });
 
             afterEach(done => {
