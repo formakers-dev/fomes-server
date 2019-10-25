@@ -1,6 +1,35 @@
 const mongoose = require('mongoose');
 const BetaTests = require('../models/betaTests');
 
+const getAllBetaTestsCount = () => {
+    return BetaTests.count({});
+};
+
+const getAllRewards = () => {
+    return BetaTests.aggregate([
+        { $project: { "rewards" : 1 } },
+        { $unwind: "$rewards.list" },
+        { $replaceRoot: { newRoot : "$rewards.list" } },
+        { $match: { price : { $exists: true } } },
+        {
+            $project: {
+                "price" : 1,
+                "userCount" : { $size : "$userIds" }
+            }
+        }
+    ]);
+};
+
+const getCompletedUsersCountFromAllMissionItem = () => {
+    return BetaTests.aggregate([
+        { $project : { missions: 1 } },
+        { $unwind: "$missions" },
+        { $unwind: "$missions.items" },
+        { $replaceRoot: { newRoot : "$missions.items" } },
+        { $project: { _id: 0, "completedUsersCount" : { $size : "$completedUserIds" } } }
+    ]);
+};
+
 const findValidBetaTests = (userId) => {
     const currentTime = new Date();
 
@@ -261,6 +290,9 @@ const addTargetUserId = (betaTestIds, userId) => {
 };
 
 module.exports = {
+    getAllBetaTestsCount,
+    getAllRewards,
+    getCompletedUsersCountFromAllMissionItem,
     findValidBetaTests,
     findFinishedBetaTests,
     findBetaTestProgress,

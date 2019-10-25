@@ -33,6 +33,11 @@ const init = () => {
     });
     mongoose.connection.on('disconnected', () => {
         console.log(TAG, 'Default connection is disconnected');
+
+        mongoose.connect(config.dbUrl, {useNewUrlParser: true})
+            .catch(err => {
+                console.error(TAG, 'Error is occurred on connecting:', err);
+            });
     });
 
     mongoose.connect(config.dbUrl, {useNewUrlParser: true})

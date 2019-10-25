@@ -10,21 +10,30 @@ const signUpUser = (req, res, next) => {
         .then(user => {
             if (!user) {
                 req.body.signUpTime = new Date();
+            } else {
+                res.sendStatus(409);
             }
 
-            return UserService.upsertUser(req.userId, req.body);
+            // 아예 그냥 insert만 하는 걸로 연결시켜버릴까?
+            return UserService.upsertUser(req.userId, req.body)
         })
-        .then(() => next())
-        .catch(err => next(err));
+        .then(() => UserService.getUser(req.userId).lean())
+        .then((user) => next(user))
+        .catch(err => {
+            next((err instanceof UserService.NickNameDuplicationError)? Boom.conflict() : err);
+        });
 };
 
-const upsertUser = (req, res, next) => {
+const signInUser = (req, res, next) => {
     if (req.body && req.body.userId) {
         delete req.body.userId;
     }
 
+    // 쓰지말고 그냥 get만 해야하려나... 아 근데 노티토큰이랑 디바이스 정보 등등 떄문에 쓰긴해야한다
+    // 무조건 update로 진행되게 해야할 것 같다. upsert라 존재하지 않는 경우에 singup (insert) 처리가 되어버리네
     UserService.upsertUser(req.userId, req.body)
-        .then(() => next())
+        .then(() => UserService.getUser(req.userId).lean())
+        .then((user) => next(user))
         .catch(err => {
             next((err instanceof UserService.NickNameDuplicationError)? Boom.conflict() : err);
         });
@@ -42,13 +51,40 @@ const updateNotificationToken = (req, res, next) => {
         .catch(err => next(err));
 };
 
-const generateToken = (req, res, next) => {
+const updateUser = (req, res, next) => {
+    if (req.body && req.body.userId) {
+        delete req.body.userId;
+    }
+
+    UserService.upsertUser(req.userId, req.body)
+        .then(() => next())
+        .catch(err => {
+            next((err instanceof UserService.NickNameDuplicationError)? Boom.conflict() : err);
+        });
+};
+
+const updateUserInfo = (req, res, next) => {
+    const userInfo = { };
+
+    if (req.body.nickName) userInfo.nickName = req.body.nickName;
+    if (req.body.birthday) userInfo.birthday = req.body.birthday;
+    if (req.body.gender) userInfo.gender = req.body.gender;
+    if (req.body.job) userInfo.job = req.body.job;
+    if (req.body.lifeApps) userInfo.lifeApps = req.body.lifeApps;
+
+    UserService.upsertUser(req.userId, userInfo)
+        .then(() => res.sendStatus(200))
+        .catch(err => next(err));
+};
+
+const generateToken = (user, req, res, next) => {
+    console.log('[', user.userId, '] generateToken');
     const tokenData = {
-        provider : req.body.provider,
-        providerId : req.body.providerId,
-        userId : req.userId,
-        email : req.body.email,
-        name : req.body.name
+        provider : user.provider,
+        providerId : user.providerId,
+        userId : user.userId,
+        email : user.email,
+        name : user.name
     };
 
     const option = {
@@ -66,7 +102,8 @@ const generateToken = (req, res, next) => {
         if (err) {
             next(err);
         } else {
-            res.json(newToken);
+            user.accessToken = newToken;
+            res.json(user);
         }
     });
 };
@@ -133,7 +170,7 @@ const sendNoti = (req, res, next) => {
 
 module.exports = {
     signUpUser,
-    upsertUser,
+    signInUser,
     generateToken,
     verifyUserInfo,
     getUser,
@@ -142,5 +179,7 @@ module.exports = {
     getWishList,
     updateActivatedDate,
     updateNotificationToken,
+    updateUser,
+    updateUserInfo,
     sendNoti
 };

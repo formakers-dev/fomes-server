@@ -3,11 +3,12 @@ const usersRouter = express.Router();
 const Users = require('../controller/users');
 const Auth = require('../middleware/auth');
 
-usersRouter.post('/', Auth.verifyAppBeeToken, Users.upsertUser, (req, res) => res.sendStatus(200));
+usersRouter.post('/', Auth.verifyAppBeeToken, Users.updateUser, (req, res) => res.sendStatus(200));
 usersRouter.put('/activated', Auth.verifyAppBeeToken, Users.updateActivatedDate);
 usersRouter.patch('/noti-token', Auth.verifyAppBeeToken, Users.updateNotificationToken);
+usersRouter.patch('/info', Auth.verifyAppBeeToken, Users.updateUserInfo);
 
-usersRouter.post('/signin', Auth.verifyGoogleToken, Users.upsertUser, Users.generateToken);
+usersRouter.post('/signin', Auth.verifyGoogleToken, Users.signInUser, Users.generateToken);
 usersRouter.post('/signup', Auth.verifyGoogleToken, Users.signUpUser, Users.generateToken);
 usersRouter.get('/verifyToken', Auth.verifyAppBeeToken, (req, res) => res.sendStatus(200));
 usersRouter.get('/verify/info', Auth.verifyAppBeeToken, Users.verifyUserInfo);

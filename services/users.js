@@ -10,8 +10,8 @@ class NickNameDuplicationError extends Error {
     }
 }
 
-const getUser = (userId) => {
-    return Users.findOne({userId: userId});
+const getUser = (userId, selection) => {
+    return Users.findOne({userId: userId}, selection);
 };
 
 const getUserId = (email) => {
@@ -19,6 +19,7 @@ const getUserId = (email) => {
 };
 
 const upsertUser = (userId, user) => {
+    console.log('[UserService] upsertUser userId=', userId, ' user=', user);
     if (user.nickName) {
         return isDuplicatedNickName(userId, user.nickName)
                 .then(isDuplicted => {

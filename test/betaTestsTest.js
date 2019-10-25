@@ -527,19 +527,20 @@ describe('BetaTests', () => {
                     res.body.iconImageUrl.should.be.eql('https://i.imgur.com/n2MaXzg.png');
                     res.body.openDate.should.be.eql('2019-03-11T00:00:00.000Z');
                     res.body.closeDate.should.be.eql('2119-12-31T14:59:50.000Z');
-                    res.body.missions.length.should.be.eql(3);
+
+                    res.body.missions.length.should.be.eql(4);
                     res.body.missions[0].order.should.be.eql(1);
                     res.body.missions[0].title.should.be.eql("베타테스트 추가 신청하기");
                     res.body.missions[0].description.should.be.eql("테스트를 신청하라!!!!\n테스트 하고 싶은 게임 골라라아아아아ㅏ아");
                     res.body.missions[0].descriptionImageUrl.should.be.eql('https://i.imgur.com/n2MaXzg.png');
                     res.body.missions[0].iconImageUrl.should.be.eql('https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png');
-                    res.body.missions[0].items.length.should.be.eql(1);
                     res.body.missions[0].item.order.should.be.eql(1);
                     res.body.missions[0].item.title.should.be.eql("신청하기");
                     res.body.missions[0].item.action.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&entry.1042588232=");
                     res.body.missions[0].item.isCompleted.should.be.eql(true);
                     res.body.missions[0].item.isRepeatable.should.be.eql(true);
                     res.body.missions[0].item.isMandatory.should.be.eql(true);
+
                     res.body.missions[1].order.should.be.eql(2);
                     res.body.missions[1].title.should.be.eql("첫번째 미션!!!");
                     res.body.missions[1].description.should.be.eql("게임을 10분 이상 플레이하라!!!!!!!");
@@ -552,6 +553,7 @@ describe('BetaTests', () => {
                     res.body.missions[1].item.postCondition.playTime.should.be.eql(600000);
                     res.body.missions[1].item.postCondition.packageName.should.be.eql("com.frozax.tentsandtrees");
                     res.body.missions[1].item.isCompleted.should.be.eql(true);
+
                     res.body.missions[2].order.should.be.eql(3);
                     res.body.missions[2].title.should.be.eql("두번째 미션!!!");
                     res.body.missions[2].description.should.be.eql("설문을 하라!!!!!!!!!!!");
@@ -562,6 +564,7 @@ describe('BetaTests', () => {
                     res.body.missions[2].item.title.should.be.eql("의견 작성");
                     res.body.missions[2].item.action.should.be.eql("https://www.naver.com");
                     res.body.missions[2].item.isCompleted.should.be.eql(false);
+
                     res.body.missions[3].order.should.be.eql(3);
                     res.body.missions[3].title.should.be.eql("두번째 미션!!!");
                     res.body.missions[3].description.should.be.eql("설문을 하라!!!!!!!!!!!");
@@ -572,6 +575,7 @@ describe('BetaTests', () => {
                     res.body.missions[3].item.title.should.be.eql("의견 작성2");
                     res.body.missions[3].item.action.should.be.eql("https://www.naver.com");
                     res.body.missions[3].item.isCompleted.should.be.eql(false);
+
                     res.body.rewards.minimumDelay.should.be.eql(100);
                     res.body.rewards.list.length.should.be.eql(3);
                     res.body.tags.length.should.be.eql(3);
@@ -612,6 +616,42 @@ describe('BetaTests', () => {
 
         afterEach(() => {
             sandbox.restore();
+        });
+    });
+
+    describe('GET /beta-tests/all/count', () => {
+        it('모든 베타테스트의 개수를 조회힌다', done => {
+            request.get('/beta-tests/all/count')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.text.should.be.eql("12");
+                    done();
+                }).catch(err => done(err));
+        });
+    });
+
+    describe('GET /beta-tests/all/rewards/total', () => {
+        it('모든 베타테스트의 상금 총 액을 조회한다', done => {
+            request.get('/beta-tests/all/rewards/total')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.text.should.be.eql("24000");
+                    done();
+                }).catch(err => done(err));
+        });
+    });
+
+    describe('GET /beta-tests//all/completed-users/count', () => {
+        it('각 베타테스트의 완료한 유저들의 총 합을 조회한다', done => {
+            request.get('/beta-tests/all/completed-users/count')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.text.should.be.eql("42");
+                    done();
+                }).catch(err => done(err));
         });
     });
 
