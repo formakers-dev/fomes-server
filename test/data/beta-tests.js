@@ -686,6 +686,7 @@ const data = [
         "_id" : ObjectId("5ce51a069cb162da02b9f94d"),
         "title" : "테스트 추가 신청하기 (버그제보 있음)",
         "description" : "테스트 하고싶은 게임 추가신청을 할 수 있어여",
+        "type" : "premium",
         "purpose": "테스트 목적이무니다",
         "progressText" : {
             "ready" : "망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.",
