@@ -18,14 +18,6 @@ describe('BetaTests', () => {
 
     before(done => {
         helper.commonBefore()
-            .then(() => Configurations.create({
-                notificationMessage : {
-                    betaTest : {
-                        completeTitle : '참여하신 테스트가 완료처리 되었어요!👏',
-                        completeSubTitle : '멋져요! [:TITLE]에 성공적으로 참여하셨습니다.',
-                    }
-                }
-            }))
             .then(() => done())
             .catch(err => done(err));
     });
