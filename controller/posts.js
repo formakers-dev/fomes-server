@@ -6,4 +6,10 @@ const getPosts = (req, res, next) => {
         .catch(err => next(err));
 };
 
-module.exports = {getPosts};
+const getPost = (req, res, next) => {
+    PostService.findPost(req.params.id)
+        .then(post => res.json(post))
+        .catch(err => next(err));
+};
+
+module.exports = {getPosts, getPost};
