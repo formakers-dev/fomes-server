@@ -75,9 +75,9 @@ describe('Posts', () => {
         });
     });
 
-    describe('GET /posts/:id', () => {
+    describe('GET /posts/detail/:id', () => {
         it('특정 게시물의 내용을 리턴한다', done => {
-            request.get('/posts/5c25c77798d78f078d8ef3bb')
+            request.get('/posts/detail/5c25c77798d78f078d8ef3bb')
                 .expect(200)
                 .then(res => {
                     res.body._id.should.be.eql('5c25c77798d78f078d8ef3bb');
