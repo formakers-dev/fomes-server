@@ -127,6 +127,7 @@ const findFinishedBetaTests = (userId) => {
                 openDate: { $first: "$openDate" },
                 closeDate: { $first: "$closeDate" },
                 afterService: { $first: "$afterService" },
+                missions: { $push: "$missions" },
                 completedItemCount: { $sum: {
                         $cond: [
                             { $setIsSubset:
@@ -141,8 +142,43 @@ const findFinishedBetaTests = (userId) => {
         const currentDate = new Date();
         return betaTests.map(betaTest => {
             betaTest.currentDate = currentDate;
+            betaTest.missions = convertMissionItemsForClient(userId, betaTest.missions)
+                .filter(mission => mission.item.isRecheckable)
+                .map(mission => {
+                    return {
+                        item : {
+                            title: mission.item.title,
+                            actionType: mission.item.actionType,
+                            action: mission.item.action,
+                            isRecheckable: mission.item.isRecheckable,
+                        }
+                    }
+                });
+
+            if(betaTest.missions[0]) {
+                console.log(betaTest.missions[0].item);
+            }
             return betaTest;
         })
+    });
+};
+
+const convertMissionItemsForClient = (userId, missions) => {
+    return missions.map(mission => {
+        mission.item = mission.items;
+        delete mission.items;
+
+        mission.item.isCompleted = mission.item.completedUserIds.includes(userId);
+        delete mission.item.completedUserIds;
+
+        if (mission.item.options) {
+            mission.item.isRepeatable = mission.item.options.includes('repeatable');
+            mission.item.isMandatory = mission.item.options.includes('mandatory');
+            mission.item.isRecheckable = mission.item.options.includes('recheckable');
+            delete mission.item.options;
+        }
+
+        return mission;
     });
 };
 
@@ -173,22 +209,7 @@ const findBetaTest = (betaTestId, userId) => {
             console.log(betaTests);
             const betaTest = betaTests[0];
 
-            betaTest.missions = betaTest.missions.map(mission => {
-                mission.item =  mission.items;
-                delete mission.items;
-
-                mission.item.isCompleted = mission.item.completedUserIds.includes(userId);
-                delete mission.item.completedUserIds;
-
-                if (mission.item.options) {
-                    mission.item.isRepeatable = mission.item.options.includes('repeatable');
-                    mission.item.isMandatory = mission.item.options.includes('mandatory');
-                    delete mission.item.options;
-                }
-
-                return mission;
-            });
-
+            betaTest.missions = convertMissionItemsForClient(userId, betaTest.missions);
             betaTest.currentDate = new Date();
 
             return betaTest;
