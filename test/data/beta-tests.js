@@ -465,6 +465,7 @@ const data = [
                             "playTime" : 1000
                         },
                         "completedUserIds" : [],
+                        "options": ["recheckable"],
                         "_id" : ObjectId("5d199a4b839927107f4bb946")
                     }
                 ],

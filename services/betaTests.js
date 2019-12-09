@@ -143,7 +143,7 @@ const findFinishedBetaTests = (userId) => {
         return betaTests.map(betaTest => {
             betaTest.currentDate = currentDate;
             betaTest.missions = convertMissionItemsForClient(userId, betaTest.missions)
-                .filter(mission => mission.item.isRecheckable)
+                .filter(mission => mission.item.isRecheckable && mission.item.isCompleted)
                 .map(mission => {
                     return {
                         item : {
@@ -151,6 +151,7 @@ const findFinishedBetaTests = (userId) => {
                             actionType: mission.item.actionType,
                             action: mission.item.action,
                             isRecheckable: mission.item.isRecheckable,
+                            isCompleted: mission.item.isCompleted,
                         }
                     }
                 });
