@@ -6,29 +6,35 @@ const config = require('../config');
 const should = chai.should();
 const helper = require('./commonTestHelper');
 const Posts = require('../models/posts');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 describe('Posts', () => {
     const sandbox = sinon.createSandbox();
 
     const data = [{
+        _id : ObjectId("5c25c77798d78f078d8ef3ba"),
         order: 1,
         openDate: new Date('2019-02-10'),
         closeDate: new Date('2019-02-13'),
         coverImageUrl: 'overviewImage_1',
         contents: 'contents_1',
     }, {
+        _id : ObjectId("5c25c77798d78f078d8ef3bb"),
         order: 2,
         openDate: new Date('2019-02-10'),
         closeDate: new Date('2019-02-12'),
         coverImageUrl: 'overviewImage_2',
         contents: 'contents_2',
     }, {
+        _id : ObjectId("5c25c77798d78f078d8ef3bc"),
         order: 3,
         openDate: new Date('2019-03-01'),
         closeDate: new Date('2019-03-10'),
         coverImageUrl: 'overviewImage_3',
         contents: 'contents_3',
     }, {
+        _id : ObjectId("5c25c77798d78f078d8ef3bd"),
         order: 4,
         openDate: new Date('2019-01-01'),
         closeDate: new Date('2019-01-10'),
@@ -63,6 +69,23 @@ describe('Posts', () => {
                     res.body[1].closeDate.should.be.eql('2019-02-12T00:00:00.000Z');
                     res.body[1].coverImageUrl.should.be.eql('overviewImage_2');
                     res.body[1].contents.should.be.eql('contents_2');
+
+                    done();
+                }).catch(err => done(err));
+        });
+    });
+
+    describe('GET /posts/detail/:id', () => {
+        it('특정 게시물의 내용을 리턴한다', done => {
+            request.get('/posts/detail/5c25c77798d78f078d8ef3bb')
+                .expect(200)
+                .then(res => {
+                    res.body._id.should.be.eql('5c25c77798d78f078d8ef3bb');
+                    res.body.order.should.be.eql(2);
+                    res.body.openDate.should.be.eql('2019-02-10T00:00:00.000Z');
+                    res.body.closeDate.should.be.eql('2019-02-12T00:00:00.000Z');
+                    res.body.coverImageUrl.should.be.eql('overviewImage_2');
+                    res.body.contents.should.be.eql('contents_2');
 
                     done();
                 }).catch(err => done(err));

@@ -18,14 +18,6 @@ describe('BetaTests', () => {
 
     before(done => {
         helper.commonBefore()
-            .then(() => Configurations.create({
-                notificationMessage : {
-                    betaTest : {
-                        completeTitle : '참여하신 테스트가 완료처리 되었어요!👏',
-                        completeSubTitle : '멋져요! [:TITLE]에 성공적으로 참여하셨습니다.',
-                    }
-                }
-            }))
             .then(() => done())
             .catch(err => done(err));
     });
@@ -439,6 +431,11 @@ describe('BetaTests', () => {
                     should.not.exist(res.body[0].afterService);
                     res.body[0].completedItemCount.should.be.eql(2);
                     res.body[0].totalItemCount.should.be.eql(2);
+                    res.body[0].missions.length.should.be.eql(1);
+                    res.body[0].missions[0].item.isRecheckable.should.be.eql(true);
+                    res.body[0].missions[0].item.title.should.be.eql("의견 작성");
+                    res.body[0].missions[0].item.actionType.should.be.eql("link");
+                    res.body[0].missions[0].item.action.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSeRI99bYe7LUU0iQgVMKev6D4zyaW2E3zKx-Tp1tVW2Qzv0Cg/viewform?internal_web=true&usp=pp_url&entry.394653407=");
 
                     res.body[1]._id.should.be.eql("5c986adee1a6f20813ec464d");
                     res.body[1].iconImageUrl.should.be.eql("https://i.imgur.com/4A0jfFe.jpg");

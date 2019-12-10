@@ -465,6 +465,7 @@ const data = [
                             "playTime" : 1000
                         },
                         "completedUserIds" : [],
+                        "options": ["recheckable"],
                         "_id" : ObjectId("5d199a4b839927107f4bb946")
                     }
                 ],
@@ -750,6 +751,7 @@ const data = [
                     {
                         "order": 1,
                         "title" : "신청하기",
+                        "actionType" : "link",
                         "action" : "https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&entry.1042588232=",
                         "completedUserIds" : [
                             config.testUser.userId
@@ -909,6 +911,7 @@ const data = [
                             "google117625570877850551868",
                             config.testUser.userId
                         ],
+                        "options": ["recheckable"],
                         "_id" : ObjectId("5d199acb839927107f4bb94f")
                     }
                 ],
