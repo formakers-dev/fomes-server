@@ -180,7 +180,7 @@ describe('Users', () => {
             registrationToken: 'new_registration_token',
         };
 
-        before(done => {
+        beforeEach(done => {
             Users.create([
                 config.testUser,
                 {
@@ -248,7 +248,7 @@ describe('Users', () => {
                 .catch(err => done(err));
         });
 
-        it('자신 외의 다른 유저가 동일한 닉네팀을 가지고 있을 경우, 409를 리턴한다', done => {
+        it('자신 외의 다른 유저가 동일한 닉네임을 가지고 있을 경우, 409를 리턴한다', done => {
             request.post('/user/signin')
                 .set('x-id-token', config.testUser.googleIdToken)
                 .send({
