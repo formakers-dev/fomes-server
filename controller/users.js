@@ -14,11 +14,17 @@ const signUpUser = (req, res, next) => {
                 res.sendStatus(409);
             }
 
-            // 아예 그냥 insert만 하는 걸로 연결시켜버릴까?
-            return UserService.upsertUser(req.userId, req.body)
+            return UserService.insertUser(req.userId, req.body)
         })
         .then(() => UserService.getUser(req.userId).lean())
-        .then((user) => next(user))
+        .then((user) => {
+            if (user) {
+                req.user = user;
+                next();
+            } else {
+                next(Boom.resourceGone()); // 이거 에러코드 고민된다
+            }
+        })
         .catch(err => {
             next((err instanceof UserService.NickNameDuplicationError)? Boom.conflict() : err);
         });
@@ -29,24 +35,37 @@ const signInUser = (req, res, next) => {
         delete req.body.userId;
     }
 
-    // 쓰지말고 그냥 get만 해야하려나... 아 근데 노티토큰이랑 디바이스 정보 등등 떄문에 쓰긴해야한다
-    // 무조건 update로 진행되게 해야할 것 같다. upsert라 존재하지 않는 경우에 singup (insert) 처리가 되어버리네
-    UserService.upsertUser(req.userId, req.body)
-        .then(() => UserService.getUser(req.userId).lean())
-        .then((user) => next(user))
+    UserService.updateUser(req.userId, req.body)
+        .then((result) => {
+            if (result === null) {
+                throw new UserService.NotExistUser();
+            } else {
+                return UserService.getUser(req.userId).lean();
+            }
+        })
+        .then((user) => {
+            req.user = user;
+            next();
+        })
         .catch(err => {
-            next((err instanceof UserService.NickNameDuplicationError)? Boom.conflict() : err);
+            if (err instanceof UserService.NickNameDuplicationError) {
+                next(Boom.conflict());
+            } else if (err instanceof UserService.NotExistUser) {
+                next(Boom.forbidden("The user does NOT exist"));
+            } else {
+                next(err);
+            }
         });
 };
 
 const updateActivatedDate = (req, res, next) => {
-    UserService.upsertUser(req.userId, { activatedDate: new Date() })
+    UserService.updateUser(req.userId, { activatedDate: new Date() })
         .then(() => res.sendStatus(200))
         .catch(err => next(err));
 };
 
 const updateNotificationToken = (req, res, next) => {
-    UserService.upsertUser(req.userId, { registrationToken: req.body.registrationToken })
+    UserService.updateUser(req.userId, { registrationToken: req.body.registrationToken })
         .then(() => res.sendStatus(200))
         .catch(err => next(err));
 };
@@ -56,7 +75,7 @@ const updateUser = (req, res, next) => {
         delete req.body.userId;
     }
 
-    UserService.upsertUser(req.userId, req.body)
+    UserService.updateUser(req.userId, req.body)
         .then(() => next())
         .catch(err => {
             next((err instanceof UserService.NickNameDuplicationError)? Boom.conflict() : err);
@@ -72,12 +91,13 @@ const updateUserInfo = (req, res, next) => {
     if (req.body.job) userInfo.job = req.body.job;
     if (req.body.lifeApps) userInfo.lifeApps = req.body.lifeApps;
 
-    UserService.upsertUser(req.userId, userInfo)
+    UserService.updateUser(req.userId, userInfo)
         .then(() => res.sendStatus(200))
         .catch(err => next(err));
 };
 
-const generateToken = (user, req, res, next) => {
+const generateToken = (req, res, next) => {
+    const user = req.user;
     console.log('[', user.userId, '] generateToken');
     const tokenData = {
         provider : user.provider,

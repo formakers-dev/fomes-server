@@ -10,6 +10,14 @@ class NickNameDuplicationError extends Error {
     }
 }
 
+class NotExistUser extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+    }
+}
+
+
 const getUser = (userId, selection) => {
     return Users.findOne({userId: userId}, selection);
 };
@@ -18,20 +26,31 @@ const getUserId = (email) => {
     return Users.findOne({email: email}, {userId : true});
 };
 
-const upsertUser = (userId, user) => {
-    console.log('[UserService] upsertUser userId=', userId, ' user=', user);
-    if (user.nickName) {
-        return isDuplicatedNickName(userId, user.nickName)
-                .then(isDuplicted => {
-                    if (isDuplicted) {
-                        throw new NickNameDuplicationError();
-                    } else {
-                        return Users.findOneAndUpdate({userId: userId}, {$set: user}, {upsert: true});
-                    }
-                });
+const checkNickNameDuplicate = (userId, nickName, nextPromise) => {
+    if (nickName) {
+        return isDuplicatedNickName(userId, nickName)
+            .then(isDuplicted => {
+                if (isDuplicted) {
+                    throw new NickNameDuplicationError();
+                } else {
+                    return nextPromise;
+                }
+            });
     } else {
-        return Users.findOneAndUpdate({userId: userId}, {$set: user}, {upsert: true});
+        return nextPromise;
     }
+}
+
+const insertUser = (userId, user) => {
+    console.log('[UserService] insertUser userId=', userId, ' user=', user);
+    return checkNickNameDuplicate(userId, user.nickName,
+        Users.findOneAndUpdate({userId: userId}, {$set: user}, {upsert: true}));
+};
+
+const updateUser = (userId, user) => {
+    console.log('[UserService] updateUser userId=', userId, ' user=', user);
+    return checkNickNameDuplicate(userId, user.nickName,
+        Users.findOneAndUpdate({userId: userId}, {$set: user}, {upsert: false}));
 };
 
 // similarPoint : columns of User model (plz refer to User's Constants)
@@ -108,12 +127,14 @@ const isDuplicatedNickName = (userId, nickName) => {
 module.exports = {
     getUser,
     getUserId,
-    upsertUser,
+    insertUser,
+    updateUser,
     getSimilarUsers,
     getAge,
     upsertWishList,
     removeAppFromWishList,
     getWishList,
     isDuplicatedNickName,
-    NickNameDuplicationError
+    NickNameDuplicationError,
+    NotExistUser
 };
