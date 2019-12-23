@@ -84,29 +84,6 @@ const findValidBetaTests = (userId) => {
 
         return betaTests.map(betaTest => {
             betaTest.currentDate = currentDate;
-
-            /* 하위 버전 호환을 위한 필드들 */
-            betaTest.groupId = 1;
-            betaTest.id = 1;
-            betaTest.subTitle = '이것은 서브타이틀';
-            betaTest.actionType = 'link';
-            betaTest.action = 'http://www.naver.com/';
-            betaTest.reward = '포메스의 사랑';
-            betaTest.requiredTime = 60000;
-            betaTest.amount = '1문';
-            betaTest.apps = [];
-            betaTest.isOpened = false;
-            betaTest.isCompleted = false;
-            betaTest.isGroup = true;
-            betaTest.afterService = {
-                "awards" : "테스트 영웅 : 드래군핥짝 님\n테스트 요정 : 이브 외 9명",
-                "epilogue" : "http://www.naver.com",
-                "companySays" : "포메스 짱! 완전 짱! 대박! 완전! 완전!"
-            };
-            if (!betaTest.tags || betaTest.tags.length <= 0) {
-                betaTest.tags = ['테스트'];
-            }
-
             return betaTest;
         })
     });
