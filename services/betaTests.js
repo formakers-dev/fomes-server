@@ -2,11 +2,12 @@ const mongoose = require('mongoose');
 const BetaTests = require('../models/betaTests');
 
 const getAllBetaTestsCount = () => {
-    return BetaTests.count({});
+    return BetaTests.count({ status: { $ne: "test" }});
 };
 
 const getAllRewards = () => {
     return BetaTests.aggregate([
+        { $match: { status: { $ne: "test" } } },
         { $project: { "rewards" : 1 } },
         { $unwind: "$rewards.list" },
         { $replaceRoot: { newRoot : "$rewards.list" } },
@@ -22,7 +23,8 @@ const getAllRewards = () => {
 
 const getCompletedUsersCountFromAllMissionItem = () => {
     return BetaTests.aggregate([
-        { $project : { missions: 1 } },
+        { $match: { status: { $ne: "test" } } },
+        { $project: { missions: 1 } },
         { $unwind: "$missions" },
         { $unwind: "$missions.items" },
         { $replaceRoot: { newRoot : "$missions.items" } },
@@ -42,7 +44,8 @@ const findValidBetaTests = (userId) => {
                 $or: [
                     {targetUserIds: {$exists: false}},
                     {targetUserIds: {$in: [userId]}},
-                ]
+                ],
+                status: { $ne: "test" },
             }
         },
         { $unwind: "$missions" },
@@ -54,6 +57,7 @@ const findValidBetaTests = (userId) => {
                 title: { $first: "$title" },
                 description: { $first: "$description" },
                 type: { $first: "$type" },
+                status: { $first: "$status" },
                 progressText: { $first: "$progressText" },
                 tags: { $first: "$tags" },
                 openDate: { $first: "$openDate" },

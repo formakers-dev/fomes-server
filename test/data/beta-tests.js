@@ -920,6 +920,53 @@ const data = [
         ],
         "apps" : [],
         "isGroup" : true
+    },
+    {
+        "_id" : ObjectId("1c861f3f2917e73db5d2d536"),
+        "title" : "검색되지 말아야 하는 미션",
+        "description" : "테스트 성 이니까",
+        "status": "test",
+        "progressText" : {
+            "ready" : "망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.",
+            "doing" : "조금만 더 힘내봐요 진행중중중",
+            "done" : "굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."
+        },
+        "tags" : [],
+        "overviewImageUrl" : "https://i.imgur.com/n2MaXzg.png",
+        "iconImageUrl" : "https://i.imgur.com/n2MaXzg.png",
+        "openDate" : ISODate("2019-03-11T00:00:00.000Z"),
+        "closeDate" : ISODate("2119-12-31T14:59:50.000Z"),
+        "rewards" : {
+            "list" : [
+                {
+                    "order" : 1,
+                    "iconImageUrl" : "",
+                    "title" : "참여자 전원",
+                    "content" : "포메스의 사랑",
+                    "userIds" : [ "a" ],
+                    "price" : 1000
+                }
+            ]
+        },
+        "missions" : [
+            {
+                "order" : 1,
+                "title" : "우체통 미션 타이틀!",
+                "description" : "포메스에게 하고 싶은 말이 있다면 이 카드를 통해 편지를 작성해주세요.\n* 불편함, 칭찬, 아이디어 모두 환영이에요.",
+                "descriptionUrl" : "",
+                "iconImageUrl" : "https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png",
+                "items" : [
+                    {
+                        "title" : "편지 보내기",
+                        "action" : "http://www.naver.com",
+                        "completedUserIds" : ["bbbb"],
+                        "_id" : ObjectId("5d199a2c839927107f4bb944")
+                    }
+                ],
+                "guide" : "* 정성가득~~~~~~~~~~~ 아름다운 세상~~~~~~~~~~~~~~~~~~~~~~~~"
+            }
+        ],
+        "apps" : []
     }
 ];
 
