@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const BetaTests = require('../models/betaTests');
+const ConfigurationsService = require('../services/configurations');
 
 const getAllBetaTestsCount = () => {
     return BetaTests.count({ status: { $ne: "test" }});
@@ -45,7 +46,6 @@ const findValidBetaTests = (userId) => {
                     {targetUserIds: {$exists: false}},
                     {targetUserIds: {$in: [userId]}},
                 ],
-                status: { $ne: "test" },
             }
         },
         { $unwind: "$missions" },
@@ -74,8 +74,14 @@ const findValidBetaTests = (userId) => {
 
             }
         }
-    ]).then(betaTests => {
+    ]).then(async betaTests => {
         const currentDate = new Date();
+
+        const adminUserIds = await ConfigurationsService.getAdminUserIds();
+        if (!adminUserIds.includes(userId)) {
+            betaTests = betaTests.filter(betaTest => betaTest.status !== "test");
+        }
+
         return betaTests.map(betaTest => {
             betaTest.currentDate = currentDate;
 

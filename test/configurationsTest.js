@@ -2,7 +2,7 @@ const chai = require('chai');
 const server = require('../server');
 const request = require('supertest').agent(server);
 const config = require('../config');
-const Configurations = require('../models/configurations');
+const {Configurations} = require('../models/configurations');
 const should = chai.should();
 const helper = require('./commonTestHelper');
 
