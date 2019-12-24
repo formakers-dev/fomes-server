@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
 const BetaTests = require('../models/betaTests');
-const Configurations = require('../models/configurations');
+const {Configurations, AdminUsers} = require('../models/configurations');
 const helper = require('./commonTestHelper');
 const data = require('./data/beta-tests');
 
@@ -23,7 +23,8 @@ describe('BetaTests', () => {
     });
 
     beforeEach(done => {
-        BetaTests.create(data)
+        AdminUsers.create([ { userId: "adminUser1" } ])
+            .then(() => BetaTests.create(data))
             .then(() => done())
             .catch(err => done(err));
     });
@@ -654,7 +655,8 @@ describe('BetaTests', () => {
     });
 
     afterEach(done => {
-        BetaTests.remove({})
+        AdminUsers.remove({})
+            .then(() => BetaTests.remove({}))
             .then(() => done())
             .catch(err => done(err));
     });

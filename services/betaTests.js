@@ -1,12 +1,14 @@
 const mongoose = require('mongoose');
 const BetaTests = require('../models/betaTests');
+const ConfigurationsService = require('../services/configurations');
 
 const getAllBetaTestsCount = () => {
-    return BetaTests.count({});
+    return BetaTests.count({ status: { $ne: "test" }});
 };
 
 const getAllRewards = () => {
     return BetaTests.aggregate([
+        { $match: { status: { $ne: "test" } } },
         { $project: { "rewards" : 1 } },
         { $unwind: "$rewards.list" },
         { $replaceRoot: { newRoot : "$rewards.list" } },
@@ -22,7 +24,8 @@ const getAllRewards = () => {
 
 const getCompletedUsersCountFromAllMissionItem = () => {
     return BetaTests.aggregate([
-        { $project : { missions: 1 } },
+        { $match: { status: { $ne: "test" } } },
+        { $project: { missions: 1 } },
         { $unwind: "$missions" },
         { $unwind: "$missions.items" },
         { $replaceRoot: { newRoot : "$missions.items" } },
@@ -42,7 +45,7 @@ const findValidBetaTests = (userId) => {
                 $or: [
                     {targetUserIds: {$exists: false}},
                     {targetUserIds: {$in: [userId]}},
-                ]
+                ],
             }
         },
         { $unwind: "$missions" },
@@ -54,6 +57,7 @@ const findValidBetaTests = (userId) => {
                 title: { $first: "$title" },
                 description: { $first: "$description" },
                 type: { $first: "$type" },
+                status: { $first: "$status" },
                 progressText: { $first: "$progressText" },
                 tags: { $first: "$tags" },
                 openDate: { $first: "$openDate" },
@@ -70,33 +74,16 @@ const findValidBetaTests = (userId) => {
 
             }
         }
-    ]).then(betaTests => {
+    ]).then(async betaTests => {
         const currentDate = new Date();
+
+        const adminUserIds = await ConfigurationsService.getAdminUserIds();
+        if (!adminUserIds.includes(userId)) {
+            betaTests = betaTests.filter(betaTest => betaTest.status !== "test");
+        }
+
         return betaTests.map(betaTest => {
             betaTest.currentDate = currentDate;
-
-            /* 하위 버전 호환을 위한 필드들 */
-            betaTest.groupId = 1;
-            betaTest.id = 1;
-            betaTest.subTitle = '이것은 서브타이틀';
-            betaTest.actionType = 'link';
-            betaTest.action = 'http://www.naver.com/';
-            betaTest.reward = '포메스의 사랑';
-            betaTest.requiredTime = 60000;
-            betaTest.amount = '1문';
-            betaTest.apps = [];
-            betaTest.isOpened = false;
-            betaTest.isCompleted = false;
-            betaTest.isGroup = true;
-            betaTest.afterService = {
-                "awards" : "테스트 영웅 : 드래군핥짝 님\n테스트 요정 : 이브 외 9명",
-                "epilogue" : "http://www.naver.com",
-                "companySays" : "포메스 짱! 완전 짱! 대박! 완전! 완전!"
-            };
-            if (!betaTest.tags || betaTest.tags.length <= 0) {
-                betaTest.tags = ['테스트'];
-            }
-
             return betaTest;
         })
     });

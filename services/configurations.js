@@ -1,4 +1,4 @@
-const Configurations = require('../models/configurations');
+const {Configurations, AdminUsers} = require('../models/configurations');
 
 const getMinAppVersionCode = () => {
     return Configurations.findOne({})
@@ -12,7 +12,14 @@ const getExcludePackageNames = () => {
         .catch(err => Promise.reject(err));
 };
 
+const getAdminUserIds = () => {
+    return AdminUsers.find({})
+        .then(adminUsers => Promise.resolve(adminUsers.map(user => user.userId)))
+        .catch(err => Promise.reject(err));
+};
+
 module.exports = {
     getMinAppVersionCode,
     getExcludePackageNames,
+    getAdminUserIds,
 };

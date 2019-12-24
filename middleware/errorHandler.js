@@ -6,6 +6,7 @@ const logError = (err, req, res, next) => {
 };
 
 const handleError = (err, req, res, next) => {
+    console.log("handleError ", err);
     res.status(Boom.isBoom(err) ? err.output.statusCode : 500)
         .json({
             success: false,

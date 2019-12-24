@@ -180,8 +180,14 @@ describe('Users', () => {
             registrationToken: 'new_registration_token',
         };
 
-        before(done => {
-            Users.create(config.testUser, done);
+        beforeEach(done => {
+            Users.create([
+                config.testUser,
+                {
+                    userId: 'userId1',
+                    nickName: '중복닉네임',
+                }
+                ], done);
         });
 
         it('구글토큰검증 후 userId를 제외한 User정보를 업데이트한다', done => {
@@ -241,6 +247,45 @@ describe('Users', () => {
                 })
                 .catch(err => done(err));
         });
+
+        it('자신 외의 다른 유저가 동일한 닉네임을 가지고 있을 경우, 409를 리턴한다', done => {
+            request.post('/user/signin')
+                .set('x-id-token', config.testUser.googleIdToken)
+                .send({
+                    nickName: '중복닉네임',
+                    birthday: 1980,
+                    gender: 'UnknownUser_gender',
+                    job: 3,
+                    registrationToken: 'UnknownUser_token',
+                })
+                .expect(409, done);
+        });
+
+        // TODO : 크어어.. 안된다...ㅠㅠ
+        // it('유저가 존재하지 않을 경우, 403를 리턴한다', done => {
+        //     helper.restoreSinon();
+        //     const Auth = require('../middleware/auth');
+        //     sinon.stub(Auth, 'verifyGoogleToken').callsFake((req, res, next) => {
+        //         req.body.provider = 'google';
+        //         req.body.providerId = 'UnknwonUser';
+        //         req.body.userId = 'UnknownUser';
+        //         req.body.email = 'unknown@email.com';
+        //         req.body.name = 'unknown';
+        //         req.userId = 'UnknownUser';
+        //         return next();
+        //     });
+        //
+        //     request.post('/user/signin')
+        //         .set('x-id-token', 'unknown_user_google_id_token')
+        //         .send({
+        //             userId: 'UnknownUser',
+        //             birthday: 1980,
+        //             gender: 'UnknownUser_gender',
+        //             job: 3,
+        //             registrationToken: 'UnknownUser_token',
+        //         })
+        //         .expect(403, done);
+        // });
 
         afterEach((done) => {
             Users.remove({userId: config.testUser.userId}, done);
@@ -340,6 +385,29 @@ describe('Users', () => {
                 Users.remove({userId: config.testUser.userId}, done);
             });
         });
+
+        afterEach(done => {
+            sandbox.restore();
+            Users.remove({userId: config.testUser.userId}, done);
+        });
+
+        // TODO : 와.. 이것도 테스트코드 어떻게짜야할지 감이 안온다...
+        // describe('가입은 되었는데 유저정보가 반환되지 않는 경우,', () => {
+        //     beforeEach(done => {
+        //         Users.create(oldUser, done);
+        //     });
+        //
+        //     it('409 에러코드를 리턴한다', done => {
+        //         request.post('/user/signup')
+        //             .set('x-id-token', config.testUser.googleIdToken)
+        //             .send(signUpUser)
+        //             .expect(409, done);
+        //     });
+        //
+        //     afterEach(done => {
+        //         Users.remove({userId: config.testUser.userId}, done);
+        //     });
+        // });
 
         afterEach(done => {
             sandbox.restore();
