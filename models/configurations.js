@@ -9,6 +9,6 @@ const Configurations = mongoose.model('configurations', configurationsSchema);
 const adminUsersSchema = new mongoose.Schema({
     userId: String,
 });
-const AdminUsers = mongoose.model('users-admin', adminUsersSchema);
+const AdminUsers = mongoose.model('admin-users', adminUsersSchema);
 
 module.exports = { Configurations, AdminUsers };

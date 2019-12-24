@@ -9,7 +9,8 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
 const BetaTests = require('../models/betaTests');
-const {Configurations, AdminUsers} = require('../models/configurations');
+const Configurations = require('../models/configurations').Configurations;
+const AdminUsers = require('../models/configurations').AdminUsers;
 const helper = require('./commonTestHelper');
 const data = require('./data/beta-tests');
 
@@ -133,6 +134,82 @@ describe('BetaTests', () => {
 
                     done();
                 }).catch(err => done(err));
+        });
+
+        describe('요청한 유저가 관리자 이면', () => {
+            beforeEach(done => {
+                const newAdmin = new AdminUsers({
+                    userId: config.testUser.userId,
+                });
+                newAdmin.save()
+                    .then(() => done())
+                    .catch(err => done(err));
+            });
+
+            it("상태가 test인 건도 조회한다", done => {
+                sandbox.useFakeTimers(new Date("2019-06-25T02:30:00.000Z").getTime());
+
+                request.get('/beta-tests')
+                    .set('x-access-token', config.appbeeToken.valid)
+                    .expect(200)
+                    .then(res => {
+                        res.body.sort((a, b) => a.title > b.title ? 1 : -1);
+                        console.error(res.body);
+
+                        res.body.length.should.be.eql(6);
+
+                        res.body[0]._id.should.be.eql("5c25e1e824196d19231fbed3");
+                        res.body[0].overviewImageUrl.should.be.eql("https://images.pexels.com/photos/669610/pexels-photo-669610.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940");
+                        res.body[0].title.should.be.eql("appbee0627 한테만 보이는 활성화된 테스트");
+                        res.body[0].description.should.be.eql("targetUserIds에 추가해보았다");
+                        res.body[0].openDate.should.be.eql("2018-12-28T00:00:00.000Z");
+                        res.body[0].closeDate.should.be.eql("2119-12-31T00:00:00.000Z");
+
+                        res.body[1]._id.should.be.eql("1c861f3f2917e73db5d2d536");
+                        res.body[1].overviewImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
+                        res.body[1].title.should.be.eql("검색되지 말아야 하는 미션");
+                        res.body[1].description.should.be.eql("테스트 성 이니까");
+                        res.body[1].openDate.should.be.eql("2019-03-11T00:00:00.000Z");
+                        res.body[1].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");
+
+                        res.body[2]._id.should.be.eql("5c7345f718500feddc24ca34");
+                        res.body[2].overviewImageUrl.should.be.eql("https://i.imgur.com/5z0esWH.png");
+                        res.body[2].title.should.be.eql("버그제보 & 리워드 없음");
+                        res.body[2].description.should.be.eql("* 제보 기간 : 2/25(월) ~ 3/3(일)\n* 제보 방법 : 게임 플레이 시 발견되는 버그가 있을 때마다 이 카드를 통해 제보\n* 중요 버그 제보를 할 수록 테스트 영웅 수상의 가능성이 높아집니다!");
+                        res.body[2].openDate.should.be.eql("2019-02-25T00:00:00.000Z");
+                        res.body[2].closeDate.should.be.eql("2119-03-03T14:59:00.000Z");
+
+                        res.body[3]._id.should.be.eql("5ce51a069cb162da02b9f94d");
+                        res.body[3].overviewImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
+                        res.body[3].title.should.be.eql("테스트 추가 신청하기 (버그제보 있음)");
+                        res.body[3].description.should.be.eql("테스트 하고싶은 게임 추가신청을 할 수 있어여");
+                        res.body[3].type.should.be.eql("premium");
+                        res.body[3].openDate.should.be.eql("2019-03-11T00:00:00.000Z");
+                        res.body[3].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");
+
+                        res.body[4]._id.should.be.eql("5c25c77798d78f078d8ef3ba");
+                        res.body[4].overviewImageUrl.should.be.eql("https://images.pexels.com/photos/669609/pexels-photo-669609.jpeg?auto=compress&cs=tinysrgb&dpr=2&fit=crop&h=500&w=500");
+                        res.body[4].title.should.be.eql("포메스 설문조사 입니다! 제목이 좀 길어요 깁니다요 길어요오 제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오");
+                        res.body[4].description.should.be.eql("갑자기 분위기 설문조사! 포메스 앱에 대한 설문조사입니다 :-D");
+                        res.body[4].openDate.should.be.eql("2018-12-28T00:00:00.000Z");
+                        res.body[4].closeDate.should.be.eql("2119-12-31T00:00:00.000Z");
+
+                        res.body[5]._id.should.be.eql("5c861f3f2917e70db5d2d536");
+                        res.body[5].overviewImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
+                        res.body[5].title.should.be.eql("포메스 우체통");
+                        res.body[5].description.should.be.eql("우체통임다");
+                        res.body[5].openDate.should.be.eql("2019-03-11T00:00:00.000Z");
+                        res.body[5].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");
+
+                        done();
+                    }).catch(err => done(err));
+            });
+
+            afterEach(done => {
+                AdminUsers.remove({userId: config.testUser.userId})
+                    .then(() => done())
+                    .catch(err => done(err));
+            });
         });
 
         afterEach(() => {
