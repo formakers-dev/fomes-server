@@ -199,7 +199,8 @@ describe('Recommend', () => {
                         testUserAppUsages = appUsages;
                         return AppUsages.remove({userId: config.testUser.userId});
                     })
-                    .then(() => done());
+                    .then(() => done())
+                    .catch(err => done(err))
             });
 
             it('데모그래픽 목록만 반환한다', done => {
@@ -217,7 +218,8 @@ describe('Recommend', () => {
 
             after(done => {
                 AppUsages.create(testUserAppUsages)
-                    .then(() => done());
+                    .then(() => done())
+                    .catch(err => done(err));
             });
         });
 
