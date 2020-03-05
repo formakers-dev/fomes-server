@@ -133,7 +133,7 @@ const data = [
                 "_id" : ObjectId("5d1d6bf2d638af0bb86b0f6e")
             }
         ],
-        "apps" : []
+        "similarApps" : []
     }
 
     ,
@@ -194,7 +194,7 @@ const data = [
         "targetUserIds" : [
             config.testUser.userId
         ],
-        "apps" : []
+        "similarApps" : []
     }
 
     ,
@@ -233,7 +233,7 @@ const data = [
                 "guide" : "* 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다!\n* 불성실한 응답은 보상지급 대상자에서 제외될 수 있습니다."
             }
         ],
-        "apps" : []
+        "similarApps" : []
     }
 
     ,
@@ -289,7 +289,7 @@ const data = [
                 "guide" : "* 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다!\n* 불성실한 응답은 보상지급 대상자에서 제외될 수 있습니다."
             }
         ],
-        "apps" : []
+        "similarApps" : []
     }
 
     ,
@@ -336,7 +336,7 @@ const data = [
                 "guide" : "* 정성가득~~~~~~~~~~~ 아름다운 세상~~~~~~~~~~~~~~~~~~~~~~~~"
             }
         ],
-        "apps" : []
+        "similarApps" : []
     }
 
     ,
@@ -404,7 +404,7 @@ const data = [
         "targetUserIds" : [
             "abcd"
         ],
-        "apps" : [
+        "similarApps" : [
             ""
         ],
         "isGroup" : true
@@ -472,7 +472,7 @@ const data = [
                 "guide" : "guide1"
             }
         ],
-        "apps" : [],
+        "similarApps" : [],
         "isGroup" : true,
         "afterService" : {
             "awards" : "테스트 영웅 : 드래군핥짝 님\n테스트 요정 : 이브 외 9명",
@@ -543,7 +543,7 @@ const data = [
                 "guide" : "guide1"
             }
         ],
-        "apps" : [],
+        "similarApps" : [],
         "isGroup" : true,
         "afterService" : {
             "awards" : "포메스 팀 : 참가자 여러분 모두 저희의 챔피언❤️",
@@ -614,7 +614,7 @@ const data = [
                 "guide" : "guide1"
             }
         ],
-        "apps" : [],
+        "similarApps" : [],
         "isGroup" : true
     }
 
@@ -678,7 +678,7 @@ const data = [
                 "guide" : "guide1"
             }
         ],
-        "apps" : [],
+        "similarApps" : [],
         "isGroup" : true
     }
 
@@ -809,7 +809,7 @@ const data = [
                 "guide" : "* 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다!\n* 불성실한 응답은 보상지급 대상자에서 제외될 수 있습니다."
             }
         ],
-        "apps" : []
+        "similarApps" : []
     }
 
     ,
@@ -918,7 +918,7 @@ const data = [
                 "guide" : "* 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다!\n* 불성실한 응답은 보상지급 대상자에서 제외될 수 있습니다."
             }
         ],
-        "apps" : [],
+        "similarApps" : [],
         "isGroup" : true
     },
     {
@@ -966,7 +966,7 @@ const data = [
                 "guide" : "* 정성가득~~~~~~~~~~~ 아름다운 세상~~~~~~~~~~~~~~~~~~~~~~~~"
             }
         ],
-        "apps" : []
+        "similarApps" : []
     }
 ];
 

@@ -52,7 +52,7 @@ const betaTestSchema = new Schema({
     afterService: afterServiceSchema,
     rewards: Rewards,
     missions: [MissionSchema],
-    apps: Array,
+    similarApps: Array,
     targetUserIds: false,
 });
 
