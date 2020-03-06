@@ -217,7 +217,7 @@ describe('Recommend', () => {
             });
 
             after(done => {
-                AppUsages.create(testUserAppUsages)
+                AppUsages.insertMany(testUserAppUsages)
                     .then(() => done())
                     .catch(err => done(err));
             });
