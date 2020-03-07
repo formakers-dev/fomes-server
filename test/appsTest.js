@@ -3,6 +3,7 @@ const config = require('../config');
 const request = require('supertest').agent(server);
 const should = require('chai').should();
 const {Apps} = require('../models/appUsages');
+const {Users} = require('../models/users');
 const helper = require('./commonTestHelper');
 
 describe('Apps', () => {
@@ -14,7 +15,8 @@ describe('Apps', () => {
 
     describe('GET /apps/:packageName', () => {
         before(done => {
-            Apps.create([{
+            Users.findOneAndUpdate({userId: config.testUser.userId}, {wishList: ['com.game.edu']})
+                .then(() => Apps.create([{
                     packageName: 'com.game.edu',
                     appName: '교육게임명',
                     categoryId1: 'GAME_EDUCATIONAL',
@@ -26,7 +28,7 @@ describe('Apps', () => {
                     installsMax: 100000,
                     contentsRating: '만 12세 이상',
                     imageUrls: ['http://edu-url.com', 'http://edu-url2.com'],
-                    wishedBy: ['user1', config.testUser.userId],
+                    // wishedBy: ['user1', config.testUser.userId],
                 }, {
                     packageName: 'com.game.rpg',
                     appName: '롤플레잉게임명',
@@ -39,9 +41,10 @@ describe('Apps', () => {
                     installsMax: 10000000,
                     contentsRating: '만 19세 이상',
                     imageUrls: ['http://rpg-url'],
-                    wishedBy: [],
-                }])
-                .then(() => done());
+                    // wishedBy: [],
+                }]))
+                .then(() => done())
+                .catch(err => done(err));
         });
 
         it('요청한 앱 정보를 전송한다', done => {
@@ -80,7 +83,10 @@ describe('Apps', () => {
 
 
         after(done => {
-            Apps.remove({}, done);
+            Users.remove({})
+                .then(() => Apps.remove({}))
+                .then(() => done())
+                .catch(err => done(err));
         });
     });
 
