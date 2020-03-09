@@ -11,6 +11,7 @@ const data = [
         "_id" : ObjectId("5c25c77798d78f078d8ef3ba"),
         "title" : "포메스 설문조사 입니다! 제목이 좀 길어요 깁니다요 길어요오 제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오",
         "description" : "갑자기 분위기 설문조사! 포메스 앱에 대한 설문조사입니다 :-D",
+        "subjectType" : "fomes-test",
         "progressText" : {
             "ready" : "밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.",
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
@@ -141,6 +142,7 @@ const data = [
         "_id" : ObjectId("5c25e1e824196d19231fbed3"),
         "title" : "appbee0627 한테만 보이는 활성화된 테스트",
         "description" : "targetUserIds에 추가해보았다",
+        "subjectType" : "event",
         "progressText" : {
             "ready" : "망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.",
             "doing" : "아직 참여 진행중인데 끝내고 싶지 않니??? 얼른 끝내버리자아아앙 두줄두줄 두줄두줄",
@@ -202,6 +204,7 @@ const data = [
         "_id" : ObjectId("5c25e23b24196d19231fd1da"),
         "title" : "아직 오픈일이 되지 않은 테스트",
         "description" : "오픈되려면 멀었다",
+        "subjectType" : "game-test",
         "progressText" : {
             "ready" : "이거 완전 재밌는 게임인데....... 그냥 해보라고하면 할지 모르겠고... 설명을 못하겠네.... 정말 재밌는 게임인데...",
             "doing" : "진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중ㅍ",
@@ -241,6 +244,7 @@ const data = [
         "_id" : ObjectId("5c7345f718500feddc24ca34"),
         "title" : "버그제보 & 리워드 없음",
         "description" : "* 제보 기간 : 2/25(월) ~ 3/3(일)\n* 제보 방법 : 게임 플레이 시 발견되는 버그가 있을 때마다 이 카드를 통해 제보\n* 중요 버그 제보를 할 수록 테스트 영웅 수상의 가능성이 높아집니다!",
+        "subjectType" : null,
         "progressText" : {
             "ready" : "아직도 안해본 사람이 있다고요???",
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요??????????????????????????????????????????????",
@@ -297,6 +301,7 @@ const data = [
         "_id" : ObjectId("5c861f3f2917e70db5d2d536"),
         "title" : "포메스 우체통",
         "description" : "우체통임다",
+        "subjectType" : null,
         "progressText" : {
             "ready" : "망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.",
             "doing" : "조금만 더 힘내봐요 진행중중중",
@@ -344,6 +349,7 @@ const data = [
         "_id" : ObjectId("5c9892f92917e70db5d243dd"),
         "title" : "appbee0627이 타겟이 아닌 그룹",
         "description" : "targetUserIds 가 없어요",
+        "subjectType" : "game-test",
         "progressText" : {
             "ready" : "망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.........................................................................",
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
@@ -414,6 +420,7 @@ const data = [
     {
         "_id" : ObjectId("5c986adee1a6f20813ec464d"),
         "title" : "[메이헴의 유산] 게임 테스트 + 에필로그",
+        "subjectType" : "game-test",
         "progressText" : {
             "ready" : "밑져야 본전! 재미있어 보인다면 참여해 보세요.",
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
@@ -485,6 +492,7 @@ const data = [
     {
         "_id" : ObjectId("5c989f0a2917e70db5d4fc2e"),
         "title" : "appbee0627이 참여한 그룹! + 에필로그  길게길게길게길게길게길게길게길게길게길게길게길게길게길게길게",
+        "subjectType" : "game-test",
         "progressText" : {
             "ready" : "망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.",
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
@@ -556,6 +564,7 @@ const data = [
     {
         "_id" : ObjectId("5c99d101d122450cf08431aa"),
         "title" : "appbee0627이 참여한 그룹! 근데 에필로그가 아직 등록안됨!!!!",
+        "subjectType" : "game-test",
         "progressText" : {
             "ready" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
             "doing" : "밑져야 본전! 재미있어 보인다면 참여해 보세요.",
@@ -622,6 +631,7 @@ const data = [
     {
         "_id" : ObjectId("5c99d14fd122450cf08431ab"),
         "title" : "appbee0627이 참여하지 않은 그룹! 에필로그도 없음!",
+        "subjectType" : "game-test",
         "progressText" : {
             "ready" : "밑져야 본전! 재미있어 보인다면 참여해 보세요.",
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
@@ -687,6 +697,7 @@ const data = [
         "_id" : ObjectId("5ce51a069cb162da02b9f94d"),
         "title" : "테스트 추가 신청하기 (버그제보 있음)",
         "description" : "테스트 하고싶은 게임 추가신청을 할 수 있어여",
+        "subjectType" : "game-test",
         "type" : "premium",
         "purpose": "테스트 목적이무니다",
         "progressText" : {
@@ -816,6 +827,7 @@ const data = [
     {
         "_id" : ObjectId("5d01b1f6db7d04bc2d04345c"),
         "title" : "[매드러너] 게임 테스트",
+        "subjectType" : "game-test",
         "description" : "",
         "progressText" : {
             "ready" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
@@ -924,6 +936,7 @@ const data = [
     {
         "_id" : ObjectId("1c861f3f2917e73db5d2d536"),
         "title" : "검색되지 말아야 하는 미션",
+        "subjectType" : "event",
         "description" : "테스트 성 이니까",
         "status": "test",
         "progressText" : {

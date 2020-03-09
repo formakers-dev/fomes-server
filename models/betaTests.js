@@ -39,6 +39,7 @@ const betaTestSchema = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
     title: String,
     description: String,
+    subjectType: String,
     type: String,
     status: String,
     purpose: String,
