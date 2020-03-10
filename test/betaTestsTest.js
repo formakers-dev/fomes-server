@@ -18,7 +18,18 @@ describe('BetaTests', () => {
     const sandbox = sinon.createSandbox();
 
     before(done => {
+        const configurationData = {
+            minAppVersionCode: 2,
+            excludeAnalysisPackageNames: ["com.kakao.talk", "com.line.talk"],
+            betaTestProgressText: {
+                ready: "Default! 밑져야 본전!",
+                doing: "Default! 당신을 기다리고 있었어요!",
+                done: "Default! 굿! 훌륭해요!"
+            }
+        };
+
         helper.commonBefore()
+            .then(() => Configurations.create(configurationData))
             .then(() => done())
             .catch(err => done(err));
     });
@@ -61,11 +72,11 @@ describe('BetaTests', () => {
 
                     res.body[1]._id.should.be.eql("5c7345f718500feddc24ca34");
                     res.body[1].coverImageUrl.should.be.eql("https://i.imgur.com/5z0esWH.png");
-                    res.body[1].title.should.be.eql("버그제보 & 리워드 없음");
+                    res.body[1].title.should.be.eql("버그제보 & 리워드 없음 (ProgressText null)");
                     res.body[1].description.should.be.eql("* 제보 기간 : 2/25(월) ~ 3/3(일)\n* 제보 방법 : 게임 플레이 시 발견되는 버그가 있을 때마다 이 카드를 통해 제보\n* 중요 버그 제보를 할 수록 테스트 영웅 수상의 가능성이 높아집니다!");
-                    res.body[1].progressText.ready.should.be.eql("아직도 안해본 사람이 있다고요???");
-                    res.body[1].progressText.doing.should.be.eql("당신을 기다리고 있었어요! 이어서 참여해볼까요??????????????????????????????????????????????");
-                    res.body[1].progressText.done.should.be.eql("짝짝짝! 멋져요! 마감 후 테스터 시상식이 열릴거에요.");
+                    res.body[1].progressText.ready.should.be.eql("Default! 밑져야 본전!");
+                    res.body[1].progressText.doing.should.be.eql("Default! 당신을 기다리고 있었어요!");
+                    res.body[1].progressText.done.should.be.eql("Default! 굿! 훌륭해요!");
                     res.body[1].tags.length.should.be.eql(1);
                     res.body[1].tags[0].should.be.eql("버그제보");
                     res.body[1].openDate.should.be.eql("2019-02-25T00:00:00.000Z");
@@ -108,11 +119,11 @@ describe('BetaTests', () => {
 
                     res.body[4]._id.should.be.eql("5c861f3f2917e70db5d2d536");
                     res.body[4].coverImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
-                    res.body[4].title.should.be.eql("포메스 우체통");
+                    res.body[4].title.should.be.eql("포메스 우체통 (ProgressText없음)");
                     res.body[4].description.should.be.eql("우체통임다");
-                    res.body[4].progressText.ready.should.be.eql("망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.");
-                    res.body[4].progressText.doing.should.be.eql("조금만 더 힘내봐요 진행중중중");
-                    res.body[4].progressText.done.should.be.eql("굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요.");
+                    res.body[4].progressText.ready.should.be.eql("Default! 밑져야 본전!");
+                    res.body[4].progressText.doing.should.be.eql("Default! 당신을 기다리고 있었어요!");
+                    res.body[4].progressText.done.should.be.eql("Default! 굿! 훌륭해요!");
                     // TODO: 진행중 테스트 조회 임시코드 제거시 주석 제거
                     // res.body[4].tags.length.should.be.eql(0);
                     res.body[4].openDate.should.be.eql("2019-03-11T00:00:00.000Z");
@@ -174,7 +185,7 @@ describe('BetaTests', () => {
 
                         res.body[2]._id.should.be.eql("5c7345f718500feddc24ca34");
                         res.body[2].coverImageUrl.should.be.eql("https://i.imgur.com/5z0esWH.png");
-                        res.body[2].title.should.be.eql("버그제보 & 리워드 없음");
+                        res.body[2].title.should.be.eql("버그제보 & 리워드 없음 (ProgressText null)");
                         res.body[2].description.should.be.eql("* 제보 기간 : 2/25(월) ~ 3/3(일)\n* 제보 방법 : 게임 플레이 시 발견되는 버그가 있을 때마다 이 카드를 통해 제보\n* 중요 버그 제보를 할 수록 테스트 영웅 수상의 가능성이 높아집니다!");
                         res.body[2].openDate.should.be.eql("2019-02-25T00:00:00.000Z");
                         res.body[2].closeDate.should.be.eql("2119-03-03T14:59:00.000Z");
@@ -196,7 +207,7 @@ describe('BetaTests', () => {
 
                         res.body[5]._id.should.be.eql("5c861f3f2917e70db5d2d536");
                         res.body[5].coverImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
-                        res.body[5].title.should.be.eql("포메스 우체통");
+                        res.body[5].title.should.be.eql("포메스 우체통 (ProgressText없음)");
                         res.body[5].description.should.be.eql("우체통임다");
                         res.body[5].openDate.should.be.eql("2019-03-11T00:00:00.000Z");
                         res.body[5].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");

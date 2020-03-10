@@ -83,8 +83,11 @@ const findValidBetaTests = (userId) => {
             betaTests = betaTests.filter(betaTest => betaTest.status !== "test");
         }
 
+        const defaultProgressText = await ConfigurationsService.getBetaTestProgressText();
+
         return betaTests.map(betaTest => {
             betaTest.currentDate = currentDate;
+            betaTest.progressText = (betaTest.progressText)? betaTest.progressText : defaultProgressText;
             return betaTest;
         })
     });

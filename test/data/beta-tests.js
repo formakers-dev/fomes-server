@@ -243,14 +243,10 @@ const data = [
     ,
     {
         "_id" : ObjectId("5c7345f718500feddc24ca34"),
-        "title" : "버그제보 & 리워드 없음",
+        "title" : "버그제보 & 리워드 없음 (ProgressText null)",
         "description" : "* 제보 기간 : 2/25(월) ~ 3/3(일)\n* 제보 방법 : 게임 플레이 시 발견되는 버그가 있을 때마다 이 카드를 통해 제보\n* 중요 버그 제보를 할 수록 테스트 영웅 수상의 가능성이 높아집니다!",
         "subjectType" : null,
-        "progressText" : {
-            "ready" : "아직도 안해본 사람이 있다고요???",
-            "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요??????????????????????????????????????????????",
-            "done" : "짝짝짝! 멋져요! 마감 후 테스터 시상식이 열릴거에요."
-        },
+        "progressText" : null,
         "tags" : [
             "버그제보"
         ],
@@ -300,14 +296,9 @@ const data = [
     ,
     {
         "_id" : ObjectId("5c861f3f2917e70db5d2d536"),
-        "title" : "포메스 우체통",
+        "title" : "포메스 우체통 (ProgressText없음)",
         "description" : "우체통임다",
         "subjectType" : null,
-        "progressText" : {
-            "ready" : "망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.",
-            "doing" : "조금만 더 힘내봐요 진행중중중",
-            "done" : "굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."
-        },
         "tags" : [],
         "coverImageUrl" : "https://i.imgur.com/n2MaXzg.png",
         "iconImageUrl" : "https://i.imgur.com/n2MaXzg.png",

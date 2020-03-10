@@ -18,8 +18,15 @@ const getAdminUserIds = () => {
         .catch(err => Promise.reject(err));
 };
 
+const getBetaTestProgressText = () => {
+    return Configurations.findOne({})
+        .then(configuration => Promise.resolve(configuration.betaTestProgressText))
+        .catch(err => Promise.reject(err));
+};
+
 module.exports = {
     getMinAppVersionCode,
     getExcludePackageNames,
     getAdminUserIds,
+    getBetaTestProgressText
 };
