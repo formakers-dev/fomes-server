@@ -40,7 +40,7 @@ const betaTestSchema = new Schema({
     title: String,
     description: String,
     subjectType: String,
-    type: String,
+    plan: String,
     status: String,
     purpose: String,
     progressText: Object,

@@ -56,7 +56,7 @@ const findValidBetaTests = (userId) => {
                 overviewImageUrl: { $first: "$overviewImageUrl" },
                 title: { $first: "$title" },
                 description: { $first: "$description" },
-                type: { $first: "$type" },
+                plan: { $first: "$plan" },
                 status: { $first: "$status" },
                 progressText: { $first: "$progressText" },
                 tags: { $first: "$tags" },

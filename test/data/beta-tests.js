@@ -205,6 +205,7 @@ const data = [
         "title" : "아직 오픈일이 되지 않은 테스트",
         "description" : "오픈되려면 멀었다",
         "subjectType" : "game-test",
+        "plan" : "lite",
         "progressText" : {
             "ready" : "이거 완전 재밌는 게임인데....... 그냥 해보라고하면 할지 모르겠고... 설명을 못하겠네.... 정말 재밌는 게임인데...",
             "doing" : "진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중ㅍ",
@@ -350,6 +351,7 @@ const data = [
         "title" : "appbee0627이 타겟이 아닌 그룹",
         "description" : "targetUserIds 가 없어요",
         "subjectType" : "game-test",
+        "plan" : "simple",
         "progressText" : {
             "ready" : "망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.........................................................................",
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
@@ -421,6 +423,7 @@ const data = [
         "_id" : ObjectId("5c986adee1a6f20813ec464d"),
         "title" : "[메이헴의 유산] 게임 테스트 + 에필로그",
         "subjectType" : "game-test",
+        "plan" : "standard",
         "progressText" : {
             "ready" : "밑져야 본전! 재미있어 보인다면 참여해 보세요.",
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
@@ -493,6 +496,7 @@ const data = [
         "_id" : ObjectId("5c989f0a2917e70db5d4fc2e"),
         "title" : "appbee0627이 참여한 그룹! + 에필로그  길게길게길게길게길게길게길게길게길게길게길게길게길게길게길게",
         "subjectType" : "game-test",
+        "plan" : "lite",
         "progressText" : {
             "ready" : "망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.",
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
@@ -565,6 +569,7 @@ const data = [
         "_id" : ObjectId("5c99d101d122450cf08431aa"),
         "title" : "appbee0627이 참여한 그룹! 근데 에필로그가 아직 등록안됨!!!!",
         "subjectType" : "game-test",
+        "plan" : "lite",
         "progressText" : {
             "ready" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
             "doing" : "밑져야 본전! 재미있어 보인다면 참여해 보세요.",
@@ -632,6 +637,7 @@ const data = [
         "_id" : ObjectId("5c99d14fd122450cf08431ab"),
         "title" : "appbee0627이 참여하지 않은 그룹! 에필로그도 없음!",
         "subjectType" : "game-test",
+        "plan" : "lite",
         "progressText" : {
             "ready" : "밑져야 본전! 재미있어 보인다면 참여해 보세요.",
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
@@ -698,7 +704,7 @@ const data = [
         "title" : "테스트 추가 신청하기 (버그제보 있음)",
         "description" : "테스트 하고싶은 게임 추가신청을 할 수 있어여",
         "subjectType" : "game-test",
-        "type" : "premium",
+        "plan" : "standard",
         "purpose": "테스트 목적이무니다",
         "progressText" : {
             "ready" : "망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.",
@@ -828,6 +834,7 @@ const data = [
         "_id" : ObjectId("5d01b1f6db7d04bc2d04345c"),
         "title" : "[매드러너] 게임 테스트",
         "subjectType" : "game-test",
+        "plan" : "standard",
         "description" : "",
         "progressText" : {
             "ready" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",

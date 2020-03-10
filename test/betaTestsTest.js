@@ -78,7 +78,7 @@ describe('BetaTests', () => {
                     res.body[2].overviewImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
                     res.body[2].title.should.be.eql("테스트 추가 신청하기 (버그제보 있음)");
                     res.body[2].description.should.be.eql("테스트 하고싶은 게임 추가신청을 할 수 있어여");
-                    res.body[2].type.should.be.eql("premium");
+                    res.body[2].plan.should.be.eql("standard");
                     res.body[2].progressText.ready.should.be.eql("망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.");
                     res.body[2].progressText.doing.should.be.eql("당신을 기다리고 있었어요! 이어서 참여해볼까요?");
                     res.body[2].progressText.done.should.be.eql("굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요.");
@@ -183,7 +183,7 @@ describe('BetaTests', () => {
                         res.body[3].overviewImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
                         res.body[3].title.should.be.eql("테스트 추가 신청하기 (버그제보 있음)");
                         res.body[3].description.should.be.eql("테스트 하고싶은 게임 추가신청을 할 수 있어여");
-                        res.body[3].type.should.be.eql("premium");
+                        res.body[3].plan.should.be.eql("standard");
                         res.body[3].openDate.should.be.eql("2019-03-11T00:00:00.000Z");
                         res.body[3].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");
 
