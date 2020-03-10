@@ -54,6 +54,7 @@ const findValidBetaTests = (userId) => {
             $group: {
                 _id: "$_id",
                 overviewImageUrl: { $first: "$overviewImageUrl" },
+                coverImageUrl: { $first: "$coverImageUrl" },
                 title: { $first: "$title" },
                 description: { $first: "$description" },
                 plan: { $first: "$plan" },
@@ -185,6 +186,7 @@ const findBetaTest = (betaTestId, userId) => {
                 purpose: { $first: "$purpose" },
                 tags: { $first: "$tags" },
                 overviewImageUrl: { $first: "$overviewImageUrl" },
+                coverImageUrl: { $first: "$coverImageUrl" },
                 iconImageUrl: { $first: "$iconImageUrl" },
                 openDate: { $first: "$openDate" },
                 closeDate: { $first: "$closeDate" },

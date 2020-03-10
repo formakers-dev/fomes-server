@@ -46,6 +46,7 @@ const betaTestSchema = new Schema({
     progressText: Object,
     tags: Array,
     overviewImageUrl: String,
+    coverImageUrl: String,
     iconImageUrl: String,
     openDate: Date,
     closeDate: Date,

@@ -20,7 +20,7 @@ const data = [
         "tags" : [
             "플레이"
         ],
-        "overviewImageUrl" : "https://images.pexels.com/photos/669609/pexels-photo-669609.jpeg?auto=compress&cs=tinysrgb&dpr=2&fit=crop&h=500&w=500",
+        "coverImageUrl" : "https://images.pexels.com/photos/669609/pexels-photo-669609.jpeg?auto=compress&cs=tinysrgb&dpr=2&fit=crop&h=500&w=500",
         "iconImageUrl" : "https://images.pexels.com/photos/669609/pexels-photo-669609.jpeg?auto=compress&cs=tinysrgb&dpr=2&fit=crop&h=500&w=500",
         "openDate" : ISODate("2018-12-28T00:00:00.000Z"),
         "closeDate" : ISODate("2119-12-31T00:00:00.000Z"),
@@ -151,7 +151,7 @@ const data = [
         "tags" : [
             "설문"
         ],
-        "overviewImageUrl" : "https://images.pexels.com/photos/669610/pexels-photo-669610.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "coverImageUrl" : "https://images.pexels.com/photos/669610/pexels-photo-669610.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
         "iconImageUrl" : "https://images.pexels.com/photos/669610/pexels-photo-669610.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
         "openDate" : ISODate("2018-12-28T00:00:00.000Z"),
         "closeDate" : ISODate("2119-12-31T00:00:00.000Z"),
@@ -214,7 +214,7 @@ const data = [
         "tags" : [
             "설문"
         ],
-        "overviewImageUrl" : "https://i.imgur.com/tVNahmV.jpg",
+        "coverImageUrl" : "https://i.imgur.com/tVNahmV.jpg",
         "iconImageUrl" : "https://i.imgur.com/tVNahmV.jpg",
         "openDate" : ISODate("2119-12-30T00:00:00.000Z"),
         "closeDate" : ISODate("2119-12-31T00:00:00.000Z"),
@@ -254,7 +254,7 @@ const data = [
         "tags" : [
             "버그제보"
         ],
-        "overviewImageUrl" : "https://i.imgur.com/5z0esWH.png",
+        "coverImageUrl" : "https://i.imgur.com/5z0esWH.png",
         "iconImageUrl" : "https://i.imgur.com/5z0esWH.png",
         "openDate" : ISODate("2019-02-25T00:00:00.000Z"),
         "closeDate" : ISODate("2119-03-03T14:59:00.000Z"),
@@ -309,7 +309,7 @@ const data = [
             "done" : "굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."
         },
         "tags" : [],
-        "overviewImageUrl" : "https://i.imgur.com/n2MaXzg.png",
+        "coverImageUrl" : "https://i.imgur.com/n2MaXzg.png",
         "iconImageUrl" : "https://i.imgur.com/n2MaXzg.png",
         "openDate" : ISODate("2019-03-11T00:00:00.000Z"),
         "closeDate" : ISODate("2119-12-31T14:59:50.000Z"),
@@ -357,7 +357,7 @@ const data = [
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
             "done" : "굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."
         },
-        "overviewImageUrl" : "https://i.imgur.com/6bmbTUV.jpg",
+        "coverImageUrl" : "https://i.imgur.com/6bmbTUV.jpg",
         "iconImageUrl" : "https://i.imgur.com/6bmbTUV.jpg",
         "openDate" : ISODate("2019-03-24T15:00:00.000Z"),
         "closeDate" : ISODate("2119-03-31T00:00:00.000Z"),
@@ -429,7 +429,7 @@ const data = [
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
             "done" : "짝짝짝! 멋져요! 마감 후 테스터 시상식이 열릴거에요."
         },
-        "overviewImageUrl" : "",
+        "coverImageUrl" : "",
         "iconImageUrl" : "https://i.imgur.com/4A0jfFe.jpg",
         "openDate" : ISODate("2019-03-21T15:00:00.000Z"),
         "closeDate" : ISODate("2019-03-23T00:00:00.000Z"),
@@ -716,7 +716,7 @@ const data = [
             "태그다",
             "꿀잼"
         ],
-        "overviewImageUrl" : "https://i.imgur.com/n2MaXzg.png",
+        "coverImageUrl" : "https://i.imgur.com/n2MaXzg.png",
         "iconImageUrl" : "https://i.imgur.com/n2MaXzg.png",
         "openDate" : ISODate("2019-03-11T00:00:00.000Z"),
         "closeDate" : ISODate("2119-12-31T14:59:50.000Z"),
@@ -844,7 +844,7 @@ const data = [
         "tags" : [
             "설문"
         ],
-        "overviewImageUrl" : "https://i.imgur.com/oXFepuQ.jpg",
+        "coverImageUrl" : "https://i.imgur.com/oXFepuQ.jpg",
         "iconImageUrl" : "https://i.imgur.com/oXFepuQ.jpg",
         "openDate" : ISODate("2019-06-13T00:00:00.000Z"),
         "closeDate" : ISODate("2019-06-19T14:59:59.999Z"),
@@ -952,7 +952,7 @@ const data = [
             "done" : "굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."
         },
         "tags" : [],
-        "overviewImageUrl" : "https://i.imgur.com/n2MaXzg.png",
+        "coverImageUrl" : "https://i.imgur.com/n2MaXzg.png",
         "iconImageUrl" : "https://i.imgur.com/n2MaXzg.png",
         "openDate" : ISODate("2019-03-11T00:00:00.000Z"),
         "closeDate" : ISODate("2119-12-31T14:59:50.000Z"),
