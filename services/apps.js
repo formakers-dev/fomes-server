@@ -18,13 +18,13 @@ const getAppForPublic = (packageName, userId) => {
         .catch(err => Promise.reject(err));
 };
 
-const getAppsForPublic = (packageNames, userId) => {
+const getAppsForPublic = (packageNames, wishList) => {
     return Apps.find({packageName : {$in: packageNames}})
-        .then(apps => apps.map(app => convertToPublicAppInfo(app, userId)))
+        .then(apps => apps.map(app => convertToPublicAppInfo(app, wishList)))
         .catch(err => Promise.reject(err));
 };
 
-const convertToPublicAppInfo = (app, userId) => {
+const convertToPublicAppInfo = (app, wishList) => {
     return {
         packageName : app.packageName,
         appName : app.appName,
@@ -37,7 +37,7 @@ const convertToPublicAppInfo = (app, userId) => {
         installsMax : app.installsMax,
         contentsRating : app.contentsRating,
         imageUrls : app.imageUrls,
-        isWished : !!(app.wishedBy && app.wishedBy.includes(userId))
+        isWished : !!(wishList && wishList.includes(app.packageName))
     };
 };
 

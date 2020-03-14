@@ -11,6 +11,7 @@ const data = [
         "_id" : ObjectId("5c25c77798d78f078d8ef3ba"),
         "title" : "포메스 설문조사 입니다! 제목이 좀 길어요 깁니다요 길어요오 제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오제목이 좀 길어요 깁니다요 길어요오",
         "description" : "갑자기 분위기 설문조사! 포메스 앱에 대한 설문조사입니다 :-D",
+        "subjectType" : "fomes-test",
         "progressText" : {
             "ready" : "밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.밑져야 본전! 재미있어 보인다면 참여해 보세요.",
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
@@ -19,7 +20,7 @@ const data = [
         "tags" : [
             "플레이"
         ],
-        "overviewImageUrl" : "https://images.pexels.com/photos/669609/pexels-photo-669609.jpeg?auto=compress&cs=tinysrgb&dpr=2&fit=crop&h=500&w=500",
+        "coverImageUrl" : "https://images.pexels.com/photos/669609/pexels-photo-669609.jpeg?auto=compress&cs=tinysrgb&dpr=2&fit=crop&h=500&w=500",
         "iconImageUrl" : "https://images.pexels.com/photos/669609/pexels-photo-669609.jpeg?auto=compress&cs=tinysrgb&dpr=2&fit=crop&h=500&w=500",
         "openDate" : ISODate("2018-12-28T00:00:00.000Z"),
         "closeDate" : ISODate("2119-12-31T00:00:00.000Z"),
@@ -133,7 +134,7 @@ const data = [
                 "_id" : ObjectId("5d1d6bf2d638af0bb86b0f6e")
             }
         ],
-        "apps" : []
+        "similarApps" : []
     }
 
     ,
@@ -141,6 +142,7 @@ const data = [
         "_id" : ObjectId("5c25e1e824196d19231fbed3"),
         "title" : "appbee0627 한테만 보이는 활성화된 테스트",
         "description" : "targetUserIds에 추가해보았다",
+        "subjectType" : "event",
         "progressText" : {
             "ready" : "망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.",
             "doing" : "아직 참여 진행중인데 끝내고 싶지 않니??? 얼른 끝내버리자아아앙 두줄두줄 두줄두줄",
@@ -149,7 +151,7 @@ const data = [
         "tags" : [
             "설문"
         ],
-        "overviewImageUrl" : "https://images.pexels.com/photos/669610/pexels-photo-669610.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "coverImageUrl" : "https://images.pexels.com/photos/669610/pexels-photo-669610.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
         "iconImageUrl" : "https://images.pexels.com/photos/669610/pexels-photo-669610.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
         "openDate" : ISODate("2018-12-28T00:00:00.000Z"),
         "closeDate" : ISODate("2119-12-31T00:00:00.000Z"),
@@ -194,7 +196,7 @@ const data = [
         "targetUserIds" : [
             config.testUser.userId
         ],
-        "apps" : []
+        "similarApps" : []
     }
 
     ,
@@ -202,6 +204,8 @@ const data = [
         "_id" : ObjectId("5c25e23b24196d19231fd1da"),
         "title" : "아직 오픈일이 되지 않은 테스트",
         "description" : "오픈되려면 멀었다",
+        "subjectType" : "game-test",
+        "plan" : "lite",
         "progressText" : {
             "ready" : "이거 완전 재밌는 게임인데....... 그냥 해보라고하면 할지 모르겠고... 설명을 못하겠네.... 정말 재밌는 게임인데...",
             "doing" : "진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중진행중ㅍ",
@@ -210,7 +214,7 @@ const data = [
         "tags" : [
             "설문"
         ],
-        "overviewImageUrl" : "https://i.imgur.com/tVNahmV.jpg",
+        "coverImageUrl" : "https://i.imgur.com/tVNahmV.jpg",
         "iconImageUrl" : "https://i.imgur.com/tVNahmV.jpg",
         "openDate" : ISODate("2119-12-30T00:00:00.000Z"),
         "closeDate" : ISODate("2119-12-31T00:00:00.000Z"),
@@ -233,23 +237,20 @@ const data = [
                 "guide" : "* 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다!\n* 불성실한 응답은 보상지급 대상자에서 제외될 수 있습니다."
             }
         ],
-        "apps" : []
+        "similarApps" : []
     }
 
     ,
     {
         "_id" : ObjectId("5c7345f718500feddc24ca34"),
-        "title" : "버그제보 & 리워드 없음",
+        "title" : "버그제보 & 리워드 없음 (ProgressText null)",
         "description" : "* 제보 기간 : 2/25(월) ~ 3/3(일)\n* 제보 방법 : 게임 플레이 시 발견되는 버그가 있을 때마다 이 카드를 통해 제보\n* 중요 버그 제보를 할 수록 테스트 영웅 수상의 가능성이 높아집니다!",
-        "progressText" : {
-            "ready" : "아직도 안해본 사람이 있다고요???",
-            "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요??????????????????????????????????????????????",
-            "done" : "짝짝짝! 멋져요! 마감 후 테스터 시상식이 열릴거에요."
-        },
+        "subjectType" : null,
+        "progressText" : null,
         "tags" : [
             "버그제보"
         ],
-        "overviewImageUrl" : "https://i.imgur.com/5z0esWH.png",
+        "coverImageUrl" : "https://i.imgur.com/5z0esWH.png",
         "iconImageUrl" : "https://i.imgur.com/5z0esWH.png",
         "openDate" : ISODate("2019-02-25T00:00:00.000Z"),
         "closeDate" : ISODate("2119-03-03T14:59:00.000Z"),
@@ -289,21 +290,17 @@ const data = [
                 "guide" : "* 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다!\n* 불성실한 응답은 보상지급 대상자에서 제외될 수 있습니다."
             }
         ],
-        "apps" : []
+        "similarApps" : []
     }
 
     ,
     {
         "_id" : ObjectId("5c861f3f2917e70db5d2d536"),
-        "title" : "포메스 우체통",
+        "title" : "포메스 우체통 (ProgressText없음)",
         "description" : "우체통임다",
-        "progressText" : {
-            "ready" : "망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.",
-            "doing" : "조금만 더 힘내봐요 진행중중중",
-            "done" : "굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."
-        },
+        "subjectType" : null,
         "tags" : [],
-        "overviewImageUrl" : "https://i.imgur.com/n2MaXzg.png",
+        "coverImageUrl" : "https://i.imgur.com/n2MaXzg.png",
         "iconImageUrl" : "https://i.imgur.com/n2MaXzg.png",
         "openDate" : ISODate("2019-03-11T00:00:00.000Z"),
         "closeDate" : ISODate("2119-12-31T14:59:50.000Z"),
@@ -336,7 +333,7 @@ const data = [
                 "guide" : "* 정성가득~~~~~~~~~~~ 아름다운 세상~~~~~~~~~~~~~~~~~~~~~~~~"
             }
         ],
-        "apps" : []
+        "similarApps" : []
     }
 
     ,
@@ -344,12 +341,14 @@ const data = [
         "_id" : ObjectId("5c9892f92917e70db5d243dd"),
         "title" : "appbee0627이 타겟이 아닌 그룹",
         "description" : "targetUserIds 가 없어요",
+        "subjectType" : "game-test",
+        "plan" : "simple",
         "progressText" : {
             "ready" : "망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.........................................................................",
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
             "done" : "굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."
         },
-        "overviewImageUrl" : "https://i.imgur.com/6bmbTUV.jpg",
+        "coverImageUrl" : "https://i.imgur.com/6bmbTUV.jpg",
         "iconImageUrl" : "https://i.imgur.com/6bmbTUV.jpg",
         "openDate" : ISODate("2019-03-24T15:00:00.000Z"),
         "closeDate" : ISODate("2119-03-31T00:00:00.000Z"),
@@ -404,7 +403,7 @@ const data = [
         "targetUserIds" : [
             "abcd"
         ],
-        "apps" : [
+        "similarApps" : [
             ""
         ],
         "isGroup" : true
@@ -414,12 +413,14 @@ const data = [
     {
         "_id" : ObjectId("5c986adee1a6f20813ec464d"),
         "title" : "[메이헴의 유산] 게임 테스트 + 에필로그",
+        "subjectType" : "game-test",
+        "plan" : "standard",
         "progressText" : {
             "ready" : "밑져야 본전! 재미있어 보인다면 참여해 보세요.",
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
             "done" : "짝짝짝! 멋져요! 마감 후 테스터 시상식이 열릴거에요."
         },
-        "overviewImageUrl" : "",
+        "coverImageUrl" : "",
         "iconImageUrl" : "https://i.imgur.com/4A0jfFe.jpg",
         "openDate" : ISODate("2019-03-21T15:00:00.000Z"),
         "closeDate" : ISODate("2019-03-23T00:00:00.000Z"),
@@ -472,7 +473,7 @@ const data = [
                 "guide" : "guide1"
             }
         ],
-        "apps" : [],
+        "similarApps" : [],
         "isGroup" : true,
         "afterService" : {
             "awards" : "테스트 영웅 : 드래군핥짝 님\n테스트 요정 : 이브 외 9명",
@@ -485,6 +486,8 @@ const data = [
     {
         "_id" : ObjectId("5c989f0a2917e70db5d4fc2e"),
         "title" : "appbee0627이 참여한 그룹! + 에필로그  길게길게길게길게길게길게길게길게길게길게길게길게길게길게길게",
+        "subjectType" : "game-test",
+        "plan" : "lite",
         "progressText" : {
             "ready" : "망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.",
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
@@ -543,7 +546,7 @@ const data = [
                 "guide" : "guide1"
             }
         ],
-        "apps" : [],
+        "similarApps" : [],
         "isGroup" : true,
         "afterService" : {
             "awards" : "포메스 팀 : 참가자 여러분 모두 저희의 챔피언❤️",
@@ -556,6 +559,8 @@ const data = [
     {
         "_id" : ObjectId("5c99d101d122450cf08431aa"),
         "title" : "appbee0627이 참여한 그룹! 근데 에필로그가 아직 등록안됨!!!!",
+        "subjectType" : "game-test",
+        "plan" : "lite",
         "progressText" : {
             "ready" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
             "doing" : "밑져야 본전! 재미있어 보인다면 참여해 보세요.",
@@ -614,7 +619,7 @@ const data = [
                 "guide" : "guide1"
             }
         ],
-        "apps" : [],
+        "similarApps" : [],
         "isGroup" : true
     }
 
@@ -622,6 +627,8 @@ const data = [
     {
         "_id" : ObjectId("5c99d14fd122450cf08431ab"),
         "title" : "appbee0627이 참여하지 않은 그룹! 에필로그도 없음!",
+        "subjectType" : "game-test",
+        "plan" : "lite",
         "progressText" : {
             "ready" : "밑져야 본전! 재미있어 보인다면 참여해 보세요.",
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
@@ -678,7 +685,7 @@ const data = [
                 "guide" : "guide1"
             }
         ],
-        "apps" : [],
+        "similarApps" : [],
         "isGroup" : true
     }
 
@@ -687,7 +694,8 @@ const data = [
         "_id" : ObjectId("5ce51a069cb162da02b9f94d"),
         "title" : "테스트 추가 신청하기 (버그제보 있음)",
         "description" : "테스트 하고싶은 게임 추가신청을 할 수 있어여",
-        "type" : "premium",
+        "subjectType" : "game-test",
+        "plan" : "standard",
         "purpose": "테스트 목적이무니다",
         "progressText" : {
             "ready" : "망설여지나요? 어렵지 않으니 일단 시작해봐요 우리.",
@@ -699,7 +707,7 @@ const data = [
             "태그다",
             "꿀잼"
         ],
-        "overviewImageUrl" : "https://i.imgur.com/n2MaXzg.png",
+        "coverImageUrl" : "https://i.imgur.com/n2MaXzg.png",
         "iconImageUrl" : "https://i.imgur.com/n2MaXzg.png",
         "openDate" : ISODate("2019-03-11T00:00:00.000Z"),
         "closeDate" : ISODate("2119-12-31T14:59:50.000Z"),
@@ -809,13 +817,15 @@ const data = [
                 "guide" : "* 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다!\n* 불성실한 응답은 보상지급 대상자에서 제외될 수 있습니다."
             }
         ],
-        "apps" : []
+        "similarApps" : []
     }
 
     ,
     {
         "_id" : ObjectId("5d01b1f6db7d04bc2d04345c"),
         "title" : "[매드러너] 게임 테스트",
+        "subjectType" : "game-test",
+        "plan" : "standard",
         "description" : "",
         "progressText" : {
             "ready" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
@@ -825,7 +835,7 @@ const data = [
         "tags" : [
             "설문"
         ],
-        "overviewImageUrl" : "https://i.imgur.com/oXFepuQ.jpg",
+        "coverImageUrl" : "https://i.imgur.com/oXFepuQ.jpg",
         "iconImageUrl" : "https://i.imgur.com/oXFepuQ.jpg",
         "openDate" : ISODate("2019-06-13T00:00:00.000Z"),
         "closeDate" : ISODate("2019-06-19T14:59:59.999Z"),
@@ -918,12 +928,13 @@ const data = [
                 "guide" : "* 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다!\n* 불성실한 응답은 보상지급 대상자에서 제외될 수 있습니다."
             }
         ],
-        "apps" : [],
+        "similarApps" : [],
         "isGroup" : true
     },
     {
         "_id" : ObjectId("1c861f3f2917e73db5d2d536"),
         "title" : "검색되지 말아야 하는 미션",
+        "subjectType" : "event",
         "description" : "테스트 성 이니까",
         "status": "test",
         "progressText" : {
@@ -932,7 +943,7 @@ const data = [
             "done" : "굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."
         },
         "tags" : [],
-        "overviewImageUrl" : "https://i.imgur.com/n2MaXzg.png",
+        "coverImageUrl" : "https://i.imgur.com/n2MaXzg.png",
         "iconImageUrl" : "https://i.imgur.com/n2MaXzg.png",
         "openDate" : ISODate("2019-03-11T00:00:00.000Z"),
         "closeDate" : ISODate("2119-12-31T14:59:50.000Z"),
@@ -966,7 +977,7 @@ const data = [
                 "guide" : "* 정성가득~~~~~~~~~~~ 아름다운 세상~~~~~~~~~~~~~~~~~~~~~~~~"
             }
         ],
-        "apps" : []
+        "similarApps" : []
     }
 ];
 

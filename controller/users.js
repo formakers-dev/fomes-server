@@ -176,7 +176,7 @@ const removeAppFromWishList = (req, res, next) => {
 
 const getWishList = (req, res, next) => {
     UserService.getWishList(req.userId)
-        .then(packageNames => AppService.getAppsForPublic(packageNames, req.userId))
+        .then(wishList => AppService.getAppsForPublic(wishList, wishList))
         .then(apps => res.json(apps))
         .catch(err => next(err));
 };

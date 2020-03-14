@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const configurationsSchema = new mongoose.Schema({
     minAppVersionCode: Number,
     excludeAnalysisPackageNames: Array,
+    betaTestProgressText: Object
 });
 const Configurations = mongoose.model('configurations', configurationsSchema);
 

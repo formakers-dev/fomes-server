@@ -638,10 +638,7 @@ describe('Users', () => {
 
     describe('GET /user/wishlist/', () => {
         beforeEach(done => {
-            config.testUser.wishList = ['com.game.edu', 'com.game.edu2'];
-
-            Users.remove({})
-                .then(() => Users.create(config.testUser))
+            Users.findOneAndUpdate({userId: config.testUser.userId}, {wishList: ['com.game.edu', 'com.game.edu2']})
                 .then(() => Apps.create([
                     {
                         packageName: 'com.game.edu',
@@ -650,7 +647,7 @@ describe('Users', () => {
                         categoryId1: 'GAME_EDUCATIONAL',
                         categoryName1: '교육',
                         iconUrl: 'iconUrl3',
-                        wishedBy: [config.testUser.userId, 'user2']
+                        // wishedBy: [config.testUser.userId, 'user2']
                     }, {
                         packageName: 'com.game.rpg',
                         appName: '롤플레잉게임명',
@@ -658,7 +655,7 @@ describe('Users', () => {
                         categoryId1: 'GAME_ROLE_PLAYING',
                         categoryName1: '롤플레잉',
                         iconUrl: 'iconUrl4',
-                        wishedBy: ['user3']
+                        // wishedBy: ['user3']
                     }, {
                         packageName: 'com.game.edu2',
                         appName: '교육게임명2',
@@ -666,7 +663,7 @@ describe('Users', () => {
                         categoryId1: 'GAME_EDUCATIONAL',
                         categoryName1: '교육',
                         iconUrl: 'iconUrl32',
-                        wishedBy: [config.testUser.userId]
+                        // wishedBy: [config.testUser.userId]
                     }]))
                 .then(() => done())
                 .catch(err => done(err))

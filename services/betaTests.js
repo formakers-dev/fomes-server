@@ -54,9 +54,10 @@ const findValidBetaTests = (userId) => {
             $group: {
                 _id: "$_id",
                 overviewImageUrl: { $first: "$overviewImageUrl" },
+                coverImageUrl: { $first: "$coverImageUrl" },
                 title: { $first: "$title" },
                 description: { $first: "$description" },
-                type: { $first: "$type" },
+                plan: { $first: "$plan" },
                 status: { $first: "$status" },
                 progressText: { $first: "$progressText" },
                 tags: { $first: "$tags" },
@@ -82,8 +83,11 @@ const findValidBetaTests = (userId) => {
             betaTests = betaTests.filter(betaTest => betaTest.status !== "test");
         }
 
+        const defaultProgressText = await ConfigurationsService.getBetaTestProgressText();
+
         return betaTests.map(betaTest => {
             betaTest.currentDate = currentDate;
+            betaTest.progressText = (betaTest.progressText)? betaTest.progressText : defaultProgressText;
             return betaTest;
         })
     });
@@ -185,6 +189,7 @@ const findBetaTest = (betaTestId, userId) => {
                 purpose: { $first: "$purpose" },
                 tags: { $first: "$tags" },
                 overviewImageUrl: { $first: "$overviewImageUrl" },
+                coverImageUrl: { $first: "$coverImageUrl" },
                 iconImageUrl: { $first: "$iconImageUrl" },
                 openDate: { $first: "$openDate" },
                 closeDate: { $first: "$closeDate" },
