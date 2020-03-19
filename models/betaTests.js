@@ -58,4 +58,15 @@ const betaTestSchema = new Schema({
     targetUserIds: false,
 });
 
-module.exports = mongoose.model('beta-tests', betaTestSchema);
+const awardRecordSchema = new Schema({
+    _id: mongoose.Schema.Types.ObjectId,
+    userId: String,
+    betaTestId: String,
+    rewardOrder: Number,
+    price: Number,
+});
+
+const BetaTests = mongoose.model('beta-tests', betaTestSchema);
+const AwardRecords = mongoose.model('award-records', awardRecordSchema);
+
+module.exports = {BetaTests, AwardRecords}

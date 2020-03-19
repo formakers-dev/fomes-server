@@ -8,11 +8,11 @@ const should = chai.should();
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
-const BetaTests = require('../models/betaTests');
+const {BetaTests, AwardRecords} = require('../models/betaTests');
 const Configurations = require('../models/configurations').Configurations;
 const AdminUsers = require('../models/configurations').AdminUsers;
 const helper = require('./commonTestHelper');
-const data = require('./data/beta-tests');
+const {BetaTestsTestData, AwardRecordsTestData} = require('./data/beta-tests');
 
 describe('BetaTests', () => {
     const sandbox = sinon.createSandbox();
@@ -36,7 +36,8 @@ describe('BetaTests', () => {
 
     beforeEach(done => {
         AdminUsers.create([ { userId: "adminUser1" } ])
-            .then(() => BetaTests.create(data))
+            .then(() => BetaTests.create(BetaTestsTestData))
+            .then(() => AwardRecords.create(AwardRecordsTestData))
             .then(() => done())
             .catch(err => done(err));
     });
@@ -744,6 +745,7 @@ describe('BetaTests', () => {
 
     afterEach(done => {
         AdminUsers.remove({})
+            .then(() => AwardRecords.remove({}))
             .then(() => BetaTests.remove({}))
             .then(() => done())
             .catch(err => done(err));

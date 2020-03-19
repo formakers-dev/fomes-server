@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const BetaTests = require('../models/betaTests');
+const {BetaTests, AwardRecords} = require('../models/betaTests');
 const ConfigurationsService = require('../services/configurations');
 
 const getAllBetaTestsCount = () => {
@@ -7,16 +7,13 @@ const getAllBetaTestsCount = () => {
 };
 
 const getAllRewards = () => {
-    return BetaTests.aggregate([
-        { $match: { status: { $ne: "test" } } },
-        { $project: { "rewards" : 1 } },
-        { $unwind: "$rewards.list" },
-        { $replaceRoot: { newRoot : "$rewards.list" } },
+    return AwardRecords.aggregate([
         { $match: { price : { $exists: true } } },
         {
-            $project: {
-                "price" : 1,
-                "userCount" : { $size : "$userIds" }
+            $group: {
+                _id: { betaTestId : '$betaTestId', rewardOrder : '$rewardOrder' },
+                price: { $first: '$price' },
+                userCount: { $sum: 1 }
             }
         }
     ]);
