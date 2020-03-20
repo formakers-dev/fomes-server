@@ -85,8 +85,8 @@ describe('BetaTests', () => {
                     res.body[1].openDate.should.be.eql("2019-02-25T00:00:00.000Z");
                     res.body[1].closeDate.should.be.eql("2119-03-03T14:59:00.000Z");
                     res.body[1].bugReport.url.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSeApAn8oPp8mW6UT8RD1uMbKk_UvAiWBh5jwlxlyUUI4D2N1g/viewform?usp=pp_url&entry.455936817=");
-                    res.body[1].completedItemCount.should.be.eql(2);
-                    res.body[1].totalItemCount.should.be.eql(2);
+                    res.body[1].completedItemCount.should.be.eql(3);
+                    res.body[1].totalItemCount.should.be.eql(3);
 
                     res.body[2]._id.should.be.eql("5ce51a069cb162da02b9f94d");
                     res.body[2].coverImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
@@ -262,17 +262,17 @@ describe('BetaTests', () => {
 
         // 정상
         it("요청한 유저의 베타테스트 참여 기록을 저장한다", done => {
-            request.post('/beta-tests/5ce51a069cb162da02b9f94d/attend')
+            request.post('/beta-tests/111111111111111111111111/attend')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(() => BetaTestParticipations.findOne({
                     "userId" : config.testUser.userId,
-                    "betaTestId" : ObjectId("5ce51a069cb162da02b9f94d"),
+                    "betaTestId" : ObjectId("111111111111111111111111"),
                     "missionId" : { $exists: false },
                 }))
                 .then(res => {
                     res.userId.should.be.eql(config.testUser.userId);
-                    res.betaTestId.should.be.eql(ObjectId("5ce51a069cb162da02b9f94d"));
+                    res.betaTestId.should.be.eql(ObjectId("111111111111111111111111"));
                     res.date.should.be.eql(new Date("2020-03-20T02:30:00.000Z"));
                     should.not.exist(res.missionId);
 
@@ -376,12 +376,12 @@ describe('BetaTests', () => {
 
         // 예외
         it('요청한 유저가 베타테스트 참여 신청이 되지 않은 경우에는 412를 리턴한다', done => {
-            request.post('/beta-tests/5ce51a069cb162da02b9f94d/missions/5d199a97839927107f4bb94a/complete?from=external_script')
+            request.post('/beta-tests/111111111111111111111111/missions/111111111111111111111112/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(412)
                 .then(() => BetaTestParticipations.find({
                     "userId": config.testUser.userId,
-                    "betaTestId" : ObjectId("5ce51a069cb162da02b9f94d")
+                    "betaTestId" : ObjectId("111111111111111111111111")
                 }))
                 .then(participations => {
                     participations.length.should.be.eql(0);
@@ -939,7 +939,7 @@ describe('BetaTests', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
-                    res.text.should.be.eql("42");
+                    res.text.should.be.eql("43");
                     done();
                 }).catch(err => done(err));
         });

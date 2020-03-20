@@ -65,13 +65,6 @@ const findValidBetaTests = (userId) => {
                 openDate: { $first: "$openDate" },
                 closeDate: { $first: "$closeDate" },
                 bugReport: { $first: "$bugReport" },
-                completedItemCount: { $sum: {
-                        $cond: [
-                            { $setIsSubset:
-                                    [ [userId], "$missions.items.completedUserIds"]
-                            }, 1, 0 ]
-                    }
-                },
                 totalItemCount: {$sum: 1},
 
             }
@@ -86,9 +79,24 @@ const findValidBetaTests = (userId) => {
 
         const defaultProgressText = await ConfigurationsService.getBetaTestProgressText();
 
+        const completedItemCounts = await BetaTestParticipations.aggregate([
+            { $match : { userId: userId, betaTestId: { $in : betaTests.map(betaTest => betaTest._id) } } },
+            {
+                $group : {
+                    _id: "$betaTestId",
+                    completedItemCount: {$sum : 1}
+                }
+            }
+        ]);
+
         return betaTests.map(betaTest => {
             betaTest.currentDate = currentDate;
             betaTest.progressText = (betaTest.progressText)? betaTest.progressText : defaultProgressText;
+
+            // 임시코드
+            const betaTestWithCompletedItemCount = completedItemCounts.filter(completedItemCount => completedItemCount._id.toString() === betaTest._id.toString());
+            betaTest.completedItemCount = betaTestWithCompletedItemCount.length > 0 ? betaTestWithCompletedItemCount[0].completedItemCount : 0;
+
             return betaTest;
         })
     });

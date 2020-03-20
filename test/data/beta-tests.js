@@ -285,6 +285,16 @@ const data = [
                         "completedUserIds" : [
                             config.testUser.userId
                         ]
+                    },
+                    {
+                        "title" : "로그인이 필요한 설문",
+                        "_id" : ObjectId("5d199a13839927107f4bb949"),
+                        "type": "hidden",
+                        "actionType" : "link",
+                        "action" : "https://docs.google.com/forms/d/e/1FAIpQLScX_8AfhRa9Fc17p2DZdVbMHCA98DY_TlShowgfoNqbx25q9g/viewform?internal_web=true&usp=pp_url&entry.1223559684=",
+                        "completedUserIds" : [
+                            config.testUser.userId
+                        ]
                     }
                 ],
                 "guide" : "* 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다!\n* 불성실한 응답은 보상지급 대상자에서 제외될 수 있습니다."
