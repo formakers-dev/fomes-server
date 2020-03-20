@@ -29,6 +29,17 @@ const getProgress = (req, res, next) => {
 };
 
 const getMissionProgress = (req, res, next) => {
+    BetaTestsService.findMissionParticipation(req.params.id, req.params.missionId, req.userId)
+        .then(participation => {
+            console.log(participation);
+            res.json({
+                _id: req.params.missionId,
+                isCompleted: !!participation,
+            })
+        }).catch(err => next(err));
+};
+
+const getMissionProgress_Old = (req, res, next) => {
     BetaTestsService.findMissionItemsProgress(req.params.id, req.userId)
         .then(missionItems => res.json(missionItems))
         .catch(err => next(err));
@@ -199,6 +210,7 @@ module.exports = {
     getDetailBetaTest,
     getProgress,
     getMissionProgress,
+    getMissionProgress_Old,
     getAllBetaTestsCount,
     getTotalRewards,
     getAccumulatedCompletedUsersCount,

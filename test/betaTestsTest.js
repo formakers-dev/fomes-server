@@ -852,6 +852,36 @@ describe('BetaTests', () => {
         });
     });
 
+    describe('GET /beta-tests/:id/missions/:missionId/progress', () => {
+
+        it('특정 미션의 요청한 유저의 진행 상태를 반환한다 - 참여한 경우', done => {
+            request.get('/beta-tests/5d01b1f6db7d04bc2d04345c/missions/5d199ac3839927107f4bb94e/progress')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    console.log(res.body);
+                    res.body._id.should.be.eql("5d199ac3839927107f4bb94e");
+                    res.body.isCompleted.should.be.eql(true);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('특정 미션의 요청한 유저의 진행 상태를 반환한다 - 참여하지 않은 경우', done => {
+            request.get('/beta-tests/111111111111111111111111/missions/111111111111111111111112/progress')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    console.log(res.body);
+                    res.body._id.should.be.eql("111111111111111111111112");
+                    res.body.isCompleted.should.be.eql(false);
+
+                    done();
+                }).catch(err => done(err));
+        });
+    });
+
+
     describe('GET /beta-tests/mission/:id/progress', () => {
 
         it('특정 미션의 요청한 유저의 진행 상태를 반환한다', done => {

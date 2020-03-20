@@ -210,6 +210,7 @@ const findBetaTest = (betaTestId, userId) => {
         });
 };
 
+// 이거 카운드말고 그냥 미션들을 싹 보내줄까... (missionId, isCompleted 조합 리스트로..)
 const findBetaTestProgress = (betaTestId, userId) => {
     const completedItemCount = BetaTestParticipations.countDocuments({userId: userId, betaTestId: betaTestId});
 
@@ -242,6 +243,14 @@ const findBetaTestProgress = (betaTestId, userId) => {
             totalItemCount: values[1][0].totalItemCount
         }
     })
+};
+
+const findMissionParticipation = (betaTestId, missionId, userId) => {
+    return BetaTestParticipations.findOne({
+        betaTestId: betaTestId,
+        missionId: missionId,
+        userId: userId,
+    });
 };
 
 const findMissionItemsProgress = (missionId, userId) => {
@@ -382,6 +391,7 @@ module.exports = {
     findFinishedBetaTests,
     findBetaTestProgress,
     findBetaTest,
+    findMissionParticipation,
     findMissionItemsProgress,
     attend,
     updateMissionCompleted,
