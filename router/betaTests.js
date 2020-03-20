@@ -15,8 +15,12 @@ router.get('/all/count', Auth.verifyAppBeeToken, BetaTestController.getAllBetaTe
 router.get('/all/rewards/total', Auth.verifyAppBeeToken, BetaTestController.getTotalRewards);
 router.get('/all/completed-users/count', Auth.verifyAppBeeToken, BetaTestController.getAccumulatedCompletedUsersCount);
 
-// from=external_script
-router.post('/:id/complete', Auth.verify, BetaTestController.postComplete);
+
+// router.post('/:id/attend', Auth.verify, BetaTestController.postAttend);
+
+/** from=external_script **/
+router.post('/:id/missions/:missionId/complete', Auth.verify, BetaTestController.postMissionComplete);
+router.post('/:id/complete', Auth.verify, BetaTestController.postComplete); // deprecated
 router.post('/target-user', Auth.verifyAPIKey, BetaTestController.postTargetUser);
 
 module.exports = router;

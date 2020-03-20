@@ -276,6 +276,33 @@ Array.prototype.flatMap = function(f) {
     return flatMap(f,this)
 };
 
+class AlreadyCompletedError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+    }
+}
+
+const updateMissionCompleted = (betaTestId, missionId, userId) => {
+    return BetaTestParticipations.findOne({ userId: userId, betaTestId: betaTestId, missionId: missionId })
+        .then(participation => {
+            if (participation) {
+                throw new AlreadyCompletedError();
+            }
+
+            return new BetaTestParticipations({
+                userId: userId,
+                betaTestId: betaTestId,
+                date: new Date(),
+                missionId: missionId,
+            }).save();
+        })
+        .then(participation => {
+            console.log("[", userId, "] updateMissionCompleted (participation:", participation , ")");
+            return participation;
+        });
+};
+
 const updateCompleted = (betaTestId, userId) => {
     return BetaTests.findOneAndUpdate(
         {
@@ -319,6 +346,9 @@ module.exports = {
     findBetaTestProgress,
     findBetaTest,
     findMissionItemsProgress,
+    updateMissionCompleted,
     updateCompleted,
     addTargetUserId,
+
+    AlreadyCompletedError,
 };

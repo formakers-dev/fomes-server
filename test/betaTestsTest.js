@@ -255,6 +255,108 @@ describe('BetaTests', () => {
         });
     });
 
+    describe('POST /beta-tests/:id/missions/:missionId/complete', () => {
+        let stubAxiosPost;
+
+        beforeEach(() => {
+            stubAxiosPost = sandbox.stub(axios, 'post').returns(Promise.resolve());
+            sandbox.useFakeTimers(new Date("2020-03-20T02:30:00.000Z").getTime());
+        });
+
+        // 정상
+        it('요청한 유저의 미션 참여 기록을 저장한다', done => {
+            request.post('/beta-tests/5c25c77798d78f078d8ef3ba/missions/5d1d74d6d638af0bb86b0f70/complete?from=external_script')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .expect(200)
+                .then(() => BetaTestParticipations.findOne({
+                    "userId": config.testUser.userId,
+                    "betaTestId" : ObjectId("5c25c77798d78f078d8ef3ba"),
+                    "missionId" : ObjectId("5d1d74d6d638af0bb86b0f70"),
+                }))
+                .then(res => {
+                    res.userId.should.be.eql(config.testUser.userId);
+                    res.betaTestId.should.be.eql(ObjectId("5c25c77798d78f078d8ef3ba"));
+                    res.missionId.should.be.eql(ObjectId("5d1d74d6d638af0bb86b0f70"));
+                    res.date.should.be.eql(new Date("2020-03-20T02:30:00.000Z"));
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+
+        it('요청한 유저에게 전달받은 알림을 보낸다', done => {
+            request.post('/beta-tests/5c25c77798d78f078d8ef3ba/missions/5d1d74d6d638af0bb86b0f70/complete?from=external_script')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .send({
+                    betaTestIds: [1, 4],
+                    notificationData: {
+                        channel: 'channel_betatest',
+                        title: '참여하신 테스트가 완료처리 되었어요!👏',
+                        subTitle: '멋져요! [전체 유저 대상 테스트]에 성공적으로 참여하셨습니다.'
+                    }
+                })
+                .expect(200)
+                .then(() => {
+                    const expectedUrl = 'https://fcm.googleapis.com/fcm/send';
+
+                    const expectedBody = {
+                        data: {
+                            channel: 'channel_betatest',
+                            title: '참여하신 테스트가 완료처리 되었어요!👏',
+                            subTitle: '멋져요! [전체 유저 대상 테스트]에 성공적으로 참여하셨습니다.'
+                        },
+                        to: 'test_user_registration_token'
+                    };
+
+                    const expectedHeader = {
+                        headers: {
+                            Authorization: 'key=testNotiApiKey',
+                            'Content-Type' : 'application/json'
+                        }
+                    };
+
+                    sinon.assert.calledWith(stubAxiosPost, expectedUrl, expectedBody, expectedHeader);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        // 예외
+        it('요청한 유저가 이미 완료한 경우에는 참여정보를 업데이트하지않고 409를 리턴한다', done => {
+            request.post('/beta-tests/5d01b1f6db7d04bc2d04345c/missions/5d199ac3839927107f4bb94e/complete?from=external_script')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .expect(409)
+                .then(() => BetaTestParticipations.findOne({
+                    "userId": config.testUser.userId,
+                    "betaTestId" : ObjectId("5d01b1f6db7d04bc2d04345c"),
+                    "missionId" : ObjectId("5d199ac3839927107f4bb94e"),
+                }))
+                .then(participation => {
+                    participation.userId.should.be.eql(config.testUser.userId);
+                    participation.betaTestId.should.be.eql(ObjectId("5d01b1f6db7d04bc2d04345c"));
+                    participation.missionId.should.be.eql(ObjectId("5d199ac3839927107f4bb94e"));
+                    participation.date.should.be.eql(new Date("2020-03-17"));
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        it('요청한 유저정보가 유효한 이메일로 접수되지 않은 경우 403 에러를 반환한다', done => {
+            request.post('/beta-tests/1/missions/2/complete?from=external_script')
+                .set('x-access-token', 'InvalidAccessToken')
+                .expect(403)
+                .then(() => done())
+                .catch(err => done(err));
+        });
+
+        afterEach(() => {
+            stubAxiosPost.restore();
+            sandbox.restore();
+        });
+    });
+
     describe('POST /beta-tests/:id/complete', () => {
         let stubAxiosPost;
 

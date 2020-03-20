@@ -65,37 +65,81 @@ const getAccumulatedCompletedUsersCount = (req, res, next) => {
         }).catch(err => next(err));
 };
 
+const postMissionComplete = (req, res, next) => {
+    console.log("[", req.userId, "] postMissionComplete betaTest:", req.params.id, ", mission: ", req.params.missionId);
+
+    BetaTestsService.updateMissionCompleted(req.params.id, req.params.missionId, req.userId)
+        .then(participation => {
+            if (!participation) {
+                return Promise.resolve();
+            }
+
+            const notificationData = req.body.notificationData;
+            console.log("[", req.userId, "] updateCompleted - notificationData", notificationData);
+
+            if (!notificationData) {
+                console.error("[", req.userId, "] notificationData is none!");
+                return;
+            }
+
+            return UsersService.getUser(req.userId)
+                .then(user => {
+                    const body = {
+                        'data': req.body.notificationData,
+                        'to': user.registrationToken,
+                    };
+
+                    return axios.post('https://fcm.googleapis.com/fcm/send', body, {
+                        headers: {
+                            'Authorization': 'key=' + config.notificationApiKey,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                });
+        })
+        .then(() => res.sendStatus(200))
+        .catch(err => {
+            if (err instanceof BetaTestsService.AlreadyCompletedError) {
+                res.sendStatus(409);
+            } else {
+                next(err);
+            }
+        });
+};
+
+/**
+ * @Deprecated
+ */
 const postComplete = (req, res, next) => {
     console.log("[", req.userId, "] postComplete", req.params.id);
 
     BetaTestsService.updateCompleted(req.params.id, req.userId)
         .then(betaTest => {
-            if (betaTest) {
-                const notificationData = req.body.notificationData;
-                console.log("[", req.userId, "] updateCompleted - notificationData", notificationData);
-
-                if (!notificationData) {
-                    return;
-                }
-
-                return UsersService.getUser(req.userId)
-                    .then(user => {
-                        const body = {
-                            'data' : req.body.notificationData,
-                            'to' : user.registrationToken,
-                        };
-
-                        return axios.post('https://fcm.googleapis.com/fcm/send', body, {
-                            headers: {
-                                'Authorization': 'key=' + config.notificationApiKey,
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                    });
-
-            } else {
+            if (!betaTest) {
                 return Promise.resolve();
             }
+
+            const notificationData = req.body.notificationData;
+            console.log("[", req.userId, "] updateCompleted - notificationData", notificationData);
+
+            if (!notificationData) {
+                return;
+            }
+
+            return UsersService.getUser(req.userId)
+                .then(user => {
+                    const body = {
+                        'data': req.body.notificationData,
+                        'to': user.registrationToken,
+                    };
+
+                    return axios.post('https://fcm.googleapis.com/fcm/send', body, {
+                        headers: {
+                            'Authorization': 'key=' + config.notificationApiKey,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                });
         })
         .then(() => res.sendStatus(200))
         .catch(err => next(err));
@@ -144,6 +188,7 @@ module.exports = {
     getAllBetaTestsCount,
     getTotalRewards,
     getAccumulatedCompletedUsersCount,
+    postMissionComplete,
     postComplete,
     postTargetUser
 };
