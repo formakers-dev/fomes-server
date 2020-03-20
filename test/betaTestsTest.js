@@ -9,10 +9,12 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
 const BetaTests = require('../models/betaTests');
+const BetaTestParticipations = require('../models/betaTestParticipations');
 const Configurations = require('../models/configurations').Configurations;
 const AdminUsers = require('../models/configurations').AdminUsers;
 const helper = require('./commonTestHelper');
-const data = require('./data/beta-tests');
+const betatestData = require('./data/beta-tests');
+const participationData = require('./data/participations');
 
 describe('BetaTests', () => {
     const sandbox = sinon.createSandbox();
@@ -36,7 +38,8 @@ describe('BetaTests', () => {
 
     beforeEach(done => {
         AdminUsers.create([ { userId: "adminUser1" } ])
-            .then(() => BetaTests.create(data))
+            .then(() => BetaTests.create(betatestData))
+            .then(() => BetaTestParticipations.create(participationData))
             .then(() => done())
             .catch(err => done(err));
     });
@@ -688,7 +691,7 @@ describe('BetaTests', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
-                    console.error(res.body);
+                    console.log(res.body);
 
                     res.body[0]._id.should.be.eql("5d199913839927107f4bb93f");
                     res.body[0].isCompleted.should.be.eql(true);
@@ -745,6 +748,7 @@ describe('BetaTests', () => {
     afterEach(done => {
         AdminUsers.remove({})
             .then(() => BetaTests.remove({}))
+            .then(() => BetaTestParticipations.remove({}))
             .then(() => done())
             .catch(err => done(err));
     });

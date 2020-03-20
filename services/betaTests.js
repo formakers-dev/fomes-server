@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const BetaTests = require('../models/betaTests');
+const BetaTestParticipations = require('../models/betaTestParticipations');
 const ConfigurationsService = require('../services/configurations');
 
 const getAllBetaTestsCount = () => {
@@ -210,7 +211,10 @@ const findBetaTest = (betaTestId, userId) => {
 };
 
 const findBetaTestProgress = (betaTestId, userId) => {
-    return BetaTests.aggregate([
+    const completedItemCount = BetaTestParticipations.countDocuments({userId: userId, betaTestId: betaTestId});
+
+    // beta-tests 컬렉션에 totalMissionCount가 들어가면 사라질 것임
+    const totalItemCount = BetaTests.aggregate([
         {
             $match : {
                 _id: mongoose.Types.ObjectId(betaTestId),
@@ -225,17 +229,19 @@ const findBetaTestProgress = (betaTestId, userId) => {
         {
             $group: {
                 _id: "$_id",
-                completedItemCount: { $sum: {
-                        $cond: [
-                            { $setIsSubset:
-                                    [ [userId], "$missions.items.completedUserIds"]
-                            }, 1, 0 ]
-                    }
-                },
                 totalItemCount: {$sum: 1}
             }
         }
-    ])
+    ]);
+
+    return Promise.all([completedItemCount, totalItemCount]).then(values => {
+        console.log(values);
+        return {
+            _id: values[1][0]._id,
+            completedItemCount : values[0],
+            totalItemCount: values[1][0].totalItemCount
+        }
+    })
 };
 
 const findMissionItemsProgress = (missionId, userId) => {
