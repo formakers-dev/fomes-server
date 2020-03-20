@@ -113,6 +113,8 @@ const postMissionComplete = (req, res, next) => {
         .catch(err => {
             if (err instanceof BetaTestsService.AlreadyExistError) {
                 res.sendStatus(409);
+            } else if (err instanceof BetaTestsService.NotAttendedError) {
+                res.sendStatus(412);
             } else {
                 next(err);
             }

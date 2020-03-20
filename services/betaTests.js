@@ -277,6 +277,13 @@ Array.prototype.flatMap = function(f) {
 };
 
 // 이거 에러 그룹에 묶고싶다..
+class NotAttendedError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+    }
+}
+
 class AlreadyExistError extends Error {
     constructor(message) {
         super(message);
@@ -306,23 +313,31 @@ const attend = (betaTestId, userId) => {
 };
 
 const updateMissionCompleted = (betaTestId, missionId, userId) => {
-    return BetaTestParticipations.findOne({ userId: userId, betaTestId: betaTestId, missionId: missionId })
-        .then(participation => {
-            if (participation) {
-                throw new AlreadyExistError();
-            }
+    return BetaTestParticipations.findOne({
+        userId: userId,
+        betaTestId: betaTestId,
+        missionId: {$exists: false}
+    }).then(participation => {
+        if (!participation) {
+            throw new NotAttendedError();
+        }
 
-            return new BetaTestParticipations({
-                userId: userId,
-                betaTestId: betaTestId,
-                date: new Date(),
-                missionId: missionId,
-            }).save();
-        })
-        .then(participation => {
-            console.log("[", userId, "] updateMissionCompleted (participation:", participation , ")");
-            return participation;
-        });
+        return BetaTestParticipations.findOne({userId: userId, betaTestId: betaTestId, missionId: missionId})
+    }).then(participation => {
+        if (participation) {
+            throw new AlreadyExistError();
+        }
+
+        return new BetaTestParticipations({
+            userId: userId,
+            betaTestId: betaTestId,
+            date: new Date(),
+            missionId: missionId,
+        }).save();
+    }).then(participation => {
+        console.log("[", userId, "] updateMissionCompleted (participation:", participation, ")");
+        return participation;
+    });
 };
 
 const updateCompleted = (betaTestId, userId) => {
@@ -374,4 +389,5 @@ module.exports = {
     addTargetUserId,
 
     AlreadyExistError,
+    NotAttendedError
 };

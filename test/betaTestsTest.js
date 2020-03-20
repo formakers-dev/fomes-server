@@ -262,17 +262,17 @@ describe('BetaTests', () => {
 
         // 정상
         it("요청한 유저의 베타테스트 참여 기록을 저장한다", done => {
-            request.post('/beta-tests/5c25c77798d78f078d8ef3ba/attend')
+            request.post('/beta-tests/5ce51a069cb162da02b9f94d/attend')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(() => BetaTestParticipations.findOne({
                     "userId" : config.testUser.userId,
-                    "betaTestId" : ObjectId("5c25c77798d78f078d8ef3ba"),
+                    "betaTestId" : ObjectId("5ce51a069cb162da02b9f94d"),
                     "missionId" : { $exists: false },
                 }))
                 .then(res => {
                     res.userId.should.be.eql(config.testUser.userId);
-                    res.betaTestId.should.be.eql(ObjectId("5c25c77798d78f078d8ef3ba"));
+                    res.betaTestId.should.be.eql(ObjectId("5ce51a069cb162da02b9f94d"));
                     res.date.should.be.eql(new Date("2020-03-20T02:30:00.000Z"));
                     should.not.exist(res.missionId);
 
@@ -375,6 +375,22 @@ describe('BetaTests', () => {
         });
 
         // 예외
+        it('요청한 유저가 베타테스트 참여 신청이 되지 않은 경우에는 412를 리턴한다', done => {
+            request.post('/beta-tests/5ce51a069cb162da02b9f94d/missions/5d199a97839927107f4bb94a/complete?from=external_script')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .expect(412)
+                .then(() => BetaTestParticipations.find({
+                    "userId": config.testUser.userId,
+                    "betaTestId" : ObjectId("5ce51a069cb162da02b9f94d")
+                }))
+                .then(participations => {
+                    participations.length.should.be.eql(0);
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
         it('요청한 유저가 이미 완료한 경우에는 참여정보를 업데이트하지않고 409를 리턴한다', done => {
             request.post('/beta-tests/5d01b1f6db7d04bc2d04345c/missions/5d199ac3839927107f4bb94e/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')

@@ -7,6 +7,12 @@ const ISODate = (ISODateString) => new Date(ISODateString);
 
 const data = [
     {
+        _id: ObjectId("111111111111111111111110"),
+        userId: config.testUser.userId,
+        betaTestId: ObjectId("5c25c77798d78f078d8ef3ba"),
+        date: ISODate("2020-03-16"),
+    },
+    {
         _id: ObjectId("111111111111111111111111"),
         userId: config.testUser.userId,
         betaTestId : ObjectId("5d01b1f6db7d04bc2d04345c"),
@@ -25,6 +31,12 @@ const data = [
         betaTestId : ObjectId("5d01b1f6db7d04bc2d04345c"),
         date: ISODate('2020-03-17'),
         missionId: ObjectId("5d199acb839927107f4bb94f"),
+    },
+    {
+        _id: ObjectId("111111111111111111111114"),
+        userId: "otherUser",
+        betaTestId : ObjectId("5d01b1f6db7d04bc2d04345c"),
+        date: ISODate('2020-03-20'),
     }
 ];
 
