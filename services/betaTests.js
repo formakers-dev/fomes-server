@@ -276,18 +276,40 @@ Array.prototype.flatMap = function(f) {
     return flatMap(f,this)
 };
 
-class AlreadyCompletedError extends Error {
+// 이거 에러 그룹에 묶고싶다..
+class AlreadyExistError extends Error {
     constructor(message) {
         super(message);
         this.name = this.constructor.name;
     }
 }
 
+const attend = (betaTestId, userId) => {
+    return BetaTestParticipations.findOne({
+        betaTestId: betaTestId,
+        userId: userId,
+        missionId: {$exists: false}
+    }).then(participation => {
+        if (participation) {
+            throw new AlreadyExistError();
+        }
+
+        return new BetaTestParticipations({
+            userId: userId,
+            betaTestId: betaTestId,
+            date: new Date(),
+        }).save();
+    }).then(participation => {
+        console.log("[", userId, "] attend (participation:", participation, ")");
+        return participation;
+    });
+};
+
 const updateMissionCompleted = (betaTestId, missionId, userId) => {
     return BetaTestParticipations.findOne({ userId: userId, betaTestId: betaTestId, missionId: missionId })
         .then(participation => {
             if (participation) {
-                throw new AlreadyCompletedError();
+                throw new AlreadyExistError();
             }
 
             return new BetaTestParticipations({
@@ -346,9 +368,10 @@ module.exports = {
     findBetaTestProgress,
     findBetaTest,
     findMissionItemsProgress,
+    attend,
     updateMissionCompleted,
     updateCompleted,
     addTargetUserId,
 
-    AlreadyCompletedError,
+    AlreadyExistError,
 };

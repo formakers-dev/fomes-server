@@ -65,6 +65,18 @@ const getAccumulatedCompletedUsersCount = (req, res, next) => {
         }).catch(err => next(err));
 };
 
+const postAttend = (req, res, next) => {
+    BetaTestsService.attend(req.params.id, req.userId)
+        .then(() => res.sendStatus(200))
+        .catch(err => {
+            if (err instanceof BetaTestsService.AlreadyExistError) {
+                res.sendStatus(409);
+            } else {
+                next(err);
+            }
+        });
+};
+
 const postMissionComplete = (req, res, next) => {
     console.log("[", req.userId, "] postMissionComplete betaTest:", req.params.id, ", mission: ", req.params.missionId);
 
@@ -99,7 +111,7 @@ const postMissionComplete = (req, res, next) => {
         })
         .then(() => res.sendStatus(200))
         .catch(err => {
-            if (err instanceof BetaTestsService.AlreadyCompletedError) {
+            if (err instanceof BetaTestsService.AlreadyExistError) {
                 res.sendStatus(409);
             } else {
                 next(err);
@@ -188,6 +200,8 @@ module.exports = {
     getAllBetaTestsCount,
     getTotalRewards,
     getAccumulatedCompletedUsersCount,
+
+    postAttend,
     postMissionComplete,
     postComplete,
     postTargetUser

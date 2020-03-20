@@ -255,6 +255,58 @@ describe('BetaTests', () => {
         });
     });
 
+    describe("POST /beta-tests/:id/attend", () => {
+        beforeEach(() => {
+            sandbox.useFakeTimers(new Date("2020-03-20T02:30:00.000Z").getTime());
+        });
+
+        // 정상
+        it("요청한 유저의 베타테스트 참여 기록을 저장한다", done => {
+            request.post('/beta-tests/5c25c77798d78f078d8ef3ba/attend')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(() => BetaTestParticipations.findOne({
+                    "userId" : config.testUser.userId,
+                    "betaTestId" : ObjectId("5c25c77798d78f078d8ef3ba"),
+                    "missionId" : { $exists: false },
+                }))
+                .then(res => {
+                    res.userId.should.be.eql(config.testUser.userId);
+                    res.betaTestId.should.be.eql(ObjectId("5c25c77798d78f078d8ef3ba"));
+                    res.date.should.be.eql(new Date("2020-03-20T02:30:00.000Z"));
+                    should.not.exist(res.missionId);
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        // 예외
+        it('요청한 유저가 이미 완료한 경우에는 참여정보를 업데이트하지않고 409를 리턴한다', done => {
+            request.post('/beta-tests/5d01b1f6db7d04bc2d04345c/attend')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(409)
+                .then(() => BetaTestParticipations.findOne({
+                    "userId": config.testUser.userId,
+                    "betaTestId" : ObjectId("5d01b1f6db7d04bc2d04345c"),
+                    "missionId" : { $exists: false },
+                }))
+                .then(participation => {
+                    participation.userId.should.be.eql(config.testUser.userId);
+                    participation.betaTestId.should.be.eql(ObjectId("5d01b1f6db7d04bc2d04345c"));
+                    participation.date.should.be.eql(new Date("2020-03-17"));
+                    should.not.exist(participation.missionId);
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        })
+    });
+
     describe('POST /beta-tests/:id/missions/:missionId/complete', () => {
         let stubAxiosPost;
 
