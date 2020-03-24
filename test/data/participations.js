@@ -78,6 +78,32 @@ const data = [
         date: ISODate("2020-03-16"),
         missionId: ObjectId("5d199913839927107f4bb93f"),
     },
+    {
+        _id: ObjectId("111111111111111111111121"),
+        userId: config.testUser.userId,
+        betaTestId: ObjectId("5c989f0a2917e70db5d4fc2e"),
+        date: ISODate("2020-03-24"),
+    },
+    {
+        _id: ObjectId("111111111111111111111122"),
+        userId: config.testUser.userId,
+        betaTestId: ObjectId("5c989f0a2917e70db5d4fc2e"),
+        date: ISODate("2020-03-24"),
+        missionId: ObjectId("5d199a58839927107f4bb947"),
+    },
+    {
+        _id: ObjectId("111111111111111111111123"),
+        userId: config.testUser.userId,
+        betaTestId: ObjectId("5c99d101d122450cf08431aa"),
+        date: ISODate("2020-03-24"),
+    },
+    {
+        _id: ObjectId("111111111111111111111124"),
+        userId: config.testUser.userId,
+        betaTestId: ObjectId("5c99d101d122450cf08431aa"),
+        date: ISODate("2020-03-24"),
+        missionId: ObjectId("5d199a84839927107f4bb949"),
+    },
 ];
 
 module.exports = data;

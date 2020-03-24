@@ -813,7 +813,7 @@ describe('BetaTests', () => {
                     res.body.missions[1].item.action.should.be.eql("https://play.google.com/store/apps/details?id=com.frozax.tentsandtrees");
                     res.body.missions[1].item.postCondition.playTime.should.be.eql(600000);
                     res.body.missions[1].item.postCondition.packageName.should.be.eql("com.frozax.tentsandtrees");
-                    res.body.missions[1].item.isCompleted.should.be.eql(true);
+                    res.body.missions[1].item.isCompleted.should.be.eql(false);
 
                     res.body.missions[2].order.should.be.eql(3);
                     res.body.missions[2].title.should.be.eql("두번째 미션!!!");
