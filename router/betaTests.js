@@ -9,7 +9,6 @@ router.get('/:id/progress', Auth.verifyAppBeeToken, BetaTestController.getProgre
 router.get('/:id/missions/:missionId/progress', Auth.verifyAppBeeToken, BetaTestController.getMissionProgress);
 
 router.get('/finished', Auth.verifyAppBeeToken, BetaTestController.getFinishedBetaTestList);
-// 이거 detail 빠져도 되지 않을까?
 router.get('/detail/:id/', Auth.verifyAppBeeToken, BetaTestController.getDetailBetaTest);
 
 // 이거 :testId/mission/:id/progress 아닐까? 정황상 어차피 missionId가 유일키이긴 하지만...

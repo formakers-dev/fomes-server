@@ -207,12 +207,16 @@ const findBetaTest = (betaTestId, userId) => {
             }
         }
         ])
-        .then(betaTests => {
+        .then(async betaTests => {
             console.log(betaTests);
             const betaTest = betaTests[0];
 
+            const participation = await findAttendParticipation(betaTestId, userId);
+            betaTest.isAttended = !!participation;
             betaTest.missions = convertMissionItemsForClient(userId, betaTest.missions);
             betaTest.currentDate = new Date();
+
+            console.log(betaTest)
 
             return betaTest;
         });
@@ -308,12 +312,16 @@ class AlreadyExistError extends Error {
     }
 }
 
-const attend = (betaTestId, userId) => {
+const findAttendParticipation = (betaTestId, userId) => {
     return BetaTestParticipations.findOne({
         betaTestId: betaTestId,
         userId: userId,
         missionId: {$exists: false}
-    }).then(participation => {
+    });
+};
+
+const attend = (betaTestId, userId) => {
+    return findAttendParticipation(betaTestId, userId).then(participation => {
         if (participation) {
             throw new AlreadyExistError();
         }

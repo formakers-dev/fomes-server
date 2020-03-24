@@ -787,6 +787,7 @@ describe('BetaTests', () => {
                     res.body.iconImageUrl.should.be.eql('https://i.imgur.com/n2MaXzg.png');
                     res.body.openDate.should.be.eql('2019-03-11T00:00:00.000Z');
                     res.body.closeDate.should.be.eql('2119-12-31T14:59:50.000Z');
+                    res.body.isAttended.should.be.eql(true);
 
                     res.body.missions.length.should.be.eql(4);
                     res.body.missions[0].order.should.be.eql(1);
