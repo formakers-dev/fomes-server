@@ -1,4 +1,5 @@
 const axios = require('axios');
+const Boom = require('boom');
 const config = require('../config');
 const BetaTestsService = require('../services/betaTests');
 const UsersService = require('../services/users');
@@ -81,7 +82,7 @@ const postAttend = (req, res, next) => {
         .then(() => res.sendStatus(200))
         .catch(err => {
             if (err instanceof BetaTestsService.AlreadyExistError) {
-                res.sendStatus(409);
+                next(Boom.conflict());
             } else {
                 next(err);
             }
@@ -123,9 +124,9 @@ const postMissionComplete = (req, res, next) => {
         .then(() => res.sendStatus(200))
         .catch(err => {
             if (err instanceof BetaTestsService.AlreadyExistError) {
-                res.sendStatus(409);
+                next(Boom.conflict());
             } else if (err instanceof BetaTestsService.NotAttendedError) {
-                res.sendStatus(412);
+                next(Boom.preconditionRequired());
             } else {
                 next(err);
             }

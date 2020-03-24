@@ -378,7 +378,7 @@ describe('BetaTests', () => {
         it('요청한 유저가 베타테스트 참여 신청이 되지 않은 경우에는 412를 리턴한다', done => {
             request.post('/beta-tests/111111111111111111111111/missions/111111111111111111111112/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
-                .expect(412)
+                .expect(428)
                 .then(() => BetaTestParticipations.find({
                     "userId": config.testUser.userId,
                     "betaTestId" : ObjectId("111111111111111111111111")
