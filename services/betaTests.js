@@ -94,7 +94,7 @@ const findValidBetaTests = (userId) => {
             betaTest.progressText = (betaTest.progressText)? betaTest.progressText : defaultProgressText;
 
             // 임시코드
-            const betaTestWithCompletedItemCount = completedItemCounts.filter(completedItemCount => completedItemCount._id.toString() === betaTest._id.toString());
+            const betaTestWithCompletedItemCount = completedItemCounts.filter(completedItemCount => String(completedItemCount._id) === String(betaTest._id));
             betaTest.completedItemCount = betaTestWithCompletedItemCount.length > 0 ? betaTestWithCompletedItemCount[0].completedItemCount : 0;
 
             return betaTest;
@@ -137,7 +137,7 @@ const findFinishedBetaTests = (userId) => {
             betaTests.map(async betaTest => {
                 betaTest.currentDate = currentDate;
 
-                const participations = await findBetaTestParticipation(userId, betaTest._id);
+                const participations = await findBetaTestParticipation(betaTest._id, userId);
                 betaTest.isAttended = participations.length > 0;
                 betaTest.missions = convertMissionItemsForClient(userId, betaTest.missions, participations)
                     .map(mission => {
@@ -211,7 +211,7 @@ const findBetaTest = (betaTestId, userId) => {
             console.log(betaTests);
             const betaTest = betaTests[0];
 
-            const participations = await findBetaTestParticipation(userId, betaTest._id);
+            const participations = await findBetaTestParticipation(betaTest._id, userId);
             betaTest.isAttended = participations.length > 0;
             betaTest.missions = convertMissionItemsForClient(userId, betaTest.missions, participations);
             betaTest.currentDate = new Date();
@@ -223,11 +223,8 @@ const findBetaTest = (betaTestId, userId) => {
 };
 
 // 이거 카운드말고 그냥 미션들을 싹 보내줄까... (missionId, isCompleted 조합 리스트로..)
-const findBetaTestProgress = (betaTestId, userId) => {
-    const completedItemCount = BetaTestParticipations.countDocuments({userId: userId, betaTestId: betaTestId});
-
-    // beta-tests 컬렉션에 totalMissionCount가 들어가면 사라질 것임
-    const totalItemCount = BetaTests.aggregate([
+const findBetaTestProgress = async (betaTestId, userId) => {
+    const missionItems = await BetaTests.aggregate([
         {
             $match : {
                 _id: mongoose.Types.ObjectId(betaTestId),
@@ -240,19 +237,29 @@ const findBetaTestProgress = (betaTestId, userId) => {
         { $unwind: "$missions" },
         { $unwind: "$missions.items" },
         {
-            $group: {
-                _id: "$_id",
-                totalItemCount: {$sum: 1}
+            $project: {
+                missionId: "$missions.items._id"
             }
         }
     ]);
 
-    return Promise.all([completedItemCount, totalItemCount]).then(values => {
-        console.log(values);
+    const userParticipations = await findBetaTestParticipation(betaTestId, userId);
+
+    return Promise.all([missionItems, userParticipations]).then(values => {
+        const missionItems = values[0];
+        const userParticipations = values[1];
+        const userParticipatedMissionIds = userParticipations.map(participation => String(participation.missionId));
+
         return {
-            _id: values[1][0]._id,
-            completedItemCount : values[0],
-            totalItemCount: values[1][0].totalItemCount
+            isAttended: userParticipations.length > 0,
+            missionItems: missionItems.map(mission => {
+                const isCompleted = userParticipatedMissionIds.includes(String(mission.missionId));
+
+                return {
+                    _id: mission.missionId,
+                    isCompleted: isCompleted,
+                }
+            })
         }
     })
 };
@@ -320,7 +327,7 @@ const findMissionParticipation = (betaTestId, missionId, userId) => {
     });
 };
 
-const findBetaTestParticipation = (userId, betaTestId) => {
+const findBetaTestParticipation = (betaTestId, userId) => {
     return BetaTestParticipations.find({
         userId: userId,
         betaTestId: betaTestId
