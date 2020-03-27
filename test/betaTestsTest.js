@@ -10,11 +10,13 @@ const ObjectId = mongoose.Types.ObjectId;
 
 const BetaTests = require('../models/betaTests');
 const BetaTestParticipations = require('../models/betaTestParticipations');
+const AwardRecords = require('../models/awardRecords');
 const Configurations = require('../models/configurations').Configurations;
 const AdminUsers = require('../models/configurations').AdminUsers;
 const helper = require('./commonTestHelper');
 const betatestData = require('./data/beta-tests');
 const participationData = require('./data/participations');
+const awardRecordData = require('./data/award-records');
 
 describe('BetaTests', () => {
     const sandbox = sinon.createSandbox();
@@ -40,6 +42,7 @@ describe('BetaTests', () => {
         AdminUsers.create([ { userId: "adminUser1" } ])
             .then(() => BetaTests.create(betatestData))
             .then(() => BetaTestParticipations.create(participationData))
+            .then(() => AwardRecords.create(awardRecordData))
             .then(() => done())
             .catch(err => done(err));
     });
@@ -948,6 +951,7 @@ describe('BetaTests', () => {
 
     afterEach(done => {
         AdminUsers.remove({})
+            .then(() => AwardRecords.remove({}))
             .then(() => BetaTests.remove({}))
             .then(() => BetaTestParticipations.remove({}))
             .then(() => done())

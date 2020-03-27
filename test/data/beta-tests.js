@@ -32,7 +32,6 @@ const data = [
                     "title" : "참여보상(10명 추첨)",
                     "content" : "문화상품권 3000원",
                     "price": "3000",
-                    "userIds" : [ 'user1', 'user2']
                 },
                 {
                     "order" : 2,
@@ -40,7 +39,6 @@ const data = [
                     "title" : "테스트 용사(3명 선정)",
                     "content" : "문화상품권 5000원",
                     "price": "5000",
-                    "userIds" : []
                 },
                 {
                     "order" : 3,
@@ -48,7 +46,6 @@ const data = [
                     "title" : "테스트 영웅(1명 선정)",
                     "content" : "문화상품권 10000원",
                     "price": "10000",
-                    "userIds" : ['user3']
                 }
             ]
         },
@@ -163,14 +160,12 @@ const data = [
                     "title" : "참여보상(10명 추첨)",
                     "content" : "문화상품권 3000원",
                     "price": "3000",
-                    "userIds" : ['user1']
                 },
                 {
                     "order" : 2,
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "테스트 영웅(1명 선정)",
                     "content" : "영웅님의 닉네임으로 게임 내 NPC 제작은 길게 써보려고 해봤다능",
-                    "userIds" : []
                 }
             ]
         },
@@ -321,7 +316,6 @@ const data = [
                     "iconImageUrl" : "",
                     "title" : "참여자 전원",
                     "content" : "포메스의 사랑",
-                    "userIds" : []
                 }
             ]
         },
@@ -372,14 +366,12 @@ const data = [
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
                     "price": "1000",
-                    "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
                     "price": "5000",
-                    "userIds" : ['user10']
                 }
             ]
         },
@@ -444,14 +436,12 @@ const data = [
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
                     "price": "1000",
-                    "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
                     "price": "5000",
-                    "userIds" : []
                 }
             ]
         },
@@ -516,14 +506,12 @@ const data = [
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
                     "price": "1000",
-                    "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
                     "price": "5000",
-                    "userIds" : []
                 }
             ]
         },
@@ -589,14 +577,12 @@ const data = [
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
                     "price": "1000",
-                    "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
                     "price": "5000",
-                    "userIds" : []
                 }
             ]
         },
@@ -657,14 +643,12 @@ const data = [
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
                     "price": "1000",
-                    "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
                     "price": "5000",
-                    "userIds" : []
                 }
             ]
         },
@@ -738,7 +722,6 @@ const data = [
                     "title" : "참여보상 (10명 추첨)",
                     "content" : "문화상품권 1000원",
                     "price": "1000",
-                    "userIds" : []
                 },
                 {
                     "order" : 2,
@@ -746,7 +729,6 @@ const data = [
                     "title" : "테스트 용사 (3명 선정)",
                     "content" : "문화상품권 3000원",
                     "price": "3000",
-                    "userIds" : []
                 },
                 {
                     "order" : 3,
@@ -754,7 +736,6 @@ const data = [
                     "title" : "테스트 영웅 (1명 선정)",
                     "content" : "문화상품권 5000원",
                     "price": "5000",
-                    "userIds" : []
                 }
             ]
         },
@@ -856,14 +837,12 @@ const data = [
                     "title" : "테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
                     "price": "1000",
-                    "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
                     "price": "5000",
-                    "userIds" : []
                 }
             ]
         },
@@ -964,7 +943,6 @@ const data = [
                     "iconImageUrl" : "",
                     "title" : "참여자 전원",
                     "content" : "포메스의 사랑",
-                    "userIds" : [ "a" ],
                     "price" : 1000
                 }
             ]
