@@ -693,7 +693,7 @@ describe('BetaTests', () => {
                     res.body[0].tags[0].should.be.eql("설문");
                     res.body[0].openDate.should.be.eql("2019-06-13T00:00:00.000Z");
                     res.body[0].closeDate.should.be.eql("2019-06-19T14:59:59.999Z");
-                    should.not.exist(res.body[0].afterService);
+                    should.not.exist(res.body[0].epilogue);
                     res.body[0].completedItemCount.should.be.eql(2);
                     res.body[0].totalItemCount.should.be.eql(2);
                     res.body[0].missions.length.should.be.eql(1);
@@ -709,9 +709,9 @@ describe('BetaTests', () => {
                     res.body[1].tags[0].should.be.eql("설문");
                     res.body[1].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
                     res.body[1].closeDate.should.be.eql("2019-03-23T00:00:00.000Z");
-                    res.body[1].afterService.awards.should.be.eql("테스트 영웅 : 드래군핥짝 님\n테스트 요정 : 이브 외 9명");
-                    res.body[1].afterService.epilogue.should.be.eql("http://www.naver.com");
-                    res.body[1].afterService.companySays.should.be.eql("포메스 짱! 완전 짱! 대박! 완전! 완전! 두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄");
+                    res.body[1].epilogue.awards.should.be.eql("테스트 영웅 : 드래군핥짝 님\n테스트 요정 : 이브 외 9명");
+                    res.body[1].epilogue.deeplink.should.be.eql("http://www.naver.com");
+                    res.body[1].epilogue.companySays.should.be.eql("포메스 짱! 완전 짱! 대박! 완전! 완전! 두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄");
                     res.body[1].completedItemCount.should.be.eql(0);
                     res.body[1].totalItemCount.should.be.eql(1);
 
@@ -722,7 +722,7 @@ describe('BetaTests', () => {
                     res.body[2].tags[0].should.be.eql("설문");
                     res.body[2].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
                     res.body[2].closeDate.should.be.eql("2019-03-25T00:00:00.000Z");
-                    should.not.exist(res.body[2].afterService);
+                    should.not.exist(res.body[2].epilogue);
                     res.body[2].completedItemCount.should.be.eql(0);
                     res.body[2].totalItemCount.should.be.eql(1);
 
@@ -733,9 +733,9 @@ describe('BetaTests', () => {
                     res.body[3].tags[0].should.be.eql("설문");
                     res.body[3].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
                     res.body[3].closeDate.should.be.eql("2019-03-26T00:00:00.000Z");
-                    res.body[3].afterService.awards.should.be.eql("포메스 팀 : 참가자 여러분 모두 저희의 챔피언❤️");
-                    res.body[3].afterService.epilogue.should.be.eql("http://www.google.co.kr");
-                    res.body[3].afterService.companySays.should.be.eql("게임사 가라사대, 너희가 나를 살찌웠노라.... 고맙노라.....");
+                    res.body[3].epilogue.awards.should.be.eql("포메스 팀 : 참가자 여러분 모두 저희의 챔피언❤️");
+                    res.body[3].epilogue.deeplink.should.be.eql("http://www.google.co.kr");
+                    res.body[3].epilogue.companySays.should.be.eql("게임사 가라사대, 너희가 나를 살찌웠노라.... 고맙노라.....");
                     res.body[3].completedItemCount.should.be.eql(1);
                     res.body[3].totalItemCount.should.be.eql(1);
 
@@ -746,7 +746,7 @@ describe('BetaTests', () => {
                     res.body[4].tags[0].should.be.eql("설문");
                     res.body[4].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
                     res.body[4].closeDate.should.be.eql("2019-03-24T00:00:00.000Z");
-                    should.not.exist(res.body[4].afterService);
+                    should.not.exist(res.body[4].epilogue);
                     res.body[4].completedItemCount.should.be.eql(1);
                     res.body[4].totalItemCount.should.be.eql(1);
 

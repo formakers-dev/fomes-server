@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const afterServiceSchema = new Schema({
+const EpilogueSchema = new Schema({
     awards: String,
-    epilogue: String,
+    deeplink: String,
     companySays: String,
 });
 
@@ -51,7 +51,7 @@ const betaTestSchema = new Schema({
     openDate: Date,
     closeDate: Date,
     bugReport: Object,
-    afterService: afterServiceSchema,
+    epilogue: EpilogueSchema,
     rewards: Rewards,
     missions: [MissionSchema],
     similarApps: Array,

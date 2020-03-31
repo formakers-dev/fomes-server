@@ -124,7 +124,7 @@ const findFinishedBetaTests = (userId) => {
                 tags: { $first: "$tags" },
                 openDate: { $first: "$openDate" },
                 closeDate: { $first: "$closeDate" },
-                afterService: { $first: "$afterService" },
+                epilogue: { $first: "$epilogue" },
                 missions: { $push: "$missions" },
                 totalItemCount: {$sum: 1}
             }

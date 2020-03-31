@@ -475,9 +475,9 @@ const data = [
         ],
         "similarApps" : [],
         "isGroup" : true,
-        "afterService" : {
+        "epilogue" : {
             "awards" : "테스트 영웅 : 드래군핥짝 님\n테스트 요정 : 이브 외 9명",
-            "epilogue" : "http://www.naver.com",
+            "deeplink" : "http://www.naver.com",
             "companySays" : "포메스 짱! 완전 짱! 대박! 완전! 완전! 두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄"
         }
     }
@@ -546,9 +546,9 @@ const data = [
         ],
         "similarApps" : [],
         "isGroup" : true,
-        "afterService" : {
+        "epilogue" : {
             "awards" : "포메스 팀 : 참가자 여러분 모두 저희의 챔피언❤️",
-            "epilogue" : "http://www.google.co.kr",
+            "deeplink" : "http://www.google.co.kr",
             "companySays" : "게임사 가라사대, 너희가 나를 살찌웠노라.... 고맙노라....."
         }
     }
