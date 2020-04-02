@@ -88,7 +88,7 @@ describe('BetaTests', () => {
                     res.body[1].openDate.should.be.eql("2019-02-25T00:00:00.000Z");
                     res.body[1].closeDate.should.be.eql("2119-03-03T14:59:00.000Z");
                     res.body[1].bugReport.url.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSeApAn8oPp8mW6UT8RD1uMbKk_UvAiWBh5jwlxlyUUI4D2N1g/viewform?usp=pp_url&entry.455936817=");
-                    res.body[1].completedItemCount.should.be.eql(3);
+                    res.body[1].completedItemCount.should.be.eql(2);
                     res.body[1].totalItemCount.should.be.eql(3);
 
                     res.body[2]._id.should.be.eql("5ce51a069cb162da02b9f94d");
@@ -105,7 +105,7 @@ describe('BetaTests', () => {
                     res.body[2].tags[2].should.be.eql("꿀잼");
                     res.body[2].openDate.should.be.eql("2019-03-11T00:00:00.000Z");
                     res.body[2].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");
-                    res.body[2].completedItemCount.should.be.eql(2);
+                    res.body[2].completedItemCount.should.be.eql(1);
                     res.body[2].totalItemCount.should.be.eql(4);
 
                     res.body[3]._id.should.be.eql("5c25c77798d78f078d8ef3ba");
@@ -227,30 +227,6 @@ describe('BetaTests', () => {
                     .then(() => done())
                     .catch(err => done(err));
             });
-        });
-
-        afterEach(() => {
-            sandbox.restore();
-        });
-    });
-
-    describe('GET /beta-tests/:id/progress', () => {
-
-        it('테스트존 리스트에 나타날 특정 테스트의 진행 상태를 요청한다', done => {
-            sandbox.useFakeTimers(new Date("2019-06-25T02:30:00.000Z").getTime());
-
-            request.get('/beta-tests/5c25e1e824196d19231fbed3/progress')
-                .set('x-access-token', config.appbeeToken.valid)
-                .expect(200)
-                .then(res => {
-                    console.error(res.body);
-
-                    res.body._id.should.be.eql("5c25e1e824196d19231fbed3");
-                    res.body.completedItemCount.should.be.eql(0);
-                    res.body.totalItemCount.should.be.eql(1);
-
-                    done();
-                }).catch(err => done(err));
         });
 
         afterEach(() => {
@@ -846,6 +822,44 @@ describe('BetaTests', () => {
                     res.body.tags[0].should.be.eql("설문fsagsgasdadddddj 아아아아 ㄴ나나나ㅏ");
                     res.body.tags[1].should.be.eql("태그다");
                     res.body.tags[2].should.be.eql("꿀잼");
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+    });
+
+    describe('GET /beta-tests/:id/progress', () => {
+
+        it('테스트존 리스트에 나타날 특정 테스트의 진행 상태를 요청한다', done => {
+            sandbox.useFakeTimers(new Date("2019-06-25T02:30:00.000Z").getTime());
+
+            request.get('/beta-tests/5c25c77798d78f078d8ef3ba/progress')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.isAttended.should.be.eql(true);
+
+                    res.body.missionItems.length.should.be.eql(5);
+                    res.body.missionItems.sort((a, b) => a._id > b._id ? 1 : -1);
+
+                    res.body.missionItems[0]._id.should.be.eql("5d1998bb839927107f4bb931");
+                    res.body.missionItems[0].isCompleted.should.be.eql(false);
+
+                    res.body.missionItems[1]._id.should.be.eql("5d1998bb839927107f4bb93e");
+                    res.body.missionItems[1].isCompleted.should.be.eql(true);
+
+                    res.body.missionItems[2]._id.should.be.eql("5d199913839927107f4bb93f");
+                    res.body.missionItems[2].isCompleted.should.be.eql(true);
+
+                    res.body.missionItems[3]._id.should.be.eql("5d1d74d1d638af0bb86b0f6f");
+                    res.body.missionItems[3].isCompleted.should.be.eql(false);
+
+                    res.body.missionItems[4]._id.should.be.eql("5d1d74d6d638af0bb86b0f70");
+                    res.body.missionItems[4].isCompleted.should.be.eql(false);
 
                     done();
                 }).catch(err => done(err));

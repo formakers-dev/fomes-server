@@ -104,6 +104,13 @@ const data = [
         date: ISODate("2020-03-24"),
         missionId: ObjectId("5d199a84839927107f4bb949"),
     },
+    {
+        _id: ObjectId("111111111111111111111125"),
+        userId: config.testUser.userId,
+        betaTestId: ObjectId("5c25c77798d78f078d8ef3ba"),
+        date: ISODate("2020-03-16"),
+        missionId: ObjectId("5d1998bb839927107f4bb93e"),
+    },
 ];
 
 module.exports = data;
