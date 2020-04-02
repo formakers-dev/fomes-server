@@ -85,7 +85,7 @@ describe('BetaTests', () => {
                     res.body[1].openDate.should.be.eql("2019-02-25T00:00:00.000Z");
                     res.body[1].closeDate.should.be.eql("2119-03-03T14:59:00.000Z");
                     res.body[1].bugReport.url.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSeApAn8oPp8mW6UT8RD1uMbKk_UvAiWBh5jwlxlyUUI4D2N1g/viewform?usp=pp_url&entry.455936817=");
-                    res.body[1].completedItemCount.should.be.eql(3);
+                    res.body[1].completedItemCount.should.be.eql(2);
                     res.body[1].totalItemCount.should.be.eql(3);
 
                     res.body[2]._id.should.be.eql("5ce51a069cb162da02b9f94d");
@@ -102,7 +102,7 @@ describe('BetaTests', () => {
                     res.body[2].tags[2].should.be.eql("꿀잼");
                     res.body[2].openDate.should.be.eql("2019-03-11T00:00:00.000Z");
                     res.body[2].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");
-                    res.body[2].completedItemCount.should.be.eql(2);
+                    res.body[2].completedItemCount.should.be.eql(1);
                     res.body[2].totalItemCount.should.be.eql(4);
 
                     res.body[3]._id.should.be.eql("5c25c77798d78f078d8ef3ba");
@@ -117,7 +117,7 @@ describe('BetaTests', () => {
                     res.body[3].openDate.should.be.eql("2018-12-28T00:00:00.000Z");
                     res.body[3].closeDate.should.be.eql("2119-12-31T00:00:00.000Z");
                     should.not.exist(res.body[3].bugReport);
-                    res.body[3].completedItemCount.should.be.eql(3);
+                    res.body[3].completedItemCount.should.be.eql(2);
                     res.body[3].totalItemCount.should.be.eql(5);
 
                     res.body[4]._id.should.be.eql("5c861f3f2917e70db5d2d536");

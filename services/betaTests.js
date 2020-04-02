@@ -95,7 +95,9 @@ const findValidBetaTests = (userId) => {
 
             // 임시코드
             const betaTestWithCompletedItemCount = completedItemCounts.filter(completedItemCount => String(completedItemCount._id) === String(betaTest._id));
-            betaTest.completedItemCount = betaTestWithCompletedItemCount.length > 0 ? betaTestWithCompletedItemCount[0].completedItemCount : 0;
+            const participationCount = betaTestWithCompletedItemCount.length > 0 ? betaTestWithCompletedItemCount[0].completedItemCount : 0;
+            betaTest.isAttended = participationCount > 0;
+            betaTest.completedItemCount = betaTest.isAttended ? participationCount - 1 : 0;
 
             return betaTest;
         })
