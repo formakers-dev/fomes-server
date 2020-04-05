@@ -10,12 +10,14 @@ const ObjectId = mongoose.Types.ObjectId;
 
 const BetaTests = require('../models/betaTests');
 const BetaTestParticipations = require('../models/betaTestParticipations');
+const BetaTestMissions = require('../models/betaTestMissions');
 const AwardRecords = require('../models/awardRecords');
 const Configurations = require('../models/configurations').Configurations;
 const AdminUsers = require('../models/configurations').AdminUsers;
 const helper = require('./commonTestHelper');
 const betatestData = require('./data/beta-tests');
 const participationData = require('./data/participations');
+const missionData = require('./data/missions');
 const awardRecordData = require('./data/award-records');
 
 describe('BetaTests', () => {
@@ -42,6 +44,7 @@ describe('BetaTests', () => {
         AdminUsers.create([ { userId: "adminUser1" } ])
             .then(() => BetaTests.create(betatestData))
             .then(() => BetaTestParticipations.create(participationData))
+            .then(() => BetaTestMissions.create(missionData))
             .then(() => AwardRecords.create(awardRecordData))
             .then(() => done())
             .catch(err => done(err));
@@ -968,6 +971,7 @@ describe('BetaTests', () => {
             .then(() => AwardRecords.remove({}))
             .then(() => BetaTests.remove({}))
             .then(() => BetaTestParticipations.remove({}))
+            .then(() => BetaTestMissions.remove({}))
             .then(() => done())
             .catch(err => done(err));
     });

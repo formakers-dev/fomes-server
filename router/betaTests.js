@@ -5,6 +5,8 @@ const Auth = require('../middleware/auth');
 
 // 이거 api 네이밍 변경해야 할 것 같은데.....
 router.get('/', Auth.verifyAppBeeToken, BetaTestController.getBetaTestList);
+// router.get('/opened', Auth.verifyAppBeeToken, BetaTestController.getOpenedBetaTestList);
+// router.get('/valid', Auth.verifyAppBeeToken, BetaTestController.getBetaTestList); // 개인 맞춤형(추천형) 인경우
 router.get('/:id/progress', Auth.verifyAppBeeToken, BetaTestController.getProgress);
 router.get('/:id/missions/:missionId/progress', Auth.verifyAppBeeToken, BetaTestController.getMissionProgress);
 

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const BetaTests = require('../models/betaTests');
 const BetaTestParticipations = require('../models/betaTestParticipations');
+const BetaTestMissions = require('../models/betaTestMissions');
 const AwardRecords = require('../models/awardRecords');
 const ConfigurationsService = require('../services/configurations');
 
@@ -47,12 +48,9 @@ const findValidBetaTests = (userId) => {
                 ],
             }
         },
-        { $unwind: "$missions" },
-        { $unwind: "$missions.items" },
         {
             $group: {
                 _id: "$_id",
-                overviewImageUrl: { $first: "$overviewImageUrl" },
                 coverImageUrl: { $first: "$coverImageUrl" },
                 title: { $first: "$title" },
                 description: { $first: "$description" },
@@ -63,8 +61,6 @@ const findValidBetaTests = (userId) => {
                 openDate: { $first: "$openDate" },
                 closeDate: { $first: "$closeDate" },
                 bugReport: { $first: "$bugReport" },
-                totalItemCount: {$sum: 1},
-
             }
         }
     ]).then(async betaTests => {
@@ -77,7 +73,18 @@ const findValidBetaTests = (userId) => {
 
         const defaultProgressText = await ConfigurationsService.getBetaTestProgressText();
 
-        const completedItemCounts = await BetaTestParticipations.aggregate([
+        // completed 처리 용도라 처리방법 변경되면 사라질 수 있음
+        const totalMissionCounts = await BetaTestMissions.aggregate([
+            { $match : { betaTestId: { $in : betaTests.map(betaTest => betaTest._id) } } },
+            {
+                $group: {
+                    _id: "$betaTestId",
+                    totalItemCount: {$sum: 1}
+                }
+            }
+        ]);
+
+        const completedMissionCounts = await BetaTestParticipations.aggregate([
             { $match : { userId: userId, betaTestId: { $in : betaTests.map(betaTest => betaTest._id) } } },
             {
                 $group : {
@@ -92,9 +99,11 @@ const findValidBetaTests = (userId) => {
             betaTest.progressText = (betaTest.progressText)? betaTest.progressText : defaultProgressText;
 
             // 임시코드
-            const betaTestWithCompletedItemCount = completedItemCounts.filter(completedItemCount => String(completedItemCount._id) === String(betaTest._id));
-            const participationCount = betaTestWithCompletedItemCount.length > 0 ? betaTestWithCompletedItemCount[0].completedItemCount : 0;
+            const betaTestWithCompletedMissionCount = completedMissionCounts.filter(completedItemCount => String(completedItemCount._id) === String(betaTest._id));
+            const participationCount = betaTestWithCompletedMissionCount.length > 0 ? betaTestWithCompletedMissionCount[0].completedItemCount : 0;
+
             betaTest.isAttended = participationCount > 0;
+            betaTest.totalItemCount = totalMissionCounts.filter(totalItemCount => String(totalItemCount._id) === String(betaTest._id))[0].totalItemCount;
             betaTest.completedItemCount = betaTest.isAttended ? participationCount - 1 : 0;
 
             return betaTest;
@@ -331,6 +340,20 @@ const findBetaTestParticipation = (betaTestId, userId) => {
     return BetaTestParticipations.find({
         userId: userId,
         betaTestId: betaTestId
+    })
+};
+
+const findBetaTestMissions = (betaTestId, userId) => {
+    return BetaTestMissions.find({
+        userId: userId,
+        betaTestId: betaTestId,
+    })
+};
+
+const getBetaTestMissionCount = (betaTestId, userId) => {
+    return BetaTestMissions.count({
+        userId: userId,
+        betaTestId: betaTestId,
     })
 };
 
