@@ -844,6 +844,7 @@ describe('BetaTests', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
+                    console.error(res.body);
                     res.body.isAttended.should.be.eql(true);
 
                     res.body.missionItems.length.should.be.eql(5);

@@ -40,6 +40,9 @@ const getMissionProgress = (req, res, next) => {
         }).catch(err => next(err));
 };
 
+/**
+ * @Deprecated
+ */
 const getMissionProgress_Old = (req, res, next) => {
     BetaTestsService.findMissionItemsProgress(req.params.id, req.userId)
         .then(missionItems => res.json(missionItems))

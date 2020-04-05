@@ -233,25 +233,7 @@ const findBetaTest = (betaTestId, userId) => {
 
 // 이거 카운드말고 그냥 미션들을 싹 보내줄까... (missionId, isCompleted 조합 리스트로..)
 const findBetaTestProgress = async (betaTestId, userId) => {
-    const missionItems = await BetaTests.aggregate([
-        {
-            $match : {
-                _id: mongoose.Types.ObjectId(betaTestId),
-                $or: [
-                    {targetUserIds: {$exists: false}},
-                    {targetUserIds: {$in: [userId]}},
-                ]
-            }
-        },
-        { $unwind: "$missions" },
-        { $unwind: "$missions.items" },
-        {
-            $project: {
-                missionId: "$missions.items._id"
-            }
-        }
-    ]);
-
+    const missionItems = await findBetaTestMissions(betaTestId);
     const userParticipations = await findBetaTestParticipation(betaTestId, userId);
 
     return Promise.all([missionItems, userParticipations]).then(values => {
@@ -262,10 +244,10 @@ const findBetaTestProgress = async (betaTestId, userId) => {
         return {
             isAttended: userParticipations.length > 0,
             missionItems: missionItems.map(mission => {
-                const isCompleted = userParticipatedMissionIds.includes(String(mission.missionId));
+                const isCompleted = userParticipatedMissionIds.includes(String(mission._id));
 
                 return {
-                    _id: mission.missionId,
+                    _id: mission._id,
                     isCompleted: isCompleted,
                 }
             })
@@ -345,14 +327,12 @@ const findBetaTestParticipation = (betaTestId, userId) => {
 
 const findBetaTestMissions = (betaTestId, userId) => {
     return BetaTestMissions.find({
-        userId: userId,
         betaTestId: betaTestId,
     })
 };
 
 const getBetaTestMissionCount = (betaTestId, userId) => {
     return BetaTestMissions.count({
-        userId: userId,
         betaTestId: betaTestId,
     })
 };
