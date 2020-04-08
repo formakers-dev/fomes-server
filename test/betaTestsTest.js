@@ -676,10 +676,10 @@ describe('BetaTests', () => {
                     res.body[0].completedItemCount.should.be.eql(2);
                     res.body[0].totalItemCount.should.be.eql(2);
                     res.body[0].missions.length.should.be.eql(1);
-                    res.body[0].missions[0].item.isRecheckable.should.be.eql(true);
-                    res.body[0].missions[0].item.title.should.be.eql("의견 작성");
-                    res.body[0].missions[0].item.actionType.should.be.eql("link");
-                    res.body[0].missions[0].item.action.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSeRI99bYe7LUU0iQgVMKev6D4zyaW2E3zKx-Tp1tVW2Qzv0Cg/viewform?internal_web=true&usp=pp_url&entry.394653407=");
+                    res.body[0].missions[0].isRecheckable.should.be.eql(true);
+                    res.body[0].missions[0].title.should.be.eql("의견 작성");
+                    res.body[0].missions[0].actionType.should.be.eql("link");
+                    res.body[0].missions[0].action.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSeRI99bYe7LUU0iQgVMKev6D4zyaW2E3zKx-Tp1tVW2Qzv0Cg/viewform?internal_web=true&usp=pp_url&entry.394653407=");
 
                     res.body[1]._id.should.be.eql("5c986adee1a6f20813ec464d");
                     res.body[1].iconImageUrl.should.be.eql("https://i.imgur.com/4A0jfFe.jpg");
@@ -772,52 +772,40 @@ describe('BetaTests', () => {
                     res.body.isAttended.should.be.eql(true);
 
                     res.body.missions.length.should.be.eql(4);
+                    res.body.missions.sort((a, b) => a.order > b.order ? 1 : -1);
                     res.body.missions[0].order.should.be.eql(1);
-                    res.body.missions[0].title.should.be.eql("베타테스트 추가 신청하기");
+                    res.body.missions[0].title.should.be.eql("신청하기");
                     res.body.missions[0].description.should.be.eql("테스트를 신청하라!!!!\n테스트 하고 싶은 게임 골라라아아아아ㅏ아");
                     res.body.missions[0].descriptionImageUrl.should.be.eql('https://i.imgur.com/n2MaXzg.png');
-                    res.body.missions[0].iconImageUrl.should.be.eql('https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png');
-                    res.body.missions[0].item.order.should.be.eql(1);
-                    res.body.missions[0].item.title.should.be.eql("신청하기");
-                    res.body.missions[0].item.action.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&entry.1042588232=");
-                    res.body.missions[0].item.isCompleted.should.be.eql(true);
-                    res.body.missions[0].item.isRepeatable.should.be.eql(true);
-                    res.body.missions[0].item.isMandatory.should.be.eql(true);
+                    res.body.missions[0].action.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSdxI2s694nLTVk4i7RMkkrtr-K_0s7pSKfUnRusr7348nQpJg/viewform?usp=pp_url&entry.1042588232=");
+                    res.body.missions[0].isCompleted.should.be.eql(true);
+                    res.body.missions[0].isRepeatable.should.be.eql(true);
+                    res.body.missions[0].isMandatory.should.be.eql(true);
 
                     res.body.missions[1].order.should.be.eql(2);
-                    res.body.missions[1].title.should.be.eql("첫번째 미션!!!");
+                    res.body.missions[1].title.should.be.eql("게임 플레이");
                     res.body.missions[1].description.should.be.eql("게임을 10분 이상 플레이하라!!!!!!!");
                     res.body.missions[1].descriptionImageUrl.should.be.eql('');
-                    res.body.missions[1].iconImageUrl.should.be.eql('https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png');
                     res.body.missions[1].guide.should.be.eql('* 위 버튼을 누르면, 테스트 대상 게임 무단배포 금지에 동의로 간주합니다.');
-                    res.body.missions[1].item.order.should.be.eql(1);
-                    res.body.missions[1].item.title.should.be.eql("게임 플레이");
-                    res.body.missions[1].item.action.should.be.eql("https://play.google.com/store/apps/details?id=com.frozax.tentsandtrees");
-                    res.body.missions[1].item.postCondition.playTime.should.be.eql(600000);
-                    res.body.missions[1].item.postCondition.packageName.should.be.eql("com.frozax.tentsandtrees");
-                    res.body.missions[1].item.isCompleted.should.be.eql(false);
+                    res.body.missions[1].action.should.be.eql("https://play.google.com/store/apps/details?id=com.frozax.tentsandtrees");
+                    res.body.missions[1].packageName.should.be.eql("com.frozax.tentsandtrees");
+                    res.body.missions[1].isCompleted.should.be.eql(false);
 
                     res.body.missions[2].order.should.be.eql(3);
-                    res.body.missions[2].title.should.be.eql("두번째 미션!!!");
+                    res.body.missions[2].title.should.be.eql("의견 작성2");
                     res.body.missions[2].description.should.be.eql("설문을 하라!!!!!!!!!!!");
                     res.body.missions[2].descriptionImageUrl.should.be.eql('');
-                    res.body.missions[2].iconImageUrl.should.be.eql('https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png');
                     res.body.missions[2].guide.should.be.eql('* 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다!\n* 불성실한 응답은 보상지급 대상자에서 제외될 수 있습니다.');
-                    res.body.missions[2].item.order.should.be.eql(2);
-                    res.body.missions[2].item.title.should.be.eql("의견 작성");
-                    res.body.missions[2].item.action.should.be.eql("https://www.naver.com");
-                    res.body.missions[2].item.isCompleted.should.be.eql(false);
+                    res.body.missions[2].action.should.be.eql("https://www.naver.com");
+                    res.body.missions[2].isCompleted.should.be.eql(false);
 
-                    res.body.missions[3].order.should.be.eql(3);
-                    res.body.missions[3].title.should.be.eql("두번째 미션!!!");
+                    res.body.missions[3].order.should.be.eql(4);
+                    res.body.missions[3].title.should.be.eql("의견 작성");
                     res.body.missions[3].description.should.be.eql("설문을 하라!!!!!!!!!!!");
                     res.body.missions[3].descriptionImageUrl.should.be.eql('');
-                    res.body.missions[3].iconImageUrl.should.be.eql('https://cdn1.iconfinder.com/data/icons/e-commerce-categories/54/Games-512.png');
                     res.body.missions[3].guide.should.be.eql('* 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다!\n* 불성실한 응답은 보상지급 대상자에서 제외될 수 있습니다.');
-                    res.body.missions[3].item.order.should.be.eql(1);
-                    res.body.missions[3].item.title.should.be.eql("의견 작성2");
-                    res.body.missions[3].item.action.should.be.eql("https://www.naver.com");
-                    res.body.missions[3].item.isCompleted.should.be.eql(false);
+                    res.body.missions[3].action.should.be.eql("https://www.naver.com");
+                    res.body.missions[3].isCompleted.should.be.eql(false);
 
                     res.body.rewards.minimumDelay.should.be.eql(100);
                     res.body.rewards.list.length.should.be.eql(3);

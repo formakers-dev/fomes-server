@@ -124,8 +124,6 @@ const findFinishedBetaTests = (userId) => {
                 ],
             }
         },
-        { $unwind: "$missions" },
-        { $unwind: "$missions.items" },
         {
             $group: {
                 _id: "$_id",
@@ -136,8 +134,6 @@ const findFinishedBetaTests = (userId) => {
                 openDate: { $first: "$openDate" },
                 closeDate: { $first: "$closeDate" },
                 epilogue: { $first: "$epilogue" },
-                missions: { $push: "$missions" },
-                totalItemCount: {$sum: 1}
             }
         }
     ]).then(async betaTests => {
@@ -148,21 +144,23 @@ const findFinishedBetaTests = (userId) => {
 
                 const participations = await findBetaTestParticipation(betaTest._id, userId);
                 betaTest.isAttended = participations.length > 0;
-                betaTest.missions = convertMissionItemsForClient(userId, betaTest.missions, participations)
+
+                const missions = await findBetaTestMissions(betaTest._id);
+                betaTest.missions = convertMissionItemsForClient(userId, missions, participations)
                     .map(mission => {
                         return {
-                            item: {
-                                title: mission.item.title,
-                                actionType: mission.item.actionType,
-                                action: mission.item.action,
-                                isRecheckable: mission.item.isRecheckable,
-                                isCompleted: mission.item.isCompleted,
-                            }
+
+                            title: mission.title,
+                            actionType: mission.actionType,
+                            action: mission.action,
+                            isRecheckable: mission.isRecheckable,
+                            isCompleted: mission.isCompleted,
                         }
                     });
 
-                betaTest.completedItemCount = betaTest.missions.filter(mission => mission.item.isCompleted).length;
-                betaTest.missions = betaTest.missions.filter(mission => mission.item.isRecheckable && mission.item.isCompleted);
+                betaTest.totalItemCount = betaTest.missions.length;
+                betaTest.completedItemCount = betaTest.missions.filter(mission => mission.isCompleted).length;
+                betaTest.missions = betaTest.missions.filter(mission => mission.isRecheckable && mission.isCompleted);
 
                 return betaTest;
             })
@@ -175,17 +173,13 @@ const convertMissionItemsForClient = (userId, missions, participations) => {
                                             .map(participation => participation.missionId.toString());
 
     return missions.map(mission => {
-        mission.item = mission.items;
-        delete mission.items;
+        mission.isCompleted = completedMissionIds.includes(mission._id.toString());
 
-        mission.item.isCompleted = completedMissionIds.includes(mission.item._id.toString());
-        delete mission.item.completedUserIds;
-
-        if (mission.item.options) {
-            mission.item.isRepeatable = mission.item.options.includes('repeatable');
-            mission.item.isMandatory = mission.item.options.includes('mandatory');
-            mission.item.isRecheckable = mission.item.options.includes('recheckable');
-            delete mission.item.options;
+        if (mission.options) {
+            mission.isRepeatable = mission.options.includes('repeatable');
+            mission.isMandatory = mission.options.includes('mandatory');
+            mission.isRecheckable = mission.options.includes('recheckable');
+            delete mission.options;
         }
 
         return mission;
@@ -222,7 +216,9 @@ const findBetaTest = (betaTestId, userId) => {
 
             const participations = await findBetaTestParticipation(betaTest._id, userId);
             betaTest.isAttended = participations.length > 0;
-            betaTest.missions = convertMissionItemsForClient(userId, betaTest.missions, participations);
+
+            const missions = await findBetaTestMissions(betaTest._id);
+            betaTest.missions = convertMissionItemsForClient(userId, missions, participations);
             betaTest.currentDate = new Date();
 
             console.log(betaTest)
@@ -307,7 +303,7 @@ const findAttendParticipation = (betaTestId, userId) => {
         betaTestId: betaTestId,
         userId: userId,
         missionId: {$exists: false}
-    });
+    }).lean();
 };
 
 const findMissionParticipation = (betaTestId, missionId, userId) => {
@@ -315,20 +311,20 @@ const findMissionParticipation = (betaTestId, missionId, userId) => {
         betaTestId: betaTestId,
         missionId: missionId,
         userId: userId,
-    });
+    }).lean();
 };
 
 const findBetaTestParticipation = (betaTestId, userId) => {
     return BetaTestParticipations.find({
         userId: userId,
         betaTestId: betaTestId
-    })
+    }).lean();
 };
 
-const findBetaTestMissions = (betaTestId, userId) => {
+const findBetaTestMissions = (betaTestId) => {
     return BetaTestMissions.find({
         betaTestId: betaTestId,
-    })
+    }).lean();
 };
 
 const getBetaTestMissionCount = (betaTestId, userId) => {
