@@ -8,7 +8,7 @@ const schema = new Schema({
     description: String,
     descriptionImageUrl: String,
     guide: String,
-    deepLink: String,
+    deeplink: String,
     options: Array,
     type: String,
 
