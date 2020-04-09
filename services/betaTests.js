@@ -191,8 +191,6 @@ const findBetaTest = (betaTestId, userId) => {
         {
             $match: { _id: mongoose.Types.ObjectId(betaTestId) }
         },
-        { $unwind: "$missions" },
-        { $unwind: "$missions.items" },
         {
             $group:  {
                 _id: "$_id",
@@ -202,11 +200,9 @@ const findBetaTest = (betaTestId, userId) => {
                 tags: { $first: "$tags" },
                 overviewImageUrl: { $first: "$overviewImageUrl" },
                 coverImageUrl: { $first: "$coverImageUrl" },
-                iconImageUrl: { $first: "$iconImageUrl" },
                 openDate: { $first: "$openDate" },
                 closeDate: { $first: "$closeDate" },
                 rewards: { $first: "$rewards" },
-                missions: { $push: "$missions" },
             }
         }
         ])
