@@ -40,15 +40,6 @@ const getMissionProgress = (req, res, next) => {
         }).catch(err => next(err));
 };
 
-/**
- * @Deprecated
- */
-const getMissionProgress_Old = (req, res, next) => {
-    BetaTestsService.findMissionItemsProgress(req.params.id, req.userId)
-        .then(missionItems => res.json(missionItems))
-        .catch(err => next(err));
-};
-
 const getAllBetaTestsCount = (req, res, next) => {
     BetaTestsService.getAllBetaTestsCount()
         .then(allBetaTestsCount => {
@@ -95,14 +86,14 @@ const postAttend = (req, res, next) => {
 const postMissionComplete = (req, res, next) => {
     console.log("[", req.userId, "] postMissionComplete betaTest:", req.params.id, ", mission: ", req.params.missionId);
 
-    BetaTestsService.updateMissionCompleted(req.params.id, req.params.missionId, req.userId)
+    BetaTestsService.completeMission(req.params.id, req.params.missionId, req.userId)
         .then(participation => {
             if (!participation) {
                 return Promise.resolve();
             }
 
             const notificationData = req.body.notificationData;
-            console.log("[", req.userId, "] updateCompleted - notificationData", notificationData);
+            console.log("[", req.userId, "] postMissionComplete - notificationData", notificationData);
 
             if (!notificationData) {
                 console.error("[", req.userId, "] notificationData is none!");
@@ -136,20 +127,17 @@ const postMissionComplete = (req, res, next) => {
         });
 };
 
-/**
- * @Deprecated
- */
 const postComplete = (req, res, next) => {
     console.log("[", req.userId, "] postComplete", req.params.id);
 
-    BetaTestsService.updateCompleted(req.params.id, req.userId)
-        .then(betaTest => {
-            if (!betaTest) {
+    BetaTestsService.completeBetaTest(req.params.id, req.userId)
+        .then(participation => {
+            if (!participation) {
                 return Promise.resolve();
             }
 
             const notificationData = req.body.notificationData;
-            console.log("[", req.userId, "] updateCompleted - notificationData", notificationData);
+            console.log("[", req.userId, "] postComplete - notificationData", notificationData);
 
             if (!notificationData) {
                 return;
@@ -171,7 +159,15 @@ const postComplete = (req, res, next) => {
                 });
         })
         .then(() => res.sendStatus(200))
-        .catch(err => next(err));
+        .catch(err => {
+            if (err instanceof BetaTestsService.AlreadyExistError) {
+                next(Boom.conflict());
+            } else if (err instanceof BetaTestsService.NotAttendedError) {
+                next(Boom.preconditionRequired());
+            } else {
+                next(err);
+            }
+        });
 };
 
 const postTargetUser = (req, res, next) => {
@@ -214,7 +210,6 @@ module.exports = {
     getDetailBetaTest,
     getProgress,
     getMissionProgress,
-    getMissionProgress_Old,
     getAllBetaTestsCount,
     getTotalRewards,
     getAccumulatedCompletedUsersCount,

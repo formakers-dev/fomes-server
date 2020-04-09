@@ -43,7 +43,7 @@ describe('BetaTests', () => {
     beforeEach(done => {
         AdminUsers.create([ { userId: "adminUser1" } ])
             .then(() => BetaTests.create(betatestData))
-            .then(() => BetaTestParticipations.create(participationData))
+            .then(() => BetaTestParticipations.Model.create(participationData))
             .then(() => BetaTestMissions.create(missionData))
             .then(() => AwardRecords.create(awardRecordData))
             .then(() => done())
@@ -247,10 +247,12 @@ describe('BetaTests', () => {
             request.post('/beta-tests/111111111111111111111111/attend')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
-                .then(() => BetaTestParticipations.findOne({
+                .then(() => BetaTestParticipations.Model.findOne({
                     "userId" : config.testUser.userId,
                     "betaTestId" : ObjectId("111111111111111111111111"),
                     "missionId" : { $exists: false },
+                    "type" : BetaTestParticipations.Constants.TYPE_BETA_TEST,
+                    "status" : BetaTestParticipations.Constants.STATUS_ATTEND,
                 }))
                 .then(res => {
                     res.userId.should.be.eql(config.testUser.userId);
@@ -264,14 +266,16 @@ describe('BetaTests', () => {
         });
 
         // 예외
-        it('요청한 유저가 이미 완료한 경우에는 참여정보를 업데이트하지않고 409를 리턴한다', done => {
+        it('요청한 유저가 이미 참여한 경우에는 참여정보를 업데이트하지않고 409를 리턴한다', done => {
             request.post('/beta-tests/5d01b1f6db7d04bc2d04345c/attend')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(409)
-                .then(() => BetaTestParticipations.findOne({
+                .then(() => BetaTestParticipations.Model.findOne({
                     "userId": config.testUser.userId,
                     "betaTestId" : ObjectId("5d01b1f6db7d04bc2d04345c"),
                     "missionId" : { $exists: false },
+                    "type" : BetaTestParticipations.Constants.TYPE_BETA_TEST,
+                    "status" : BetaTestParticipations.Constants.STATUS_ATTEND,
                 }))
                 .then(participation => {
                     participation.userId.should.be.eql(config.testUser.userId);
@@ -302,10 +306,12 @@ describe('BetaTests', () => {
             request.post('/beta-tests/5c25c77798d78f078d8ef3ba/missions/5d1d74d6d638af0bb86b0f70/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
-                .then(() => BetaTestParticipations.findOne({
+                .then(() => BetaTestParticipations.Model.findOne({
                     "userId": config.testUser.userId,
                     "betaTestId" : ObjectId("5c25c77798d78f078d8ef3ba"),
                     "missionId" : ObjectId("5d1d74d6d638af0bb86b0f70"),
+                    "type" : BetaTestParticipations.Constants.TYPE_MISSION,
+                    "status" : BetaTestParticipations.Constants.STATUS_COMPLETE,
                 }))
                 .then(res => {
                     res.userId.should.be.eql(config.testUser.userId);
@@ -361,7 +367,7 @@ describe('BetaTests', () => {
             request.post('/beta-tests/111111111111111111111111/missions/111111111111111111111112/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(428)
-                .then(() => BetaTestParticipations.find({
+                .then(() => BetaTestParticipations.Model.find({
                     "userId": config.testUser.userId,
                     "betaTestId" : ObjectId("111111111111111111111111")
                 }))
@@ -377,7 +383,7 @@ describe('BetaTests', () => {
             request.post('/beta-tests/5d01b1f6db7d04bc2d04345c/missions/5d199ac3839927107f4bb94e/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(409)
-                .then(() => BetaTestParticipations.findOne({
+                .then(() => BetaTestParticipations.Model.findOne({
                     "userId": config.testUser.userId,
                     "betaTestId" : ObjectId("5d01b1f6db7d04bc2d04345c"),
                     "missionId" : ObjectId("5d199ac3839927107f4bb94e"),
@@ -416,33 +422,20 @@ describe('BetaTests', () => {
 
         // 정상
         it('요청한 유저를 전달받은 ID에 해당하는 미션아이템의 완료 리스트에 추가한다', done => {
-            request.post('/beta-tests/5d1d74d6d638af0bb86b0f70/complete?from=external_script')
+            request.post('/beta-tests/5c25c77798d78f078d8ef3ba/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(200)
-                .then(() => BetaTests.findOne({"missions.items._id": ObjectId("5d1d74d6d638af0bb86b0f70")}))
+                .then(() => BetaTestParticipations.Model.findOne({
+                    userId: config.testUser.userId,
+                    betaTestId: "5c25c77798d78f078d8ef3ba",
+                    type: BetaTestParticipations.Constants.TYPE_BETA_TEST,
+                    status: BetaTestParticipations.Constants.STATUS_COMPLETE,
+                }))
                 .then(res => {
-                    res.missions.sort((o1, o2) => o1.order - o2.order);
-                    res.missions.forEach(mission => {
-                        mission.items.sort((o1, o2) => o1.order - o2.order);
-                    });
-
-                    res.missions[0].items[0].completedUserIds.length.should.be.eql(1);
-                    res.missions[0].items[0].completedUserIds.should.be.include("google115909938647516500511");
-
-                    res.missions[0].items[1].completedUserIds.length.should.be.eql(3);
-                    res.missions[0].items[1].completedUserIds.should.be.include("google115909938647516500511");
-                    res.missions[0].items[1].completedUserIds.should.be.include("google115838807161306170827");
-                    res.missions[0].items[1].completedUserIds.should.be.include(config.testUser.userId);
-
-                    res.missions[1].items[0].completedUserIds.length.should.be.eql(2);
-                    res.missions[1].items[0].completedUserIds.should.be.include("google115909938647516500511");
-                    res.missions[1].items[0].completedUserIds.should.be.include(config.testUser.userId);
-
-                    res.missions[1].items[2].completedUserIds.length.should.be.eql(1);
-                    res.missions[1].items[2].completedUserIds.should.be.include("google115909938647516500511");
-
-                    res.missions[1].items[1].completedUserIds.length.should.be.eql(2);
-                    res.missions[1].items[1].completedUserIds.should.be.include(config.testUser.userId);
+                    res.userId.should.be.eql(config.testUser.userId);
+                    res.betaTestId.should.be.eql(ObjectId("5c25c77798d78f078d8ef3ba"));
+                    res.type.should.be.eql("beta-test");
+                    res.status.should.be.eql("complete");
 
                     done();
                 })
@@ -451,7 +444,7 @@ describe('BetaTests', () => {
 
 
         it('요청한 유저에게 전달받은 알림을 보낸다', done => {
-            request.post('/beta-tests/5d19996f839927107f4bb941/complete?from=external_script')
+            request.post('/beta-tests/5c25c77798d78f078d8ef3ba/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .send({
                     betaTestIds: [1, 4],
@@ -488,34 +481,42 @@ describe('BetaTests', () => {
         });
 
         // 예외
-        it('요청한 유저가 이미 완료한 경우에는 완료 리스트에 추가하지 않는다', done => {
-            request.post('/beta-tests/5d199913839927107f4bb93f/complete?from=external_script')
+        it('요청한 유저가 이미 완료한 경우에는 추가하지않고 409를 리턴한다', done => {
+            request.post('/beta-tests/5d01b1f6db7d04bc2d04345c/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
-                .expect(200)
-                .then(() => BetaTests.findOne({"missions.items._id": ObjectId("5d199913839927107f4bb93f")}))
+                .expect(409)
+                .then(() => BetaTestParticipations.Model.findOne({
+                    userId: config.testUser.userId,
+                    betaTestId: "5d01b1f6db7d04bc2d04345c",
+                    type: BetaTestParticipations.Constants.TYPE_BETA_TEST,
+                    status: BetaTestParticipations.Constants.STATUS_COMPLETE,
+                }))
                 .then(res => {
-                    res.missions.sort((o1, o2) => o1.order - o2.order);
-                    res.missions.forEach(mission => {
-                        mission.items.sort((o1, o2) => o1.order - o2.order);
-                    });
+                    // 기존 Document의 id
+                    res._id.should.be.eql(ObjectId("111111111111111111112224"));
 
-                    console.log(res.missions[1].items[0]);
-                    res.missions[1].items[0].completedUserIds.length.should.be.eql(2);
-                    res.missions[1].items[0].completedUserIds.should.be.include(config.testUser.userId);
+                    // 완료 노티 보내지 않음
+                    sinon.assert.notCalled(stubAxiosPost);
                     done();
                 })
                 .catch(err => done(err));
         });
 
-        it('요청한 유저가 이미 완료한 경우에는 완료 노티를 보내지 않는다', done => {
-            request.post('/beta-tests/5d199a0b839927107f4bb942/complete?from=external_script')
+        it('요청한 유저가 참여하지 않은 경우에는 추가하지않고 428를 리턴한다', done => {
+            request.post('/beta-tests/5c25e23b24196d19231fd1da/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
-                .expect(200)
-                .then(() => BetaTests.findOne({"missions.items._id": ObjectId("5d199a0b839927107f4bb942")}))
-                .then(() => {
-                    sinon.assert.notCalled(stubAxiosPost);
+                .expect(428)
+                .then(() => BetaTestParticipations.Model.findOne({
+                    userId: config.testUser.userId,
+                    betaTestId: "5c25e23b24196d19231fd1da",
+                    type: BetaTestParticipations.Constants.TYPE_BETA_TEST,
+                    status: BetaTestParticipations.Constants.STATUS_COMPLETE,
+                }))
+                .then(res => {
+                    should.not.exist(res);
                     done();
-                }).catch(err => done(err));
+                })
+                .catch(err => done(err));
         });
 
         it('요청한 유저정보가 유효한 이메일로 접수되지 않은 경우 403 에러를 반환한다', done => {
@@ -891,34 +892,6 @@ describe('BetaTests', () => {
         });
     });
 
-
-    describe('GET /beta-tests/mission/:id/progress', () => {
-
-        it('특정 미션의 요청한 유저의 진행 상태를 반환한다', done => {
-            sandbox.useFakeTimers(new Date("2019-06-30T02:30:00.000Z").getTime());
-
-            request.get('/beta-tests/mission/5d1d6be5d638af0bb86b0f6d/progress')
-                .set('x-access-token', config.appbeeToken.valid)
-                .expect(200)
-                .then(res => {
-                    console.log(res.body);
-
-                    res.body[0]._id.should.be.eql("5d199913839927107f4bb93f");
-                    res.body[0].isCompleted.should.be.eql(true);
-                    res.body[1]._id.should.be.eql("5d1d74d1d638af0bb86b0f6f");
-                    res.body[1].isCompleted.should.be.eql(false);
-                    res.body[2]._id.should.be.eql("5d1d74d6d638af0bb86b0f70");
-                    res.body[2].isCompleted.should.be.eql(false);
-
-                    done();
-                }).catch(err => done(err));
-        });
-
-        afterEach(() => {
-            sandbox.restore();
-        });
-    });
-
     describe('GET /beta-tests/all/count', () => {
         it('모든 베타테스트의 개수를 조회힌다', done => {
             request.get('/beta-tests/all/count')
@@ -959,7 +932,7 @@ describe('BetaTests', () => {
         AdminUsers.remove({})
             .then(() => AwardRecords.remove({}))
             .then(() => BetaTests.remove({}))
-            .then(() => BetaTestParticipations.remove({}))
+            .then(() => BetaTestParticipations.Model.remove({}))
             .then(() => BetaTestMissions.remove({}))
             .then(() => done())
             .catch(err => done(err));

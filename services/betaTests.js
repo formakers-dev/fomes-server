@@ -84,7 +84,7 @@ const findValidBetaTests = (userId) => {
             }
         ]);
 
-        const completedMissionCounts = await BetaTestParticipations.aggregate([
+        const completedMissionCounts = await BetaTestParticipations.Model.aggregate([
             { $match : { userId: userId, betaTestId: { $in : betaTests.map(betaTest => betaTest._id) } } },
             {
                 $group : {
@@ -247,28 +247,6 @@ const findBetaTestProgress = async (betaTestId, userId) => {
     })
 };
 
-const findMissionItemsProgress = (missionId, userId) => {
-    return BetaTests.aggregate([
-        {
-            $unwind: "$missions"
-        }, {
-            $match: { "missions._id": mongoose.Types.ObjectId(missionId) }
-        }, {
-            $project: {
-                _id: "$missions._id",
-                items: "$missions.items"
-            }
-        }, {
-            $unwind: "$items"
-        }, {
-            $project: {
-                _id: "$items._id",
-                isCompleted: { $in : [userId, "$items.completedUserIds"] },
-            }
-        }
-    ]);
-};
-
 const concat = (x,y) =>
     x.concat(y);
 
@@ -295,15 +273,18 @@ class AlreadyExistError extends Error {
 }
 
 const findAttendParticipation = (betaTestId, userId) => {
-    return BetaTestParticipations.findOne({
+    return BetaTestParticipations.Model.findOne({
         betaTestId: betaTestId,
         userId: userId,
-        missionId: {$exists: false}
+        type: BetaTestParticipations.Constants.TYPE_BETA_TEST,
+        status: BetaTestParticipations.Constants.STATUS_ATTEND,
+        missionId: {$exists: false},
     }).lean();
 };
 
 const findMissionParticipation = (betaTestId, missionId, userId) => {
-    return BetaTestParticipations.findOne({
+    return BetaTestParticipations.Model.findOne({
+        type: BetaTestParticipations.Constants.TYPE_MISSION,
         betaTestId: betaTestId,
         missionId: missionId,
         userId: userId,
@@ -311,7 +292,7 @@ const findMissionParticipation = (betaTestId, missionId, userId) => {
 };
 
 const findBetaTestParticipation = (betaTestId, userId) => {
-    return BetaTestParticipations.find({
+    return BetaTestParticipations.Model.find({
         userId: userId,
         betaTestId: betaTestId
     }).lean();
@@ -335,9 +316,11 @@ const attend = (betaTestId, userId) => {
             throw new AlreadyExistError();
         }
 
-        return new BetaTestParticipations({
+        return new BetaTestParticipations.Model({
             userId: userId,
             betaTestId: betaTestId,
+            type: BetaTestParticipations.Constants.TYPE_BETA_TEST,
+            status: BetaTestParticipations.Constants.STATUS_ATTEND,
             date: new Date(),
         }).save();
     }).then(participation => {
@@ -346,48 +329,60 @@ const attend = (betaTestId, userId) => {
     });
 };
 
-const updateMissionCompleted = (betaTestId, missionId, userId) => {
-    return BetaTestParticipations.findOne({
+const completeMission = (betaTestId, missionId, userId) => {
+    const missionParticipation = {
         userId: userId,
         betaTestId: betaTestId,
-        missionId: {$exists: false}
-    }).then(participation => {
+        missionId: missionId,
+        type: BetaTestParticipations.Constants.TYPE_MISSION,
+        status: BetaTestParticipations.Constants.STATUS_COMPLETE,
+    };
+
+    return findAttendParticipation(betaTestId, userId).then(participation => {
         if (!participation) {
             throw new NotAttendedError();
         }
 
-        return BetaTestParticipations.findOne({userId: userId, betaTestId: betaTestId, missionId: missionId})
+        return BetaTestParticipations.Model.findOne(missionParticipation);
     }).then(participation => {
         if (participation) {
             throw new AlreadyExistError();
         }
 
-        return new BetaTestParticipations({
-            userId: userId,
-            betaTestId: betaTestId,
-            date: new Date(),
-            missionId: missionId,
-        }).save();
+        missionParticipation.date = new Date();
+
+        return new BetaTestParticipations.Model(missionParticipation).save();
     }).then(participation => {
-        console.log("[", userId, "] updateMissionCompleted (participation:", participation, ")");
+        console.log("[", userId, "] Mission is Completed (participation:", participation, ")");
         return participation;
     });
 };
 
-const updateCompleted = (betaTestId, userId) => {
-    return BetaTests.findOneAndUpdate(
-        {
-            "missions.items": {$elemMatch: {_id: mongoose.Types.ObjectId(betaTestId), completedUserIds: {$nin: [userId]}}}
-        },
-        { $push: {"missions.$.items.$[item].completedUserIds": userId}},
-        {
-            arrayFilters: [
-                {"item._id": {$eq: mongoose.Types.ObjectId(betaTestId)}}
-            ]
-        }).then(betaTest => {
-            console.log("[", userId, "] updateCompleted", betaTest);
-            return betaTest;
-        });
+const completeBetaTest = (betaTestId, userId) => {
+    const betaTestParticipation = {
+        userId: userId,
+        betaTestId: betaTestId,
+        type: BetaTestParticipations.Constants.TYPE_BETA_TEST,
+        status: BetaTestParticipations.Constants.STATUS_COMPLETE,
+    };
+
+    return findAttendParticipation(betaTestId, userId).then(participation => {
+        if (!participation) {
+            throw new NotAttendedError();
+        }
+        return BetaTestParticipations.Model.findOne(betaTestParticipation);
+    }).then(participation => {
+        if (participation) {
+            throw new AlreadyExistError();
+        }
+
+        betaTestParticipation.date = new Date();
+
+        return new BetaTestParticipations.Model(betaTestParticipation).save();
+    }).then(participation => {
+        console.log("[", userId, "] BetaTest is Completed (participation:", participation, ")");
+        return participation;
+    });
 };
 
 const addTargetUserId = (betaTestIds, userId) => {
@@ -417,10 +412,9 @@ module.exports = {
     findBetaTestProgress,
     findBetaTest,
     findMissionParticipation,
-    findMissionItemsProgress,
     attend,
-    updateMissionCompleted,
-    updateCompleted,
+    completeMission,
+    completeBetaTest,
     addTargetUserId,
 
     AlreadyExistError,
