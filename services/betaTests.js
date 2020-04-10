@@ -83,23 +83,15 @@ const findValidBetaTests = (userId) => {
             betaTest.currentDate = currentDate;
             betaTest.progressText = (betaTest.progressText)? betaTest.progressText : defaultProgressText;
 
-            betaTest.isAttended = participations.filter(participation =>
-                participation.betaTestId.toString() === betaTest._id.toString()
-                && participation.type === BetaTestParticipations.Constants.TYPE_BETA_TEST
-                && participation.status === BetaTestParticipations.Constants.STATUS_ATTEND
-            ).length > 0;
-            betaTest.isCompleted = participations.filter(participation =>
-                participation.betaTestId.toString() === betaTest._id.toString()
-                && participation.type === BetaTestParticipations.Constants.TYPE_BETA_TEST
-                && participation.status === BetaTestParticipations.Constants.STATUS_COMPLETE
-            ).length > 0;
+            betaTest.isAttended = isAttendedBetaTest(userId, betaTest._id, participations);
+            betaTest.isCompleted = isCompletedBetaTest(userId, betaTest._id, participations);
 
             return betaTest;
         })
     });
 };
 
-const findFinishedBetaTests = (userId) => {
+const findFinishedBetaTests = (userId, isVerbose) => {
     const currentTime = new Date();
 
     return BetaTests.aggregate([
@@ -126,28 +118,31 @@ const findFinishedBetaTests = (userId) => {
         }
     ]).then(async betaTests => {
         const currentDate = new Date();
+
         return await Promise.all(
             betaTests.map(async betaTest => {
                 betaTest.currentDate = currentDate;
 
                 const participations = await findBetaTestParticipation(betaTest._id, userId);
-                betaTest.isAttended = participations.length > 0;
+                betaTest.isAttended = isAttendedBetaTest(userId, betaTest._id, participations);
+                betaTest.isCompleted = isCompletedBetaTest(userId, betaTest._id, participations);
 
-                const missions = await findBetaTestMissions(betaTest._id);
-                betaTest.missions = convertMissionItemsForClient(userId, missions, participations)
-                    .map(mission => {
-                        return {
-                            title: mission.title,
-                            actionType: mission.actionType,
-                            action: mission.action,
-                            isRecheckable: mission.isRecheckable,
-                            isCompleted: mission.isCompleted,
-                        }
-                    });
+                if (isVerbose) {
+                    // 종료된 테스트 리스트에서 미션이 보여질 필요가 없어지면 제거 되어야 함! 미션은 아예 따로 검색하도록하자
+                    const missions = await findBetaTestMissions(betaTest._id);
+                    betaTest.missions = convertMissionItemsForClient(userId, missions, participations)
+                        .map(mission => {
+                            return {
+                                title: mission.title,
+                                actionType: mission.actionType,
+                                action: mission.action,
+                                isRecheckable: mission.isRecheckable,
+                                isCompleted: mission.isCompleted,
+                            }
+                        });
 
-                betaTest.totalItemCount = betaTest.missions.length;
-                betaTest.completedItemCount = betaTest.missions.filter(mission => mission.isCompleted).length;
-                betaTest.missions = betaTest.missions.filter(mission => mission.isRecheckable && mission.isCompleted);
+                    betaTest.missions = betaTest.missions.filter(mission => mission.isRecheckable && mission.isCompleted);
+                }
 
                 return betaTest;
             })
@@ -156,7 +151,7 @@ const findFinishedBetaTests = (userId) => {
 };
 
 const convertMissionItemsForClient = (userId, missions, participations) => {
-    const completedMissionIds = participations.filter(participation => participation.missionId)
+    const completedMissionIds = participations.filter(participation => participation.type === BetaTestParticipations.Constants.TYPE_MISSION)
                                             .map(participation => participation.missionId.toString());
 
     return missions.map(mission => {
@@ -198,14 +193,8 @@ const findBetaTest = (betaTestId, userId) => {
             const betaTest = betaTests[0];
 
             const participations = await findBetaTestParticipation(betaTest._id, userId);
-            betaTest.isAttended = participations.filter(participation =>
-                participation.type === BetaTestParticipations.Constants.TYPE_BETA_TEST
-                && participation.status === BetaTestParticipations.Constants.STATUS_ATTEND
-            ).length > 0;
-            betaTest.isCompleted = participations.filter(participation =>
-                participation.type === BetaTestParticipations.Constants.TYPE_BETA_TEST
-                && participation.status === BetaTestParticipations.Constants.STATUS_COMPLETE
-            ).length > 0;
+            betaTest.isAttended = isAttendedBetaTest(userId, betaTest._id, participations);
+            betaTest.isCompleted = isCompletedBetaTest(userId, betaTest._id, participations);
 
             const missions = await findBetaTestMissions(betaTest._id);
             betaTest.missions = convertMissionItemsForClient(userId, missions, participations);
@@ -294,6 +283,22 @@ const findBetaTestMissions = (betaTestId) => {
     return BetaTestMissions.find({
         betaTestId: betaTestId,
     }).lean();
+};
+
+const isAttendedBetaTest = (userId, betaTestId, participations) => {
+    return participations.some(participation =>
+        participation.betaTestId.toString() === betaTestId.toString()
+        && participation.type === BetaTestParticipations.Constants.TYPE_BETA_TEST
+        && participation.status === BetaTestParticipations.Constants.STATUS_ATTEND
+    );
+};
+
+const isCompletedBetaTest = (userId, betaTestId, participations) => {
+    return participations.some(participation =>
+        participation.betaTestId.toString() === betaTestId.toString()
+        && participation.type === BetaTestParticipations.Constants.TYPE_BETA_TEST
+        && participation.status === BetaTestParticipations.Constants.STATUS_COMPLETE
+    );
 };
 
 const getBetaTestMissionCount = (betaTestId, userId) => {
