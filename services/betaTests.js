@@ -73,38 +73,26 @@ const findValidBetaTests = (userId) => {
 
         const defaultProgressText = await ConfigurationsService.getBetaTestProgressText();
 
-        // completed 처리 용도라 처리방법 변경되면 사라질 수 있음
-        const totalMissionCounts = await BetaTestMissions.aggregate([
-            { $match : { betaTestId: { $in : betaTests.map(betaTest => betaTest._id) } } },
-            {
-                $group: {
-                    _id: "$betaTestId",
-                    totalItemCount: {$sum: 1}
-                }
-            }
-        ]);
-
-        const completedMissionCounts = await BetaTestParticipations.Model.aggregate([
-            { $match : { userId: userId, betaTestId: { $in : betaTests.map(betaTest => betaTest._id) } } },
-            {
-                $group : {
-                    _id: "$betaTestId",
-                    completedItemCount: {$sum : 1}
-                }
-            }
-        ]);
+        const participations = await BetaTestParticipations.Model.find({
+            userId: userId,
+            betaTestId: {$in: betaTests.map(betaTest => betaTest._id)},
+            type: BetaTestParticipations.Constants.TYPE_BETA_TEST
+        }).lean();
 
         return betaTests.map(betaTest => {
             betaTest.currentDate = currentDate;
             betaTest.progressText = (betaTest.progressText)? betaTest.progressText : defaultProgressText;
 
-            // 임시코드
-            const betaTestWithCompletedMissionCount = completedMissionCounts.filter(completedItemCount => String(completedItemCount._id) === String(betaTest._id));
-            const participationCount = betaTestWithCompletedMissionCount.length > 0 ? betaTestWithCompletedMissionCount[0].completedItemCount : 0;
-
-            betaTest.isAttended = participationCount > 0;
-            betaTest.totalItemCount = totalMissionCounts.filter(totalItemCount => String(totalItemCount._id) === String(betaTest._id))[0].totalItemCount;
-            betaTest.completedItemCount = betaTest.isAttended ? participationCount - 1 : 0;
+            betaTest.isAttended = participations.filter(participation =>
+                participation.betaTestId.toString() === betaTest._id.toString()
+                && participation.type === BetaTestParticipations.Constants.TYPE_BETA_TEST
+                && participation.status === BetaTestParticipations.Constants.STATUS_ATTEND
+            ).length > 0;
+            betaTest.isCompleted = participations.filter(participation =>
+                participation.betaTestId.toString() === betaTest._id.toString()
+                && participation.type === BetaTestParticipations.Constants.TYPE_BETA_TEST
+                && participation.status === BetaTestParticipations.Constants.STATUS_COMPLETE
+            ).length > 0;
 
             return betaTest;
         })
