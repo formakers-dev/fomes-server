@@ -205,27 +205,29 @@ const findBetaTest = (betaTestId, userId) => {
 };
 
 // 이거 카운드말고 그냥 미션들을 싹 보내줄까... (missionId, isCompleted 조합 리스트로..)
-const findBetaTestProgress = async (betaTestId, userId) => {
-    const missionItems = await findBetaTestMissions(betaTestId);
+const findBetaTestProgress = async (betaTestId, userId, isVerbose) => {
     const userParticipations = await findBetaTestParticipation(betaTestId, userId);
 
-    return Promise.all([missionItems, userParticipations]).then(values => {
-        const missionItems = values[0];
-        const userParticipations = values[1];
+    const result = {
+        isAttended: isAttendedBetaTest(userId, betaTestId, userParticipations),
+        isCompleted: isCompletedBetaTest(userId, betaTestId, userParticipations),
+    };
+
+    if (isVerbose) {
         const userParticipatedMissionIds = userParticipations.map(participation => String(participation.missionId));
+        const missionItems = await findBetaTestMissions(betaTestId);
 
-        return {
-            isAttended: userParticipations.length > 0,
-            missionItems: missionItems.map(mission => {
-                const isCompleted = userParticipatedMissionIds.includes(String(mission._id));
+        result.missionItems = missionItems.map(mission => {
+            const isCompleted = userParticipatedMissionIds.includes(String(mission._id));
 
-                return {
-                    _id: mission._id,
-                    isCompleted: isCompleted,
-                }
-            })
-        }
-    })
+            return {
+                _id: mission._id,
+                isCompleted: isCompleted,
+            }
+        })
+    }
+
+    return result;
 };
 
 const concat = (x,y) =>

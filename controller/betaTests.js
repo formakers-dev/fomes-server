@@ -24,7 +24,7 @@ const getDetailBetaTest = (req, res, next) => {
 };
 
 const getProgress = (req, res, next) => {
-  BetaTestsService.findBetaTestProgress(req.params.id, req.userId)
+  BetaTestsService.findBetaTestProgress(req.params.id, req.userId, req.query.verbose)
       .then(betaTests => res.json(betaTests))
       .catch(err => next(err))
 };

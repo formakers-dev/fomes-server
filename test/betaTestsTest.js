@@ -836,6 +836,22 @@ describe('BetaTests', () => {
                 .then(res => {
                     console.error(res.body);
                     res.body.isAttended.should.be.eql(true);
+                    res.body.isCompleted.should.be.eql(false);
+                    should.not.exist(res.body.missionItems);
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('(verbose) 테스트존 리스트에 나타날 특정 테스트의 진행 상태를 요청한다', done => {
+            sandbox.useFakeTimers(new Date("2019-06-25T02:30:00.000Z").getTime());
+
+            request.get('/beta-tests/5c25c77798d78f078d8ef3ba/progress?verbose=true')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    console.error(res.body);
+                    res.body.isAttended.should.be.eql(true);
+                    res.body.isCompleted.should.be.eql(false);
 
                     res.body.missionItems.length.should.be.eql(5);
                     res.body.missionItems.sort((a, b) => a._id > b._id ? 1 : -1);
