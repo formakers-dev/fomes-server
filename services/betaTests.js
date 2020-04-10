@@ -149,7 +149,6 @@ const findFinishedBetaTests = (userId) => {
                 betaTest.missions = convertMissionItemsForClient(userId, missions, participations)
                     .map(mission => {
                         return {
-
                             title: mission.title,
                             actionType: mission.actionType,
                             action: mission.action,
@@ -211,13 +210,18 @@ const findBetaTest = (betaTestId, userId) => {
             const betaTest = betaTests[0];
 
             const participations = await findBetaTestParticipation(betaTest._id, userId);
-            betaTest.isAttended = participations.length > 0;
+            betaTest.isAttended = participations.filter(participation =>
+                participation.type === BetaTestParticipations.Constants.TYPE_BETA_TEST
+                && participation.status === BetaTestParticipations.Constants.STATUS_ATTEND
+            ).length > 0;
+            betaTest.isCompleted = participations.filter(participation =>
+                participation.type === BetaTestParticipations.Constants.TYPE_BETA_TEST
+                && participation.status === BetaTestParticipations.Constants.STATUS_COMPLETE
+            ).length > 0;
 
             const missions = await findBetaTestMissions(betaTest._id);
             betaTest.missions = convertMissionItemsForClient(userId, missions, participations);
             betaTest.currentDate = new Date();
-
-            console.log(betaTest)
 
             return betaTest;
         });
