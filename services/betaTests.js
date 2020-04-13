@@ -189,7 +189,6 @@ const findBetaTest = (betaTestId, userId) => {
         }
         ])
         .then(async betaTests => {
-            console.log(betaTests);
             const betaTest = betaTests[0];
 
             const participations = await findBetaTestParticipation(betaTest._id, userId);
@@ -303,10 +302,18 @@ const isCompletedBetaTest = (userId, betaTestId, participations) => {
     );
 };
 
-const getBetaTestMissionCount = (betaTestId, userId) => {
+const getTotalMissionCount = (betaTestId) => {
     return BetaTestMissions.count({
         betaTestId: betaTestId,
     })
+};
+
+const getParticipatedMissionCount = (betaTestId, userId) => {
+    return BetaTestParticipations.Model.count({
+        userId: userId,
+        betaTestId: betaTestId,
+        type : BetaTestParticipations.Constants.TYPE_MISSION,
+    }).lean();
 };
 
 const attend = (betaTestId, userId) => {
@@ -355,6 +362,20 @@ const completeMission = (betaTestId, missionId, userId) => {
         console.log("[", userId, "] Mission is Completed (participation:", participation, ")");
         return participation;
     });
+};
+
+const checkAndCompleteBetaTest = (betaTestId, userId) => {
+    return Promise.all([getTotalMissionCount(betaTestId), getParticipatedMissionCount(betaTestId, userId)])
+        .then(values => {
+            const totalMissionCount = values[0];
+            const completedMissionCount = values[1];
+
+            if (totalMissionCount === completedMissionCount) {
+                return completeBetaTest(betaTestId, userId);
+            } else {
+                return Promise.resolve();
+            }
+        })
 };
 
 const completeBetaTest = (betaTestId, userId) => {
@@ -415,6 +436,7 @@ module.exports = {
     completeMission,
     completeBetaTest,
     addTargetUserId,
+    checkAndCompleteBetaTest,
 
     AlreadyExistError,
     NotAttendedError

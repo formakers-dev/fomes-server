@@ -115,7 +115,11 @@ const postMissionComplete = (req, res, next) => {
                     })
                 });
         })
-        .then(() => res.sendStatus(200))
+        .then(() => BetaTestsService.checkAndCompleteBetaTest(req.params.id, req.userId))
+        .then(() => {
+            // TODO : 추후 beta-test completed 에 대한 정보를 body에 담아 보내주기
+            res.sendStatus(200)
+        })
         .catch(err => {
             if (err instanceof BetaTestsService.AlreadyExistError) {
                 next(Boom.conflict());

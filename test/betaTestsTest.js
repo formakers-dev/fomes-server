@@ -318,12 +318,35 @@ describe('BetaTests', () => {
                     res.betaTestId.should.be.eql(ObjectId("5c25c77798d78f078d8ef3ba"));
                     res.missionId.should.be.eql(ObjectId("5d1d74d6d638af0bb86b0f70"));
                     res.date.should.be.eql(new Date("2020-03-20T02:30:00.000Z"));
+                    res.type.should.be.eql(BetaTestParticipations.Constants.TYPE_MISSION);
+                    res.status.should.be.eql(BetaTestParticipations.Constants.STATUS_COMPLETE);
 
                     done();
                 })
                 .catch(err => done(err));
         });
 
+        it('요청한 유저가 모든 미션에 참여했을 경우, 베타테스트 참여완료 정보를 저장한다', done => {
+            request.post('/beta-tests/5c7345f718500feddc24ca34/missions/5d199a13839927107f4bb949/complete?from=external_script')
+                .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
+                .expect(200)
+                .then(() => BetaTestParticipations.Model.findOne({
+                    "userId": config.testUser.userId,
+                    "betaTestId" : ObjectId("5c7345f718500feddc24ca34"),
+                    "type" : BetaTestParticipations.Constants.TYPE_BETA_TEST,
+                    "status" : BetaTestParticipations.Constants.STATUS_COMPLETE,
+                }))
+                .then(res => {
+                    res.userId.should.be.eql(config.testUser.userId);
+                    res.betaTestId.should.be.eql(ObjectId("5c7345f718500feddc24ca34"));
+                    res.date.should.be.eql(new Date("2020-03-20T02:30:00.000Z"));
+                    res.type.should.be.eql(BetaTestParticipations.Constants.TYPE_BETA_TEST);
+                    res.status.should.be.eql(BetaTestParticipations.Constants.STATUS_COMPLETE);
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
 
         it('요청한 유저에게 전달받은 알림을 보낸다', done => {
             request.post('/beta-tests/5c25c77798d78f078d8ef3ba/missions/5d1d74d6d638af0bb86b0f70/complete?from=external_script')
