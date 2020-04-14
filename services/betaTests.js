@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 const BetaTests = require('../models/betaTests');
+const BetaTestParticipations = require('../models/betaTestParticipations');
+const BetaTestMissions = require('../models/betaTestMissions');
+const AwardRecords = require('../models/awardRecords');
 const ConfigurationsService = require('../services/configurations');
 
 const getAllBetaTestsCount = () => {
@@ -7,16 +10,13 @@ const getAllBetaTestsCount = () => {
 };
 
 const getAllRewards = () => {
-    return BetaTests.aggregate([
-        { $match: { status: { $ne: "test" } } },
-        { $project: { "rewards" : 1 } },
-        { $unwind: "$rewards.list" },
-        { $replaceRoot: { newRoot : "$rewards.list" } },
+    return AwardRecords.aggregate([
         { $match: { price : { $exists: true } } },
         {
-            $project: {
-                "price" : 1,
-                "userCount" : { $size : "$userIds" }
+            $group: {
+                _id: { betaTestId : '$betaTestId', rewardOrder : '$rewardOrder' },
+                price: { $first: '$price' },
+                userCount: { $sum: 1 }
             }
         }
     ]);
@@ -48,12 +48,9 @@ const findValidBetaTests = (userId) => {
                 ],
             }
         },
-        { $unwind: "$missions" },
-        { $unwind: "$missions.items" },
         {
             $group: {
                 _id: "$_id",
-                overviewImageUrl: { $first: "$overviewImageUrl" },
                 coverImageUrl: { $first: "$coverImageUrl" },
                 title: { $first: "$title" },
                 description: { $first: "$description" },
@@ -64,15 +61,6 @@ const findValidBetaTests = (userId) => {
                 openDate: { $first: "$openDate" },
                 closeDate: { $first: "$closeDate" },
                 bugReport: { $first: "$bugReport" },
-                completedItemCount: { $sum: {
-                        $cond: [
-                            { $setIsSubset:
-                                    [ [userId], "$missions.items.completedUserIds"]
-                            }, 1, 0 ]
-                    }
-                },
-                totalItemCount: {$sum: 1},
-
             }
         }
     ]).then(async betaTests => {
@@ -85,15 +73,25 @@ const findValidBetaTests = (userId) => {
 
         const defaultProgressText = await ConfigurationsService.getBetaTestProgressText();
 
+        const participations = await BetaTestParticipations.Model.find({
+            userId: userId,
+            betaTestId: {$in: betaTests.map(betaTest => betaTest._id)},
+            type: BetaTestParticipations.Constants.TYPE_BETA_TEST
+        }).lean();
+
         return betaTests.map(betaTest => {
             betaTest.currentDate = currentDate;
             betaTest.progressText = (betaTest.progressText)? betaTest.progressText : defaultProgressText;
+
+            betaTest.isAttended = isAttendedBetaTest(userId, betaTest._id, participations);
+            betaTest.isCompleted = isCompletedBetaTest(userId, betaTest._id, participations);
+
             return betaTest;
         })
     });
 };
 
-const findFinishedBetaTests = (userId) => {
+const findFinishedBetaTests = (userId, isVerbose) => {
     const currentTime = new Date();
 
     return BetaTests.aggregate([
@@ -106,8 +104,6 @@ const findFinishedBetaTests = (userId) => {
                 ],
             }
         },
-        { $unwind: "$missions" },
-        { $unwind: "$missions.items" },
         {
             $group: {
                 _id: "$_id",
@@ -117,57 +113,55 @@ const findFinishedBetaTests = (userId) => {
                 tags: { $first: "$tags" },
                 openDate: { $first: "$openDate" },
                 closeDate: { $first: "$closeDate" },
-                afterService: { $first: "$afterService" },
-                missions: { $push: "$missions" },
-                completedItemCount: { $sum: {
-                        $cond: [
-                            { $setIsSubset:
-                                    [ [userId], "$missions.items.completedUserIds"]
-                            }, 1, 0 ]
-                    }
-                },
-                totalItemCount: {$sum: 1}
+                epilogue: { $first: "$epilogue" },
             }
         }
-    ]).then(betaTests => {
+    ]).then(async betaTests => {
         const currentDate = new Date();
-        return betaTests.map(betaTest => {
-            betaTest.currentDate = currentDate;
-            betaTest.missions = convertMissionItemsForClient(userId, betaTest.missions)
-                .filter(mission => mission.item.isRecheckable && mission.item.isCompleted)
-                .map(mission => {
-                    return {
-                        item : {
-                            title: mission.item.title,
-                            actionType: mission.item.actionType,
-                            action: mission.item.action,
-                            isRecheckable: mission.item.isRecheckable,
-                            isCompleted: mission.item.isCompleted,
-                        }
-                    }
-                });
 
-            if(betaTest.missions[0]) {
-                console.log(betaTest.missions[0].item);
-            }
-            return betaTest;
-        })
+        return await Promise.all(
+            betaTests.map(async betaTest => {
+                betaTest.currentDate = currentDate;
+
+                const participations = await findBetaTestParticipation(betaTest._id, userId);
+                betaTest.isAttended = isAttendedBetaTest(userId, betaTest._id, participations);
+                betaTest.isCompleted = isCompletedBetaTest(userId, betaTest._id, participations);
+
+                if (isVerbose) {
+                    // 종료된 테스트 리스트에서 미션이 보여질 필요가 없어지면 제거 되어야 함! 미션은 아예 따로 검색하도록하자
+                    const missions = await findBetaTestMissions(betaTest._id);
+                    betaTest.missions = convertMissionItemsForClient(userId, missions, participations)
+                        .map(mission => {
+                            return {
+                                title: mission.title,
+                                actionType: mission.actionType,
+                                action: mission.action,
+                                isRecheckable: mission.isRecheckable,
+                                isCompleted: mission.isCompleted,
+                            }
+                        });
+
+                    betaTest.missions = betaTest.missions.filter(mission => mission.isRecheckable && mission.isCompleted);
+                }
+
+                return betaTest;
+            })
+        );
     });
 };
 
-const convertMissionItemsForClient = (userId, missions) => {
+const convertMissionItemsForClient = (userId, missions, participations) => {
+    const completedMissionIds = participations.filter(participation => participation.type === BetaTestParticipations.Constants.TYPE_MISSION)
+                                            .map(participation => participation.missionId.toString());
+
     return missions.map(mission => {
-        mission.item = mission.items;
-        delete mission.items;
+        mission.isCompleted = completedMissionIds.includes(mission._id.toString());
 
-        mission.item.isCompleted = mission.item.completedUserIds.includes(userId);
-        delete mission.item.completedUserIds;
-
-        if (mission.item.options) {
-            mission.item.isRepeatable = mission.item.options.includes('repeatable');
-            mission.item.isMandatory = mission.item.options.includes('mandatory');
-            mission.item.isRecheckable = mission.item.options.includes('recheckable');
-            delete mission.item.options;
+        if (mission.options) {
+            mission.isRepeatable = mission.options.includes('repeatable');
+            mission.isMandatory = mission.options.includes('mandatory');
+            mission.isRecheckable = mission.options.includes('recheckable');
+            delete mission.options;
         }
 
         return mission;
@@ -179,8 +173,6 @@ const findBetaTest = (betaTestId, userId) => {
         {
             $match: { _id: mongoose.Types.ObjectId(betaTestId) }
         },
-        { $unwind: "$missions" },
-        { $unwind: "$missions.items" },
         {
             $group:  {
                 _id: "$_id",
@@ -188,76 +180,53 @@ const findBetaTest = (betaTestId, userId) => {
                 description: { $first: "$description" },
                 purpose: { $first: "$purpose" },
                 tags: { $first: "$tags" },
-                overviewImageUrl: { $first: "$overviewImageUrl" },
                 coverImageUrl: { $first: "$coverImageUrl" },
                 iconImageUrl: { $first: "$iconImageUrl" },
                 openDate: { $first: "$openDate" },
                 closeDate: { $first: "$closeDate" },
                 rewards: { $first: "$rewards" },
-                missions: { $push: "$missions" },
             }
         }
         ])
-        .then(betaTests => {
-            console.log(betaTests);
+        .then(async betaTests => {
             const betaTest = betaTests[0];
 
-            betaTest.missions = convertMissionItemsForClient(userId, betaTest.missions);
+            const participations = await findBetaTestParticipation(betaTest._id, userId);
+            betaTest.isAttended = isAttendedBetaTest(userId, betaTest._id, participations);
+            betaTest.isCompleted = isCompletedBetaTest(userId, betaTest._id, participations);
+
+            const missions = await findBetaTestMissions(betaTest._id);
+            betaTest.missions = convertMissionItemsForClient(userId, missions, participations);
             betaTest.currentDate = new Date();
 
             return betaTest;
         });
 };
 
-const findBetaTestProgress = (betaTestId, userId) => {
-    return BetaTests.aggregate([
-        {
-            $match : {
-                _id: mongoose.Types.ObjectId(betaTestId),
-                $or: [
-                    {targetUserIds: {$exists: false}},
-                    {targetUserIds: {$in: [userId]}},
-                ]
-            }
-        },
-        { $unwind: "$missions" },
-        { $unwind: "$missions.items" },
-        {
-            $group: {
-                _id: "$_id",
-                completedItemCount: { $sum: {
-                        $cond: [
-                            { $setIsSubset:
-                                    [ [userId], "$missions.items.completedUserIds"]
-                            }, 1, 0 ]
-                    }
-                },
-                totalItemCount: {$sum: 1}
-            }
-        }
-    ])
-};
+// 이거 카운드말고 그냥 미션들을 싹 보내줄까... (missionId, isCompleted 조합 리스트로..)
+const findBetaTestProgress = async (betaTestId, userId, isVerbose) => {
+    const userParticipations = await findBetaTestParticipation(betaTestId, userId);
 
-const findMissionItemsProgress = (missionId, userId) => {
-    return BetaTests.aggregate([
-        {
-            $unwind: "$missions"
-        }, {
-            $match: { "missions._id": mongoose.Types.ObjectId(missionId) }
-        }, {
-            $project: {
-                _id: "$missions._id",
-                items: "$missions.items"
+    const result = {
+        isAttended: isAttendedBetaTest(userId, betaTestId, userParticipations),
+        isCompleted: isCompletedBetaTest(userId, betaTestId, userParticipations),
+    };
+
+    if (isVerbose) {
+        const userParticipatedMissionIds = userParticipations.map(participation => String(participation.missionId));
+        const missionItems = await findBetaTestMissions(betaTestId);
+
+        result.missionItems = missionItems.map(mission => {
+            const isCompleted = userParticipatedMissionIds.includes(String(mission._id));
+
+            return {
+                _id: mission._id,
+                isCompleted: isCompleted,
             }
-        }, {
-            $unwind: "$items"
-        }, {
-            $project: {
-                _id: "$items._id",
-                isCompleted: { $in : [userId, "$items.completedUserIds"] },
-            }
-        }
-    ]);
+        })
+    }
+
+    return result;
 };
 
 const concat = (x,y) =>
@@ -270,20 +239,170 @@ Array.prototype.flatMap = function(f) {
     return flatMap(f,this)
 };
 
-const updateCompleted = (betaTestId, userId) => {
-    return BetaTests.findOneAndUpdate(
-        {
-            "missions.items": {$elemMatch: {_id: mongoose.Types.ObjectId(betaTestId), completedUserIds: {$nin: [userId]}}}
-        },
-        { $push: {"missions.$.items.$[item].completedUserIds": userId}},
-        {
-            arrayFilters: [
-                {"item._id": {$eq: mongoose.Types.ObjectId(betaTestId)}}
-            ]
-        }).then(betaTest => {
-            console.log("[", userId, "] updateCompleted", betaTest);
-            return betaTest;
-        });
+// 이거 에러 그룹에 묶고싶다..
+class NotAttendedError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+    }
+}
+
+class AlreadyExistError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+    }
+}
+
+const findAttendParticipation = (betaTestId, userId) => {
+    return BetaTestParticipations.Model.findOne({
+        betaTestId: betaTestId,
+        userId: userId,
+        type: BetaTestParticipations.Constants.TYPE_BETA_TEST,
+        status: BetaTestParticipations.Constants.STATUS_ATTEND,
+        missionId: {$exists: false},
+    }).lean();
+};
+
+const findMissionParticipation = (betaTestId, missionId, userId) => {
+    return BetaTestParticipations.Model.findOne({
+        type: BetaTestParticipations.Constants.TYPE_MISSION,
+        betaTestId: betaTestId,
+        missionId: missionId,
+        userId: userId,
+    }).lean();
+};
+
+const findBetaTestParticipation = (betaTestId, userId) => {
+    return BetaTestParticipations.Model.find({
+        userId: userId,
+        betaTestId: betaTestId
+    }).lean();
+};
+
+const findBetaTestMissions = (betaTestId) => {
+    return BetaTestMissions.find({
+        betaTestId: betaTestId,
+    }).lean();
+};
+
+const isAttendedBetaTest = (userId, betaTestId, participations) => {
+    return participations.some(participation =>
+        participation.betaTestId.toString() === betaTestId.toString()
+        && participation.type === BetaTestParticipations.Constants.TYPE_BETA_TEST
+        && participation.status === BetaTestParticipations.Constants.STATUS_ATTEND
+    );
+};
+
+const isCompletedBetaTest = (userId, betaTestId, participations) => {
+    return participations.some(participation =>
+        participation.betaTestId.toString() === betaTestId.toString()
+        && participation.type === BetaTestParticipations.Constants.TYPE_BETA_TEST
+        && participation.status === BetaTestParticipations.Constants.STATUS_COMPLETE
+    );
+};
+
+const getTotalMissionCount = (betaTestId) => {
+    return BetaTestMissions.count({
+        betaTestId: betaTestId,
+    })
+};
+
+const getParticipatedMissionCount = (betaTestId, userId) => {
+    return BetaTestParticipations.Model.count({
+        userId: userId,
+        betaTestId: betaTestId,
+        type : BetaTestParticipations.Constants.TYPE_MISSION,
+    }).lean();
+};
+
+const attend = (betaTestId, userId) => {
+    return findAttendParticipation(betaTestId, userId).then(participation => {
+        if (participation) {
+            throw new AlreadyExistError();
+        }
+
+        return new BetaTestParticipations.Model({
+            userId: userId,
+            betaTestId: betaTestId,
+            type: BetaTestParticipations.Constants.TYPE_BETA_TEST,
+            status: BetaTestParticipations.Constants.STATUS_ATTEND,
+            date: new Date(),
+        }).save();
+    }).then(participation => {
+        console.log("[", userId, "] attend (participation:", participation, ")");
+        return participation;
+    });
+};
+
+const completeMission = (betaTestId, missionId, userId) => {
+    const missionParticipation = {
+        userId: userId,
+        betaTestId: betaTestId,
+        missionId: missionId,
+        type: BetaTestParticipations.Constants.TYPE_MISSION,
+        status: BetaTestParticipations.Constants.STATUS_COMPLETE,
+    };
+
+    return findAttendParticipation(betaTestId, userId).then(participation => {
+        if (!participation) {
+            throw new NotAttendedError();
+        }
+
+        return BetaTestParticipations.Model.findOne(missionParticipation);
+    }).then(participation => {
+        if (participation) {
+            throw new AlreadyExistError();
+        }
+
+        missionParticipation.date = new Date();
+
+        return new BetaTestParticipations.Model(missionParticipation).save();
+    }).then(participation => {
+        console.log("[", userId, "] Mission is Completed (participation:", participation, ")");
+        return participation;
+    });
+};
+
+const checkAndCompleteBetaTest = (betaTestId, userId) => {
+    return Promise.all([getTotalMissionCount(betaTestId), getParticipatedMissionCount(betaTestId, userId)])
+        .then(values => {
+            const totalMissionCount = values[0];
+            const completedMissionCount = values[1];
+
+            if (totalMissionCount === completedMissionCount) {
+                return completeBetaTest(betaTestId, userId);
+            } else {
+                return Promise.resolve();
+            }
+        })
+};
+
+const completeBetaTest = (betaTestId, userId) => {
+    const betaTestParticipation = {
+        userId: userId,
+        betaTestId: betaTestId,
+        type: BetaTestParticipations.Constants.TYPE_BETA_TEST,
+        status: BetaTestParticipations.Constants.STATUS_COMPLETE,
+    };
+
+    return findAttendParticipation(betaTestId, userId).then(participation => {
+        if (!participation) {
+            throw new NotAttendedError();
+        }
+        return BetaTestParticipations.Model.findOne(betaTestParticipation);
+    }).then(participation => {
+        if (participation) {
+            throw new AlreadyExistError();
+        }
+
+        betaTestParticipation.date = new Date();
+
+        return new BetaTestParticipations.Model(betaTestParticipation).save();
+    }).then(participation => {
+        console.log("[", userId, "] BetaTest is Completed (participation:", participation, ")");
+        return participation;
+    });
 };
 
 const addTargetUserId = (betaTestIds, userId) => {
@@ -312,7 +431,13 @@ module.exports = {
     findFinishedBetaTests,
     findBetaTestProgress,
     findBetaTest,
-    findMissionItemsProgress,
-    updateCompleted,
+    findMissionParticipation,
+    attend,
+    completeMission,
+    completeBetaTest,
     addTargetUserId,
+    checkAndCompleteBetaTest,
+
+    AlreadyExistError,
+    NotAttendedError
 };

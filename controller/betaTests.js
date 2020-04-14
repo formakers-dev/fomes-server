@@ -1,4 +1,5 @@
 const axios = require('axios');
+const Boom = require('boom');
 const config = require('../config');
 const BetaTestsService = require('../services/betaTests');
 const UsersService = require('../services/users');
@@ -11,7 +12,7 @@ const getBetaTestList = (req, res, next) => {
 };
 
 const getFinishedBetaTestList = (req, res, next) => {
-    BetaTestsService.findFinishedBetaTests(req.userId)
+    BetaTestsService.findFinishedBetaTests(req.userId, req.query.verbose)
         .then(betaTests => res.json(betaTests))
         .catch(err => next(err))
 };
@@ -23,15 +24,20 @@ const getDetailBetaTest = (req, res, next) => {
 };
 
 const getProgress = (req, res, next) => {
-  BetaTestsService.findBetaTestProgress(req.params.id, req.userId)
-      .then(betaTests => res.json(betaTests[0]))
+  BetaTestsService.findBetaTestProgress(req.params.id, req.userId, req.query.verbose)
+      .then(betaTests => res.json(betaTests))
       .catch(err => next(err))
 };
 
 const getMissionProgress = (req, res, next) => {
-    BetaTestsService.findMissionItemsProgress(req.params.id, req.userId)
-        .then(missionItems => res.json(missionItems))
-        .catch(err => next(err));
+    BetaTestsService.findMissionParticipation(req.params.id, req.params.missionId, req.userId)
+        .then(participation => {
+            console.log(participation);
+            res.json({
+                _id: req.params.missionId,
+                isCompleted: !!participation,
+            })
+        }).catch(err => next(err));
 };
 
 const getAllBetaTestsCount = (req, res, next) => {
@@ -65,40 +71,107 @@ const getAccumulatedCompletedUsersCount = (req, res, next) => {
         }).catch(err => next(err));
 };
 
+const postAttend = (req, res, next) => {
+    BetaTestsService.attend(req.params.id, req.userId)
+        .then(() => res.sendStatus(200))
+        .catch(err => {
+            if (err instanceof BetaTestsService.AlreadyExistError) {
+                next(Boom.conflict());
+            } else {
+                next(err);
+            }
+        });
+};
+
+const postMissionComplete = (req, res, next) => {
+    console.log("[", req.userId, "] postMissionComplete betaTest:", req.params.id, ", mission: ", req.params.missionId);
+
+    BetaTestsService.completeMission(req.params.id, req.params.missionId, req.userId)
+        .then(participation => {
+            if (!participation) {
+                return Promise.resolve();
+            }
+
+            const notificationData = req.body.notificationData;
+            console.log("[", req.userId, "] postMissionComplete - notificationData", notificationData);
+
+            if (!notificationData) {
+                console.error("[", req.userId, "] notificationData is none!");
+                return;
+            }
+
+            return UsersService.getUser(req.userId)
+                .then(user => {
+                    const body = {
+                        'data': req.body.notificationData,
+                        'to': user.registrationToken,
+                    };
+
+                    return axios.post('https://fcm.googleapis.com/fcm/send', body, {
+                        headers: {
+                            'Authorization': 'key=' + config.notificationApiKey,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                });
+        })
+        .then(() => BetaTestsService.checkAndCompleteBetaTest(req.params.id, req.userId))
+        .then(() => {
+            // TODO : 추후 beta-test completed 에 대한 정보를 body에 담아 보내주기
+            res.sendStatus(200)
+        })
+        .catch(err => {
+            if (err instanceof BetaTestsService.AlreadyExistError) {
+                next(Boom.conflict());
+            } else if (err instanceof BetaTestsService.NotAttendedError) {
+                next(Boom.preconditionRequired());
+            } else {
+                next(err);
+            }
+        });
+};
+
 const postComplete = (req, res, next) => {
     console.log("[", req.userId, "] postComplete", req.params.id);
 
-    BetaTestsService.updateCompleted(req.params.id, req.userId)
-        .then(betaTest => {
-            if (betaTest) {
-                const notificationData = req.body.notificationData;
-                console.log("[", req.userId, "] updateCompleted - notificationData", notificationData);
-
-                if (!notificationData) {
-                    return;
-                }
-
-                return UsersService.getUser(req.userId)
-                    .then(user => {
-                        const body = {
-                            'data' : req.body.notificationData,
-                            'to' : user.registrationToken,
-                        };
-
-                        return axios.post('https://fcm.googleapis.com/fcm/send', body, {
-                            headers: {
-                                'Authorization': 'key=' + config.notificationApiKey,
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                    });
-
-            } else {
+    BetaTestsService.completeBetaTest(req.params.id, req.userId)
+        .then(participation => {
+            if (!participation) {
                 return Promise.resolve();
             }
+
+            const notificationData = req.body.notificationData;
+            console.log("[", req.userId, "] postComplete - notificationData", notificationData);
+
+            if (!notificationData) {
+                return;
+            }
+
+            return UsersService.getUser(req.userId)
+                .then(user => {
+                    const body = {
+                        'data': req.body.notificationData,
+                        'to': user.registrationToken,
+                    };
+
+                    return axios.post('https://fcm.googleapis.com/fcm/send', body, {
+                        headers: {
+                            'Authorization': 'key=' + config.notificationApiKey,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                });
         })
         .then(() => res.sendStatus(200))
-        .catch(err => next(err));
+        .catch(err => {
+            if (err instanceof BetaTestsService.AlreadyExistError) {
+                next(Boom.conflict());
+            } else if (err instanceof BetaTestsService.NotAttendedError) {
+                next(Boom.preconditionRequired());
+            } else {
+                next(err);
+            }
+        });
 };
 
 const postTargetUser = (req, res, next) => {
@@ -144,6 +217,9 @@ module.exports = {
     getAllBetaTestsCount,
     getTotalRewards,
     getAccumulatedCompletedUsersCount,
+
+    postAttend,
+    postMissionComplete,
     postComplete,
     postTargetUser
 };

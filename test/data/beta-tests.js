@@ -32,7 +32,6 @@ const data = [
                     "title" : "참여보상(10명 추첨)",
                     "content" : "문화상품권 3000원",
                     "price": "3000",
-                    "userIds" : [ 'user1', 'user2']
                 },
                 {
                     "order" : 2,
@@ -40,7 +39,6 @@ const data = [
                     "title" : "테스트 용사(3명 선정)",
                     "content" : "문화상품권 5000원",
                     "price": "5000",
-                    "userIds" : []
                 },
                 {
                     "order" : 3,
@@ -48,7 +46,6 @@ const data = [
                     "title" : "테스트 영웅(1명 선정)",
                     "content" : "문화상품권 10000원",
                     "price": "10000",
-                    "userIds" : ['user3']
                 }
             ]
         },
@@ -163,14 +160,12 @@ const data = [
                     "title" : "참여보상(10명 추첨)",
                     "content" : "문화상품권 3000원",
                     "price": "3000",
-                    "userIds" : ['user1']
                 },
                 {
                     "order" : 2,
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "테스트 영웅(1명 선정)",
                     "content" : "영웅님의 닉네임으로 게임 내 NPC 제작은 길게 써보려고 해봤다능",
-                    "userIds" : []
                 }
             ]
         },
@@ -285,6 +280,16 @@ const data = [
                         "completedUserIds" : [
                             config.testUser.userId
                         ]
+                    },
+                    {
+                        "title" : "로그인이 필요한 설문",
+                        "_id" : ObjectId("5d199a13839927107f4bb949"),
+                        "type": "hidden",
+                        "actionType" : "link",
+                        "action" : "https://docs.google.com/forms/d/e/1FAIpQLScX_8AfhRa9Fc17p2DZdVbMHCA98DY_TlShowgfoNqbx25q9g/viewform?internal_web=true&usp=pp_url&entry.1223559684=",
+                        "completedUserIds" : [
+                            config.testUser.userId
+                        ]
                     }
                 ],
                 "guide" : "* 솔직하고 구체적으로 의견을 적어주시는게 제일 중요합니다!\n* 불성실한 응답은 보상지급 대상자에서 제외될 수 있습니다."
@@ -311,7 +316,6 @@ const data = [
                     "iconImageUrl" : "",
                     "title" : "참여자 전원",
                     "content" : "포메스의 사랑",
-                    "userIds" : []
                 }
             ]
         },
@@ -362,14 +366,12 @@ const data = [
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
                     "price": "1000",
-                    "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
                     "price": "5000",
-                    "userIds" : ['user10']
                 }
             ]
         },
@@ -434,14 +436,12 @@ const data = [
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
                     "price": "1000",
-                    "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
                     "price": "5000",
-                    "userIds" : []
                 }
             ]
         },
@@ -475,9 +475,9 @@ const data = [
         ],
         "similarApps" : [],
         "isGroup" : true,
-        "afterService" : {
+        "epilogue" : {
             "awards" : "테스트 영웅 : 드래군핥짝 님\n테스트 요정 : 이브 외 9명",
-            "epilogue" : "http://www.naver.com",
+            "deeplink" : "http://www.naver.com",
             "companySays" : "포메스 짱! 완전 짱! 대박! 완전! 완전! 두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄"
         }
     }
@@ -506,14 +506,12 @@ const data = [
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
                     "price": "1000",
-                    "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
                     "price": "5000",
-                    "userIds" : []
                 }
             ]
         },
@@ -548,9 +546,9 @@ const data = [
         ],
         "similarApps" : [],
         "isGroup" : true,
-        "afterService" : {
+        "epilogue" : {
             "awards" : "포메스 팀 : 참가자 여러분 모두 저희의 챔피언❤️",
-            "epilogue" : "http://www.google.co.kr",
+            "deeplink" : "http://www.google.co.kr",
             "companySays" : "게임사 가라사대, 너희가 나를 살찌웠노라.... 고맙노라....."
         }
     }
@@ -579,14 +577,12 @@ const data = [
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
                     "price": "1000",
-                    "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
                     "price": "5000",
-                    "userIds" : []
                 }
             ]
         },
@@ -647,14 +643,12 @@ const data = [
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
                     "price": "1000",
-                    "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
                     "price": "5000",
-                    "userIds" : []
                 }
             ]
         },
@@ -728,7 +722,6 @@ const data = [
                     "title" : "참여보상 (10명 추첨)",
                     "content" : "문화상품권 1000원",
                     "price": "1000",
-                    "userIds" : []
                 },
                 {
                     "order" : 2,
@@ -736,7 +729,6 @@ const data = [
                     "title" : "테스트 용사 (3명 선정)",
                     "content" : "문화상품권 3000원",
                     "price": "3000",
-                    "userIds" : []
                 },
                 {
                     "order" : 3,
@@ -744,7 +736,6 @@ const data = [
                     "title" : "테스트 영웅 (1명 선정)",
                     "content" : "문화상품권 5000원",
                     "price": "5000",
-                    "userIds" : []
                 }
             ]
         },
@@ -846,14 +837,12 @@ const data = [
                     "title" : "테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
                     "price": "1000",
-                    "userIds" : []
                 },
                 {
                     "order" : 2,
                     "title" : "테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
                     "price": "5000",
-                    "userIds" : []
                 }
             ]
         },
@@ -954,7 +943,6 @@ const data = [
                     "iconImageUrl" : "",
                     "title" : "참여자 전원",
                     "content" : "포메스의 사랑",
-                    "userIds" : [ "a" ],
                     "price" : 1000
                 }
             ]
