@@ -87,8 +87,8 @@ const findValidBetaTests = (userId) => {
             betaTest.isCompleted = isCompletedBetaTest(userId, betaTest._id, participations);
 
             // TODO : v0.3.0 크리티컬릴리즈 시 오류 방지 위한 임시 코드 - 릴리즈 후 추후 삭제 필요
-            betaTest.completedItemCount = 0;
-            betaTest.totalItemCount = 0;
+            betaTest.completedItemCount = 1;
+            betaTest.totalItemCount = 1;
 
             return betaTest;
         })
@@ -132,8 +132,8 @@ const findFinishedBetaTests = (userId, isVerbose) => {
                 betaTest.isCompleted = isCompletedBetaTest(userId, betaTest._id, participations);
 
                 // TODO : v0.3.0 크리티컬릴리즈 시 오류 방지 위한 임시 코드 - 릴리즈 후 추후 삭제 필요
-                betaTest.completedItemCount = 0;
-                betaTest.totalItemCount = 0;
+                betaTest.completedItemCount = 1;
+                betaTest.totalItemCount = 1;
 
                 if (isVerbose) {
                     // 종료된 테스트 리스트에서 미션이 보여질 필요가 없어지면 제거 되어야 함! 미션은 아예 따로 검색하도록하자
@@ -204,8 +204,8 @@ const findBetaTest = (betaTestId, userId) => {
             betaTest.isCompleted = isCompletedBetaTest(userId, betaTest._id, participations);
 
             // TODO : v0.3.0 크리티컬릴리즈 시 오류 방지 위한 임시 코드 - 릴리즈 후 추후 삭제 필요
-            betaTest.completedItemCount = 0;
-            betaTest.totalItemCount = 0;
+            betaTest.completedItemCount = 1;
+            betaTest.totalItemCount = 1;
 
             const missions = await findBetaTestMissions(betaTest._id);
             betaTest.missions = convertMissionItemsForClient(userId, missions, participations);
@@ -224,8 +224,8 @@ const findBetaTestProgress = async (betaTestId, userId, isVerbose) => {
         isCompleted: isCompletedBetaTest(userId, betaTestId, userParticipations),
 
         // TODO : v0.3.0 크리티컬릴리즈 시 오류 방지 위한 임시 코드 - 릴리즈 후 추후 삭제 필요
-        completedItemCount: 0,
-        totalItemCount: 0
+        completedItemCount: 1,
+        totalItemCount: 1
     };
 
     if (isVerbose) {
