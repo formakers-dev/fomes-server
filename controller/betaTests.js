@@ -12,8 +12,7 @@ const getBetaTestList = (req, res, next) => {
 };
 
 const getFinishedBetaTestList = (req, res, next) => {
-    BetaTestsService.findFinishedBetaTests(req.userId,
-        typeof req.query.verbose !== "undefined" ? req.query.verbose : 'true')
+    BetaTestsService.findFinishedBetaTests(req.userId, req.query.verbose)
         .then(betaTests => res.json(betaTests))
         .catch(err => next(err))
 };

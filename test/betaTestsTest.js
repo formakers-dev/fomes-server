@@ -748,7 +748,8 @@ describe('BetaTests', () => {
         };
 
         const assertNotVerboseFormat = (result) => {
-            should.not.exist(result[0].missions);
+            result[0].missions.length.should.be.eql(0);
+            //should.not.exist(result[0].missions);
         };
 
         it('종료된 피드백 요청 목록을 조회한다 (verbose=true)', done => {
@@ -780,7 +781,7 @@ describe('BetaTests', () => {
                     console.error(res.body);
 
                     assertFinishedBetaTestFormat(res.body);
-                    assertVerboseFormat(res.body);
+                    assertNotVerboseFormat(res.body);
                     done();
                 }).catch(err => done(err));
         });
