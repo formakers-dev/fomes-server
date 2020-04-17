@@ -96,6 +96,7 @@ const findValidBetaTests = (userId) => {
 };
 
 const findFinishedBetaTests = (userId, isVerbose) => {
+    console.log("[findFinishedBetaTests] userId=", userId, ", isVerbose=", isVerbose);
     const currentTime = new Date();
 
     return BetaTests.aggregate([
@@ -135,7 +136,7 @@ const findFinishedBetaTests = (userId, isVerbose) => {
                 betaTest.completedItemCount = 1;
                 betaTest.totalItemCount = 1;
 
-                if (isVerbose) {
+                if (isVerbose === 'true') {
                     // 종료된 테스트 리스트에서 미션이 보여질 필요가 없어지면 제거 되어야 함! 미션은 아예 따로 검색하도록하자
                     const missions = await findBetaTestMissions(betaTest._id);
                     betaTest.missions = convertMissionItemsForClient(userId, missions, participations)
