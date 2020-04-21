@@ -99,34 +99,37 @@ const findFinishedBetaTests = (userId, isVerbose) => {
     console.log("[findFinishedBetaTests] userId=", userId, ", isVerbose=", isVerbose);
     const currentTime = new Date();
 
-    return BetaTests.aggregate([
+    return BetaTests.find(
         {
-            $match : {
-                closeDate: { $lte: currentTime },
-                $or: [
-                    { targetUserIds: { $exists: false }},
-                    { targetUserIds: { $in: [ userId ] } },
-                ],
-            }
+            $and: [
+                { closeDate: {$lte: currentTime} },
+                {
+                    $or: [
+                        {targetUserIds: {$exists: false}},
+                        {targetUserIds: {$in: [userId]}},
+                    ]
+                }
+            ],
         },
         {
-            $group: {
-                _id: "$_id",
-                iconImageUrl: { $first: "$iconImageUrl" },
-                title: { $first: "$title" },
-                description: { $first: "$description" },
-                tags: { $first: "$tags" },
-                openDate: { $first: "$openDate" },
-                closeDate: { $first: "$closeDate" },
-                epilogue: { $first: "$epilogue" },
-            }
+            _id: 1,
+            iconImageUrl: 1,
+            title: 1,
+            description: 1,
+            tags: 1,
+            openDate: 1,
+            closeDate: 1,
+            epilogue: 1,
+            plan: 1,
         }
-    ]).then(async betaTests => {
+    ).lean().then(async betaTests => {
         const currentDate = new Date();
 
         return await Promise.all(
             betaTests.map(async betaTest => {
                 betaTest.currentDate = currentDate;
+
+                betaTest.isRegisteredEpilogue = !!betaTest.epilogue;
 
                 const participations = await findBetaTestParticipation(betaTest._id, userId);
                 betaTest.isAttended = isAttendedBetaTest(userId, betaTest._id, participations);
