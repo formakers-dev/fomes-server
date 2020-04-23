@@ -251,6 +251,16 @@ const findBetaTestProgress = async (betaTestId, userId, isVerbose) => {
     return result;
 };
 
+const findEpilogue = (betaTestId) => {
+    return BetaTests.findOne({_id: betaTestId},
+        {
+            epilogue: 1,
+        }
+    ).then(betaTest => {
+        return betaTest.epilogue;
+    })
+};
+
 const concat = (x,y) =>
     x.concat(y);
 
@@ -454,6 +464,7 @@ module.exports = {
     findBetaTestProgress,
     findBetaTest,
     findMissionParticipation,
+    findEpilogue,
     attend,
     completeMission,
     completeBetaTest,

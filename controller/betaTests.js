@@ -40,6 +40,18 @@ const getMissionProgress = (req, res, next) => {
         }).catch(err => next(err));
 };
 
+const getEpilogue = (req, res, next) => {
+    BetaTestsService.findEpilogue(req.params.id)
+        .then(epilogue => {
+            if (epilogue) {
+                res.json(epilogue)
+            } else {
+                next(Boom.notFound("Epilogue doesn't exists!"));
+            }
+        })
+        .catch(err => next(err))
+};
+
 const getAllBetaTestsCount = (req, res, next) => {
     BetaTestsService.getAllBetaTestsCount()
         .then(allBetaTestsCount => {
@@ -214,6 +226,7 @@ module.exports = {
     getDetailBetaTest,
     getProgress,
     getMissionProgress,
+    getEpilogue,
     getAllBetaTestsCount,
     getTotalRewards,
     getAccumulatedCompletedUsersCount,

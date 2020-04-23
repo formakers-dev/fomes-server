@@ -10,6 +10,8 @@ router.get('/', Auth.verifyAppBeeToken, BetaTestController.getBetaTestList);
 router.get('/:id/progress', Auth.verifyAppBeeToken, BetaTestController.getProgress);
 router.get('/:id/missions/:missionId/progress', Auth.verifyAppBeeToken, BetaTestController.getMissionProgress);
 
+router.get('/:id/epilogue', Auth.verifyAppBeeToken, BetaTestController.getEpilogue);
+
 router.get('/finished', Auth.verifyAppBeeToken, BetaTestController.getFinishedBetaTestList);
 router.get('/detail/:id/', Auth.verifyAppBeeToken, BetaTestController.getDetailBetaTest);
 

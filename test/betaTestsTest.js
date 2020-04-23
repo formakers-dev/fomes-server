@@ -984,6 +984,30 @@ describe('BetaTests', () => {
         });
     });
 
+    describe('GET /beta-tests/:id/epilogue', () => {
+        it('해당 베타테스트의 에필로그 정보를 조회한다', done => {
+            request.get('/beta-tests/5c986adee1a6f20813ec464d/epilogue')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.deeplink.should.be.eql("http://www.naver.com");
+                    res.body.companySays.should.be.eql("포메스 짱! 완전 짱! 대박! 완전! 완전! 두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄");
+                    res.body.companyName.should.be.eql("게임사이름");
+                    res.body.companyImageUrl.should.be.eql("http://www.google.com/image.png");
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('해당 베타테스트에 에필로그 정보가 존재하지 않으면 ', done => {
+            request.get('/beta-tests/5c99d101d122450cf08431aa/epilogue')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(404)
+                .then(() => done())
+                .catch(err => done(err));
+        });
+    });
+
     describe('GET /beta-tests/all/count', () => {
         it('모든 베타테스트의 개수를 조회힌다', done => {
             request.get('/beta-tests/all/count')
