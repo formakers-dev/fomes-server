@@ -113,6 +113,7 @@ const findFinishedBetaTests = (userId, isVerbose) => {
         },
         {
             _id: 1,
+            coverImageUrl: 1,
             iconImageUrl: 1,
             title: 1,
             description: 1,

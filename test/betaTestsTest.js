@@ -679,6 +679,7 @@ describe('BetaTests', () => {
             result.length.should.be.eql(5);
 
             result[0]._id.should.be.eql("5d01b1f6db7d04bc2d04345c");
+            result[0].coverImageUrl.should.be.eql("https://i.imgur.com/oXFepuQ.jpg");
             result[0].iconImageUrl.should.be.eql("https://i.imgur.com/oXFepuQ.jpg");
             result[0].title.should.be.eql("[매드러너] 게임 테스트");
             result[0].description.should.be.eql("");
@@ -692,6 +693,7 @@ describe('BetaTests', () => {
             result[0].isRegisteredEpilogue.should.be.eql(false);
 
             result[1]._id.should.be.eql("5c986adee1a6f20813ec464d");
+            result[1].coverImageUrl.should.be.eql("");
             result[1].iconImageUrl.should.be.eql("https://i.imgur.com/4A0jfFe.jpg");
             result[1].title.should.be.eql("[메이헴의 유산] 게임 테스트 + 에필로그");
             result[1].plan.should.be.eql("standard");
@@ -704,6 +706,7 @@ describe('BetaTests', () => {
             result[1].isRegisteredEpilogue.should.be.eql(true);
 
             result[2]._id.should.be.eql("5c99d14fd122450cf08431ab");
+            result[2].coverImageUrl.should.be.eql("https://i.imgur.com/4oaQHWe1.jpg");
             result[2].iconImageUrl.should.be.eql("https://i.imgur.com/4oaQHWe.jpg");
             result[2].title.should.be.eql("appbee0627이 참여하지 않은 그룹! 에필로그도 없음!");
             result[2].plan.should.be.eql("lite");
@@ -716,6 +719,7 @@ describe('BetaTests', () => {
             result[2].isRegisteredEpilogue.should.be.eql(false);
 
             result[3]._id.should.be.eql("5c989f0a2917e70db5d4fc2e");
+            result[3].coverImageUrl.should.be.eql("https://i.imgur.com/uSaMpey1.jpg");
             result[3].iconImageUrl.should.be.eql("https://i.imgur.com/uSaMpey.jpg");
             result[3].title.should.be.eql("appbee0627이 참여한 그룹! + 에필로그  길게길게길게길게길게길게길게길게길게길게길게길게길게길게길게");
             result[3].plan.should.be.eql("lite");
@@ -728,6 +732,7 @@ describe('BetaTests', () => {
             result[3].isRegisteredEpilogue.should.be.eql(true);
 
             result[4]._id.should.be.eql("5c99d101d122450cf08431aa");
+            result[4].coverImageUrl.should.be.eql("https://i.imgur.com/7886ojX1.png");
             result[4].iconImageUrl.should.be.eql("https://i.imgur.com/7886ojX.png");
             result[4].title.should.be.eql("appbee0627이 참여한 그룹! 근데 에필로그가 아직 등록안됨!!!!");
             result[4].plan.should.be.eql("lite");

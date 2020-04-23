@@ -493,6 +493,7 @@ const data = [
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
             "done" : "굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."
         },
+        "coverImageUrl" : "https://i.imgur.com/uSaMpey1.jpg",
         "iconImageUrl" : "https://i.imgur.com/uSaMpey.jpg",
         "openDate" : ISODate("2019-03-21T15:00:00.000Z"),
         "closeDate" : ISODate("2019-03-26T00:00:00.000Z"),
@@ -564,6 +565,7 @@ const data = [
             "doing" : "밑져야 본전! 재미있어 보인다면 참여해 보세요.",
             "done" : "짝짝짝! 멋져요! 마감 후 테스터 시상식이 열릴거에요."
         },
+        "coverImageUrl" : "https://i.imgur.com/7886ojX1.png",
         "iconImageUrl" : "https://i.imgur.com/7886ojX.png",
         "openDate" : ISODate("2019-03-21T15:00:00.000Z"),
         "closeDate" : ISODate("2019-03-24T00:00:00.000Z"),
@@ -630,6 +632,7 @@ const data = [
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
             "done" : "짝짝짝! 멋져요! 마감 후 테스터 시상식이 열릴거에요."
         },
+        "coverImageUrl" : "https://i.imgur.com/4oaQHWe1.jpg",
         "iconImageUrl" : "https://i.imgur.com/4oaQHWe.jpg",
         "openDate" : ISODate("2019-03-21T15:00:00.000Z"),
         "closeDate" : ISODate("2019-03-25T00:00:00.000Z"),
