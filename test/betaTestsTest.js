@@ -675,7 +675,84 @@ describe('BetaTests', () => {
 
     describe('GET /beta-tests/finished', () => {
 
-        it('종료된 피드백 요청 목록을 조회한다', done => {
+        const assertFinishedBetaTestFormat = (result) => {
+            result.length.should.be.eql(5);
+
+            result[0]._id.should.be.eql("5d01b1f6db7d04bc2d04345c");
+            result[0].iconImageUrl.should.be.eql("https://i.imgur.com/oXFepuQ.jpg");
+            result[0].title.should.be.eql("[매드러너] 게임 테스트");
+            result[0].description.should.be.eql("");
+            result[0].tags.length.should.be.eql(1);
+            result[0].tags[0].should.be.eql("설문");
+            result[0].openDate.should.be.eql("2019-06-13T00:00:00.000Z");
+            result[0].closeDate.should.be.eql("2019-06-19T14:59:59.999Z");
+            should.not.exist(result[0].epilogue);
+            result[0].isAttended.should.be.eql(true);
+            result[0].isCompleted.should.be.eql(true);
+
+            result[1]._id.should.be.eql("5c986adee1a6f20813ec464d");
+            result[1].iconImageUrl.should.be.eql("https://i.imgur.com/4A0jfFe.jpg");
+            result[1].title.should.be.eql("[메이헴의 유산] 게임 테스트 + 에필로그");
+            result[1].tags.length.should.be.eql(1);
+            result[1].tags[0].should.be.eql("설문");
+            result[1].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
+            result[1].closeDate.should.be.eql("2019-03-23T00:00:00.000Z");
+            result[1].epilogue.awards.should.be.eql("테스트 영웅 : 드래군핥짝 님\n테스트 요정 : 이브 외 9명");
+            result[1].epilogue.deeplink.should.be.eql("http://www.naver.com");
+            result[1].epilogue.companySays.should.be.eql("포메스 짱! 완전 짱! 대박! 완전! 완전! 두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄");
+            result[1].isAttended.should.be.eql(false);
+            result[1].isCompleted.should.be.eql(false);
+
+            result[2]._id.should.be.eql("5c99d14fd122450cf08431ab");
+            result[2].iconImageUrl.should.be.eql("https://i.imgur.com/4oaQHWe.jpg");
+            result[2].title.should.be.eql("appbee0627이 참여하지 않은 그룹! 에필로그도 없음!");
+            result[2].tags.length.should.be.eql(1);
+            result[2].tags[0].should.be.eql("설문");
+            result[2].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
+            result[2].closeDate.should.be.eql("2019-03-25T00:00:00.000Z");
+            should.not.exist(result[2].epilogue);
+            result[2].isAttended.should.be.eql(false);
+            result[2].isCompleted.should.be.eql(false);
+
+            result[3]._id.should.be.eql("5c989f0a2917e70db5d4fc2e");
+            result[3].iconImageUrl.should.be.eql("https://i.imgur.com/uSaMpey.jpg");
+            result[3].title.should.be.eql("appbee0627이 참여한 그룹! + 에필로그  길게길게길게길게길게길게길게길게길게길게길게길게길게길게길게");
+            result[3].tags.length.should.be.eql(1);
+            result[3].tags[0].should.be.eql("설문");
+            result[3].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
+            result[3].closeDate.should.be.eql("2019-03-26T00:00:00.000Z");
+            result[3].epilogue.awards.should.be.eql("포메스 팀 : 참가자 여러분 모두 저희의 챔피언❤️");
+            result[3].epilogue.deeplink.should.be.eql("http://www.google.co.kr");
+            result[3].epilogue.companySays.should.be.eql("게임사 가라사대, 너희가 나를 살찌웠노라.... 고맙노라.....");
+            result[3].isAttended.should.be.eql(true);
+            result[3].isCompleted.should.be.eql(true);
+
+            result[4]._id.should.be.eql("5c99d101d122450cf08431aa");
+            result[4].iconImageUrl.should.be.eql("https://i.imgur.com/7886ojX.png");
+            result[4].title.should.be.eql("appbee0627이 참여한 그룹! 근데 에필로그가 아직 등록안됨!!!!");
+            result[4].tags.length.should.be.eql(1);
+            result[4].tags[0].should.be.eql("설문");
+            result[4].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
+            result[4].closeDate.should.be.eql("2019-03-24T00:00:00.000Z");
+            should.not.exist(result[4].epilogue);
+            result[4].isAttended.should.be.eql(true);
+            result[4].isCompleted.should.be.eql(true);
+        };
+
+        const assertVerboseFormat = (result) => {
+            result[0].missions.length.should.be.eql(1);
+            result[0].missions[0].isRecheckable.should.be.eql(true);
+            result[0].missions[0].title.should.be.eql("의견 작성");
+            result[0].missions[0].actionType.should.be.eql("link");
+            result[0].missions[0].action.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSeRI99bYe7LUU0iQgVMKev6D4zyaW2E3zKx-Tp1tVW2Qzv0Cg/viewform?internal_web=true&usp=pp_url&entry.394653407=");
+        };
+
+        const assertNotVerboseFormat = (result) => {
+            result[0].missions.length.should.be.eql(0);
+            //should.not.exist(result[0].missions);
+        };
+
+        it('종료된 피드백 요청 목록을 조회한다 (verbose=true)', done => {
             sandbox.useFakeTimers(new Date("2019-06-30T02:30:00.000Z").getTime());
 
             request.get('/beta-tests/finished?verbose=true')
@@ -686,73 +763,42 @@ describe('BetaTests', () => {
 
                     console.error(res.body);
 
-                    res.body.length.should.be.eql(5);
+                    assertFinishedBetaTestFormat(res.body);
+                    assertVerboseFormat(res.body);
+                    done();
+                }).catch(err => done(err));
+        });
 
-                    res.body[0]._id.should.be.eql("5d01b1f6db7d04bc2d04345c");
-                    res.body[0].iconImageUrl.should.be.eql("https://i.imgur.com/oXFepuQ.jpg");
-                    res.body[0].title.should.be.eql("[매드러너] 게임 테스트");
-                    res.body[0].description.should.be.eql("");
-                    res.body[0].tags.length.should.be.eql(1);
-                    res.body[0].tags[0].should.be.eql("설문");
-                    res.body[0].openDate.should.be.eql("2019-06-13T00:00:00.000Z");
-                    res.body[0].closeDate.should.be.eql("2019-06-19T14:59:59.999Z");
-                    should.not.exist(res.body[0].epilogue);
-                    res.body[0].isAttended.should.be.eql(true);
-                    res.body[0].isCompleted.should.be.eql(true);
-                    res.body[0].missions.length.should.be.eql(1);
-                    res.body[0].missions[0].isRecheckable.should.be.eql(true);
-                    res.body[0].missions[0].title.should.be.eql("의견 작성");
-                    res.body[0].missions[0].actionType.should.be.eql("link");
-                    res.body[0].missions[0].action.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSeRI99bYe7LUU0iQgVMKev6D4zyaW2E3zKx-Tp1tVW2Qzv0Cg/viewform?internal_web=true&usp=pp_url&entry.394653407=");
+        it('종료된 피드백 요청 목록을 조회한다 (default verbose)', done => {
+            sandbox.useFakeTimers(new Date("2019-06-30T02:30:00.000Z").getTime());
 
-                    res.body[1]._id.should.be.eql("5c986adee1a6f20813ec464d");
-                    res.body[1].iconImageUrl.should.be.eql("https://i.imgur.com/4A0jfFe.jpg");
-                    res.body[1].title.should.be.eql("[메이헴의 유산] 게임 테스트 + 에필로그");
-                    res.body[1].tags.length.should.be.eql(1);
-                    res.body[1].tags[0].should.be.eql("설문");
-                    res.body[1].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
-                    res.body[1].closeDate.should.be.eql("2019-03-23T00:00:00.000Z");
-                    res.body[1].epilogue.awards.should.be.eql("테스트 영웅 : 드래군핥짝 님\n테스트 요정 : 이브 외 9명");
-                    res.body[1].epilogue.deeplink.should.be.eql("http://www.naver.com");
-                    res.body[1].epilogue.companySays.should.be.eql("포메스 짱! 완전 짱! 대박! 완전! 완전! 두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄");
-                    res.body[1].isAttended.should.be.eql(false);
-                    res.body[1].isCompleted.should.be.eql(false);
+            request.get('/beta-tests/finished')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.sort((a, b) => a.title > b.title ? 1 : -1);
 
-                    res.body[2]._id.should.be.eql("5c99d14fd122450cf08431ab");
-                    res.body[2].iconImageUrl.should.be.eql("https://i.imgur.com/4oaQHWe.jpg");
-                    res.body[2].title.should.be.eql("appbee0627이 참여하지 않은 그룹! 에필로그도 없음!");
-                    res.body[2].tags.length.should.be.eql(1);
-                    res.body[2].tags[0].should.be.eql("설문");
-                    res.body[2].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
-                    res.body[2].closeDate.should.be.eql("2019-03-25T00:00:00.000Z");
-                    should.not.exist(res.body[2].epilogue);
-                    res.body[2].isAttended.should.be.eql(false);
-                    res.body[2].isCompleted.should.be.eql(false);
+                    console.error(res.body);
 
-                    res.body[3]._id.should.be.eql("5c989f0a2917e70db5d4fc2e");
-                    res.body[3].iconImageUrl.should.be.eql("https://i.imgur.com/uSaMpey.jpg");
-                    res.body[3].title.should.be.eql("appbee0627이 참여한 그룹! + 에필로그  길게길게길게길게길게길게길게길게길게길게길게길게길게길게길게");
-                    res.body[3].tags.length.should.be.eql(1);
-                    res.body[3].tags[0].should.be.eql("설문");
-                    res.body[3].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
-                    res.body[3].closeDate.should.be.eql("2019-03-26T00:00:00.000Z");
-                    res.body[3].epilogue.awards.should.be.eql("포메스 팀 : 참가자 여러분 모두 저희의 챔피언❤️");
-                    res.body[3].epilogue.deeplink.should.be.eql("http://www.google.co.kr");
-                    res.body[3].epilogue.companySays.should.be.eql("게임사 가라사대, 너희가 나를 살찌웠노라.... 고맙노라.....");
-                    res.body[3].isAttended.should.be.eql(true);
-                    res.body[3].isCompleted.should.be.eql(true);
+                    assertFinishedBetaTestFormat(res.body);
+                    assertNotVerboseFormat(res.body);
+                    done();
+                }).catch(err => done(err));
+        });
 
-                    res.body[4]._id.should.be.eql("5c99d101d122450cf08431aa");
-                    res.body[4].iconImageUrl.should.be.eql("https://i.imgur.com/7886ojX.png");
-                    res.body[4].title.should.be.eql("appbee0627이 참여한 그룹! 근데 에필로그가 아직 등록안됨!!!!");
-                    res.body[4].tags.length.should.be.eql(1);
-                    res.body[4].tags[0].should.be.eql("설문");
-                    res.body[4].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
-                    res.body[4].closeDate.should.be.eql("2019-03-24T00:00:00.000Z");
-                    should.not.exist(res.body[4].epilogue);
-                    res.body[4].isAttended.should.be.eql(true);
-                    res.body[4].isCompleted.should.be.eql(true);
+        it('종료된 피드백 요청 목록을 조회한다 (verbose=false)', done => {
+            sandbox.useFakeTimers(new Date("2019-06-30T02:30:00.000Z").getTime());
 
+            request.get('/beta-tests/finished?verbose=false')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.sort((a, b) => a.title > b.title ? 1 : -1);
+
+                    console.error(res.body);
+
+                    assertFinishedBetaTestFormat(res.body);
+                    assertNotVerboseFormat(res.body);
                     done();
                 }).catch(err => done(err));
         });

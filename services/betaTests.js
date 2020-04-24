@@ -86,12 +86,17 @@ const findValidBetaTests = (userId) => {
             betaTest.isAttended = isAttendedBetaTest(userId, betaTest._id, participations);
             betaTest.isCompleted = isCompletedBetaTest(userId, betaTest._id, participations);
 
+            // TODO : v0.3.0 크리티컬릴리즈 시 오류 방지 위한 임시 코드 - 릴리즈 후 추후 삭제 필요
+            betaTest.completedItemCount = 1;
+            betaTest.totalItemCount = 1;
+
             return betaTest;
         })
     });
 };
 
 const findFinishedBetaTests = (userId, isVerbose) => {
+    console.log("[findFinishedBetaTests] userId=", userId, ", isVerbose=", isVerbose);
     const currentTime = new Date();
 
     return BetaTests.aggregate([
@@ -127,7 +132,12 @@ const findFinishedBetaTests = (userId, isVerbose) => {
                 betaTest.isAttended = isAttendedBetaTest(userId, betaTest._id, participations);
                 betaTest.isCompleted = isCompletedBetaTest(userId, betaTest._id, participations);
 
-                if (isVerbose) {
+                // TODO : v0.3.0 크리티컬릴리즈 시 오류 방지 위한 임시 코드 - 릴리즈 후 추후 삭제 필요
+                betaTest.completedItemCount = 1;
+                betaTest.totalItemCount = 1;
+                betaTest.missions = [];
+
+                if (isVerbose === 'true') {
                     // 종료된 테스트 리스트에서 미션이 보여질 필요가 없어지면 제거 되어야 함! 미션은 아예 따로 검색하도록하자
                     const missions = await findBetaTestMissions(betaTest._id);
                     betaTest.missions = convertMissionItemsForClient(userId, missions, participations)
@@ -195,6 +205,10 @@ const findBetaTest = (betaTestId, userId) => {
             betaTest.isAttended = isAttendedBetaTest(userId, betaTest._id, participations);
             betaTest.isCompleted = isCompletedBetaTest(userId, betaTest._id, participations);
 
+            // TODO : v0.3.0 크리티컬릴리즈 시 오류 방지 위한 임시 코드 - 릴리즈 후 추후 삭제 필요
+            betaTest.completedItemCount = 1;
+            betaTest.totalItemCount = 1;
+
             const missions = await findBetaTestMissions(betaTest._id);
             betaTest.missions = convertMissionItemsForClient(userId, missions, participations);
             betaTest.currentDate = new Date();
@@ -210,6 +224,10 @@ const findBetaTestProgress = async (betaTestId, userId, isVerbose) => {
     const result = {
         isAttended: isAttendedBetaTest(userId, betaTestId, userParticipations),
         isCompleted: isCompletedBetaTest(userId, betaTestId, userParticipations),
+
+        // TODO : v0.3.0 크리티컬릴리즈 시 오류 방지 위한 임시 코드 - 릴리즈 후 추후 삭제 필요
+        completedItemCount: 1,
+        totalItemCount: 1
     };
 
     if (isVerbose) {
