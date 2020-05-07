@@ -11,11 +11,11 @@ const getAllBetaTestsCount = () => {
 
 const getAllRewards = () => {
     return AwardRecords.aggregate([
-        { $match: { price : { $exists: true } } },
+        { $match: { 'reward.price' : {$exists: true } } },
         {
             $group: {
-                _id: { betaTestId : '$betaTestId', rewardOrder : '$rewardOrder' },
-                price: { $first: '$price' },
+                _id: { betaTestId : '$betaTestId', type : '$type' },
+                price: { $first: '$reward.price' },
                 userCount: { $sum: 1 }
             }
         }
