@@ -251,6 +251,15 @@ const findBetaTestProgress = async (betaTestId, userId, isVerbose) => {
     return result;
 };
 
+const findAwardRecords = (betaTestId) => {
+    return AwardRecords.find({betaTestId: betaTestId},
+        {
+            userId: 1,
+            type: 1,
+            reward: 1
+        }).lean();
+};
+
 const findEpilogue = (betaTestId) => {
     return BetaTests.findOne({_id: betaTestId},
         {
@@ -464,6 +473,7 @@ module.exports = {
     findBetaTestProgress,
     findBetaTest,
     findMissionParticipation,
+    findAwardRecords,
     findEpilogue,
     attend,
     completeMission,

@@ -3,7 +3,6 @@ const Boom = require('boom');
 const config = require('../config');
 const BetaTestsService = require('../services/betaTests');
 const UsersService = require('../services/users');
-const ConfigurationsService = require('../services/configurations');
 
 const getBetaTestList = (req, res, next) => {
     BetaTestsService.findValidBetaTests(req.userId)
@@ -38,6 +37,20 @@ const getMissionProgress = (req, res, next) => {
                 isCompleted: !!participation,
             })
         }).catch(err => next(err));
+};
+
+const getAwardRecord = (req, res, next) => {
+    BetaTestsService.findAwardRecords(req.params.id)
+        .then(awardRecords => {
+            const filteredMyAwardRecords = awardRecords.filter(awardRecord => awardRecord.userId === req.userId);
+
+            if (filteredMyAwardRecords && filteredMyAwardRecords.length > 0) {
+                res.json(filteredMyAwardRecords[0])
+            } else {
+                next(Boom.notFound("User's award record doesn't exists!"));
+            }
+        })
+        .catch(err => next(err))
 };
 
 const getEpilogue = (req, res, next) => {
@@ -226,6 +239,7 @@ module.exports = {
     getDetailBetaTest,
     getProgress,
     getMissionProgress,
+    getAwardRecord,
     getEpilogue,
     getAllBetaTestsCount,
     getTotalRewards,

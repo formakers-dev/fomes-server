@@ -15,7 +15,7 @@ const AwardRecords = require('../models/awardRecords');
 const Configurations = require('../models/configurations').Configurations;
 const AdminUsers = require('../models/configurations').AdminUsers;
 const helper = require('./commonTestHelper');
-const betatestData = require('./data/beta-tests');
+const betaTestData = require('./data/beta-tests');
 const participationData = require('./data/participations');
 const missionData = require('./data/missions');
 const awardRecordData = require('./data/award-records');
@@ -42,7 +42,7 @@ describe('BetaTests', () => {
 
     beforeEach(done => {
         AdminUsers.create([ { userId: "adminUser1" } ])
-            .then(() => BetaTests.create(betatestData))
+            .then(() => BetaTests.create(betaTestData))
             .then(() => BetaTestParticipations.Model.create(participationData))
             .then(() => BetaTestMissions.create(missionData))
             .then(() => AwardRecords.create(awardRecordData))
@@ -981,6 +981,37 @@ describe('BetaTests', () => {
 
                     done();
                 }).catch(err => done(err));
+        });
+    });
+
+    describe('GET /beta-tests/:id/award-record', () => {
+        it('해당 베타테스트의 나의 수상 정보를 조회한다', done => {
+            request.get('/beta-tests/5c9892f92917e70db5d243dd/award-record')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.type.should.be.eql("best");
+                    res.body.reward.description.should.be.eql("문화상품권 5000원");
+                    res.body.reward.price.should.be.eql(5000);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('해당 베타테스트에 나의 수상 정보가 존재하지 않으면 ', done => {
+            request.get('/beta-tests/5c25c77798d78f078d8ef3ba/award-record')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(404)
+                .then(() => done())
+                .catch(err => done(err));
+        });
+
+        it('해당 베타테스트에 전체 수상 정보가 존재하지 않으면 ', done => {
+            request.get('/beta-tests/5c986adee1a6f20813ec464d/award-record')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(404)
+                .then(() => done())
+                .catch(err => done(err));
         });
     });
 

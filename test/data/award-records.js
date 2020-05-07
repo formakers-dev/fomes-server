@@ -45,7 +45,7 @@ const data = [
     },
     {
         "_id" : ObjectId("5e720bfd0511671bbbbbbc42"),
-        "userId" : "user10",
+        "userId" : "109974316241227718963",
         "betaTestId" : ObjectId("5c9892f92917e70db5d243dd"),
         "type" : "best",
         "reward" : {
