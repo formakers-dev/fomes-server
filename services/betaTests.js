@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const BetaTests = require('../models/betaTests');
 const BetaTestParticipations = require('../models/betaTestParticipations');
 const BetaTestMissions = require('../models/betaTestMissions');
-const AwardRecords = require('../models/awardRecords');
+const AwardRecords = require('../models/awardRecords').AwardRecords;
 const ConfigurationsService = require('../services/configurations');
 
 const getAllBetaTestsCount = () => {

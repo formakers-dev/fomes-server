@@ -40,7 +40,7 @@ const getMissionProgress = (req, res, next) => {
 };
 
 const getAwardRecord = (req, res, next) => {
-    BetaTestsService.findAwardRecords(req.params.id)
+    BetaTestsService.findAwardRecords(req.params.id, req.query.type)
         .then(awardRecords => {
             const filteredMyAwardRecords = awardRecords.filter(awardRecord => awardRecord.userId === req.userId);
 

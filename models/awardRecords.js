@@ -12,4 +12,14 @@ const awardRecordSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('award-records', awardRecordSchema);
+const AwardRecords = mongoose.model('award-records', awardRecordSchema);
+
+const AwardType = {
+    best: "best",
+    good: "good",
+    normal: "normal",
+    participated: "participated",
+    etc: "etc",
+};
+
+module.exports = { AwardRecords, AwardType };
