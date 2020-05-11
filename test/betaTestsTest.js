@@ -1086,7 +1086,7 @@ describe('BetaTests', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
-                    res.text.should.be.eql("24000");
+                    res.text.should.be.eql("27000");
                     done();
                 }).catch(err => done(err));
         });
