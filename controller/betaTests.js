@@ -39,6 +39,18 @@ const getMissionProgress = (req, res, next) => {
         }).catch(err => next(err));
 };
 
+const getAwardRecords = (req, res, next) => {
+    BetaTestsService.findAwardRecords(req.params.id)
+        .then(awardRecords => {
+            if (awardRecords.length <= 0) {
+                next(Boom.notFound("Award records don't exists!"));
+            } else {
+                res.json(awardRecords);
+            }
+        })
+        .catch(err => next(err))
+};
+
 const getAwardRecord = (req, res, next) => {
     BetaTestsService.findAwardRecords(req.params.id, req.query.type)
         .then(awardRecords => {
@@ -239,6 +251,7 @@ module.exports = {
     getDetailBetaTest,
     getProgress,
     getMissionProgress,
+    getAwardRecords,
     getAwardRecord,
     getEpilogue,
     getAllBetaTestsCount,

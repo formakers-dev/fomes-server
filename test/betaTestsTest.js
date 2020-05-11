@@ -1015,6 +1015,35 @@ describe('BetaTests', () => {
         });
     });
 
+    describe('GET /beta-tests/:id/award-records', () => {
+        it('해당 베타테스트의 해당 수상 정보를 조회한다', done => {
+            request.get('/beta-tests/5c9892f92917e70db5d243dd/award-records')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body[0].type.should.be.eql("best");
+                    res.body[0].nickName.should.be.eql("test_user_nickname");
+                    res.body[0].reward.description.should.be.eql("문화상품권 5000원");
+                    res.body[0].reward.price.should.be.eql(5000);
+
+                    res.body[1].type.should.be.eql("good");
+                    res.body[1].nickName.should.be.eql("GoodUser");
+                    res.body[1].reward.description.should.be.eql("문화상품권 3000원");
+                    res.body[1].reward.price.should.be.eql(3000);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('해당 베타테스트에 해당 수상 정보가 존재하지 않으면 ', done => {
+            request.get('/beta-tests/000000000000000000000000/award-records')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(404)
+                .then(() => done())
+                .catch(err => done(err));
+        });
+    });
+
     describe('GET /beta-tests/:id/epilogue', () => {
         it('해당 베타테스트의 에필로그 정보를 조회한다', done => {
             request.get('/beta-tests/5c986adee1a6f20813ec464d/epilogue')
