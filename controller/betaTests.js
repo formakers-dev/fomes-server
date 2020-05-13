@@ -39,6 +39,32 @@ const getMissionProgress = (req, res, next) => {
         }).catch(err => next(err));
 };
 
+const getCompletedMissions = (req, res, next) => {
+    BetaTestsService.findCompletedMissions(req.params.id, req.userId)
+        .then(missions => {
+            const resultMissions = missions.map(mission => {
+                mission.isCompleted = true;
+
+                if (mission.options) {
+                    mission.isRepeatable = mission.options.includes('repeatable');
+                    mission.isMandatory = mission.options.includes('mandatory');
+                    mission.isRecheckable = mission.options.includes('recheckable');
+                    delete mission.options;
+                }
+
+                return mission
+            });
+
+            console.log(resultMissions);
+
+            if (resultMissions.length <= 0) {
+                next(Boom.notFound("Completed missions don't exists!"));
+            } else {
+                res.json(resultMissions);
+            }
+        }).catch(err => next(err));
+};
+
 const getAwardRecords = (req, res, next) => {
     BetaTestsService.findAwardRecords(req.params.id)
         .then(awardRecords => {
@@ -250,6 +276,7 @@ module.exports = {
     getFinishedBetaTestList,
     getDetailBetaTest,
     getProgress,
+    getCompletedMissions,
     getMissionProgress,
     getAwardRecords,
     getAwardRecord,

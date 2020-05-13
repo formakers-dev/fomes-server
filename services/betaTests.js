@@ -272,6 +272,20 @@ const findEpilogue = (betaTestId) => {
     })
 };
 
+const findCompletedMissions = (betaTestId, userId) => {
+    return BetaTestParticipations.Model.find({
+        betaTestId: betaTestId,
+        userId: userId,
+        type: BetaTestParticipations.Constants.TYPE_MISSION,
+        status: BetaTestParticipations.Constants.STATUS_COMPLETE,
+    }).lean().then(participations => {
+        return BetaTestMissions.find({
+            betaTestId: betaTestId,
+            _id: { $in: participations.map(participation => participation.missionId) }
+        }).lean()
+    })
+};
+
 const concat = (x, y) =>
     x.concat(y);
 
@@ -477,6 +491,7 @@ module.exports = {
     findMissionParticipation,
     findAwardRecords,
     findEpilogue,
+    findCompletedMissions,
     attend,
     completeMission,
     completeBetaTest,

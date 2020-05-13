@@ -436,6 +436,33 @@ describe('BetaTests', () => {
         });
     });
 
+    describe('POST /beta-tests/:id/missions/completed', () => {
+        it('해당 베타테스트에서 요청한 유저가 완료한 미션들의 정보를 전달한다', done => {
+            request.get('/beta-tests/5c7345f718500feddc24ca34/missions/completed')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    console.log(res.body);
+                    res.body.length.should.be.eql(2);
+
+                    res.body[0].title.should.be.eql("의견 작성");
+                    res.body[0].betaTestId.should.be.eql("5c7345f718500feddc24ca34");
+                    res.body[0].action.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSeApAn8oPp8mW6UT8RD1uMbKk_UvAiWBh5jwlxlyUUI4D2N1g/viewform?usp=pp_url&entry.455936817=");
+                    res.body[0].isCompleted.should.be.eql(true);
+                    res.body[0].isRecheckable.should.be.eql(false);
+
+                    res.body[1].title.should.be.eql("로그인이 필요한 설문");
+                    res.body[1].betaTestId.should.be.eql("5c7345f718500feddc24ca34");
+                    res.body[1].action.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLScX_8AfhRa9Fc17p2DZdVbMHCA98DY_TlShowgfoNqbx25q9g/viewform?internal_web=true&usp=pp_url&entry.1223559684=");
+                    res.body[1].isCompleted.should.be.eql(true);
+                    res.body[1].isRecheckable.should.be.eql(true);
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
+    });
+
     describe('POST /beta-tests/:id/complete', () => {
         let stubAxiosPost;
 
@@ -1021,6 +1048,8 @@ describe('BetaTests', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
+                    res.body.sort((a, b) => a.type > b.type ? 1 : -1);
+
                     res.body[0].type.should.be.eql("best");
                     res.body[0].nickName.should.be.eql("test_user_nickname");
                     res.body[0].reward.description.should.be.eql("문화상품권 5000원");

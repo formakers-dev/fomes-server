@@ -9,6 +9,7 @@ router.get('/', Auth.verifyAppBeeToken, BetaTestController.getBetaTestList);
 // router.get('/valid', Auth.verifyAppBeeToken, BetaTestController.getBetaTestList); // 개인 맞춤형(추천형) 인경우
 router.get('/:id/progress', Auth.verifyAppBeeToken, BetaTestController.getProgress);
 router.get('/:id/missions/:missionId/progress', Auth.verifyAppBeeToken, BetaTestController.getMissionProgress);
+router.get('/:id/missions/completed', Auth.verifyAppBeeToken, BetaTestController.getCompletedMissions);
 
 router.get('/:id/award-records', Auth.verifyAppBeeToken, BetaTestController.getAwardRecords);
 router.get('/:id/award-record', Auth.verifyAppBeeToken, BetaTestController.getAwardRecord);
