@@ -718,6 +718,15 @@ describe('BetaTests', () => {
             result[0].isAttended.should.be.eql(true);
             result[0].isCompleted.should.be.eql(true);
             result[0].isRegisteredEpilogue.should.be.eql(false);
+            result[0].rewards.list.length.should.be.eql(2);
+            result[0].rewards.list[0].order.should.be.eql(1);
+            result[0].rewards.list[0].title.should.be.eql("테스트 요정 (전체지급)");
+            result[0].rewards.list[0].content.should.be.eql("문화상품권 1000원");
+            result[0].rewards.list[0].price.should.be.eql(1000);
+            result[0].rewards.list[1].order.should.be.eql(2);
+            result[0].rewards.list[1].title.should.be.eql("테스트 영웅 (1명)");
+            result[0].rewards.list[1].content.should.be.eql("문화상품권 5000원");
+            result[0].rewards.list[1].price.should.be.eql(5000);
 
             result[1]._id.should.be.eql("5c986adee1a6f20813ec464d");
             result[1].coverImageUrl.should.be.eql("");
@@ -731,6 +740,15 @@ describe('BetaTests', () => {
             result[1].isAttended.should.be.eql(false);
             result[1].isCompleted.should.be.eql(false);
             result[1].isRegisteredEpilogue.should.be.eql(true);
+            result[1].rewards.list.length.should.be.eql(2);
+            result[1].rewards.list[0].order.should.be.eql(1);
+            result[1].rewards.list[0].title.should.be.eql("1테스트 요정 (전체지급)");
+            result[1].rewards.list[0].content.should.be.eql("문화상품권 1000원");
+            result[1].rewards.list[0].price.should.be.eql(1000);
+            result[1].rewards.list[1].order.should.be.eql(2);
+            result[1].rewards.list[1].title.should.be.eql("1테스트 영웅 (1명)");
+            result[1].rewards.list[1].content.should.be.eql("문화상품권 5000원");
+            result[1].rewards.list[1].price.should.be.eql(5000);
 
             result[2]._id.should.be.eql("5c99d14fd122450cf08431ab");
             result[2].coverImageUrl.should.be.eql("https://i.imgur.com/4oaQHWe1.jpg");
@@ -744,6 +762,15 @@ describe('BetaTests', () => {
             result[2].isAttended.should.be.eql(false);
             result[2].isCompleted.should.be.eql(false);
             result[2].isRegisteredEpilogue.should.be.eql(false);
+            result[2].rewards.list.length.should.be.eql(2);
+            result[2].rewards.list[0].order.should.be.eql(1);
+            result[2].rewards.list[0].title.should.be.eql("1테스트 요정 (전체지급)");
+            result[2].rewards.list[0].content.should.be.eql("문화상품권 1000원");
+            result[2].rewards.list[0].price.should.be.eql(1000);
+            result[2].rewards.list[1].order.should.be.eql(2);
+            result[2].rewards.list[1].title.should.be.eql("1테스트 영웅 (1명)");
+            result[2].rewards.list[1].content.should.be.eql("문화상품권 5000원");
+            result[2].rewards.list[1].price.should.be.eql(5000);
 
             result[3]._id.should.be.eql("5c989f0a2917e70db5d4fc2e");
             result[3].coverImageUrl.should.be.eql("https://i.imgur.com/uSaMpey1.jpg");
@@ -757,6 +784,15 @@ describe('BetaTests', () => {
             result[3].isAttended.should.be.eql(true);
             result[3].isCompleted.should.be.eql(true);
             result[3].isRegisteredEpilogue.should.be.eql(true);
+            result[3].rewards.list.length.should.be.eql(2);
+            result[3].rewards.list[0].order.should.be.eql(1);
+            result[3].rewards.list[0].title.should.be.eql("1테스트 요정 (전체지급)");
+            result[3].rewards.list[0].content.should.be.eql("문화상품권 1000원");
+            result[3].rewards.list[0].price.should.be.eql(1000);
+            result[3].rewards.list[1].order.should.be.eql(2);
+            result[3].rewards.list[1].title.should.be.eql("1테스트 영웅 (1명)");
+            result[3].rewards.list[1].content.should.be.eql("문화상품권 5000원");
+            result[3].rewards.list[1].price.should.be.eql(5000);
 
             result[4]._id.should.be.eql("5c99d101d122450cf08431aa");
             result[4].coverImageUrl.should.be.eql("https://i.imgur.com/7886ojX1.png");
@@ -770,6 +806,15 @@ describe('BetaTests', () => {
             result[4].isAttended.should.be.eql(true);
             result[4].isCompleted.should.be.eql(true);
             result[4].isRegisteredEpilogue.should.be.eql(false);
+            result[4].rewards.list.length.should.be.eql(2);
+            result[4].rewards.list[0].order.should.be.eql(1);
+            result[4].rewards.list[0].title.should.be.eql("1테스트 요정 (전체지급)");
+            result[4].rewards.list[0].content.should.be.eql("문화상품권 1000원");
+            result[4].rewards.list[0].price.should.be.eql(1000);
+            result[4].rewards.list[1].order.should.be.eql(2);
+            result[4].rewards.list[1].title.should.be.eql("1테스트 영웅 (1명)");
+            result[4].rewards.list[1].content.should.be.eql("문화상품권 5000원");
+            result[4].rewards.list[1].price.should.be.eql(5000);
         };
 
         const assertVerboseFormat = (result) => {

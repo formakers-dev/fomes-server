@@ -123,6 +123,7 @@ const findFinishedBetaTests = (userId, isVerbose) => {
             closeDate: 1,
             epilogue: 1,
             plan: 1,
+            rewards: 1,
         }
     ).lean().then(async betaTests => {
         const currentDate = new Date();
