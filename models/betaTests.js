@@ -4,7 +4,9 @@ const Schema = mongoose.Schema;
 const EpilogueSchema = new Schema({
     awards: String,
     deeplink: String,
+    companyImageUrl: String,
     companySays: String,
+    companyName: String,
 });
 
 const Rewards = {

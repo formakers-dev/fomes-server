@@ -3,7 +3,6 @@ const Boom = require('boom');
 const config = require('../config');
 const BetaTestsService = require('../services/betaTests');
 const UsersService = require('../services/users');
-const ConfigurationsService = require('../services/configurations');
 
 const getBetaTestList = (req, res, next) => {
     BetaTestsService.findValidBetaTests(req.userId)
@@ -38,6 +37,70 @@ const getMissionProgress = (req, res, next) => {
                 isCompleted: !!participation,
             })
         }).catch(err => next(err));
+};
+
+const getCompletedMissions = (req, res, next) => {
+    BetaTestsService.findCompletedMissions(req.params.id, req.userId)
+        .then(missions => {
+            const resultMissions = missions.map(mission => {
+                mission.isCompleted = true;
+
+                if (mission.options) {
+                    mission.isRepeatable = mission.options.includes('repeatable');
+                    mission.isMandatory = mission.options.includes('mandatory');
+                    mission.isRecheckable = mission.options.includes('recheckable');
+                    delete mission.options;
+                }
+
+                return mission
+            });
+
+            console.log(resultMissions);
+
+            if (resultMissions.length <= 0) {
+                next(Boom.notFound("Completed missions don't exists!"));
+            } else {
+                res.json(resultMissions);
+            }
+        }).catch(err => next(err));
+};
+
+const getAwardRecords = (req, res, next) => {
+    BetaTestsService.findAwardRecords(req.params.id)
+        .then(awardRecords => {
+            if (awardRecords.length <= 0) {
+                next(Boom.notFound("Award records don't exists!"));
+            } else {
+                res.json(awardRecords);
+            }
+        })
+        .catch(err => next(err))
+};
+
+const getAwardRecord = (req, res, next) => {
+    BetaTestsService.findAwardRecords(req.params.id, req.query.type)
+        .then(awardRecords => {
+            const filteredMyAwardRecords = awardRecords.filter(awardRecord => awardRecord.userId === req.userId);
+
+            if (filteredMyAwardRecords && filteredMyAwardRecords.length > 0) {
+                res.json(filteredMyAwardRecords[0])
+            } else {
+                next(Boom.notFound("User's award record doesn't exists!"));
+            }
+        })
+        .catch(err => next(err))
+};
+
+const getEpilogue = (req, res, next) => {
+    BetaTestsService.findEpilogue(req.params.id)
+        .then(epilogue => {
+            if (epilogue) {
+                res.json(epilogue)
+            } else {
+                next(Boom.notFound("Epilogue doesn't exists!"));
+            }
+        })
+        .catch(err => next(err))
 };
 
 const getAllBetaTestsCount = (req, res, next) => {
@@ -213,7 +276,11 @@ module.exports = {
     getFinishedBetaTestList,
     getDetailBetaTest,
     getProgress,
+    getCompletedMissions,
     getMissionProgress,
+    getAwardRecords,
+    getAwardRecord,
+    getEpilogue,
     getAllBetaTestsCount,
     getTotalRewards,
     getAccumulatedCompletedUsersCount,

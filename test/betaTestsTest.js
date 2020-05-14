@@ -11,11 +11,11 @@ const ObjectId = mongoose.Types.ObjectId;
 const BetaTests = require('../models/betaTests');
 const BetaTestParticipations = require('../models/betaTestParticipations');
 const BetaTestMissions = require('../models/betaTestMissions');
-const AwardRecords = require('../models/awardRecords');
+const AwardRecords = require('../models/awardRecords').AwardRecords;
 const Configurations = require('../models/configurations').Configurations;
 const AdminUsers = require('../models/configurations').AdminUsers;
 const helper = require('./commonTestHelper');
-const betatestData = require('./data/beta-tests');
+const betaTestData = require('./data/beta-tests');
 const participationData = require('./data/participations');
 const missionData = require('./data/missions');
 const awardRecordData = require('./data/award-records');
@@ -42,7 +42,7 @@ describe('BetaTests', () => {
 
     beforeEach(done => {
         AdminUsers.create([ { userId: "adminUser1" } ])
-            .then(() => BetaTests.create(betatestData))
+            .then(() => BetaTests.create(betaTestData))
             .then(() => BetaTestParticipations.Model.create(participationData))
             .then(() => BetaTestMissions.create(missionData))
             .then(() => AwardRecords.create(awardRecordData))
@@ -436,6 +436,33 @@ describe('BetaTests', () => {
         });
     });
 
+    describe('POST /beta-tests/:id/missions/completed', () => {
+        it('해당 베타테스트에서 요청한 유저가 완료한 미션들의 정보를 전달한다', done => {
+            request.get('/beta-tests/5c7345f718500feddc24ca34/missions/completed')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    console.log(res.body);
+                    res.body.length.should.be.eql(2);
+
+                    res.body[0].title.should.be.eql("의견 작성");
+                    res.body[0].betaTestId.should.be.eql("5c7345f718500feddc24ca34");
+                    res.body[0].action.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSeApAn8oPp8mW6UT8RD1uMbKk_UvAiWBh5jwlxlyUUI4D2N1g/viewform?usp=pp_url&entry.455936817=");
+                    res.body[0].isCompleted.should.be.eql(true);
+                    res.body[0].isRecheckable.should.be.eql(false);
+
+                    res.body[1].title.should.be.eql("로그인이 필요한 설문");
+                    res.body[1].betaTestId.should.be.eql("5c7345f718500feddc24ca34");
+                    res.body[1].action.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLScX_8AfhRa9Fc17p2DZdVbMHCA98DY_TlShowgfoNqbx25q9g/viewform?internal_web=true&usp=pp_url&entry.1223559684=");
+                    res.body[1].isCompleted.should.be.eql(true);
+                    res.body[1].isRecheckable.should.be.eql(true);
+
+                    done();
+                })
+                .catch(err => done(err));
+        });
+    });
+
     describe('POST /beta-tests/:id/complete', () => {
         let stubAxiosPost;
 
@@ -679,64 +706,115 @@ describe('BetaTests', () => {
             result.length.should.be.eql(5);
 
             result[0]._id.should.be.eql("5d01b1f6db7d04bc2d04345c");
+            result[0].coverImageUrl.should.be.eql("https://i.imgur.com/oXFepuQ.jpg");
             result[0].iconImageUrl.should.be.eql("https://i.imgur.com/oXFepuQ.jpg");
             result[0].title.should.be.eql("[매드러너] 게임 테스트");
             result[0].description.should.be.eql("");
+            result[0].plan.should.be.eql("standard");
             result[0].tags.length.should.be.eql(1);
             result[0].tags[0].should.be.eql("설문");
             result[0].openDate.should.be.eql("2019-06-13T00:00:00.000Z");
             result[0].closeDate.should.be.eql("2019-06-19T14:59:59.999Z");
-            should.not.exist(result[0].epilogue);
             result[0].isAttended.should.be.eql(true);
             result[0].isCompleted.should.be.eql(true);
+            result[0].isRegisteredEpilogue.should.be.eql(false);
+            result[0].rewards.list.length.should.be.eql(2);
+            result[0].rewards.list[0].order.should.be.eql(1);
+            result[0].rewards.list[0].title.should.be.eql("테스트 요정 (전체지급)");
+            result[0].rewards.list[0].content.should.be.eql("문화상품권 1000원");
+            result[0].rewards.list[0].price.should.be.eql(1000);
+            result[0].rewards.list[1].order.should.be.eql(2);
+            result[0].rewards.list[1].title.should.be.eql("테스트 영웅 (1명)");
+            result[0].rewards.list[1].content.should.be.eql("문화상품권 5000원");
+            result[0].rewards.list[1].price.should.be.eql(5000);
 
             result[1]._id.should.be.eql("5c986adee1a6f20813ec464d");
+            result[1].coverImageUrl.should.be.eql("");
             result[1].iconImageUrl.should.be.eql("https://i.imgur.com/4A0jfFe.jpg");
             result[1].title.should.be.eql("[메이헴의 유산] 게임 테스트 + 에필로그");
+            result[1].plan.should.be.eql("standard");
             result[1].tags.length.should.be.eql(1);
             result[1].tags[0].should.be.eql("설문");
             result[1].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
             result[1].closeDate.should.be.eql("2019-03-23T00:00:00.000Z");
-            result[1].epilogue.awards.should.be.eql("테스트 영웅 : 드래군핥짝 님\n테스트 요정 : 이브 외 9명");
-            result[1].epilogue.deeplink.should.be.eql("http://www.naver.com");
-            result[1].epilogue.companySays.should.be.eql("포메스 짱! 완전 짱! 대박! 완전! 완전! 두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄");
             result[1].isAttended.should.be.eql(false);
             result[1].isCompleted.should.be.eql(false);
+            result[1].isRegisteredEpilogue.should.be.eql(true);
+            result[1].rewards.list.length.should.be.eql(2);
+            result[1].rewards.list[0].order.should.be.eql(1);
+            result[1].rewards.list[0].title.should.be.eql("1테스트 요정 (전체지급)");
+            result[1].rewards.list[0].content.should.be.eql("문화상품권 1000원");
+            result[1].rewards.list[0].price.should.be.eql(1000);
+            result[1].rewards.list[1].order.should.be.eql(2);
+            result[1].rewards.list[1].title.should.be.eql("1테스트 영웅 (1명)");
+            result[1].rewards.list[1].content.should.be.eql("문화상품권 5000원");
+            result[1].rewards.list[1].price.should.be.eql(5000);
 
             result[2]._id.should.be.eql("5c99d14fd122450cf08431ab");
+            result[2].coverImageUrl.should.be.eql("https://i.imgur.com/4oaQHWe1.jpg");
             result[2].iconImageUrl.should.be.eql("https://i.imgur.com/4oaQHWe.jpg");
             result[2].title.should.be.eql("appbee0627이 참여하지 않은 그룹! 에필로그도 없음!");
+            result[2].plan.should.be.eql("lite");
             result[2].tags.length.should.be.eql(1);
             result[2].tags[0].should.be.eql("설문");
             result[2].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
             result[2].closeDate.should.be.eql("2019-03-25T00:00:00.000Z");
-            should.not.exist(result[2].epilogue);
             result[2].isAttended.should.be.eql(false);
             result[2].isCompleted.should.be.eql(false);
+            result[2].isRegisteredEpilogue.should.be.eql(false);
+            result[2].rewards.list.length.should.be.eql(2);
+            result[2].rewards.list[0].order.should.be.eql(1);
+            result[2].rewards.list[0].title.should.be.eql("1테스트 요정 (전체지급)");
+            result[2].rewards.list[0].content.should.be.eql("문화상품권 1000원");
+            result[2].rewards.list[0].price.should.be.eql(1000);
+            result[2].rewards.list[1].order.should.be.eql(2);
+            result[2].rewards.list[1].title.should.be.eql("1테스트 영웅 (1명)");
+            result[2].rewards.list[1].content.should.be.eql("문화상품권 5000원");
+            result[2].rewards.list[1].price.should.be.eql(5000);
 
             result[3]._id.should.be.eql("5c989f0a2917e70db5d4fc2e");
+            result[3].coverImageUrl.should.be.eql("https://i.imgur.com/uSaMpey1.jpg");
             result[3].iconImageUrl.should.be.eql("https://i.imgur.com/uSaMpey.jpg");
             result[3].title.should.be.eql("appbee0627이 참여한 그룹! + 에필로그  길게길게길게길게길게길게길게길게길게길게길게길게길게길게길게");
+            result[3].plan.should.be.eql("lite");
             result[3].tags.length.should.be.eql(1);
             result[3].tags[0].should.be.eql("설문");
             result[3].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
             result[3].closeDate.should.be.eql("2019-03-26T00:00:00.000Z");
-            result[3].epilogue.awards.should.be.eql("포메스 팀 : 참가자 여러분 모두 저희의 챔피언❤️");
-            result[3].epilogue.deeplink.should.be.eql("http://www.google.co.kr");
-            result[3].epilogue.companySays.should.be.eql("게임사 가라사대, 너희가 나를 살찌웠노라.... 고맙노라.....");
             result[3].isAttended.should.be.eql(true);
             result[3].isCompleted.should.be.eql(true);
+            result[3].isRegisteredEpilogue.should.be.eql(true);
+            result[3].rewards.list.length.should.be.eql(2);
+            result[3].rewards.list[0].order.should.be.eql(1);
+            result[3].rewards.list[0].title.should.be.eql("1테스트 요정 (전체지급)");
+            result[3].rewards.list[0].content.should.be.eql("문화상품권 1000원");
+            result[3].rewards.list[0].price.should.be.eql(1000);
+            result[3].rewards.list[1].order.should.be.eql(2);
+            result[3].rewards.list[1].title.should.be.eql("1테스트 영웅 (1명)");
+            result[3].rewards.list[1].content.should.be.eql("문화상품권 5000원");
+            result[3].rewards.list[1].price.should.be.eql(5000);
 
             result[4]._id.should.be.eql("5c99d101d122450cf08431aa");
+            result[4].coverImageUrl.should.be.eql("https://i.imgur.com/7886ojX1.png");
             result[4].iconImageUrl.should.be.eql("https://i.imgur.com/7886ojX.png");
             result[4].title.should.be.eql("appbee0627이 참여한 그룹! 근데 에필로그가 아직 등록안됨!!!!");
+            result[4].plan.should.be.eql("lite");
             result[4].tags.length.should.be.eql(1);
             result[4].tags[0].should.be.eql("설문");
             result[4].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
             result[4].closeDate.should.be.eql("2019-03-24T00:00:00.000Z");
-            should.not.exist(result[4].epilogue);
             result[4].isAttended.should.be.eql(true);
             result[4].isCompleted.should.be.eql(true);
+            result[4].isRegisteredEpilogue.should.be.eql(false);
+            result[4].rewards.list.length.should.be.eql(2);
+            result[4].rewards.list[0].order.should.be.eql(1);
+            result[4].rewards.list[0].title.should.be.eql("1테스트 요정 (전체지급)");
+            result[4].rewards.list[0].content.should.be.eql("문화상품권 1000원");
+            result[4].rewards.list[0].price.should.be.eql(1000);
+            result[4].rewards.list[1].order.should.be.eql(2);
+            result[4].rewards.list[1].title.should.be.eql("1테스트 영웅 (1명)");
+            result[4].rewards.list[1].content.should.be.eql("문화상품권 5000원");
+            result[4].rewards.list[1].price.should.be.eql(5000);
         };
 
         const assertVerboseFormat = (result) => {
@@ -978,6 +1056,92 @@ describe('BetaTests', () => {
         });
     });
 
+    describe('GET /beta-tests/:id/award-record', () => {
+        it('해당 베타테스트의 나의 수상 정보를 조회한다', done => {
+            request.get('/beta-tests/5c9892f92917e70db5d243dd/award-record')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.type.should.be.eql("best");
+                    res.body.reward.description.should.be.eql("문화상품권 5000원");
+                    res.body.reward.price.should.be.eql(5000);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('해당 베타테스트에 나의 수상 정보가 존재하지 않으면 ', done => {
+            request.get('/beta-tests/5c25c77798d78f078d8ef3ba/award-record')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(404)
+                .then(() => done())
+                .catch(err => done(err));
+        });
+
+        it('해당 베타테스트에 전체 수상 정보가 존재하지 않으면 ', done => {
+            request.get('/beta-tests/5c986adee1a6f20813ec464d/award-record')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(404)
+                .then(() => done())
+                .catch(err => done(err));
+        });
+    });
+
+    describe('GET /beta-tests/:id/award-records', () => {
+        it('해당 베타테스트의 해당 수상 정보를 조회한다', done => {
+            request.get('/beta-tests/5c9892f92917e70db5d243dd/award-records')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.sort((a, b) => a.type > b.type ? 1 : -1);
+
+                    res.body[0].type.should.be.eql("best");
+                    res.body[0].nickName.should.be.eql("test_user_nickname");
+                    res.body[0].reward.description.should.be.eql("문화상품권 5000원");
+                    res.body[0].reward.price.should.be.eql(5000);
+
+                    res.body[1].type.should.be.eql("good");
+                    res.body[1].nickName.should.be.eql("GoodUser");
+                    res.body[1].reward.description.should.be.eql("문화상품권 3000원");
+                    res.body[1].reward.price.should.be.eql(3000);
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('해당 베타테스트에 해당 수상 정보가 존재하지 않으면 ', done => {
+            request.get('/beta-tests/000000000000000000000000/award-records')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(404)
+                .then(() => done())
+                .catch(err => done(err));
+        });
+    });
+
+    describe('GET /beta-tests/:id/epilogue', () => {
+        it('해당 베타테스트의 에필로그 정보를 조회한다', done => {
+            request.get('/beta-tests/5c986adee1a6f20813ec464d/epilogue')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(200)
+                .then(res => {
+                    res.body.deeplink.should.be.eql("http://www.naver.com");
+                    res.body.companySays.should.be.eql("포메스 짱! 완전 짱! 대박! 완전! 완전! 두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄");
+                    res.body.companyName.should.be.eql("게임사이름");
+                    res.body.companyImageUrl.should.be.eql("http://www.google.com/image.png");
+
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('해당 베타테스트에 에필로그 정보가 존재하지 않으면 ', done => {
+            request.get('/beta-tests/5c99d101d122450cf08431aa/epilogue')
+                .set('x-access-token', config.appbeeToken.valid)
+                .expect(404)
+                .then(() => done())
+                .catch(err => done(err));
+        });
+    });
+
     describe('GET /beta-tests/all/count', () => {
         it('모든 베타테스트의 개수를 조회힌다', done => {
             request.get('/beta-tests/all/count')
@@ -996,7 +1160,7 @@ describe('BetaTests', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
-                    res.text.should.be.eql("24000");
+                    res.text.should.be.eql("27000");
                     done();
                 }).catch(err => done(err));
         });
