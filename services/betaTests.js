@@ -2,21 +2,22 @@ const mongoose = require('mongoose');
 const BetaTests = require('../models/betaTests');
 const BetaTestParticipations = require('../models/betaTestParticipations');
 const BetaTestMissions = require('../models/betaTestMissions');
-const AwardRecords = require('../models/awardRecords');
+const AwardRecords = require('../models/awardRecords').AwardRecords;
+const AwardType = require('../models/awardRecords').AwardType;
 const ConfigurationsService = require('../services/configurations');
 
 const getAllBetaTestsCount = () => {
-    return BetaTests.count({ status: { $ne: "test" }});
+    return BetaTests.count({status: {$ne: "test"}});
 };
 
 const getAllRewards = () => {
     return AwardRecords.aggregate([
-        { $match: { price : { $exists: true } } },
+        {$match: {'reward.price': {$exists: true}}},
         {
             $group: {
-                _id: { betaTestId : '$betaTestId', rewardOrder : '$rewardOrder' },
-                price: { $first: '$price' },
-                userCount: { $sum: 1 }
+                _id: {betaTestId: '$betaTestId', type: '$type'},
+                price: {$first: '$reward.price'},
+                userCount: {$sum: 1}
             }
         }
     ]);
@@ -24,12 +25,12 @@ const getAllRewards = () => {
 
 const getCompletedUsersCountFromAllMissionItem = () => {
     return BetaTests.aggregate([
-        { $match: { status: { $ne: "test" } } },
-        { $project: { missions: 1 } },
-        { $unwind: "$missions" },
-        { $unwind: "$missions.items" },
-        { $replaceRoot: { newRoot : "$missions.items" } },
-        { $project: { _id: 0, "completedUsersCount" : { $size : "$completedUserIds" } } }
+        {$match: {status: {$ne: "test"}}},
+        {$project: {missions: 1}},
+        {$unwind: "$missions"},
+        {$unwind: "$missions.items"},
+        {$replaceRoot: {newRoot: "$missions.items"}},
+        {$project: {_id: 0, "completedUsersCount": {$size: "$completedUserIds"}}}
     ]);
 };
 
@@ -39,7 +40,7 @@ const findValidBetaTests = (userId) => {
     console.log('findValidBetaTests userId=', userId);
     return BetaTests.aggregate([
         {
-            $match : {
+            $match: {
                 openDate: {$lte: currentTime},
                 closeDate: {$gte: currentTime},
                 $or: [
@@ -51,16 +52,16 @@ const findValidBetaTests = (userId) => {
         {
             $group: {
                 _id: "$_id",
-                coverImageUrl: { $first: "$coverImageUrl" },
-                title: { $first: "$title" },
-                description: { $first: "$description" },
-                plan: { $first: "$plan" },
-                status: { $first: "$status" },
-                progressText: { $first: "$progressText" },
-                tags: { $first: "$tags" },
-                openDate: { $first: "$openDate" },
-                closeDate: { $first: "$closeDate" },
-                bugReport: { $first: "$bugReport" },
+                coverImageUrl: {$first: "$coverImageUrl"},
+                title: {$first: "$title"},
+                description: {$first: "$description"},
+                plan: {$first: "$plan"},
+                status: {$first: "$status"},
+                progressText: {$first: "$progressText"},
+                tags: {$first: "$tags"},
+                openDate: {$first: "$openDate"},
+                closeDate: {$first: "$closeDate"},
+                bugReport: {$first: "$bugReport"},
             }
         }
     ]).then(async betaTests => {
@@ -81,7 +82,7 @@ const findValidBetaTests = (userId) => {
 
         return betaTests.map(betaTest => {
             betaTest.currentDate = currentDate;
-            betaTest.progressText = (betaTest.progressText)? betaTest.progressText : defaultProgressText;
+            betaTest.progressText = (betaTest.progressText) ? betaTest.progressText : defaultProgressText;
 
             betaTest.isAttended = isAttendedBetaTest(userId, betaTest._id, participations);
             betaTest.isCompleted = isCompletedBetaTest(userId, betaTest._id, participations);
@@ -99,34 +100,39 @@ const findFinishedBetaTests = (userId, isVerbose) => {
     console.log("[findFinishedBetaTests] userId=", userId, ", isVerbose=", isVerbose);
     const currentTime = new Date();
 
-    return BetaTests.aggregate([
+    return BetaTests.find(
         {
-            $match : {
-                closeDate: { $lte: currentTime },
-                $or: [
-                    { targetUserIds: { $exists: false }},
-                    { targetUserIds: { $in: [ userId ] } },
-                ],
-            }
+            $and: [
+                {closeDate: {$lte: currentTime}},
+                {
+                    $or: [
+                        {targetUserIds: {$exists: false}},
+                        {targetUserIds: {$in: [userId]}},
+                    ]
+                }
+            ],
         },
         {
-            $group: {
-                _id: "$_id",
-                iconImageUrl: { $first: "$iconImageUrl" },
-                title: { $first: "$title" },
-                description: { $first: "$description" },
-                tags: { $first: "$tags" },
-                openDate: { $first: "$openDate" },
-                closeDate: { $first: "$closeDate" },
-                epilogue: { $first: "$epilogue" },
-            }
+            _id: 1,
+            coverImageUrl: 1,
+            iconImageUrl: 1,
+            title: 1,
+            description: 1,
+            tags: 1,
+            openDate: 1,
+            closeDate: 1,
+            epilogue: 1,
+            plan: 1,
+            rewards: 1,
         }
-    ]).then(async betaTests => {
+    ).lean().then(async betaTests => {
         const currentDate = new Date();
 
         return await Promise.all(
             betaTests.map(async betaTest => {
                 betaTest.currentDate = currentDate;
+
+                betaTest.isRegisteredEpilogue = !!betaTest.epilogue;
 
                 const participations = await findBetaTestParticipation(betaTest._id, userId);
                 betaTest.isAttended = isAttendedBetaTest(userId, betaTest._id, participations);
@@ -162,7 +168,7 @@ const findFinishedBetaTests = (userId, isVerbose) => {
 
 const convertMissionItemsForClient = (userId, missions, participations) => {
     const completedMissionIds = participations.filter(participation => participation.type === BetaTestParticipations.Constants.TYPE_MISSION)
-                                            .map(participation => participation.missionId.toString());
+        .map(participation => participation.missionId.toString());
 
     return missions.map(mission => {
         mission.isCompleted = completedMissionIds.includes(mission._id.toString());
@@ -181,23 +187,23 @@ const convertMissionItemsForClient = (userId, missions, participations) => {
 const findBetaTest = (betaTestId, userId) => {
     return BetaTests.aggregate([
         {
-            $match: { _id: mongoose.Types.ObjectId(betaTestId) }
+            $match: {_id: mongoose.Types.ObjectId(betaTestId)}
         },
         {
-            $group:  {
+            $group: {
                 _id: "$_id",
-                title: { $first: "$title" },
-                description: { $first: "$description" },
-                purpose: { $first: "$purpose" },
-                tags: { $first: "$tags" },
-                coverImageUrl: { $first: "$coverImageUrl" },
-                iconImageUrl: { $first: "$iconImageUrl" },
-                openDate: { $first: "$openDate" },
-                closeDate: { $first: "$closeDate" },
-                rewards: { $first: "$rewards" },
+                title: {$first: "$title"},
+                description: {$first: "$description"},
+                purpose: {$first: "$purpose"},
+                tags: {$first: "$tags"},
+                coverImageUrl: {$first: "$coverImageUrl"},
+                iconImageUrl: {$first: "$iconImageUrl"},
+                openDate: {$first: "$openDate"},
+                closeDate: {$first: "$closeDate"},
+                rewards: {$first: "$rewards"},
             }
         }
-        ])
+    ])
         .then(async betaTests => {
             const betaTest = betaTests[0];
 
@@ -247,14 +253,48 @@ const findBetaTestProgress = async (betaTestId, userId, isVerbose) => {
     return result;
 };
 
-const concat = (x,y) =>
+const findAwardRecords = (betaTestId) => {
+    return AwardRecords.find({betaTestId: betaTestId},
+        {
+            userId: 1,
+            nickName: 1,
+            type: 1,
+            reward: 1
+        }).lean();
+};
+
+const findEpilogue = (betaTestId) => {
+    return BetaTests.findOne({_id: betaTestId},
+        {
+            epilogue: 1,
+        }
+    ).then(betaTest => {
+        return betaTest.epilogue;
+    })
+};
+
+const findCompletedMissions = (betaTestId, userId) => {
+    return BetaTestParticipations.Model.find({
+        betaTestId: betaTestId,
+        userId: userId,
+        type: BetaTestParticipations.Constants.TYPE_MISSION,
+        status: BetaTestParticipations.Constants.STATUS_COMPLETE,
+    }).lean().then(participations => {
+        return BetaTestMissions.find({
+            betaTestId: betaTestId,
+            _id: { $in: participations.map(participation => participation.missionId) }
+        }).lean()
+    })
+};
+
+const concat = (x, y) =>
     x.concat(y);
 
-const flatMap = (f,xs) =>
+const flatMap = (f, xs) =>
     xs.map(f).reduce(concat, []);
 
-Array.prototype.flatMap = function(f) {
-    return flatMap(f,this)
+Array.prototype.flatMap = function (f) {
+    return flatMap(f, this)
 };
 
 // 이거 에러 그룹에 묶고싶다..
@@ -330,7 +370,7 @@ const getParticipatedMissionCount = (betaTestId, userId) => {
     return BetaTestParticipations.Model.count({
         userId: userId,
         betaTestId: betaTestId,
-        type : BetaTestParticipations.Constants.TYPE_MISSION,
+        type: BetaTestParticipations.Constants.TYPE_MISSION,
     }).lean();
 };
 
@@ -450,6 +490,9 @@ module.exports = {
     findBetaTestProgress,
     findBetaTest,
     findMissionParticipation,
+    findAwardRecords,
+    findEpilogue,
+    findCompletedMissions,
     attend,
     completeMission,
     completeBetaTest,

@@ -31,21 +31,27 @@ const data = [
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "참여보상(10명 추첨)",
                     "content" : "문화상품권 3000원",
-                    "price": "3000",
+                    "price" : 3000,
+                    "type" : "participated",
+                    "count" : 10,
                 },
                 {
                     "order" : 2,
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "테스트 용사(3명 선정)",
                     "content" : "문화상품권 5000원",
-                    "price": "5000",
+                    "price" : 5000,
+                    "type" : "good",
+                    "count" : 3,
                 },
                 {
                     "order" : 3,
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "테스트 영웅(1명 선정)",
                     "content" : "문화상품권 10000원",
-                    "price": "10000",
+                    "price" : 10000,
+                    "type" : "best",
+                    "count" : 1,
                 }
             ]
         },
@@ -159,13 +165,17 @@ const data = [
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "참여보상(10명 추첨)",
                     "content" : "문화상품권 3000원",
-                    "price": "3000",
+                    "price" : 3000,
+                    "type" : "participated",
+                    "count" : 10,
                 },
                 {
                     "order" : 2,
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "테스트 영웅(1명 선정)",
                     "content" : "영웅님의 닉네임으로 게임 내 NPC 제작은 길게 써보려고 해봤다능",
+                    "type" : "best",
+                    "count" : 1,
                 }
             ]
         },
@@ -316,6 +326,7 @@ const data = [
                     "iconImageUrl" : "",
                     "title" : "참여자 전원",
                     "content" : "포메스의 사랑",
+                    "type" : "participated",
                 }
             ]
         },
@@ -365,13 +376,16 @@ const data = [
                     "order" : 1,
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
-                    "price": "1000",
+                    "price" : 1000,
+                    "type" : "normal",
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
-                    "price": "5000",
+                    "price" : 5000,
+                    "type" : "best",
+                    "count" : 1,
                 }
             ]
         },
@@ -435,13 +449,16 @@ const data = [
                     "order" : 1,
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
-                    "price": "1000",
+                    "price" : 1000,
+                    "type" : "normal",
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
-                    "price": "5000",
+                    "price" : 5000,
+                    "type" : "best",
+                    "count" : 1,
                 }
             ]
         },
@@ -478,7 +495,9 @@ const data = [
         "epilogue" : {
             "awards" : "테스트 영웅 : 드래군핥짝 님\n테스트 요정 : 이브 외 9명",
             "deeplink" : "http://www.naver.com",
-            "companySays" : "포메스 짱! 완전 짱! 대박! 완전! 완전! 두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄"
+            "companySays" : "포메스 짱! 완전 짱! 대박! 완전! 완전! 두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄두줄",
+            "companyName" : "게임사이름",
+            "companyImageUrl" : "http://www.google.com/image.png",
         }
     }
 
@@ -493,6 +512,7 @@ const data = [
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
             "done" : "굿! 훌륭해요! 마감 후 테스터 시상식이 열릴거에요."
         },
+        "coverImageUrl" : "https://i.imgur.com/uSaMpey1.jpg",
         "iconImageUrl" : "https://i.imgur.com/uSaMpey.jpg",
         "openDate" : ISODate("2019-03-21T15:00:00.000Z"),
         "closeDate" : ISODate("2019-03-26T00:00:00.000Z"),
@@ -505,13 +525,16 @@ const data = [
                     "order" : 1,
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
-                    "price": "1000",
+                    "price" : 1000,
+                    "type" : "normal",
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
-                    "price": "5000",
+                    "price" : 5000,
+                    "type" : "best",
+                    "count" : 1,
                 }
             ]
         },
@@ -564,6 +587,7 @@ const data = [
             "doing" : "밑져야 본전! 재미있어 보인다면 참여해 보세요.",
             "done" : "짝짝짝! 멋져요! 마감 후 테스터 시상식이 열릴거에요."
         },
+        "coverImageUrl" : "https://i.imgur.com/7886ojX1.png",
         "iconImageUrl" : "https://i.imgur.com/7886ojX.png",
         "openDate" : ISODate("2019-03-21T15:00:00.000Z"),
         "closeDate" : ISODate("2019-03-24T00:00:00.000Z"),
@@ -576,13 +600,16 @@ const data = [
                     "order" : 1,
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
-                    "price": "1000",
+                    "price" : 1000,
+                    "type" : "normal",
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
-                    "price": "5000",
+                    "price" : 5000,
+                    "type" : "best",
+                    "count" : 1,
                 }
             ]
         },
@@ -630,6 +657,7 @@ const data = [
             "doing" : "당신을 기다리고 있었어요! 이어서 참여해볼까요?",
             "done" : "짝짝짝! 멋져요! 마감 후 테스터 시상식이 열릴거에요."
         },
+        "coverImageUrl" : "https://i.imgur.com/4oaQHWe1.jpg",
         "iconImageUrl" : "https://i.imgur.com/4oaQHWe.jpg",
         "openDate" : ISODate("2019-03-21T15:00:00.000Z"),
         "closeDate" : ISODate("2019-03-25T00:00:00.000Z"),
@@ -642,13 +670,16 @@ const data = [
                     "order" : 1,
                     "title" : "1테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
-                    "price": "1000",
+                    "price" : 1000,
+                    "type" : "normal",
                 },
                 {
                     "order" : 2,
                     "title" : "1테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
-                    "price": "5000",
+                    "price" : 5000,
+                    "type" : "best",
+                    "count" : 1,
                 }
             ]
         },
@@ -721,21 +752,27 @@ const data = [
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "참여보상 (10명 추첨)",
                     "content" : "문화상품권 1000원",
-                    "price": "1000",
+                    "price" : 1000,
+                    "type" : "participated",
+                    "count" : 10,
                 },
                 {
                     "order" : 2,
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "테스트 용사 (3명 선정)",
                     "content" : "문화상품권 3000원",
-                    "price": "3000",
+                    "price" : 3000,
+                    "type" : "good",
+                    "count" : 3,
                 },
                 {
                     "order" : 3,
                     "iconImageUrl" : "http://icons.iconarchive.com/icons/icons-land/metro-raster-sport/256/Medal-icon.png",
                     "title" : "테스트 영웅 (1명 선정)",
                     "content" : "문화상품권 5000원",
-                    "price": "5000",
+                    "price" : 5000,
+                    "type" : "best",
+                    "count" : 1,
                 }
             ]
         },
@@ -836,13 +873,16 @@ const data = [
                     "order" : 1,
                     "title" : "테스트 요정 (전체지급)",
                     "content" : "문화상품권 1000원",
-                    "price": "1000",
+                    "price": 1000,
+                    "type" : "normal",
                 },
                 {
                     "order" : 2,
                     "title" : "테스트 영웅 (1명)",
                     "content" : "문화상품권 5000원",
-                    "price": "5000",
+                    "price": 5000,
+                    "type" : "best",
+                    "count" : 1,
                 }
             ]
         },
@@ -943,7 +983,8 @@ const data = [
                     "iconImageUrl" : "",
                     "title" : "참여자 전원",
                     "content" : "포메스의 사랑",
-                    "price" : 1000
+                    "price" : 1000,
+                    "type" : "participated",
                 }
             ]
         },
