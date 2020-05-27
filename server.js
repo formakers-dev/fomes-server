@@ -14,8 +14,14 @@ const postsRouter = require('./router/posts');
 const {logError, handleError} = require('./middleware/errorHandler');
 const db = require('./db');
 const port = require('./config').port;
+const cors = require('cors');
 
 db.init();
+
+app.use(cors({
+    origin: true,
+    credentials: true
+}));
 
 app.use(bodyParser.json({limit: '10mb'}));
 app.use(bodyParser.urlencoded({
