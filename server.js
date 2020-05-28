@@ -13,13 +13,14 @@ const eventLogsRouter = require('./router/eventLogs');
 const postsRouter = require('./router/posts');
 const {logError, handleError} = require('./middleware/errorHandler');
 const db = require('./db');
-const port = require('./config').port;
+const config = require('./config');
+const port = config.port;
 const cors = require('cors');
 
 db.init();
 
 app.use(cors({
-    origin: true,
+    origin: config.frontendBaseUrl,
     credentials: true
 }));
 
