@@ -6,6 +6,7 @@ config.development = {
     port: process.env.PORT || 8080,
     googleClientId: process.env.GG_CLIENT_ID,
     notificationApiKey: process.env.NOTI_API_KEY,
+    frontendBaseUrl : process.env.FRONTEND_BASE_URL || 'http://localhost:5000'
 };
 
 config.staging = config.development;
@@ -17,6 +18,7 @@ config.test = {
     port: 3000,
     googleClientId: '',
     notificationApiKey: 'testNotiApiKey',
+    frontendBaseUrl: '',
 
     // for test only
     testUser: {
