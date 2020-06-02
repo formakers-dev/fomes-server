@@ -204,6 +204,7 @@ const findBetaTest = (betaTestId, userId) => {
                 closeDate: {$first: "$closeDate"},
                 rewards: {$first: "$rewards"},
                 missionsSummary: {$first: "$missionsSummary"},
+                plan: {$first: "$plan"},
             }
         }
     ])

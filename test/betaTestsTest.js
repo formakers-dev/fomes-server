@@ -935,6 +935,7 @@ describe('BetaTests', () => {
                     res.body.closeDate.should.be.eql('2119-12-31T14:59:50.000Z');
                     res.body.isAttended.should.be.eql(true);
                     res.body.isCompleted.should.be.eql(false);
+                    res.body.plan.should.be.eql('standard');
 
                     res.body.missions.length.should.be.eql(4);
                     res.body.missions.sort((a, b) => a.order > b.order ? 1 : -1);
