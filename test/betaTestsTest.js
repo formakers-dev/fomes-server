@@ -78,6 +78,7 @@ describe('BetaTests', () => {
                     should.not.exist(res.body[0].bugReport);
                     res.body[0].isAttended.should.be.eql(false);
                     res.body[0].isCompleted.should.be.eql(false);
+                    res.body[0].missionsSummary.should.be.eql("설문 참여 (객10/주5)");
 
                     res.body[1]._id.should.be.eql("5c7345f718500feddc24ca34");
                     res.body[1].coverImageUrl.should.be.eql("https://i.imgur.com/5z0esWH.png");
@@ -93,6 +94,7 @@ describe('BetaTests', () => {
                     res.body[1].bugReport.url.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSeApAn8oPp8mW6UT8RD1uMbKk_UvAiWBh5jwlxlyUUI4D2N1g/viewform?usp=pp_url&entry.455936817=");
                     res.body[1].isAttended.should.be.eql(true);
                     res.body[1].isCompleted.should.be.eql(false);
+                    res.body[1].missionsSummary.should.be.eql("설문 참여 (객15)");
 
                     res.body[2]._id.should.be.eql("5ce51a069cb162da02b9f94d");
                     res.body[2].coverImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
@@ -110,6 +112,7 @@ describe('BetaTests', () => {
                     res.body[2].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");
                     res.body[2].isAttended.should.be.eql(true);
                     res.body[2].isCompleted.should.be.eql(false);
+                    res.body[2].missionsSummary.should.be.eql("사전 신청 / 10분 플레이 / 설문 참여 (객5/주5)");
 
                     res.body[3]._id.should.be.eql("5c25c77798d78f078d8ef3ba");
                     res.body[3].coverImageUrl.should.be.eql("https://images.pexels.com/photos/669609/pexels-photo-669609.jpeg?auto=compress&cs=tinysrgb&dpr=2&fit=crop&h=500&w=500");
@@ -125,6 +128,7 @@ describe('BetaTests', () => {
                     should.not.exist(res.body[3].bugReport);
                     res.body[3].isAttended.should.be.eql(true);
                     res.body[3].isCompleted.should.be.eql(false);
+                    res.body[3].missionsSummary.should.be.eql("사전 신청 / 30분 플레이 / 설문 참여 (객20/주5)");
 
                     res.body[4]._id.should.be.eql("5c861f3f2917e70db5d2d536");
                     res.body[4].coverImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
@@ -139,6 +143,7 @@ describe('BetaTests', () => {
                     res.body[4].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");
                     res.body[4].isAttended.should.be.eql(false);
                     res.body[4].isCompleted.should.be.eql(false);
+                    res.body[4].missionsSummary.should.be.eql("설문 참여 (객5)");
 
                     done();
                 }).catch(err => done(err));
@@ -184,6 +189,7 @@ describe('BetaTests', () => {
                         res.body[0].description.should.be.eql("targetUserIds에 추가해보았다");
                         res.body[0].openDate.should.be.eql("2018-12-28T00:00:00.000Z");
                         res.body[0].closeDate.should.be.eql("2119-12-31T00:00:00.000Z");
+                        res.body[0].missionsSummary.should.be.eql("설문 참여 (객10/주5)");
 
                         res.body[1]._id.should.be.eql("1c861f3f2917e73db5d2d536");
                         res.body[1].coverImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
@@ -191,6 +197,7 @@ describe('BetaTests', () => {
                         res.body[1].description.should.be.eql("테스트 성 이니까");
                         res.body[1].openDate.should.be.eql("2019-03-11T00:00:00.000Z");
                         res.body[1].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");
+                        res.body[1].missionsSummary.should.be.eql("설문 참여 (객2/주3)");
 
                         res.body[2]._id.should.be.eql("5c7345f718500feddc24ca34");
                         res.body[2].coverImageUrl.should.be.eql("https://i.imgur.com/5z0esWH.png");
@@ -198,6 +205,7 @@ describe('BetaTests', () => {
                         res.body[2].description.should.be.eql("* 제보 기간 : 2/25(월) ~ 3/3(일)\n* 제보 방법 : 게임 플레이 시 발견되는 버그가 있을 때마다 이 카드를 통해 제보\n* 중요 버그 제보를 할 수록 테스트 영웅 수상의 가능성이 높아집니다!");
                         res.body[2].openDate.should.be.eql("2019-02-25T00:00:00.000Z");
                         res.body[2].closeDate.should.be.eql("2119-03-03T14:59:00.000Z");
+                        res.body[2].missionsSummary.should.be.eql("설문 참여 (객15)");
 
                         res.body[3]._id.should.be.eql("5ce51a069cb162da02b9f94d");
                         res.body[3].coverImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
@@ -206,6 +214,7 @@ describe('BetaTests', () => {
                         res.body[3].plan.should.be.eql("standard");
                         res.body[3].openDate.should.be.eql("2019-03-11T00:00:00.000Z");
                         res.body[3].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");
+                        res.body[3].missionsSummary.should.be.eql("사전 신청 / 10분 플레이 / 설문 참여 (객5/주5)");
 
                         res.body[4]._id.should.be.eql("5c25c77798d78f078d8ef3ba");
                         res.body[4].coverImageUrl.should.be.eql("https://images.pexels.com/photos/669609/pexels-photo-669609.jpeg?auto=compress&cs=tinysrgb&dpr=2&fit=crop&h=500&w=500");
@@ -213,6 +222,7 @@ describe('BetaTests', () => {
                         res.body[4].description.should.be.eql("갑자기 분위기 설문조사! 포메스 앱에 대한 설문조사입니다 :-D");
                         res.body[4].openDate.should.be.eql("2018-12-28T00:00:00.000Z");
                         res.body[4].closeDate.should.be.eql("2119-12-31T00:00:00.000Z");
+                        res.body[4].missionsSummary.should.be.eql("사전 신청 / 30분 플레이 / 설문 참여 (객20/주5)");
 
                         res.body[5]._id.should.be.eql("5c861f3f2917e70db5d2d536");
                         res.body[5].coverImageUrl.should.be.eql("https://i.imgur.com/n2MaXzg.png");
@@ -220,6 +230,7 @@ describe('BetaTests', () => {
                         res.body[5].description.should.be.eql("우체통임다");
                         res.body[5].openDate.should.be.eql("2019-03-11T00:00:00.000Z");
                         res.body[5].closeDate.should.be.eql("2119-12-31T14:59:50.000Z");
+                        res.body[5].missionsSummary.should.be.eql("설문 참여 (객5)");
 
                         done();
                     }).catch(err => done(err));
@@ -727,6 +738,7 @@ describe('BetaTests', () => {
             result[0].rewards.list[1].title.should.be.eql("테스트 영웅 (1명)");
             result[0].rewards.list[1].content.should.be.eql("문화상품권 5000원");
             result[0].rewards.list[1].price.should.be.eql(5000);
+            result[0].missionsSummary.should.be.eql("30분 플레이 / 설문 참여 (객10/주5)");
 
             result[1]._id.should.be.eql("5c986adee1a6f20813ec464d");
             result[1].coverImageUrl.should.be.eql("");
@@ -749,6 +761,7 @@ describe('BetaTests', () => {
             result[1].rewards.list[1].title.should.be.eql("1테스트 영웅 (1명)");
             result[1].rewards.list[1].content.should.be.eql("문화상품권 5000원");
             result[1].rewards.list[1].price.should.be.eql(5000);
+            result[1].missionsSummary.should.be.eql("30분 플레이 / 설문 참여 (객5/주5)");
 
             result[2]._id.should.be.eql("5c99d14fd122450cf08431ab");
             result[2].coverImageUrl.should.be.eql("https://i.imgur.com/4oaQHWe1.jpg");
@@ -771,6 +784,7 @@ describe('BetaTests', () => {
             result[2].rewards.list[1].title.should.be.eql("1테스트 영웅 (1명)");
             result[2].rewards.list[1].content.should.be.eql("문화상품권 5000원");
             result[2].rewards.list[1].price.should.be.eql(5000);
+            result[2].missionsSummary.should.be.eql("설문 참여 (객1)");
 
             result[3]._id.should.be.eql("5c989f0a2917e70db5d4fc2e");
             result[3].coverImageUrl.should.be.eql("https://i.imgur.com/uSaMpey1.jpg");
@@ -793,6 +807,7 @@ describe('BetaTests', () => {
             result[3].rewards.list[1].title.should.be.eql("1테스트 영웅 (1명)");
             result[3].rewards.list[1].content.should.be.eql("문화상품권 5000원");
             result[3].rewards.list[1].price.should.be.eql(5000);
+            result[3].missionsSummary.should.be.eql("설문 참여 (객2/주5)");
 
             result[4]._id.should.be.eql("5c99d101d122450cf08431aa");
             result[4].coverImageUrl.should.be.eql("https://i.imgur.com/7886ojX1.png");
@@ -815,6 +830,7 @@ describe('BetaTests', () => {
             result[4].rewards.list[1].title.should.be.eql("1테스트 영웅 (1명)");
             result[4].rewards.list[1].content.should.be.eql("문화상품권 5000원");
             result[4].rewards.list[1].price.should.be.eql(5000);
+            result[4].missionsSummary.should.be.eql("설문 참여 (주1)");
         };
 
         const assertVerboseFormat = (result) => {
@@ -962,6 +978,7 @@ describe('BetaTests', () => {
                     res.body.tags[0].should.be.eql("설문fsagsgasdadddddj 아아아아 ㄴ나나나ㅏ");
                     res.body.tags[1].should.be.eql("태그다");
                     res.body.tags[2].should.be.eql("꿀잼");
+                    res.body.missionsSummary.should.be.eql("사전 신청 / 10분 플레이 / 설문 참여 (객5/주5)");
 
                     done();
                 }).catch(err => done(err));

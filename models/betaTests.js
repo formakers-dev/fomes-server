@@ -55,6 +55,7 @@ const betaTestSchema = new Schema({
     epilogue: EpilogueSchema,
     rewards: Rewards,
     missions: [MissionSchema],
+    missionsSummary: String,
     similarApps: Array,
     targetUserIds: false,
 });
