@@ -62,6 +62,7 @@ const findValidBetaTests = (userId) => {
                 openDate: {$first: "$openDate"},
                 closeDate: {$first: "$closeDate"},
                 bugReport: {$first: "$bugReport"},
+                missionsSummary: {$first: "$missionsSummary"},
             }
         }
     ]).then(async betaTests => {
@@ -124,6 +125,7 @@ const findFinishedBetaTests = (userId, isVerbose) => {
             epilogue: 1,
             plan: 1,
             rewards: 1,
+            missionsSummary: 1,
         }
     ).lean().then(async betaTests => {
         const currentDate = new Date();
@@ -201,6 +203,8 @@ const findBetaTest = (betaTestId, userId) => {
                 openDate: {$first: "$openDate"},
                 closeDate: {$first: "$closeDate"},
                 rewards: {$first: "$rewards"},
+                missionsSummary: {$first: "$missionsSummary"},
+                plan: {$first: "$plan"},
             }
         }
     ])

@@ -55,6 +55,7 @@ const data = [
                 }
             ]
         },
+        "missionsSummary" : "사전 신청 / 30분 플레이 / 설문 참여 (객20/주5)",
         "missions" : [
             {
                 "order" : 2,
@@ -179,6 +180,7 @@ const data = [
                 }
             ]
         },
+        "missionsSummary" : "설문 참여 (객10/주5)",
         "missions" : [
             {
                 "order" : 1,
@@ -223,6 +225,7 @@ const data = [
         "iconImageUrl" : "https://i.imgur.com/tVNahmV.jpg",
         "openDate" : ISODate("2119-12-30T00:00:00.000Z"),
         "closeDate" : ISODate("2119-12-31T00:00:00.000Z"),
+        "missionsSummary" : "설문 참여 (주5)",
         "missions" : [
             {
                 "order" : 1,
@@ -265,6 +268,7 @@ const data = [
                 config.testUser.userId
             ]
         },
+        "missionsSummary" : "설문 참여 (객15)",
         "missions" : [
             {
                 "order" : 1,
@@ -330,6 +334,7 @@ const data = [
                 }
             ]
         },
+        "missionsSummary" : "설문 참여 (객5)",
         "missions" : [
             {
                 "order" : 1,
@@ -389,6 +394,7 @@ const data = [
                 }
             ]
         },
+        "missionsSummary" : "설문 참여 (객2/주2)",
         "missions" : [
             {
                 "order" : 1,
@@ -462,6 +468,7 @@ const data = [
                 }
             ]
         },
+        "missionsSummary" : "30분 플레이 / 설문 참여 (객5/주5)",
         "missions" : [
             {
                 "order" : 1,
@@ -538,6 +545,7 @@ const data = [
                 }
             ]
         },
+        "missionsSummary" : "설문 참여 (객2/주5)",
         "missions" : [
             {
                 "order" : 1,
@@ -613,6 +621,7 @@ const data = [
                 }
             ]
         },
+        "missionsSummary" : "설문 참여 (주1)",
         "missions" : [
             {
                 "order" : 1,
@@ -683,6 +692,7 @@ const data = [
                 }
             ]
         },
+        "missionsSummary" : "설문 참여 (객1)",
         "missions" : [
             {
                 "order" : 1,
@@ -776,6 +786,7 @@ const data = [
                 }
             ]
         },
+        "missionsSummary" : "사전 신청 / 10분 플레이 / 설문 참여 (객5/주5)",
         "missions" : [
             {
                 "order" : 1,
@@ -886,6 +897,7 @@ const data = [
                 }
             ]
         },
+        "missionsSummary" : "30분 플레이 / 설문 참여 (객10/주5)",
         "missions" : [
             {
                 "order" : 1,
@@ -988,6 +1000,7 @@ const data = [
                 }
             ]
         },
+        "missionsSummary" : "설문 참여 (객2/주3)",
         "missions" : [
             {
                 "order" : 1,
