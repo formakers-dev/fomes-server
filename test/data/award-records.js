@@ -10,6 +10,7 @@ const data = [
         "nickName" : "user1",
         "betaTestId" : ObjectId("5c25c77798d78f078d8ef3ba"),
         "type" : "participated",
+        "typeCode" : 3000,
         "reward" : {
             "description" : "문화상품권 3000원",
             "price" : 3000
@@ -21,6 +22,7 @@ const data = [
         "nickName" : "user2",
         "betaTestId" : ObjectId("5c25c77798d78f078d8ef3ba"),
         "type" : "participated",
+        "typeCode" : 3000,
         "reward" : {
             "description" : "문화상품권 3000원",
             "price" : 3000
@@ -32,6 +34,7 @@ const data = [
         "nickName" : "user3",
         "betaTestId" : ObjectId("5c25c77798d78f078d8ef3ba"),
         "type" : "best",
+        "typeCode" : 9000,
         "reward" : {
             "description" : "문화상품권 10000원",
             "price" : 10000
@@ -43,6 +46,7 @@ const data = [
         "nickName" : "user1",
         "betaTestId" : ObjectId("5c25e1e824196d19231fbed3"),
         "type" : "participated",
+        "typeCode" : 3000,
         "reward" : {
             "description" : "문화상품권 3000원",
             "price" : 3000
@@ -54,6 +58,7 @@ const data = [
         "nickName" : config.testUser.nickName,
         "betaTestId" : ObjectId("5c9892f92917e70db5d243dd"),
         "type" : "best",
+        "typeCode" : 9000,
         "reward" : {
             "description" : "문화상품권 5000원",
             "price" : 5000
@@ -65,6 +70,7 @@ const data = [
         "nickName" : "GoodUser",
         "betaTestId" : ObjectId("5c9892f92917e70db5d243dd"),
         "type" : "good",
+        "typeCode" : 7000,
         "reward" : {
             "description" : "문화상품권 3000원",
             "price" : 3000

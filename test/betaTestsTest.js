@@ -1081,6 +1081,7 @@ describe('BetaTests', () => {
                 .expect(200)
                 .then(res => {
                     res.body.type.should.be.eql("best");
+                    res.body.typeCode.should.be.eql(9000);
                     res.body.reward.description.should.be.eql("문화상품권 5000원");
                     res.body.reward.price.should.be.eql(5000);
 
@@ -1114,11 +1115,13 @@ describe('BetaTests', () => {
                     res.body.sort((a, b) => a.type > b.type ? 1 : -1);
 
                     res.body[0].type.should.be.eql("best");
+                    res.body[0].typeCode.should.be.eql(9000);
                     res.body[0].nickName.should.be.eql("test_user_nickname");
                     res.body[0].reward.description.should.be.eql("문화상품권 5000원");
                     res.body[0].reward.price.should.be.eql(5000);
 
                     res.body[1].type.should.be.eql("good");
+                    res.body[1].typeCode.should.be.eql(7000);
                     res.body[1].nickName.should.be.eql("GoodUser");
                     res.body[1].reward.description.should.be.eql("문화상품권 3000원");
                     res.body[1].reward.price.should.be.eql(3000);

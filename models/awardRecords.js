@@ -7,6 +7,7 @@ const awardRecordSchema = new Schema({
     nickName: String,
     betaTestId: mongoose.Schema.Types.ObjectId,
     type: String,
+    typeCode : Number,
     reward: {
         description: String,
         price: Number,
@@ -15,15 +16,4 @@ const awardRecordSchema = new Schema({
 
 const AwardRecords = mongoose.model('award-records', awardRecordSchema);
 
-const AwardType = {
-    best: "best",
-    good: "good",
-    normal: "normal",
-    participated: "participated",
-    etc: "etc",
-
-    // for query params
-    mine: "mine"
-};
-
-module.exports = { AwardRecords, AwardType };
+module.exports = { AwardRecords };

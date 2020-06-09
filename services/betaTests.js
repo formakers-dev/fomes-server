@@ -3,7 +3,6 @@ const BetaTests = require('../models/betaTests');
 const BetaTestParticipations = require('../models/betaTestParticipations');
 const BetaTestMissions = require('../models/betaTestMissions');
 const AwardRecords = require('../models/awardRecords').AwardRecords;
-const AwardType = require('../models/awardRecords').AwardType;
 const ConfigurationsService = require('../services/configurations');
 
 const getAllBetaTestsCount = () => {
@@ -15,7 +14,7 @@ const getAllRewards = () => {
         {$match: {'reward.price': {$exists: true}}},
         {
             $group: {
-                _id: {betaTestId: '$betaTestId', type: '$type'},
+                _id: {betaTestId: '$betaTestId', type: '$type', typeCode: '$typeCode'},
                 price: {$first: '$reward.price'},
                 userCount: {$sum: 1}
             }
@@ -263,8 +262,9 @@ const findAwardRecords = (betaTestId) => {
             userId: 1,
             nickName: 1,
             type: 1,
+            typeCode: 1,
             reward: 1
-        }).lean();
+        }).sort({ typeCode: -1 }).lean();
 };
 
 const findEpilogue = (betaTestId) => {
