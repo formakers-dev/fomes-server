@@ -78,7 +78,7 @@ const getAwardRecords = (req, res, next) => {
 };
 
 const getAwardRecord = (req, res, next) => {
-    BetaTestsService.findAwardRecords(req.params.id, req.query.type)
+    BetaTestsService.findAwardRecords(req.params.id)
         .then(awardRecords => {
             const filteredMyAwardRecords = awardRecords.filter(awardRecord => awardRecord.userId === req.userId);
 
