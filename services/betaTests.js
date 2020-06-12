@@ -291,6 +291,14 @@ const findCompletedMissions = (betaTestId, userId) => {
     })
 };
 
+const findCompletedBetaTestCount = (userId) => {
+    return BetaTestParticipations.Model.count({
+        userId: userId,
+        type: BetaTestParticipations.Constants.TYPE_BETA_TEST,
+        status: BetaTestParticipations.Constants.STATUS_COMPLETE,
+    });
+};
+
 const concat = (x, y) =>
     x.concat(y);
 
@@ -497,6 +505,7 @@ module.exports = {
     findAwardRecords,
     findEpilogue,
     findCompletedMissions,
+    findCompletedBetaTestCount,
     attend,
     completeMission,
     completeBetaTest,

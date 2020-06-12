@@ -447,6 +447,18 @@ describe('BetaTests', () => {
         });
     });
 
+    describe('GET /beta-tests/completed/count', () => {
+        it('요청한 유저가 완료한 베타테스트의 개수를 전달한다', done => {
+          request.get('/beta-tests/completed/count')
+            .set('x-access-token', config.appbeeToken.valid)
+            .expect(200)
+            .then(res => {
+                res.body.count.should.be.eql(3);
+                done();
+            }).catch(err => done(err));
+        });
+    });
+
     describe('POST /beta-tests/:id/missions/completed', () => {
         it('해당 베타테스트에서 요청한 유저가 완료한 미션들의 정보를 전달한다', done => {
             request.get('/beta-tests/5c7345f718500feddc24ca34/missions/completed')
