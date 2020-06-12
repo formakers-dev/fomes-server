@@ -65,6 +65,13 @@ const getCompletedMissions = (req, res, next) => {
         }).catch(err => next(err));
 };
 
+const getCompletedBetaTestCount = (req, res, next) => {
+  BetaTestsService.findCompletedBetaTestCount(req.userId)
+    .then(count => {
+        res.json({ count : count });
+    }).catch(err => next(err));
+};
+
 const getAwardRecords = (req, res, next) => {
     BetaTestsService.findAwardRecords(req.params.id)
         .then(awardRecords => {
@@ -277,6 +284,7 @@ module.exports = {
     getDetailBetaTest,
     getProgress,
     getCompletedMissions,
+    getCompletedBetaTestCount,
     getMissionProgress,
     getAwardRecords,
     getAwardRecord,
