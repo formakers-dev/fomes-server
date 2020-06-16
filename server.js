@@ -19,10 +19,17 @@ const cors = require('cors');
 
 db.init();
 
-app.use(cors({
-    origin: config.frontendBaseUrl,
-    credentials: true
-}));
+const whitelistOfCors = config.frontendBaseUrl.split(",");
+
+const corsOptions = {
+    origin: function(origin, callback) {
+        const isWhitelisted = whitelistOfCors.indexOf(origin) !== -1;
+        callback(null, isWhitelisted);
+    },
+    credentials:true
+};
+
+app.use(cors(corsOptions));
 
 app.use(bodyParser.json({limit: '10mb'}));
 app.use(bodyParser.urlencoded({
