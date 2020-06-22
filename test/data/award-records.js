@@ -76,6 +76,18 @@ const data = [
             "price" : 3000
         }
     },
+    {
+        "_id" : ObjectId("5e720bfd0511671bbbbbbc44"),
+        "userId" : "goodUserId",
+        "nickName" : "GoodUser",
+        "betaTestId" : ObjectId("5c99d101d122450cf08431aa"),
+        "type" : "good",
+        "typeCode" : 7000,
+        "reward" : {
+            "description" : "문화상품권 3000원",
+            "price" : 3000
+        }
+    }
 ];
 
 module.exports = data;

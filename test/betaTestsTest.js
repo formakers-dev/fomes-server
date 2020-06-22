@@ -738,9 +738,9 @@ describe('BetaTests', () => {
             result[0].tags[0].should.be.eql("설문");
             result[0].openDate.should.be.eql("2019-06-13T00:00:00.000Z");
             result[0].closeDate.should.be.eql("2019-06-19T14:59:59.999Z");
-            result[0].isAttended.should.be.eql(true);
             result[0].isCompleted.should.be.eql(true);
             result[0].isRegisteredEpilogue.should.be.eql(false);
+            result[0].isRegisteredAwards.should.be.eql(false);
             result[0].rewards.list.length.should.be.eql(2);
             result[0].rewards.list[0].order.should.be.eql(1);
             result[0].rewards.list[0].title.should.be.eql("테스트 요정 (전체지급)");
@@ -761,9 +761,9 @@ describe('BetaTests', () => {
             result[1].tags[0].should.be.eql("설문");
             result[1].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
             result[1].closeDate.should.be.eql("2019-03-23T00:00:00.000Z");
-            result[1].isAttended.should.be.eql(false);
             result[1].isCompleted.should.be.eql(false);
             result[1].isRegisteredEpilogue.should.be.eql(true);
+            result[1].isRegisteredAwards.should.be.eql(false);
             result[1].rewards.list.length.should.be.eql(2);
             result[1].rewards.list[0].order.should.be.eql(1);
             result[1].rewards.list[0].title.should.be.eql("1테스트 요정 (전체지급)");
@@ -784,9 +784,9 @@ describe('BetaTests', () => {
             result[2].tags[0].should.be.eql("설문");
             result[2].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
             result[2].closeDate.should.be.eql("2019-03-25T00:00:00.000Z");
-            result[2].isAttended.should.be.eql(false);
             result[2].isCompleted.should.be.eql(false);
             result[2].isRegisteredEpilogue.should.be.eql(false);
+            result[2].isRegisteredAwards.should.be.eql(false);
             result[2].rewards.list.length.should.be.eql(2);
             result[2].rewards.list[0].order.should.be.eql(1);
             result[2].rewards.list[0].title.should.be.eql("1테스트 요정 (전체지급)");
@@ -807,9 +807,9 @@ describe('BetaTests', () => {
             result[3].tags[0].should.be.eql("설문");
             result[3].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
             result[3].closeDate.should.be.eql("2019-03-26T00:00:00.000Z");
-            result[3].isAttended.should.be.eql(true);
             result[3].isCompleted.should.be.eql(true);
             result[3].isRegisteredEpilogue.should.be.eql(true);
+            result[3].isRegisteredAwards.should.be.eql(false);
             result[3].rewards.list.length.should.be.eql(2);
             result[3].rewards.list[0].order.should.be.eql(1);
             result[3].rewards.list[0].title.should.be.eql("1테스트 요정 (전체지급)");
@@ -830,9 +830,9 @@ describe('BetaTests', () => {
             result[4].tags[0].should.be.eql("설문");
             result[4].openDate.should.be.eql("2019-03-21T15:00:00.000Z");
             result[4].closeDate.should.be.eql("2019-03-24T00:00:00.000Z");
-            result[4].isAttended.should.be.eql(true);
             result[4].isCompleted.should.be.eql(true);
             result[4].isRegisteredEpilogue.should.be.eql(false);
+            result[4].isRegisteredAwards.should.be.eql(true);
             result[4].rewards.list.length.should.be.eql(2);
             result[4].rewards.list[0].order.should.be.eql(1);
             result[4].rewards.list[0].title.should.be.eql("1테스트 요정 (전체지급)");
@@ -843,14 +843,6 @@ describe('BetaTests', () => {
             result[4].rewards.list[1].content.should.be.eql("문화상품권 5000원");
             result[4].rewards.list[1].price.should.be.eql(5000);
             result[4].missionsSummary.should.be.eql("설문 참여 (주1)");
-        };
-
-        const assertVerboseFormat = (result) => {
-            result[0].missions.length.should.be.eql(1);
-            result[0].missions[0].isRecheckable.should.be.eql(true);
-            result[0].missions[0].title.should.be.eql("의견 작성");
-            result[0].missions[0].actionType.should.be.eql("link");
-            result[0].missions[0].action.should.be.eql("https://docs.google.com/forms/d/e/1FAIpQLSeRI99bYe7LUU0iQgVMKev6D4zyaW2E3zKx-Tp1tVW2Qzv0Cg/viewform?internal_web=true&usp=pp_url&entry.394653407=");
         };
 
         const assertNotVerboseFormat = (result) => {
@@ -870,41 +862,6 @@ describe('BetaTests', () => {
                     console.error(res.body);
 
                     assertFinishedBetaTestFormat(res.body);
-                    assertVerboseFormat(res.body);
-                    done();
-                }).catch(err => done(err));
-        });
-
-        it('종료된 피드백 요청 목록을 조회한다 (default verbose)', done => {
-            sandbox.useFakeTimers(new Date("2019-06-30T02:30:00.000Z").getTime());
-
-            request.get('/beta-tests/finished')
-                .set('x-access-token', config.appbeeToken.valid)
-                .expect(200)
-                .then(res => {
-                    res.body.sort((a, b) => a.title > b.title ? 1 : -1);
-
-                    console.error(res.body);
-
-                    assertFinishedBetaTestFormat(res.body);
-                    assertNotVerboseFormat(res.body);
-                    done();
-                }).catch(err => done(err));
-        });
-
-        it('종료된 피드백 요청 목록을 조회한다 (verbose=false)', done => {
-            sandbox.useFakeTimers(new Date("2019-06-30T02:30:00.000Z").getTime());
-
-            request.get('/beta-tests/finished?verbose=false')
-                .set('x-access-token', config.appbeeToken.valid)
-                .expect(200)
-                .then(res => {
-                    res.body.sort((a, b) => a.title > b.title ? 1 : -1);
-
-                    console.error(res.body);
-
-                    assertFinishedBetaTestFormat(res.body);
-                    assertNotVerboseFormat(res.body);
                     done();
                 }).catch(err => done(err));
         });
@@ -1193,7 +1150,7 @@ describe('BetaTests', () => {
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(200)
                 .then(res => {
-                    res.text.should.be.eql("27000");
+                    res.text.should.be.eql("30000");
                     done();
                 }).catch(err => done(err));
         });
