@@ -134,7 +134,7 @@ const findFinishedBetaTests = (userId, isVerbose) => {
                 betaTest.currentDate = currentDate;
 
                 betaTest.isRegisteredEpilogue = !!betaTest.epilogue;
-                betaTest.isRegisteredAwards = await findAwardRecordsIsExist(betaTest._id);
+                // betaTest.isRegisteredAwards = await findAwardRecordsIsExist(betaTest._id);
 
                 // TODO : 별도 API로 분리해서 가져오는게 좋을 것 같긴한데... 고민된당
                 const participations = await findBetaTestParticipation(betaTest._id, userId);
@@ -248,7 +248,6 @@ const findAwardRecords = (betaTestId) => {
 
 const findAwardRecordsIsExist = async (betaTestId) => {
     const count = await AwardRecords.count({betaTestId: betaTestId}).limit(1);
-    console.log("count=", count);
     return count > 0;
 };
 
