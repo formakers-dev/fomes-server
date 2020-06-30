@@ -41,9 +41,24 @@ describe('Points', () => {
                 }).catch(err => done(err));
         });
 
-        afterEach(() => {
-            sandbox.restore();
-        });
+        describe('나의 포인트 내역이 없으면', () => {
+
+          beforeEach(done => {
+            PointRecords.deleteMany({userId: config.testUser.userId})
+              .then(() => done())
+              .catch(err => done(err));
+          });
+
+          it('빈 값을 반환한다', done => {
+            request.get('/points')
+              .set('x-access-token', config.appbeeToken.valid)
+              .expect(200)
+              .then(res => {
+                res.body.length.should.be.eql(0);
+                done();
+              }).catch(err => done(err));
+          });
+        })
     });
 
     afterEach(done => {
