@@ -4,5 +4,6 @@ const Controller = require('../controller/points');
 const Auth = require('../middleware/auth');
 
 router.get('/', Auth.verifyAppBeeToken, Controller.getPointRecords);
+router.put('/', Auth.verifyAppBeeToken, Controller.putPointRecord);
 
 module.exports = router;

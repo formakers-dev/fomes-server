@@ -6,4 +6,10 @@ const getPointRecords = (req, res, next) => {
     .catch(err => next(err))
 };
 
-module.exports = {getPointRecords};
+const putPointRecord = (req, res, next) => {
+  PointsService.insert(req.userId, req.body)
+    .then(() => res.sendStatus(200))
+    .catch(err => next(err));
+};
+
+module.exports = {getPointRecords, putPointRecord};

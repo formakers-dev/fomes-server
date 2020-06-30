@@ -4,4 +4,17 @@ const findAll = (userId) => {
   return PointRecords.find({userId : userId})
 };
 
-module.exports = {findAll};
+const insert = (userId, pointRecord) => {
+  return PointRecords.create({
+
+    userId : userId,
+    date : new Date(),
+    point : pointRecord.point,
+    type : 'save',
+    status : 'completed',
+    description : pointRecord.description,
+    metaData : pointRecord.metaData
+  });
+};
+
+module.exports = {findAll, insert};
