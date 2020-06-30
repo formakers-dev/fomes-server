@@ -103,6 +103,41 @@ describe('Points', () => {
     });
   });
 
+  describe('GET /points/available', () => {
+
+    it('현재 사용 가능한 나의 포인트를 조회한다', done => {
+      request.get('/points/available')
+        .set('x-access-token', config.appbeeToken.valid)
+        .expect(200)
+        .then(res => {
+          console.error(res.body);
+
+          res.body.point.should.be.eql(31000);
+
+          done();
+        }).catch(err => done(err));
+    });
+
+    describe('나의 포인트 내역이 없으면', () => {
+
+      beforeEach(done => {
+        PointRecords.deleteMany({userId: config.testUser.userId})
+          .then(() => done())
+          .catch(err => done(err));
+      });
+
+      it('0을 반환한다', done => {
+        request.get('/points/available')
+          .set('x-access-token', config.appbeeToken.valid)
+          .expect(200)
+          .then(res => {
+            res.body.point.should.be.eql(0);
+            done();
+          }).catch(err => done(err));
+      });
+    })
+  });
+
   afterEach(done => {
     sandbox.restore();
 

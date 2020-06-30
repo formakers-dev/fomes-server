@@ -12,4 +12,18 @@ const putPointRecord = (req, res, next) => {
     .catch(err => next(err));
 };
 
-module.exports = {getPointRecords, putPointRecord};
+const getAvailablePoint = (req, res, next) => {
+  PointsService.getAvailablePoint(req.userId)
+    .then(result => {
+      res.json({
+        point: result
+      })
+    })
+    .catch(err => next(err))
+};
+
+module.exports = {
+  getPointRecords,
+  putPointRecord,
+  getAvailablePoint
+};

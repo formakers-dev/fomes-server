@@ -17,4 +17,20 @@ const insert = (userId, pointRecord) => {
   });
 };
 
-module.exports = {findAll, insert};
+const getAvailablePoint = (userId) => {
+  return PointRecords.aggregate([
+    { $match: {userId: userId } },
+    {
+      $group: {
+        _id: "$userId",
+        point: { $sum: "$point" }
+      }
+    }
+  ]).then(result => Promise.resolve(result && result.length > 0 ? result[0].point : 0))
+};
+
+module.exports = {
+  findAll,
+  insert,
+  getAvailablePoint,
+};
