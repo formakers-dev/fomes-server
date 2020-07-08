@@ -4,13 +4,13 @@ const findAll = (userId) => {
   return PointRecords.find({userId : userId})
 };
 
-const insert = (userId, pointRecord) => {
+const insert = (userId, pointRecord, type) => {
   return PointRecords.create({
 
     userId : userId,
     date : new Date(),
     point : pointRecord.point,
-    type : 'save',
+    type : type,
     status : 'completed',
     description : pointRecord.description,
     metaData : pointRecord.metaData

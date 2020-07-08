@@ -93,6 +93,8 @@ describe('Points', () => {
 
           res[2].userId.should.be.eql(config.testUser.userId);
           res[2].date.should.be.eql(new Date("2020-06-30T17:30:00.000Z"));
+          res[2].type.should.be.eql("save");
+          res[2].status.should.be.eql("completed");
           res[2].point.should.be.eql(10);
           res[2].description.should.be.eql("마이컬러링 게임테스트 참여");
           res[2].metaData.refType.should.be.eql("beta-test");
@@ -102,6 +104,68 @@ describe('Points', () => {
         }).catch(err => done(err));
     });
   });
+
+  describe('PUT /points/withdraw', () => {
+
+    it('나의 포인트를 출금한다', done => {
+      sandbox.useFakeTimers(new Date("2020-06-30T17:30:00.000Z").getTime());
+
+      const myPoint = {
+        "userId": config.testUser.userId,
+        "point": 6000,
+        "description": "마이컬러링 게임테스트 참여",
+        "metaData": {
+          "refType": "beta-test",
+          "refId": ObjectId("5de748053ae42700175f6849")
+        }
+      };
+
+      request.put('/points/withdraw')
+        .set('x-access-token', config.appbeeToken.valid)
+        .send(myPoint)
+        .expect(200)
+        .then(() => PointRecords.find({userId: config.testUser.userId}))
+        .then(res => {
+          console.error(res);
+
+          res.length.should.be.eql(3);
+          res[0].userId.should.be.eql(config.testUser.userId);
+          res[1].userId.should.be.eql(config.testUser.userId);
+
+          res[2].userId.should.be.eql(config.testUser.userId);
+          res[2].date.should.be.eql(new Date("2020-06-30T17:30:00.000Z"));
+          res[2].type.should.be.eql("withdraw");
+          res[2].status.should.be.eql("completed");
+          res[2].point.should.be.eql(-6000);
+          res[2].description.should.be.eql("마이컬러링 게임테스트 참여");
+          res[2].metaData.refType.should.be.eql("beta-test");
+          res[2].metaData.refId.should.be.eql(ObjectId("5de748053ae42700175f6849"));
+
+          done();
+        }).catch(err => done(err));
+    });
+
+    describe('요청된 포인트가 5000 미만이면', () => {
+
+      const myPoint = {
+        "userId": config.testUser.userId,
+        "point": 1000,
+        "description": "마이컬러링 게임테스트 참여",
+        "metaData": {
+          "refType": "beta-test",
+          "refId": ObjectId("5de748053ae42700175f6849")
+        }
+      };
+
+      it('412를 반환한다', done => {
+        request.put('/points/withdraw')
+          .set('x-access-token', config.appbeeToken.valid)
+          .send(myPoint)
+          .expect(412, done);
+      });
+    })
+  });
+
 
   describe('GET /points/available', () => {
 
