@@ -36,9 +36,10 @@ describe('Points', () => {
         .then(res => {
           console.error(res.body);
 
-          res.body.length.should.be.eql(2);
+          res.body.length.should.be.eql(3);
           res.body[0].userId.should.be.eql(config.testUser.userId);
           res.body[1].userId.should.be.eql(config.testUser.userId);
+          res.body[2].userId.should.be.eql(config.testUser.userId);
 
           done();
         }).catch(err => done(err));
@@ -87,18 +88,19 @@ describe('Points', () => {
         .then(res => {
           console.error(res);
 
-          res.length.should.be.eql(3);
+          res.length.should.be.eql(4);
           res[0].userId.should.be.eql(config.testUser.userId);
           res[1].userId.should.be.eql(config.testUser.userId);
-
           res[2].userId.should.be.eql(config.testUser.userId);
-          res[2].date.should.be.eql(new Date("2020-06-30T17:30:00.000Z"));
-          res[2].type.should.be.eql("save");
-          res[2].status.should.be.eql("completed");
-          res[2].point.should.be.eql(10);
-          res[2].description.should.be.eql("마이컬러링 게임테스트 참여");
-          res[2].metaData.refType.should.be.eql("beta-test");
-          res[2].metaData.refId.should.be.eql(ObjectId("5de748053ae42700175f6849"));
+
+          res[3].userId.should.be.eql(config.testUser.userId);
+          res[3].date.should.be.eql(new Date("2020-06-30T17:30:00.000Z"));
+          res[3].type.should.be.eql("save");
+          res[3].status.should.be.eql("completed");
+          res[3].point.should.be.eql(10);
+          res[3].description.should.be.eql("마이컬러링 게임테스트 참여");
+          res[3].metaData.refType.should.be.eql("beta-test");
+          res[3].metaData.refId.should.be.eql(ObjectId("5de748053ae42700175f6849"));
 
           done();
         }).catch(err => done(err));
@@ -128,18 +130,19 @@ describe('Points', () => {
         .then(res => {
           console.error(res);
 
-          res.length.should.be.eql(3);
+          res.length.should.be.eql(4);
           res[0].userId.should.be.eql(config.testUser.userId);
           res[1].userId.should.be.eql(config.testUser.userId);
-
           res[2].userId.should.be.eql(config.testUser.userId);
-          res[2].date.should.be.eql(new Date("2020-06-30T17:30:00.000Z"));
-          res[2].type.should.be.eql("withdraw");
-          res[2].status.should.be.eql("completed");
-          res[2].point.should.be.eql(-6000);
-          res[2].description.should.be.eql("마이컬러링 게임테스트 참여");
-          res[2].metaData.refType.should.be.eql("beta-test");
-          res[2].metaData.refId.should.be.eql(ObjectId("5de748053ae42700175f6849"));
+
+          res[3].userId.should.be.eql(config.testUser.userId);
+          res[3].date.should.be.eql(new Date("2020-06-30T17:30:00.000Z"));
+          res[3].type.should.be.eql("withdraw");
+          res[3].status.should.be.eql("completed");
+          res[3].point.should.be.eql(-6000);
+          res[3].description.should.be.eql("마이컬러링 게임테스트 참여");
+          res[3].metaData.refType.should.be.eql("beta-test");
+          res[3].metaData.refId.should.be.eql(ObjectId("5de748053ae42700175f6849"));
 
           done();
         }).catch(err => done(err));
@@ -176,7 +179,7 @@ describe('Points', () => {
         .then(res => {
           console.error(res.body);
 
-          res.body.point.should.be.eql(31000);
+          res.body.point.should.be.eql(26000);
 
           done();
         }).catch(err => done(err));

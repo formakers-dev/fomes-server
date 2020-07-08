@@ -43,6 +43,20 @@ const data = [
             "refType" : "beta-test",
             "refId" : ObjectId("5cb3ef0db5e8fc246c3b6c18")
         }
+    },
+    {
+        "_id" : ObjectId("5efaee3be03734ef5dadb888"),
+        "userId" : config.testUser.userId,
+        "date" : ISODate("2020-07-01T00:00:00.000Z"),
+        "point" : -5000,
+        "type" : "withdraw",
+        "status" : "completed",
+        "description" : "문화상품권 1장 출금 신청",
+        "metaData" : {
+            "type" : "giftCertificate5000",
+            "count" : 2,
+            "phone" : '010-1111-2222'
+        }
     }
 ];
 
