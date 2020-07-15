@@ -113,13 +113,9 @@ describe('Points', () => {
       sandbox.useFakeTimers(new Date("2020-06-30T17:30:00.000Z").getTime());
 
       const myPoint = {
-        "userId": config.testUser.userId,
         "point": 6000,
         "description": "마이컬러링 게임테스트 참여",
-        "metaData": {
-          "refType": "beta-test",
-          "refId": ObjectId("5de748053ae42700175f6849")
-        }
+        "phoneNumber": "010-1111-2222",
       };
 
       request.put('/points/withdraw')
@@ -141,8 +137,7 @@ describe('Points', () => {
           res[3].status.should.be.eql("completed");
           res[3].point.should.be.eql(-6000);
           res[3].description.should.be.eql("마이컬러링 게임테스트 참여");
-          res[3].metaData.refType.should.be.eql("beta-test");
-          res[3].metaData.refId.should.be.eql(ObjectId("5de748053ae42700175f6849"));
+          res[3].phoneNumber.should.be.eql("010-1111-2222");
 
           done();
         }).catch(err => done(err));
@@ -151,13 +146,9 @@ describe('Points', () => {
     describe('요청된 포인트가 5000 미만이면', () => {
 
       const myPoint = {
-        "userId": config.testUser.userId,
         "point": 1000,
         "description": "마이컬러링 게임테스트 참여",
-        "metaData": {
-          "refType": "beta-test",
-          "refId": ObjectId("5de748053ae42700175f6849")
-        }
+        "phoneNumber": "010-2222-3333"
       };
 
       it('412를 반환한다', done => {

@@ -6,13 +6,13 @@ const findAll = (userId) => {
 
 const insert = (userId, pointRecord, type) => {
   return PointRecords.create({
-
     userId : userId,
     date : new Date(),
     point : pointRecord.point,
     type : type,
     status : 'completed',
     description : pointRecord.description,
+    phoneNumber : pointRecord.phoneNumber,
     metaData : pointRecord.metaData
   });
 };

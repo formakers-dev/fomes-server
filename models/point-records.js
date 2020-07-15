@@ -13,6 +13,9 @@ const schema = new Schema({
         refType: String,
         refId: ObjectId
     },
+
+    // for withdraw type
+    phoneNumber: String,
 });
 
 module.exports = mongoose.model('point-records', schema);
