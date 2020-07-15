@@ -7,7 +7,7 @@ const getPointRecords = (req, res, next) => {
     .catch(err => next(err))
 };
 
-const putPointRecord = (req, res, next) => {
+const putPointRecord = async (req, res, next) => {
   let type;
 
   if (req.path === '/') {
@@ -16,6 +16,12 @@ const putPointRecord = (req, res, next) => {
     type = "withdraw";
 
     if (Math.abs(req.body.point) < 5000) {
+      next(Boom.preconditionFailed('Invalid Withdraw point'));
+      return;
+    }
+
+    const availablePoint = await PointsService.getAvailablePoint(req.userId);
+    if (req.body.point > availablePoint) {
       next(Boom.preconditionFailed('Invalid Withdraw point'));
       return;
     }

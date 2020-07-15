@@ -157,7 +157,23 @@ describe('Points', () => {
           .send(myPoint)
           .expect(412, done);
       });
-    })
+    });
+
+    describe('요청된 포인트가 가용 포인트를 초과하면', () => {
+
+      const myPoint = {
+        "point": 26100,
+        "description": "5000원권 6장 교환",
+        "phoneNumber": "010-2222-3333"
+      };
+
+      it('412를 반환한다', done => {
+        request.put('/points/withdraw')
+          .set('x-access-token', config.appbeeToken.valid)
+          .send(myPoint)
+          .expect(412, done);
+      });
+    });
   });
 
 
