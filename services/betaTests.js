@@ -424,7 +424,7 @@ const checkAndCompleteBetaTest = (betaTestId, userId) => {
             const totalMissionCount = values[0];
             const completedMissionCount = values[1];
 
-            if (totalMissionCount === completedMissionCount) {
+            if (completedMissionCount >= totalMissionCount) {
                 return completeBetaTest(betaTestId, userId);
             } else {
                 return Promise.resolve();

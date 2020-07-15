@@ -281,7 +281,7 @@ describe('BetaTests', () => {
             request.post('/beta-tests/5d01b1f6db7d04bc2d04345c/attend')
                 .set('x-access-token', config.appbeeToken.valid)
                 .expect(409)
-                .then(() => BetaTestParticipations.Model.findOne({
+                .then(() => BetaTestParticipations.Model.find({
                     "userId": config.testUser.userId,
                     "betaTestId" : ObjectId("5d01b1f6db7d04bc2d04345c"),
                     "missionId" : { $exists: false },
@@ -289,10 +289,11 @@ describe('BetaTests', () => {
                     "status" : BetaTestParticipations.Constants.STATUS_ATTEND,
                 }))
                 .then(participation => {
-                    participation.userId.should.be.eql(config.testUser.userId);
-                    participation.betaTestId.should.be.eql(ObjectId("5d01b1f6db7d04bc2d04345c"));
-                    participation.date.should.be.eql(new Date("2020-03-17"));
-                    should.not.exist(participation.missionId);
+                    participation.length.should.be.eql(1);
+                    participation[0].userId.should.be.eql(config.testUser.userId);
+                    participation[0].betaTestId.should.be.eql(ObjectId("5d01b1f6db7d04bc2d04345c"));
+                    participation[0].date.should.be.eql(new Date("2020-03-17"));
+                    should.not.exist(participation[0].missionId);
 
                     done();
                 })
@@ -417,16 +418,17 @@ describe('BetaTests', () => {
             request.post('/beta-tests/5d01b1f6db7d04bc2d04345c/missions/5d199ac3839927107f4bb94e/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(409)
-                .then(() => BetaTestParticipations.Model.findOne({
+                .then(() => BetaTestParticipations.Model.find({
                     "userId": config.testUser.userId,
                     "betaTestId" : ObjectId("5d01b1f6db7d04bc2d04345c"),
                     "missionId" : ObjectId("5d199ac3839927107f4bb94e"),
                 }))
                 .then(participation => {
-                    participation.userId.should.be.eql(config.testUser.userId);
-                    participation.betaTestId.should.be.eql(ObjectId("5d01b1f6db7d04bc2d04345c"));
-                    participation.missionId.should.be.eql(ObjectId("5d199ac3839927107f4bb94e"));
-                    participation.date.should.be.eql(new Date("2020-03-17"));
+                    participation.length.should.be.eql(1);
+                    participation[0].userId.should.be.eql(config.testUser.userId);
+                    participation[0].betaTestId.should.be.eql(ObjectId("5d01b1f6db7d04bc2d04345c"));
+                    participation[0].missionId.should.be.eql(ObjectId("5d199ac3839927107f4bb94e"));
+                    participation[0].date.should.be.eql(new Date("2020-03-17"));
 
                     done();
                 })
@@ -558,13 +560,14 @@ describe('BetaTests', () => {
             request.post('/beta-tests/5d01b1f6db7d04bc2d04345c/complete?from=external_script')
                 .set('x-access-token', 'YXBwYmVlQGFwcGJlZS5jb20K')
                 .expect(409)
-                .then(() => BetaTestParticipations.Model.findOne({
+                .then(() => BetaTestParticipations.Model.find({
                     userId: config.testUser.userId,
                     betaTestId: "5d01b1f6db7d04bc2d04345c",
                     type: BetaTestParticipations.Constants.TYPE_BETA_TEST,
                     status: BetaTestParticipations.Constants.STATUS_COMPLETE,
                 }))
                 .then(res => {
+                    res.length.should.be.eql(1);
                     // 기존 Document의 id
                     res._id.should.be.eql(ObjectId("111111111111111111112224"));
 
