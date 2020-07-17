@@ -108,9 +108,9 @@ describe('Points', () => {
     });
   });
 
-  describe('PUT /points/withdraw', () => {
+  describe('PUT /points/exchange', () => {
 
-    it('나의 포인트를 출금한다', done => {
+    it('나의 포인트를 교환한다', done => {
       sandbox.useFakeTimers(new Date("2020-06-30T17:30:00.000Z").getTime());
 
       const myPoint = {
@@ -119,7 +119,7 @@ describe('Points', () => {
         "phoneNumber": "010-1111-2222",
       };
 
-      request.put('/points/withdraw')
+      request.put('/points/exchange')
         .set('x-access-token', config.appbeeToken.valid)
         .send(myPoint)
         .expect(200)
@@ -134,7 +134,7 @@ describe('Points', () => {
 
           res[3].userId.should.be.eql(config.testUser.userId);
           res[3].date.should.be.eql(new Date("2020-06-30T17:30:00.000Z"));
-          res[3].type.should.be.eql(PointConstants.TYPE.WITHDRAW);
+          res[3].type.should.be.eql(PointConstants.TYPE.EXCHANGE);
           res[3].status.should.be.eql(PointConstants.STATUS.REQUEST);
           res[3].point.should.be.eql(-6000);
           res[3].description.should.be.eql("마이컬러링 게임테스트 참여");
@@ -153,7 +153,7 @@ describe('Points', () => {
       };
 
       it('412를 반환한다', done => {
-        request.put('/points/withdraw')
+        request.put('/points/exchange')
           .set('x-access-token', config.appbeeToken.valid)
           .send(myPoint)
           .expect(412, done);
@@ -169,7 +169,7 @@ describe('Points', () => {
       };
 
       it('412를 반환한다', done => {
-        request.put('/points/withdraw')
+        request.put('/points/exchange')
           .set('x-access-token', config.appbeeToken.valid)
           .send(myPoint)
           .expect(412, done);

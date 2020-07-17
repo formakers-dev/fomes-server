@@ -5,7 +5,7 @@ const Auth = require('../middleware/auth');
 
 router.get('/', Auth.verifyAppBeeToken, Controller.getPointRecords);
 router.put('/', Auth.verifyAppBeeToken, Controller.putPointRecord);
-router.put('/withdraw', Auth.verifyAppBeeToken, Controller.putPointRecord);
+router.put('/exchange', Auth.verifyAppBeeToken, Controller.putPointRecord);
 
 router.get('/available', Auth.verifyAppBeeToken, Controller.getAvailablePoint);
 

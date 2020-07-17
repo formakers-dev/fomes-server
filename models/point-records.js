@@ -5,7 +5,7 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 const Constants = {
     TYPE: {
         SAVE: 1,
-        WITHDRAW: 2,
+        EXCHANGE: 2,
     },
     STATUS: {
         COMPLETED: 1, // 완료
@@ -26,7 +26,7 @@ const schema = new Schema({
         refId: ObjectId
     },
 
-    // for withdraw type
+    // for exchange type
     phoneNumber: String,
 });
 

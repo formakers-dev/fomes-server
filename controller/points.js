@@ -14,18 +14,18 @@ const putPointRecord = async (req, res, next) => {
   if (req.path === '/') {
     type = PointConstants.TYPE.SAVE;
     status = PointConstants.STATUS.COMPLETED;
-  } else if (req.path === '/withdraw') {
-    type = PointConstants.TYPE.WITHDRAW;
+  } else if (req.path === '/exchange') {
+    type = PointConstants.TYPE.EXCHANGE;
     status = PointConstants.STATUS.REQUEST;
 
     if (Math.abs(req.body.point) < 5000) {
-      next(Boom.preconditionFailed('Invalid Withdraw point'));
+      next(Boom.preconditionFailed('Invalid Exchange Point'));
       return;
     }
 
     const availablePoint = await PointsService.getAvailablePoint(req.userId);
     if (req.body.point > availablePoint) {
-      next(Boom.preconditionFailed('Invalid Withdraw point'));
+      next(Boom.preconditionFailed('Invalid Exchange Point'));
       return;
     }
 

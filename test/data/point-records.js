@@ -50,9 +50,9 @@ const data = [
         "userId" : config.testUser.userId,
         "date" : ISODate("2020-07-01T00:00:00.000Z"),
         "point" : -5000,
-        "type" : PointConstants.TYPE.WITHDRAW,
+        "type" : PointConstants.TYPE.EXCHANGE,
         "status" : PointConstants.STATUS.COMPLETED,
-        "description" : "문화상품권 1장 출금 신청",
+        "description" : "문화상품권 1장 교환 신청",
         "metaData" : {
             "type" : "giftCertificate5000",
             "count" : 2,
