@@ -1,16 +1,16 @@
-const PointRecords = require('../models/point-records');
+const PointRecords = require('../models/point-records').Model;
 
 const findAll = (userId) => {
   return PointRecords.find({userId : userId})
 };
 
-const insert = (userId, pointRecord, type) => {
+const insert = (userId, pointRecord, type, status) => {
   return PointRecords.create({
     userId : userId,
     date : new Date(),
     point : pointRecord.point,
     type : type,
-    status : 'completed',
+    status : status,
     description : pointRecord.description,
     phoneNumber : pointRecord.phoneNumber,
     metaData : pointRecord.metaData

@@ -1,4 +1,5 @@
 const PointsService = require('../services/points');
+const PointConstants = require('../models/point-records').Constants;
 const Boom = require('boom');
 
 const getPointRecords = (req, res, next) => {
@@ -8,12 +9,14 @@ const getPointRecords = (req, res, next) => {
 };
 
 const putPointRecord = async (req, res, next) => {
-  let type;
+  let type, status;
 
   if (req.path === '/') {
-    type = "save";
+    type = PointConstants.TYPE.SAVE;
+    status = PointConstants.STATUS.COMPLETED;
   } else if (req.path === '/withdraw') {
-    type = "withdraw";
+    type = PointConstants.TYPE.WITHDRAW;
+    status = PointConstants.STATUS.REQUEST;
 
     if (Math.abs(req.body.point) < 5000) {
       next(Boom.preconditionFailed('Invalid Withdraw point'));
@@ -31,7 +34,7 @@ const putPointRecord = async (req, res, next) => {
     }
   }
 
-  PointsService.insert(req.userId, req.body, type)
+  PointsService.insert(req.userId, req.body, type, status)
     .then(() => res.sendStatus(200))
     .catch(err => next(err));
 };

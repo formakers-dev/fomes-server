@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const config = require('../../config');
+const PointConstants = require('../../models/point-records').Constants;
 
 const ObjectId = mongoose.Types.ObjectId;
 const ISODate = (ISODateString) => new Date(ISODateString);
@@ -10,8 +11,8 @@ const data = [
         "userId" : config.testUser.userId,
         "date" : ISODate("2020-06-30T00:00:00.000Z"),
         "point" : 1000,
-        "type" : "save",
-        "status" : "completed",
+        "type" : PointConstants.TYPE.SAVE,
+        "status" : PointConstants.STATUS.COMPLETED,
         "description" : "더팜 게임테스트 성실상",
         "metaData" : {
             "refType" : "beta-test",
@@ -23,8 +24,8 @@ const data = [
         "userId" : config.testUser.userId,
         "date" : ISODate("2020-06-29T00:00:00.000Z"),
         "point" : 30000,
-        "type" : "save",
-        "status" : "completed",
+        "type" : PointConstants.TYPE.SAVE,
+        "status" : PointConstants.STATUS.COMPLETED,
         "description" : "마이컬러링 게임테스트 수석",
         "metaData" : {
             "refType" : "beta-test",
@@ -36,8 +37,8 @@ const data = [
         "userId" : "user1",
         "date" : ISODate("2020-05-15T00:00:00.000Z"),
         "point" : 5000,
-        "type" : "save",
-        "status" : "completed",
+        "type" : PointConstants.TYPE.SAVE,
+        "status" : PointConstants.STATUS.COMPLETED,
         "description" : "고양이숲 게임테스트 수석",
         "metaData" : {
             "refType" : "beta-test",
@@ -49,8 +50,8 @@ const data = [
         "userId" : config.testUser.userId,
         "date" : ISODate("2020-07-01T00:00:00.000Z"),
         "point" : -5000,
-        "type" : "withdraw",
-        "status" : "completed",
+        "type" : PointConstants.TYPE.WITHDRAW,
+        "status" : PointConstants.STATUS.COMPLETED,
         "description" : "문화상품권 1장 출금 신청",
         "metaData" : {
             "type" : "giftCertificate5000",

@@ -8,7 +8,8 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
 
-const PointRecords = require('../models/point-records');
+const PointRecords = require('../models/point-records').Model;
+const PointConstants = require('../models/point-records').Constants;
 const helper = require('./commonTestHelper');
 const pointRecordsData = require('./data/point-records');
 
@@ -95,8 +96,8 @@ describe('Points', () => {
 
           res[3].userId.should.be.eql(config.testUser.userId);
           res[3].date.should.be.eql(new Date("2020-06-30T17:30:00.000Z"));
-          res[3].type.should.be.eql("save");
-          res[3].status.should.be.eql("completed");
+          res[3].type.should.be.eql(PointConstants.TYPE.SAVE);
+          res[3].status.should.be.eql(PointConstants.STATUS.COMPLETED);
           res[3].point.should.be.eql(10);
           res[3].description.should.be.eql("마이컬러링 게임테스트 참여");
           res[3].metaData.refType.should.be.eql("beta-test");
@@ -133,8 +134,8 @@ describe('Points', () => {
 
           res[3].userId.should.be.eql(config.testUser.userId);
           res[3].date.should.be.eql(new Date("2020-06-30T17:30:00.000Z"));
-          res[3].type.should.be.eql("withdraw");
-          res[3].status.should.be.eql("completed");
+          res[3].type.should.be.eql(PointConstants.TYPE.WITHDRAW);
+          res[3].status.should.be.eql(PointConstants.STATUS.REQUEST);
           res[3].point.should.be.eql(-6000);
           res[3].description.should.be.eql("마이컬러링 게임테스트 참여");
           res[3].phoneNumber.should.be.eql("010-1111-2222");
