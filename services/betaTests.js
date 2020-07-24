@@ -134,32 +134,11 @@ const findFinishedBetaTests = (userId, isVerbose) => {
                 betaTest.currentDate = currentDate;
 
                 betaTest.isRegisteredEpilogue = !!betaTest.epilogue;
+                // betaTest.isRegisteredAwards = await findAwardRecordsIsExist(betaTest._id);
 
+                // TODO : 별도 API로 분리해서 가져오는게 좋을 것 같긴한데... 고민된당
                 const participations = await findBetaTestParticipation(betaTest._id, userId);
-                betaTest.isAttended = isAttendedBetaTest(userId, betaTest._id, participations);
                 betaTest.isCompleted = isCompletedBetaTest(userId, betaTest._id, participations);
-
-                // TODO : v0.3.0 크리티컬릴리즈 시 오류 방지 위한 임시 코드 - 릴리즈 후 추후 삭제 필요
-                betaTest.completedItemCount = 1;
-                betaTest.totalItemCount = 1;
-                betaTest.missions = [];
-
-                if (isVerbose === 'true') {
-                    // 종료된 테스트 리스트에서 미션이 보여질 필요가 없어지면 제거 되어야 함! 미션은 아예 따로 검색하도록하자
-                    const missions = await findBetaTestMissions(betaTest._id);
-                    betaTest.missions = convertMissionItemsForClient(userId, missions, participations)
-                        .map(mission => {
-                            return {
-                                title: mission.title,
-                                actionType: mission.actionType,
-                                action: mission.action,
-                                isRecheckable: mission.isRecheckable,
-                                isCompleted: mission.isCompleted,
-                            }
-                        });
-
-                    betaTest.missions = betaTest.missions.filter(mission => mission.isRecheckable && mission.isCompleted);
-                }
 
                 return betaTest;
             })
@@ -265,6 +244,11 @@ const findAwardRecords = (betaTestId) => {
             typeCode: 1,
             reward: 1
         }).sort({ typeCode: -1 }).lean();
+};
+
+const findAwardRecordsIsExist = async (betaTestId) => {
+    const count = await AwardRecords.count({betaTestId: betaTestId}).limit(1);
+    return count > 0;
 };
 
 const findEpilogue = (betaTestId) => {
@@ -440,7 +424,7 @@ const checkAndCompleteBetaTest = (betaTestId, userId) => {
             const totalMissionCount = values[0];
             const completedMissionCount = values[1];
 
-            if (totalMissionCount === completedMissionCount) {
+            if (completedMissionCount >= totalMissionCount) {
                 return completeBetaTest(betaTestId, userId);
             } else {
                 return Promise.resolve();
