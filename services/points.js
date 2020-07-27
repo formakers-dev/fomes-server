@@ -4,8 +4,8 @@ const findAll = (userId) => {
   return PointRecords.find({userId : userId})
 };
 
-const insert = (userId, pointRecord, type, status) => {
-  return PointRecords.create({
+const insert = (userId, pointRecord, type, status, operationStatus) => {
+  const pointRecordDoc = {
     userId : userId,
     date : new Date(),
     point : pointRecord.point,
@@ -13,8 +13,16 @@ const insert = (userId, pointRecord, type, status) => {
     status : status,
     description : pointRecord.description,
     phoneNumber : pointRecord.phoneNumber,
-    metaData : pointRecord.metaData
-  });
+    metaData : pointRecord.metaData,
+  };
+
+  if (operationStatus) {
+    pointRecordDoc.operationData = {
+      status: operationStatus
+    };
+  }
+
+  return PointRecords.create(pointRecordDoc);
 };
 
 const getAvailablePoint = (userId) => {

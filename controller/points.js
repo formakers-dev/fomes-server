@@ -9,14 +9,15 @@ const getPointRecords = (req, res, next) => {
 };
 
 const putPointRecord = async (req, res, next) => {
-  let type, status;
+  let type, status, operationStatus;
 
   if (req.path === '/') {
     type = PointConstants.TYPE.SAVE;
     status = PointConstants.STATUS.COMPLETED;
   } else if (req.path === '/exchange') {
     type = PointConstants.TYPE.EXCHANGE;
-    status = PointConstants.STATUS.REQUEST;
+    status = PointConstants.STATUS.REQUESTED;
+    operationStatus = PointConstants.OPERATION_STATUS.OPENED;
 
     if (Math.abs(req.body.point) < 5000) {
       next(Boom.preconditionFailed('Invalid Exchange Point'));
@@ -34,7 +35,7 @@ const putPointRecord = async (req, res, next) => {
     }
   }
 
-  PointsService.insert(req.userId, req.body, type, status)
+  PointsService.insert(req.userId, req.body, type, status, operationStatus)
     .then(() => res.sendStatus(200))
     .catch(err => next(err));
 };
