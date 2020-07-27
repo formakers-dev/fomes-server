@@ -8,34 +8,34 @@ const getPointRecords = (req, res, next) => {
     .catch(err => next(err))
 };
 
-const putPointRecord = async (req, res, next) => {
-  let type, status, operationStatus;
+const putSavePointRecord = (req, res, next) => {
+  const status = PointConstants.STATUS.COMPLETED;
 
-  if (req.path === '/') {
-    type = PointConstants.TYPE.SAVE;
-    status = PointConstants.STATUS.COMPLETED;
-  } else if (req.path === '/exchange') {
-    type = PointConstants.TYPE.EXCHANGE;
-    status = PointConstants.STATUS.REQUESTED;
-    operationStatus = PointConstants.OPERATION_STATUS.OPENED;
+  PointsService.insertDocForSaveType(req.userId, req.body, status)
+    .then(() => res.sendStatus(200))
+    .catch(err => next(err));
+};
 
-    if (Math.abs(req.body.point) < 5000) {
-      next(Boom.preconditionFailed('Invalid Exchange Point'));
-      return;
-    }
+const putExchangePointRecord = async (req, res, next) => {
+  const status = PointConstants.STATUS.REQUESTED;
+  const operationStatus = PointConstants.OPERATION_STATUS.OPENED;
 
-    const availablePoint = await PointsService.getAvailablePoint(req.userId);
-    if (req.body.point > availablePoint) {
-      next(Boom.preconditionFailed('Invalid Exchange Point'));
-      return;
-    }
-
-    if (req.body.point > 0) {
-      req.body.point *= -1;
-    }
+  if (Math.abs(req.body.point) < 5000) {
+    next(Boom.preconditionFailed('Invalid Exchange Point'));
+    return;
   }
 
-  PointsService.insert(req.userId, req.body, type, status, operationStatus)
+  const availablePoint = await PointsService.getAvailablePoint(req.userId);
+  if (req.body.point > availablePoint) {
+    next(Boom.preconditionFailed('Invalid Exchange Point'));
+    return;
+  }
+
+  if (req.body.point > 0) {
+    req.body.point *= -1;
+  }
+
+  PointsService.insertDocForExchangeType(req.userId, req.body, status, operationStatus)
     .then(() => res.sendStatus(200))
     .catch(err => next(err));
 };
@@ -52,6 +52,7 @@ const getAvailablePoint = (req, res, next) => {
 
 module.exports = {
   getPointRecords,
-  putPointRecord,
+  putSavePointRecord,
+  putExchangePointRecord,
   getAvailablePoint
 };

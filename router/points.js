@@ -4,8 +4,8 @@ const Controller = require('../controller/points');
 const Auth = require('../middleware/auth');
 
 router.get('/', Auth.verifyAppBeeToken, Controller.getPointRecords);
-router.put('/', Auth.verifyAppBeeToken, Controller.putPointRecord);
-router.put('/exchange', Auth.verifyAppBeeToken, Controller.putPointRecord);
+router.put('/', Auth.verifyAppBeeToken, Controller.putSavePointRecord);
+router.put('/exchange', Auth.verifyAppBeeToken, Controller.putExchangePointRecord);
 
 router.get('/available', Auth.verifyAppBeeToken, Controller.getAvailablePoint);
 

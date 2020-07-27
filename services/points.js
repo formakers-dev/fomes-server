@@ -1,19 +1,33 @@
 const PointRecords = require('../models/point-records').Model;
+const PointConstants = require('../models/point-records').Constants;
 
 const findAll = (userId) => {
   return PointRecords.find({userId : userId})
 };
 
-const insert = (userId, pointRecord, type, status, operationStatus) => {
+const insertDocForSaveType = (userId, pointRecord, status) => {
   const pointRecordDoc = {
     userId : userId,
     date : new Date(),
     point : pointRecord.point,
-    type : type,
+    type : PointConstants.TYPE.SAVE,
+    status : status,
+    description : pointRecord.description,
+    metaData : pointRecord.metaData,
+  };
+
+  return PointRecords.create(pointRecordDoc);
+};
+
+const insertDocForExchangeType = (userId, pointRecord, status, operationStatus) => {
+  const pointRecordDoc = {
+    userId : userId,
+    date : new Date(),
+    point : pointRecord.point,
+    type : PointConstants.TYPE.EXCHANGE,
     status : status,
     description : pointRecord.description,
     phoneNumber : pointRecord.phoneNumber,
-    metaData : pointRecord.metaData,
   };
 
   if (operationStatus) {
@@ -39,6 +53,7 @@ const getAvailablePoint = (userId) => {
 
 module.exports = {
   findAll,
-  insert,
+  insertDocForSaveType,
+  insertDocForExchangeType,
   getAvailablePoint,
 };
