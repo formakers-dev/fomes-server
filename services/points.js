@@ -41,19 +41,46 @@ const insertDocForExchangeType = (userId, pointRecord, status, operationStatus) 
 
 const getAvailablePoint = (userId) => {
   return PointRecords.aggregate([
-    { $match: {userId: userId } },
+    { $match: { userId: userId } },
     {
       $group: {
         _id: "$userId",
         point: { $sum: "$point" }
       }
     }
-  ]).then(result => Promise.resolve(result && result.length > 0 ? result[0].point : 0))
+  ]).then(result => {
+    const point = convertToValidPointResult(result);
+    return Promise.resolve(point);
+  })
 };
+
+const getRequestedExchangePoint = (userId) => {
+  return PointRecords.aggregate([
+    {
+      $match: {
+        userId: userId,
+        type: PointConstants.TYPE.EXCHANGE,
+        status: PointConstants.STATUS.REQUESTED,
+      }
+    },
+    {
+      $group: {
+        _id: "$userId",
+        point: { $sum: "$point" }
+      }
+    }
+  ]).then(result => {
+    const point = convertToValidPointResult(result);
+    return Promise.resolve(point * -1);
+  })
+};
+
+const convertToValidPointResult = (pointResult) => pointResult && pointResult.length > 0 ? pointResult[0].point : 0;
 
 module.exports = {
   findAll,
   insertDocForSaveType,
   insertDocForExchangeType,
   getAvailablePoint,
+  getRequestedExchangePoint,
 };

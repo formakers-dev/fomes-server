@@ -37,10 +37,12 @@ describe('Points', () => {
         .then(res => {
           console.error(res.body);
 
-          res.body.length.should.be.eql(3);
+          res.body.length.should.be.eql(5);
           res.body[0].userId.should.be.eql(config.testUser.userId);
           res.body[1].userId.should.be.eql(config.testUser.userId);
           res.body[2].userId.should.be.eql(config.testUser.userId);
+          res.body[3].userId.should.be.eql(config.testUser.userId);
+          res.body[4].userId.should.be.eql(config.testUser.userId);
 
           done();
         }).catch(err => done(err));
@@ -89,20 +91,16 @@ describe('Points', () => {
         .then(res => {
           console.error(res);
 
-          res.length.should.be.eql(4);
-          res[0].userId.should.be.eql(config.testUser.userId);
-          res[1].userId.should.be.eql(config.testUser.userId);
-          res[2].userId.should.be.eql(config.testUser.userId);
-
-          res[3].userId.should.be.eql(config.testUser.userId);
-          res[3].date.should.be.eql(new Date("2020-06-30T17:30:00.000Z"));
-          res[3].type.should.be.eql(PointConstants.TYPE.SAVE);
-          res[3].status.should.be.eql(PointConstants.STATUS.COMPLETED);
-          should.not.exist(res[3].operationData);
-          res[3].point.should.be.eql(10);
-          res[3].description.should.be.eql("마이컬러링 게임테스트 참여");
-          res[3].metaData.refType.should.be.eql("beta-test");
-          res[3].metaData.refId.should.be.eql(ObjectId("5de748053ae42700175f6849"));
+          const last = res[res.length - 1];
+          last.userId.should.be.eql(config.testUser.userId);
+          last.date.should.be.eql(new Date("2020-06-30T17:30:00.000Z"));
+          last.type.should.be.eql(PointConstants.TYPE.SAVE);
+          last.status.should.be.eql(PointConstants.STATUS.COMPLETED);
+          should.not.exist(last.operationData);
+          last.point.should.be.eql(10);
+          last.description.should.be.eql("마이컬러링 게임테스트 참여");
+          last.metaData.refType.should.be.eql("beta-test");
+          last.metaData.refId.should.be.eql(ObjectId("5de748053ae42700175f6849"));
 
           done();
         }).catch(err => done(err));
@@ -115,7 +113,7 @@ describe('Points', () => {
       sandbox.useFakeTimers(new Date("2020-06-30T17:30:00.000Z").getTime());
 
       const myPoint = {
-        "point": 6000,
+        "point": 5000,
         "description": "마이컬러링 게임테스트 참여",
         "phoneNumber": "010-1111-2222",
       };
@@ -128,19 +126,17 @@ describe('Points', () => {
         .then(res => {
           console.error(res);
 
-          res.length.should.be.eql(4);
-          res[0].userId.should.be.eql(config.testUser.userId);
-          res[1].userId.should.be.eql(config.testUser.userId);
-          res[2].userId.should.be.eql(config.testUser.userId);
 
-          res[3].userId.should.be.eql(config.testUser.userId);
-          res[3].date.should.be.eql(new Date("2020-06-30T17:30:00.000Z"));
-          res[3].type.should.be.eql(PointConstants.TYPE.EXCHANGE);
-          res[3].status.should.be.eql(PointConstants.STATUS.REQUESTED);
-          res[3].operationData.status.should.be.eql(PointConstants.OPERATION_STATUS.OPENED);
-          res[3].point.should.be.eql(-6000);
-          res[3].description.should.be.eql("마이컬러링 게임테스트 참여");
-          res[3].phoneNumber.should.be.eql("010-1111-2222");
+          const last = res[res.length - 1];
+
+          last.userId.should.be.eql(config.testUser.userId);
+          last.date.should.be.eql(new Date("2020-06-30T17:30:00.000Z"));
+          last.type.should.be.eql(PointConstants.TYPE.EXCHANGE);
+          last.status.should.be.eql(PointConstants.STATUS.REQUESTED);
+          last.operationData.status.should.be.eql(PointConstants.OPERATION_STATUS.OPENED);
+          last.point.should.be.eql(-5000);
+          last.description.should.be.eql("마이컬러링 게임테스트 참여");
+          last.phoneNumber.should.be.eql("010-1111-2222");
 
           done();
         }).catch(err => done(err));
@@ -165,10 +161,20 @@ describe('Points', () => {
     describe('요청된 포인트가 가용 포인트를 초과하면', () => {
 
       const myPoint = {
-        "point": 26100,
+        "point": 0,
         "description": "5000원권 6장 교환",
         "phoneNumber": "010-2222-3333"
       };
+
+      beforeEach(done => {
+        request.get('/points/available')
+          .set('x-access-token', config.appbeeToken.valid)
+          .then(res => {
+            myPoint.point = res.point + 1;
+            done();
+          })
+          .catch(err => done(err));
+      });
 
       it('412를 반환한다', done => {
         request.put('/points/exchange')
@@ -189,7 +195,7 @@ describe('Points', () => {
         .then(res => {
           console.error(res.body);
 
-          res.body.point.should.be.eql(26000);
+          res.body.point.should.be.eql(2966000);
 
           done();
         }).catch(err => done(err));
@@ -205,6 +211,41 @@ describe('Points', () => {
 
       it('0을 반환한다', done => {
         request.get('/points/available')
+          .set('x-access-token', config.appbeeToken.valid)
+          .expect(200)
+          .then(res => {
+            res.body.point.should.be.eql(0);
+            done();
+          }).catch(err => done(err));
+      });
+    })
+  });
+
+  describe('GET /points/exchange/requested', () => {
+
+    it('현재 교환 신청중인 나의 포인트를 조회한다', done => {
+      request.get('/points/exchange/requested')
+        .set('x-access-token', config.appbeeToken.valid)
+        .expect(200)
+        .then(res => {
+          console.error(res.body);
+
+          res.body.point.should.be.eql(30000);
+
+          done();
+        }).catch(err => done(err));
+    });
+
+    describe('나의 포인트 내역이 없으면', () => {
+
+      beforeEach(done => {
+        PointRecords.deleteMany({userId: config.testUser.userId})
+          .then(() => done())
+          .catch(err => done(err));
+      });
+
+      it('0을 반환한다', done => {
+        request.get('/points/exchange/requested')
           .set('x-access-token', config.appbeeToken.valid)
           .expect(200)
           .then(res => {
