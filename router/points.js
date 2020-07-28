@@ -8,6 +8,6 @@ router.put('/', Auth.verifyAppBeeToken, Controller.putSavePointRecord);
 router.put('/exchange', Auth.verifyAppBeeToken, Controller.putExchangePointRecord);
 
 router.get('/available', Auth.verifyAppBeeToken, Controller.getAvailablePoint);
-router.get('/exchange/requested', Auth.verifyAppBeeToken, Controller.getRequestedExchangePoint);
+router.get('/accumulated', Auth.verifyAppBeeToken, Controller.getAccumulatedPoint);
 
 module.exports = router;

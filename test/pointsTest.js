@@ -221,16 +221,16 @@ describe('Points', () => {
     })
   });
 
-  describe('GET /points/exchange/requested', () => {
+  describe('GET /points/accumulated', () => {
 
-    it('현재 교환 신청중인 나의 포인트를 조회한다', done => {
-      request.get('/points/exchange/requested')
+    it('나의 누적 포인트를 조회한다', done => {
+      request.get('/points/accumulated')
         .set('x-access-token', config.appbeeToken.valid)
         .expect(200)
         .then(res => {
           console.error(res.body);
 
-          res.body.point.should.be.eql(30000);
+          res.body.point.should.be.eql(3001000);
 
           done();
         }).catch(err => done(err));
@@ -245,7 +245,7 @@ describe('Points', () => {
       });
 
       it('0을 반환한다', done => {
-        request.get('/points/exchange/requested')
+        request.get('/points/accumulated')
           .set('x-access-token', config.appbeeToken.valid)
           .expect(200)
           .then(res => {

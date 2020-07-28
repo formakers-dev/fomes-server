@@ -54,13 +54,13 @@ const getAvailablePoint = (userId) => {
   })
 };
 
-const getRequestedExchangePoint = (userId) => {
+const getAccumulatedPoint = (userId) => {
   return PointRecords.aggregate([
     {
       $match: {
         userId: userId,
-        type: PointConstants.TYPE.EXCHANGE,
-        status: PointConstants.STATUS.REQUESTED,
+        type: PointConstants.TYPE.SAVE,
+        status: PointConstants.STATUS.COMPLETED,
       }
     },
     {
@@ -71,7 +71,7 @@ const getRequestedExchangePoint = (userId) => {
     }
   ]).then(result => {
     const point = convertToValidPointResult(result);
-    return Promise.resolve(point * -1);
+    return Promise.resolve(point);
   })
 };
 
@@ -82,5 +82,5 @@ module.exports = {
   insertDocForSaveType,
   insertDocForExchangeType,
   getAvailablePoint,
-  getRequestedExchangePoint,
+  getAccumulatedPoint,
 };

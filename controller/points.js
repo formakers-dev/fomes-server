@@ -50,8 +50,8 @@ const getAvailablePoint = (req, res, next) => {
     .catch(err => next(err))
 };
 
-const getRequestedExchangePoint = (req, res, next) => {
-  PointsService.getRequestedExchangePoint(req.userId)
+const getAccumulatedPoint = (req, res, next) => {
+  PointsService.getAccumulatedPoint(req.userId)
     .then(result => {
       res.json({
         point: result
@@ -65,5 +65,5 @@ module.exports = {
   putSavePointRecord,
   putExchangePointRecord,
   getAvailablePoint,
-  getRequestedExchangePoint
+  getAccumulatedPoint
 };
