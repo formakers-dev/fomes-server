@@ -54,6 +54,7 @@ const findValidBetaTests = (userId) => {
                 coverImageUrl: {$first: "$coverImageUrl"},
                 title: {$first: "$title"},
                 description: {$first: "$description"},
+                rewards: {$first: "$rewards"},
                 plan: {$first: "$plan"},
                 status: {$first: "$status"},
                 progressText: {$first: "$progressText"},

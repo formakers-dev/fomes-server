@@ -11,6 +11,7 @@ const recommendRouter = require('./router/recommend');
 const betaTestsRouter = require('./router/betaTests');
 const eventLogsRouter = require('./router/eventLogs');
 const postsRouter = require('./router/posts');
+const pointsRouter = require('./router/points');
 const {logError, handleError} = require('./middleware/errorHandler');
 const db = require('./db');
 const config = require('./config');
@@ -59,6 +60,7 @@ app.use('/recommend', recommendRouter);
 app.use('/beta-tests', betaTestsRouter);
 app.use('/event-logs', eventLogsRouter);
 app.use('/posts', postsRouter);
+app.use('/points', pointsRouter);
 
 app.use((err, req, res, next) => logError(err, req, res, next));
 app.use((err, req, res, next) => handleError(err, req, res, next));
