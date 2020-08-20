@@ -300,7 +300,7 @@ describe('Stats', () => {
 
                     docs[1].date.should.be.eql(new Date('2018-09-24T15:00:00.000Z'));
                     docs[1].userId.should.be.eql(config.testUser.userId);
-                    docs[₩].nickName.should.be.eql('test_user_nickname');
+                    docs[1].nickName.should.be.eql('test_user_nickname');
                     docs[1].gender.should.be.eql('male');
                     docs[1].birthday.should.be.eql(1992);
                     docs[1].job.should.be.eql(1);

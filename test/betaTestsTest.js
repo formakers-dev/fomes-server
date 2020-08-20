@@ -569,7 +569,7 @@ describe('BetaTests', () => {
                 .then(res => {
                     res.length.should.be.eql(1);
                     // 기존 Document의 id
-                    res._id.should.be.eql(ObjectId("111111111111111111112224"));
+                    res[0]._id.should.be.eql(ObjectId("111111111111111111112224"));
 
                     // 완료 노티 보내지 않음
                     sinon.assert.notCalled(stubAxiosPost);
