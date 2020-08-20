@@ -283,6 +283,7 @@ describe('Stats', () => {
                     console.log(docs);
                     docs[0].date.should.be.eql(new Date('2018-09-24T15:00:00.000Z'));
                     docs[0].userId.should.be.eql(config.testUser.userId);
+                    docs[0].nickName.should.be.eql('test_user_nickname');
                     docs[0].gender.should.be.eql('male');
                     docs[0].birthday.should.be.eql(1992);
                     docs[0].job.should.be.eql(1);
@@ -299,6 +300,7 @@ describe('Stats', () => {
 
                     docs[1].date.should.be.eql(new Date('2018-09-24T15:00:00.000Z'));
                     docs[1].userId.should.be.eql(config.testUser.userId);
+                    docs[₩].nickName.should.be.eql('test_user_nickname');
                     docs[1].gender.should.be.eql('male');
                     docs[1].birthday.should.be.eql(1992);
                     docs[1].job.should.be.eql(1);
@@ -315,6 +317,7 @@ describe('Stats', () => {
 
                     docs[2].date.should.be.eql(new Date('2018-09-25T15:00:00.000Z'));
                     docs[2].userId.should.be.eql(config.testUser.userId);
+                    docs[2].nickName.should.be.eql('test_user_nickname');
                     docs[2].gender.should.be.eql('male');
                     docs[2].birthday.should.be.eql(1992);
                     docs[2].job.should.be.eql(1);
@@ -331,6 +334,7 @@ describe('Stats', () => {
 
                     docs[3].date.should.be.eql(new Date('2018-09-24T15:00:00.000Z'));
                     docs[3].userId.should.be.eql(config.testUser.userId);
+                    docs[3].nickName.should.be.eql('test_user_nickname');
                     docs[3].gender.should.be.eql('male');
                     docs[3].birthday.should.be.eql(1992);
                     docs[3].job.should.be.eql(1);

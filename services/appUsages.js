@@ -336,6 +336,7 @@ const upsertAppUsages = (user, appUsages) => {
                 'document': {
                     'date': appUsage.date ? appUsage.date : moment(currentDate).startOf('day').toDate(),
                     'userId': user.userId,
+                    'nickName': user.nickName,
                     'birthday': user.birthday,
                     'job': user.job,
                     'gender': user.gender,
