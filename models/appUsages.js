@@ -21,6 +21,7 @@ const appSchema = new mongoose.Schema({
 const appUsagesSchema = new mongoose.Schema({
     date: Date,
     userId: String,
+    nickName: String,
     birthday: Number,
     job: Number,
     gender: String,
