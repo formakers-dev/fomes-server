@@ -33,6 +33,10 @@ const usersSchema = new Schema({
     wishList: Array,
     appVersion: String,
     device: Device,
+    favoriteGenre: Array,
+    feedbackStyle: Array,
+    monthlyPayment: Number,
+    remoteConfigVersion: Number,
 });
 
 const Users = mongoose.model('users', usersSchema);
