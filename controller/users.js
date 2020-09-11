@@ -91,6 +91,12 @@ const updateUserInfo = (req, res, next) => {
     if (req.body.job) userInfo.job = req.body.job;
     if (req.body.lifeApps) userInfo.lifeApps = req.body.lifeApps;
 
+    //부가정보 추가 20200911
+    if (req.body.favoriteGenre) userInfo.favoriteGenre = req.body.favoriteGenre;
+    if (req.body.feedbackStyle) userInfo.feedbackStyle = req.body.feedbackStyle;
+    if (req.body.monthlyPayment) userInfo.monthlyPayment = req.body.monthlyPayment;
+    if (req.body.remoteConfigVersion) userInfo.remoteConfigVersion = req.body.remoteConfigVersion;
+
     UserService.updateUser(req.userId, userInfo)
         .then(() => res.sendStatus(200))
         .catch(err => next(err));

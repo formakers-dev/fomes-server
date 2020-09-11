@@ -796,6 +796,10 @@ describe('Users', () => {
                     "에오엠"
                 ],
                 nickName : "테스트닉네임",
+                favoriteGenre: ["GAME_SIMULATION","GAME_ROLE_PLAYING"],
+                feedbackStyle: ["analytical"],
+                monthlyPayment: 10,
+                remoteConfigVersion: 3,
             };
 
             request.patch('/user/info')
@@ -812,6 +816,10 @@ describe('Users', () => {
                     user.job.should.be.eql(2001);
                     user.nickName.should.be.eql('테스트닉네임');
                     user.registrationToken.should.be.eql('test_user_registration_token');
+                    user.favoriteGenre.should.be.eql(["GAME_SIMULATION","GAME_ROLE_PLAYING"]);
+                    user.feedbackStyle.should.be.eql(["analytical"]);
+                    user.monthlyPayment.should.be.eql(10);
+                    user.remoteConfigVersion.should.be.eql(3);
 
                     done();
                 })
@@ -838,6 +846,10 @@ describe('Users', () => {
                     user.job.should.be.eql(1);
                     user.nickName.should.be.eql('test_user_nickname');
                     user.registrationToken.should.be.eql('test_user_registration_token');
+                    user.favoriteGenre.should.be.eql([]);
+                    user.feedbackStyle.should.be.eql([]);
+                    should.not.exist(user.monthlyPayment);
+                    should.not.exist(user.remoteConfigVersion);
 
                     done();
                 })
