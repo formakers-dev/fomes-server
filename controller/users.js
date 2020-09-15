@@ -119,7 +119,9 @@ const updateUserInfo = (req, res, next) => {
             }
         })
         .then(() => res.sendStatus(200))
-        .catch(err => next(err));
+        .catch(err => {
+            next((err instanceof UserService.NickNameDuplicationError)? Boom.conflict() : err);
+        });
 };
 
 const generateToken = (req, res, next) => {
