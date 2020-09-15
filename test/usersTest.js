@@ -5,6 +5,8 @@ const config = require('../config');
 const should = require('chai').should();
 const Users = require('../models/users').Users;
 const Apps = require('../models/appUsages').Apps;
+const PointRecords = require('../models/point-records').Model;
+const PointConstants = require('../models/point-records').Constants;
 const UserConstants = require('../models/users').Constants;
 const UserService = require('../services/users');
 const helper = require('./commonTestHelper');
@@ -787,6 +789,12 @@ describe('Users', () => {
     });
 
     describe('PATCH /user/info/', () => {
+        beforeEach(done => {
+            PointRecords.remove({})
+                .then(() => done())
+                .catch(err => done(err));
+        });
+
         it('요청한 유저의 신상정보를 업데이트 한다', done => {
             const newUserInfo = {
                 birthday : 1990,
@@ -853,6 +861,95 @@ describe('Users', () => {
 
                     done();
                 })
+                .catch(err => done(err));
+        });
+
+        it('remoteConfigVersion이 올라간 경우 포인트를 적립한다', done => {
+            const newUserInfo = {
+                monthlyPayment: 5,
+                remoteConfigVersion: 4,
+            };
+
+            request.patch('/user/info')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send(newUserInfo)
+                .expect(200)
+                .then(() => Users.findOne({userId: config.testUser.userId}))
+                .then(user => {
+                    user.userId.should.be.eql(config.testUser.userId);
+                    user.monthlyPayment.should.be.eql(5);
+                    user.remoteConfigVersion.should.be.eql(4);
+
+                    return PointRecords.findOne({userId: config.testUser.userId, type:PointConstants.TYPE.SAVE})
+                })
+                .then(pointRecord => {
+                    pointRecord.point.should.be.eql(PointConstants.SAVE_POLICY.UPDATE_USER.POINT);
+                    pointRecord.description.should.be.eql(PointConstants.SAVE_POLICY.UPDATE_USER.DESCRIPTION);
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        it('remoteConfigVersion이 입력되지 않은 경우 포인트를 적립하지 않는다', done => {
+            const newUserInfo = {
+                monthlyPayment: 99,
+            };
+
+            request.patch('/user/info')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send(newUserInfo)
+                .expect(200)
+                .then(() => Users.findOne({userId: config.testUser.userId}))
+                .then(user => {
+                    user.userId.should.be.eql(config.testUser.userId);
+                    user.monthlyPayment.should.be.eql(99);
+
+                    return PointRecords.findOne({userId: config.testUser.userId, type:PointConstants.TYPE.SAVE})
+                })
+                .then(pointRecord => {
+                    should.not.exist(pointRecord);
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        it('remoteConfigVersion이 동일한 경우 포인트를 적립하지 않는다', done => {
+            request.patch('/user/info')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send({
+                    monthlyPayment: 3,
+                    remoteConfigVersion: 2,
+                })
+                .expect(200)
+                .then(() => PointRecords.remove({}))
+                .then(() => {
+                    return request.patch('/user/info')
+                        .set('x-access-token', config.appbeeToken.valid)
+                        .send({
+                            monthlyPayment: 5,
+                            remoteConfigVersion: 2,
+                        })
+                        .expect(200);
+                })
+                .then(() => Users.findOne({userId: config.testUser.userId}))
+                .then(user => {
+                    user.userId.should.be.eql(config.testUser.userId);
+                    user.monthlyPayment.should.be.eql(5);
+                    user.remoteConfigVersion.should.be.eql(2);
+
+                    return PointRecords.findOne({userId: config.testUser.userId, type:PointConstants.TYPE.SAVE});
+                })
+                .then(pointRecord => {
+                    should.not.exist(pointRecord);
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        afterEach(done => {
+            Users.remove({})
+                .then(() => PointRecords.remove({}))
+                .then(() => done())
                 .catch(err => done(err));
         });
     });

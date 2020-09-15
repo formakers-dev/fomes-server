@@ -3,6 +3,8 @@ const config = require('../config');
 const UserService = require('../services/users');
 const AppService = require('../services/apps');
 const NotiService = require('../services/noti');
+const PointService = require('../services/points');
+const PointConstants = require('../models/point-records').Constants;
 const Boom = require('boom');
 
 const signUpUser = (req, res, next) => {
@@ -98,6 +100,24 @@ const updateUserInfo = (req, res, next) => {
     if (req.body.remoteConfigVersion) userInfo.remoteConfigVersion = req.body.remoteConfigVersion;
 
     UserService.updateUser(req.userId, userInfo)
+        .then((oldUser) => {
+            if (!!userInfo.remoteConfigVersion &&
+                (!!!oldUser.remoteConfigVersion ||
+                    userInfo.remoteConfigVersion > oldUser.remoteConfigVersion)) {
+
+                const pointRecord = {
+                    point : PointConstants.SAVE_POLICY.UPDATE_USER.POINT,
+                    description : PointConstants.SAVE_POLICY.UPDATE_USER.DESCRIPTION,
+                    metaData : {
+                        remoteConfigVersion : userInfo.remoteConfigVersion
+                    }
+                };
+
+                return PointService.insertDocForSaveType(req.userId, pointRecord, PointConstants.STATUS.COMPLETED);
+            } else {
+                return Promise.resolve();
+            }
+        })
         .then(() => res.sendStatus(200))
         .catch(err => next(err));
 };

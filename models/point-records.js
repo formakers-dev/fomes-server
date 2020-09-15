@@ -16,6 +16,12 @@ const Constants = {
         COMPLETED: 99,
         OPENED: 10,
         FAILED: -1
+    },
+    SAVE_POLICY: {
+        UPDATE_USER: {
+            POINT: 100,
+            DESCRIPTION : '회원정보 수정 이벤트 참여'
+        }
     }
 };
 
@@ -31,8 +37,9 @@ const schema = new Schema({
     status: Number,
     description: String,
     metaData: {
-        refType: String,
-        refId: ObjectId
+        betaTestId: ObjectId,
+        awardRecordId: ObjectId,
+        remoteConfigVersion: Number
     },
     operationData: {
         type: operationDataObject,

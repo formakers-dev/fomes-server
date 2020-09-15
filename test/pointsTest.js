@@ -78,8 +78,7 @@ describe('Points', () => {
         "point": 10,
         "description": "마이컬러링 게임테스트 참여",
         "metaData": {
-          "refType": "beta-test",
-          "refId": ObjectId("5de748053ae42700175f6849")
+          "betaTestId": ObjectId("5de748053ae42700175f6849")
         }
       };
 
@@ -99,8 +98,7 @@ describe('Points', () => {
           should.not.exist(last.operationData);
           last.point.should.be.eql(10);
           last.description.should.be.eql("마이컬러링 게임테스트 참여");
-          last.metaData.refType.should.be.eql("beta-test");
-          last.metaData.refId.should.be.eql(ObjectId("5de748053ae42700175f6849"));
+          last.metaData.betaTestId.should.be.eql(ObjectId("5de748053ae42700175f6849"));
 
           done();
         }).catch(err => done(err));
