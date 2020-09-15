@@ -7,6 +7,7 @@ usersRouter.post('/', Auth.verifyAppBeeToken, Users.updateUser, (req, res) => re
 usersRouter.put('/activated', Auth.verifyAppBeeToken, Users.updateActivatedDate);
 usersRouter.patch('/noti-token', Auth.verifyAppBeeToken, Users.updateNotificationToken);
 usersRouter.patch('/info', Auth.verifyAppBeeToken, Users.updateUserInfo);
+usersRouter.get('/info', Auth.verifyAppBeeToken, Users.getUser, (req, res) => res.json(req.user));
 
 usersRouter.post('/signin', Auth.verifyGoogleToken, Users.signInUser, Users.generateToken);
 usersRouter.post('/signup', Auth.verifyGoogleToken, Users.signUpUser, Users.generateToken);

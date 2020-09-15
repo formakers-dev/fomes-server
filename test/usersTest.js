@@ -954,6 +954,30 @@ describe('Users', () => {
         });
     });
 
+
+    describe('GET /user/info/', () => {
+
+        it('요청한 유저의 정보를 리턴한다', done => {
+            request.get('/user/info')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send({})
+                .expect(200)
+                .then((res) => {
+                    const user = res.body;
+                    user.userId.should.be.eql(config.testUser.userId);
+                    user.name.should.be.eql('test_user');
+                    user.email.should.be.eql('appbee@appbee.com');
+                    user.gender.should.be.eql('male');
+                    user.birthday.should.be.eql(1992);
+                    user.job.should.be.eql(1);
+                    user.nickName.should.be.eql('test_user_nickname');
+                    user.registrationToken.should.be.eql('test_user_registration_token');
+
+                    done();
+                }).catch(err => done(err));
+        });
+    });
+
     describe('POST /user/noti/', () => {
         let stubAxiosPost;
 
