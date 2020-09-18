@@ -33,8 +33,8 @@ const usersSchema = new Schema({
     wishList: Array,
     appVersion: String,
     device: Device,
-    favoriteGenre: Array,
-    feedbackStyle: Array,
+    favoriteGenres: Array,
+    feedbackStyles: Array,
     monthlyPayment: Number,
     remoteConfigVersion: Number,
 });

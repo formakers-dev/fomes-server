@@ -94,8 +94,8 @@ const updateUserInfo = (req, res, next) => {
     if (req.body.lifeApps) userInfo.lifeApps = req.body.lifeApps;
 
     //부가정보 추가 20200911
-    if (req.body.favoriteGenre) userInfo.favoriteGenre = req.body.favoriteGenre;
-    if (req.body.feedbackStyle) userInfo.feedbackStyle = req.body.feedbackStyle;
+    if (req.body.favoriteGenres) userInfo.favoriteGenres = req.body.favoriteGenres;
+    if (req.body.feedbackStyles) userInfo.feedbackStyles = req.body.feedbackStyles;
     if (req.body.monthlyPayment) userInfo.monthlyPayment = req.body.monthlyPayment;
     if (req.body.remoteConfigVersion) userInfo.remoteConfigVersion = req.body.remoteConfigVersion;
 
