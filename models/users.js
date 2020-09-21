@@ -34,6 +34,7 @@ const usersSchema = new Schema({
     appVersion: String,
     device: Device,
     favoriteGenres: Array,
+    leastFavoriteGenres: Array,
     feedbackStyles: Array,
     monthlyPayment: Number,
     remoteConfigVersion: Number,

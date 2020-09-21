@@ -95,6 +95,7 @@ const updateUserInfo = (req, res, next) => {
 
     //부가정보 추가 20200911
     if (req.body.favoriteGenres) userInfo.favoriteGenres = req.body.favoriteGenres;
+    if (req.body.leastFavoriteGenres) userInfo.leastFavoriteGenres = req.body.leastFavoriteGenres;
     if (req.body.feedbackStyles) userInfo.feedbackStyles = req.body.feedbackStyles;
     if (req.body.monthlyPayment) userInfo.monthlyPayment = req.body.monthlyPayment;
     if (req.body.remoteConfigVersion) userInfo.remoteConfigVersion = req.body.remoteConfigVersion;
