@@ -804,6 +804,7 @@ describe('Users', () => {
                     "에오엠"
                 ],
                 nickName : "테스트닉네임",
+                favoritePlatforms: ["pc","mobile"],
                 favoriteGenres: ["simulation","rolePlaying"],
                 leastFavoriteGenres: ["action"],
                 feedbackStyles: ["analytical"],
@@ -825,6 +826,7 @@ describe('Users', () => {
                     user.job.should.be.eql(2001);
                     user.nickName.should.be.eql('테스트닉네임');
                     user.registrationToken.should.be.eql('test_user_registration_token');
+                    user.favoritePlatforms.should.be.eql(["pc","mobile"]);
                     user.favoriteGenres.should.be.eql(["simulation","rolePlaying"]);
                     user.leastFavoriteGenres.should.be.eql(["action"]);
                     user.feedbackStyles.should.be.eql(["analytical"]);
@@ -856,6 +858,7 @@ describe('Users', () => {
                     user.job.should.be.eql(1);
                     user.nickName.should.be.eql('test_user_nickname');
                     user.registrationToken.should.be.eql('test_user_registration_token');
+                    user.favoritePlatforms.should.be.eql([]);
                     user.favoriteGenres.should.be.eql([]);
                     user.leastFavoriteGenres.should.be.eql([]);
                     user.feedbackStyles.should.be.eql([]);
