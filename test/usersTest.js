@@ -809,7 +809,7 @@ describe('Users', () => {
                 leastFavoriteGenres: ["action"],
                 feedbackStyles: ["analytical"],
                 monthlyPayment: 10,
-                remoteConfigVersion: 3,
+                userInfoUpdateVersion: 3,
             };
 
             request.patch('/user/info')
@@ -831,7 +831,7 @@ describe('Users', () => {
                     user.leastFavoriteGenres.should.be.eql(["action"]);
                     user.feedbackStyles.should.be.eql(["analytical"]);
                     user.monthlyPayment.should.be.eql(10);
-                    user.remoteConfigVersion.should.be.eql(3);
+                    user.userInfoUpdateVersion.should.be.eql(3);
 
                     done();
                 })
@@ -863,17 +863,17 @@ describe('Users', () => {
                     user.leastFavoriteGenres.should.be.eql([]);
                     user.feedbackStyles.should.be.eql([]);
                     should.not.exist(user.monthlyPayment);
-                    should.not.exist(user.remoteConfigVersion);
+                    should.not.exist(user.userInfoUpdateVersion);
 
                     done();
                 })
                 .catch(err => done(err));
         });
 
-        it('remoteConfigVersion이 올라간 경우 포인트를 적립한다', done => {
+        it('userInfoUpdateVersion이 올라간 경우 포인트를 적립한다', done => {
             const newUserInfo = {
                 monthlyPayment: 5,
-                remoteConfigVersion: 4,
+                userInfoUpdateVersion: 4,
             };
 
             request.patch('/user/info')
@@ -884,7 +884,7 @@ describe('Users', () => {
                 .then(user => {
                     user.userId.should.be.eql(config.testUser.userId);
                     user.monthlyPayment.should.be.eql(5);
-                    user.remoteConfigVersion.should.be.eql(4);
+                    user.userInfoUpdateVersion.should.be.eql(4);
 
                     return PointRecords.findOne({userId: config.testUser.userId, type:PointConstants.TYPE.SAVE})
                 })
@@ -896,7 +896,7 @@ describe('Users', () => {
                 .catch(err => done(err));
         });
 
-        it('remoteConfigVersion이 입력되지 않은 경우 포인트를 적립하지 않는다', done => {
+        it('userInfoUpdateVersion이 입력되지 않은 경우 포인트를 적립하지 않는다', done => {
             const newUserInfo = {
                 monthlyPayment: 99,
             };
@@ -919,12 +919,12 @@ describe('Users', () => {
                 .catch(err => done(err));
         });
 
-        it('remoteConfigVersion이 동일한 경우 포인트를 적립하지 않는다', done => {
+        it('userInfoUpdateVersion이 동일한 경우 포인트를 적립하지 않는다', done => {
             request.patch('/user/info')
                 .set('x-access-token', config.appbeeToken.valid)
                 .send({
                     monthlyPayment: 3,
-                    remoteConfigVersion: 2,
+                    userInfoUpdateVersion: 2,
                 })
                 .expect(200)
                 .then(() => PointRecords.remove({}))
@@ -933,7 +933,7 @@ describe('Users', () => {
                         .set('x-access-token', config.appbeeToken.valid)
                         .send({
                             monthlyPayment: 5,
-                            remoteConfigVersion: 2,
+                            userInfoUpdateVersion: 2,
                         })
                         .expect(200);
                 })
@@ -941,7 +941,7 @@ describe('Users', () => {
                 .then(user => {
                     user.userId.should.be.eql(config.testUser.userId);
                     user.monthlyPayment.should.be.eql(5);
-                    user.remoteConfigVersion.should.be.eql(2);
+                    user.userInfoUpdateVersion.should.be.eql(2);
 
                     return PointRecords.findOne({userId: config.testUser.userId, type:PointConstants.TYPE.SAVE});
                 })

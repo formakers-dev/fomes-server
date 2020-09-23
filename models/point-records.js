@@ -39,7 +39,7 @@ const schema = new Schema({
     metaData: {
         betaTestId: ObjectId,
         awardRecordId: ObjectId,
-        remoteConfigVersion: Number
+        userInfoUpdateVersion: Number
     },
     operationData: {
         type: operationDataObject,

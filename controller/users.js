@@ -99,19 +99,19 @@ const updateUserInfo = (req, res, next) => {
     if (req.body.leastFavoriteGenres) userInfo.leastFavoriteGenres = req.body.leastFavoriteGenres;
     if (req.body.feedbackStyles) userInfo.feedbackStyles = req.body.feedbackStyles;
     if (req.body.monthlyPayment) userInfo.monthlyPayment = req.body.monthlyPayment;
-    if (req.body.remoteConfigVersion) userInfo.remoteConfigVersion = req.body.remoteConfigVersion;
+    if (req.body.userInfoUpdateVersion) userInfo.userInfoUpdateVersion = req.body.userInfoUpdateVersion;
 
     UserService.updateUser(req.userId, userInfo)
         .then((oldUser) => {
-            if (!!userInfo.remoteConfigVersion &&
-                (!!!oldUser.remoteConfigVersion ||
-                    userInfo.remoteConfigVersion > oldUser.remoteConfigVersion)) {
+            if (!!userInfo.userInfoUpdateVersion &&
+                (!!!oldUser.userInfoUpdateVersion ||
+                    userInfo.userInfoUpdateVersion > oldUser.userInfoUpdateVersion)) {
 
                 const pointRecord = {
                     point : PointConstants.SAVE_POLICY.UPDATE_USER.POINT,
                     description : PointConstants.SAVE_POLICY.UPDATE_USER.DESCRIPTION,
                     metaData : {
-                        remoteConfigVersion : userInfo.remoteConfigVersion
+                        userInfoUpdateVersion : userInfo.userInfoUpdateVersion
                     }
                 };
 

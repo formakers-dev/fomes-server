@@ -38,7 +38,7 @@ const usersSchema = new Schema({
     leastFavoriteGenres: Array,
     feedbackStyles: Array,
     monthlyPayment: Number,
-    remoteConfigVersion: Number,
+    userInfoUpdateVersion: Number,
 });
 
 const Users = mongoose.model('users', usersSchema);
