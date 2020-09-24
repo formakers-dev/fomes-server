@@ -101,6 +101,11 @@ const updateUserInfo = (req, res, next) => {
     if (req.body.monthlyPayment) userInfo.monthlyPayment = req.body.monthlyPayment;
     if (req.body.userInfoUpdateVersion) userInfo.userInfoUpdateVersion = req.body.userInfoUpdateVersion;
 
+    //자동 수집 정보 추가 20200924
+    if (req.body.appVersion) userInfo.appVersion = req.body.appVersion;
+    if (req.body.registrationToken) userInfo.registrationToken = req.body.registrationToken;
+    if (req.body.device) userInfo.device = req.body.device;
+
     UserService.updateUser(req.userId, userInfo)
         .then((oldUser) => {
             if (!!userInfo.userInfoUpdateVersion &&
