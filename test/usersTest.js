@@ -5,6 +5,8 @@ const config = require('../config');
 const should = require('chai').should();
 const Users = require('../models/users').Users;
 const Apps = require('../models/appUsages').Apps;
+const PointRecords = require('../models/point-records').Model;
+const PointConstants = require('../models/point-records').Constants;
 const UserConstants = require('../models/users').Constants;
 const UserService = require('../services/users');
 const helper = require('./commonTestHelper');
@@ -787,6 +789,12 @@ describe('Users', () => {
     });
 
     describe('PATCH /user/info/', () => {
+        beforeEach(done => {
+            PointRecords.remove({})
+                .then(() => done())
+                .catch(err => done(err));
+        });
+
         it('요청한 유저의 신상정보를 업데이트 한다', done => {
             const newUserInfo = {
                 birthday : 1990,
@@ -796,6 +804,12 @@ describe('Users', () => {
                     "에오엠"
                 ],
                 nickName : "테스트닉네임",
+                favoritePlatforms: ["pc","mobile"],
+                favoriteGenres: ["simulation","rolePlaying"],
+                leastFavoriteGenres: ["action"],
+                feedbackStyles: ["analytical"],
+                monthlyPayment: 10,
+                userInfoUpdateVersion: 3,
             };
 
             request.patch('/user/info')
@@ -812,6 +826,12 @@ describe('Users', () => {
                     user.job.should.be.eql(2001);
                     user.nickName.should.be.eql('테스트닉네임');
                     user.registrationToken.should.be.eql('test_user_registration_token');
+                    user.favoritePlatforms.should.be.eql(["pc","mobile"]);
+                    user.favoriteGenres.should.be.eql(["simulation","rolePlaying"]);
+                    user.leastFavoriteGenres.should.be.eql(["action"]);
+                    user.feedbackStyles.should.be.eql(["analytical"]);
+                    user.monthlyPayment.should.be.eql(10);
+                    user.userInfoUpdateVersion.should.be.eql(3);
 
                     done();
                 })
@@ -838,10 +858,129 @@ describe('Users', () => {
                     user.job.should.be.eql(1);
                     user.nickName.should.be.eql('test_user_nickname');
                     user.registrationToken.should.be.eql('test_user_registration_token');
+                    user.favoritePlatforms.should.be.eql([]);
+                    user.favoriteGenres.should.be.eql([]);
+                    user.leastFavoriteGenres.should.be.eql([]);
+                    user.feedbackStyles.should.be.eql([]);
+                    should.not.exist(user.monthlyPayment);
+                    should.not.exist(user.userInfoUpdateVersion);
 
                     done();
                 })
                 .catch(err => done(err));
+        });
+
+        it('userInfoUpdateVersion이 올라간 경우 포인트를 적립한다', done => {
+            const newUserInfo = {
+                monthlyPayment: 5,
+                userInfoUpdateVersion: 4,
+            };
+
+            request.patch('/user/info')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send(newUserInfo)
+                .expect(200)
+                .then(() => Users.findOne({userId: config.testUser.userId}))
+                .then(user => {
+                    user.userId.should.be.eql(config.testUser.userId);
+                    user.monthlyPayment.should.be.eql(5);
+                    user.userInfoUpdateVersion.should.be.eql(4);
+
+                    return PointRecords.findOne({userId: config.testUser.userId, type:PointConstants.TYPE.SAVE})
+                })
+                .then(pointRecord => {
+                    pointRecord.point.should.be.eql(PointConstants.SAVE_POLICY.UPDATE_USER.POINT);
+                    pointRecord.description.should.be.eql(PointConstants.SAVE_POLICY.UPDATE_USER.DESCRIPTION);
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        it('userInfoUpdateVersion이 입력되지 않은 경우 포인트를 적립하지 않는다', done => {
+            const newUserInfo = {
+                monthlyPayment: 99,
+            };
+
+            request.patch('/user/info')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send(newUserInfo)
+                .expect(200)
+                .then(() => Users.findOne({userId: config.testUser.userId}))
+                .then(user => {
+                    user.userId.should.be.eql(config.testUser.userId);
+                    user.monthlyPayment.should.be.eql(99);
+
+                    return PointRecords.findOne({userId: config.testUser.userId, type:PointConstants.TYPE.SAVE})
+                })
+                .then(pointRecord => {
+                    should.not.exist(pointRecord);
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        it('userInfoUpdateVersion이 동일한 경우 포인트를 적립하지 않는다', done => {
+            request.patch('/user/info')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send({
+                    monthlyPayment: 3,
+                    userInfoUpdateVersion: 2,
+                })
+                .expect(200)
+                .then(() => PointRecords.remove({}))
+                .then(() => {
+                    return request.patch('/user/info')
+                        .set('x-access-token', config.appbeeToken.valid)
+                        .send({
+                            monthlyPayment: 5,
+                            userInfoUpdateVersion: 2,
+                        })
+                        .expect(200);
+                })
+                .then(() => Users.findOne({userId: config.testUser.userId}))
+                .then(user => {
+                    user.userId.should.be.eql(config.testUser.userId);
+                    user.monthlyPayment.should.be.eql(5);
+                    user.userInfoUpdateVersion.should.be.eql(2);
+
+                    return PointRecords.findOne({userId: config.testUser.userId, type:PointConstants.TYPE.SAVE});
+                })
+                .then(pointRecord => {
+                    should.not.exist(pointRecord);
+                    done();
+                })
+                .catch(err => done(err));
+        });
+
+        afterEach(done => {
+            Users.remove({})
+                .then(() => PointRecords.remove({}))
+                .then(() => done())
+                .catch(err => done(err));
+        });
+    });
+
+
+    describe('GET /user/info/', () => {
+
+        it('요청한 유저의 정보를 리턴한다', done => {
+            request.get('/user/info')
+                .set('x-access-token', config.appbeeToken.valid)
+                .send({})
+                .expect(200)
+                .then((res) => {
+                    const user = res.body;
+                    user.userId.should.be.eql(config.testUser.userId);
+                    user.name.should.be.eql('test_user');
+                    user.email.should.be.eql('appbee@appbee.com');
+                    user.gender.should.be.eql('male');
+                    user.birthday.should.be.eql(1992);
+                    user.job.should.be.eql(1);
+                    user.nickName.should.be.eql('test_user_nickname');
+                    user.registrationToken.should.be.eql('test_user_registration_token');
+
+                    done();
+                }).catch(err => done(err));
         });
     });
 

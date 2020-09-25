@@ -15,8 +15,7 @@ const data = [
         "status" : PointConstants.STATUS.COMPLETED,
         "description" : "더팜 게임테스트 성실상",
         "metaData" : {
-            "refType" : "beta-test",
-            "refId" : ObjectId("5dd38c8cb1e19307f5fce299")
+            "betaTestId" : ObjectId("5dd38c8cb1e19307f5fce299")
         }
     },
     {
@@ -28,8 +27,7 @@ const data = [
         "status" : PointConstants.STATUS.COMPLETED,
         "description" : "마이컬러링 게임테스트 수석",
         "metaData" : {
-            "refType" : "beta-test",
-            "refId" : ObjectId("5de748053ae42700175f6849")
+            "betaTestId" : ObjectId("5de748053ae42700175f6849")
         }
     },
     {
@@ -41,8 +39,7 @@ const data = [
         "status" : PointConstants.STATUS.COMPLETED,
         "description" : "고양이숲 게임테스트 수석",
         "metaData" : {
-            "refType" : "beta-test",
-            "refId" : ObjectId("5cb3ef0db5e8fc246c3b6c18")
+            "betaTestId" : ObjectId("5cb3ef0db5e8fc246c3b6c18")
         }
     },
     {

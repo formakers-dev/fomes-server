@@ -33,6 +33,12 @@ const usersSchema = new Schema({
     wishList: Array,
     appVersion: String,
     device: Device,
+    favoritePlatforms: Array,
+    favoriteGenres: Array,
+    leastFavoriteGenres: Array,
+    feedbackStyles: Array,
+    monthlyPayment: Number,
+    userInfoUpdateVersion: Number,
 });
 
 const Users = mongoose.model('users', usersSchema);

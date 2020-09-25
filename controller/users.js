@@ -3,6 +3,8 @@ const config = require('../config');
 const UserService = require('../services/users');
 const AppService = require('../services/apps');
 const NotiService = require('../services/noti');
+const PointService = require('../services/points');
+const PointConstants = require('../models/point-records').Constants;
 const Boom = require('boom');
 
 const signUpUser = (req, res, next) => {
@@ -91,9 +93,42 @@ const updateUserInfo = (req, res, next) => {
     if (req.body.job) userInfo.job = req.body.job;
     if (req.body.lifeApps) userInfo.lifeApps = req.body.lifeApps;
 
+    //부가정보 추가 20200911
+    if (req.body.favoritePlatforms) userInfo.favoritePlatforms = req.body.favoritePlatforms;
+    if (req.body.favoriteGenres) userInfo.favoriteGenres = req.body.favoriteGenres;
+    if (req.body.leastFavoriteGenres) userInfo.leastFavoriteGenres = req.body.leastFavoriteGenres;
+    if (req.body.feedbackStyles) userInfo.feedbackStyles = req.body.feedbackStyles;
+    if (req.body.monthlyPayment) userInfo.monthlyPayment = req.body.monthlyPayment;
+    if (req.body.userInfoUpdateVersion) userInfo.userInfoUpdateVersion = req.body.userInfoUpdateVersion;
+
+    //자동 수집 정보 추가 20200924
+    if (req.body.appVersion) userInfo.appVersion = req.body.appVersion;
+    if (req.body.registrationToken) userInfo.registrationToken = req.body.registrationToken;
+    if (req.body.device) userInfo.device = req.body.device;
+
     UserService.updateUser(req.userId, userInfo)
+        .then((oldUser) => {
+            if (!!userInfo.userInfoUpdateVersion &&
+                (!!!oldUser.userInfoUpdateVersion ||
+                    userInfo.userInfoUpdateVersion > oldUser.userInfoUpdateVersion)) {
+
+                const pointRecord = {
+                    point : PointConstants.SAVE_POLICY.UPDATE_USER.POINT,
+                    description : PointConstants.SAVE_POLICY.UPDATE_USER.DESCRIPTION,
+                    metaData : {
+                        userInfoUpdateVersion : userInfo.userInfoUpdateVersion
+                    }
+                };
+
+                return PointService.insertDocForSaveType(req.userId, pointRecord, PointConstants.STATUS.COMPLETED);
+            } else {
+                return Promise.resolve();
+            }
+        })
         .then(() => res.sendStatus(200))
-        .catch(err => next(err));
+        .catch(err => {
+            next((err instanceof UserService.NickNameDuplicationError)? Boom.conflict() : err);
+        });
 };
 
 const generateToken = (req, res, next) => {
