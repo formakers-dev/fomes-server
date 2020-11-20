@@ -311,20 +311,20 @@ class AlreadyExistError extends Error {
 
 const findAttendParticipation = (betaTestId, userId) => {
     return BetaTestParticipations.Model.findOne({
-        betaTestId: betaTestId,
         userId: userId,
+        betaTestId: betaTestId,
+        missionId: {$exists: false},
         type: BetaTestParticipations.Constants.TYPE_BETA_TEST,
         status: BetaTestParticipations.Constants.STATUS_ATTEND,
-        missionId: {$exists: false},
     }).lean();
 };
 
 const findMissionParticipation = (betaTestId, missionId, userId) => {
     return BetaTestParticipations.Model.findOne({
-        type: BetaTestParticipations.Constants.TYPE_MISSION,
+        userId: userId,
         betaTestId: betaTestId,
         missionId: missionId,
-        userId: userId,
+        type: BetaTestParticipations.Constants.TYPE_MISSION,
     }).lean();
 };
 
